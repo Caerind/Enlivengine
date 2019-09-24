@@ -31,17 +31,20 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 		DOCTEST_CHECK(en::I8_Max == 127);
 		DOCTEST_CHECK(en::I16_Min == -32768);
 		DOCTEST_CHECK(en::I16_Max == 32767);
-		DOCTEST_CHECK(en::I32_Min == -en::I32(2147483648)); // TODO : This is not great... but we ensure it is working below
-		DOCTEST_CHECK(en::I32_Max == 2147483647);
-		DOCTEST_CHECK(en::I64_Min == -en::I64(9223372036854775808)); // TODO : This is not great... but we ensure it is working below
-		DOCTEST_CHECK(en::I64_Max == 9223372036854775807);
+		DOCTEST_CHECK(en::I32_Min == -2147483648i32);
+		DOCTEST_CHECK(en::I32_Max == 2147483647i32);
+		DOCTEST_CHECK(en::I64_Min == -9223372036854775808i64);
+		DOCTEST_CHECK(en::I64_Max == 9223372036854775807i64);
 
-		// Temporary disable overflow detection
-		#if defined(ENLIVE_COMPILER_MSVC)
-			#pragma warning(disable: 4307)
-		#endif
 
 		// Correct type limits
+		#if defined(ENLIVE_COMPILER_MSVC)
+			#pragma warning(disable: 4307)
+		#elif defined(ENLIVE_COMPILER_GNUC)
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Woverflow"
+		#endif
+
 		DOCTEST_CHECK(en::I8(en::I8_Max + 1) == en::I8_Min);
 		DOCTEST_CHECK(en::I8(en::I8_Min - 1) == en::I8_Max);
 		DOCTEST_CHECK(en::I16(en::I16_Max + 1) == en::I16_Min);
@@ -51,9 +54,10 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 		DOCTEST_CHECK(en::I64(en::I64_Max + 1) == en::I64_Min);
 		DOCTEST_CHECK(en::I64(en::I64_Min - 1) == en::I64_Max);
 
-		// Re-enable overflow detection
 		#if defined(ENLIVE_COMPILER_MSVC)
 			#pragma warning(default: 4307)
+		#elif defined(ENLIVE_COMPILER_GNUC)
+			#pragma GCC diagnostic pop
 		#endif
 	}
 
@@ -69,11 +73,25 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 		DOCTEST_CHECK(en::U64_Min == 0);
 		DOCTEST_CHECK(en::U64_Max == 18446744073709551615);
 
+
 		// Correct type limits
+		#if defined(ENLIVE_COMPILER_MSVC)
+			#pragma warning(disable: 4307)
+		#elif defined(ENLIVE_COMPILER_GNUC)
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Woverflow"
+		#endif
+
 		DOCTEST_CHECK(en::U8_Max == en::U8(-1));
 		DOCTEST_CHECK(en::U16_Max == en::U16(-1));
 		DOCTEST_CHECK(en::U32_Max == en::U32(-1));
-		DOCTEST_CHECK(en::U64_Max == en::U64(-1));
+		DOCTEST_CHECK(en::U64_Max == en::U64(-1)); 
+
+		#if defined(ENLIVE_COMPILER_MSVC)
+			#pragma warning(default: 4307)
+		#elif defined(ENLIVE_COMPILER_GNUC)
+			#pragma GCC diagnostic pop
+		#endif
 	}
 }
 
