@@ -2,31 +2,20 @@
 
 #include "compilertraits.hpp"
 
+#include <cstdint>
+
 namespace en
 {
 
-// 8 bits integer types
-using I8 = signed char;
-using U8 = unsigned char;
+using I8 = std::int8_t;
+using U8 = std::uint8_t;
+using I16 = std::int16_t;
+using U16 = std::uint16_t;
+using I32 = std::int32_t;
+using U32 = std::uint32_t;
+using I64 = std::int64_t;
+using U64 = std::int64_t;
 
-// 16 bits integer types
-using I16 = signed short;
-using U16 = unsigned short;
-
-// 32 bits integer types
-using I32 = signed int;
-using U32 = unsigned int;
-
-// 64 bits integer types
-#if defined(_MSC_VER)
-	using I64 = signed __int64;
-	using U64 = unsigned __int64;
-#else
-	using I64 = signed long long;
-	using U64 = unsigned long long;
-#endif
-
-// Floating point
 using F32 = float;
 using F64 = double;
 #if defined(ENLIVE_DOUBLE_PRECISION)
@@ -46,18 +35,30 @@ static_assert(sizeof(U64) == 8);
 static_assert(sizeof(F32) == 4);
 static_assert(sizeof(F64) == 8);
 
-constexpr I8 I8_Min = -128;
-constexpr I8 I8_Max = 127;
-constexpr I16 I16_Min = -32768;
-constexpr I16 I16_Max = 32767;
-constexpr I32 I32_Min = -I32(2147483648); // Workaround as it is recognized as unsigned, there is tests below to ensures this works everywhere
-constexpr I32 I32_Max = 2147483647;
-constexpr I64 I64_Min = -I64(9223372036854775808); // Workaround as it is recognized as unsigned, there is tests below to ensures this works everywhere
-constexpr I64 I64_Max = 9223372036854775807;
+constexpr I8 I8_Min = INT8_MIN;
+constexpr I8 I8_Max = INT8_MAX;
+constexpr I16 I16_Min = INT16_MIN;
+constexpr I16 I16_Max = INT16_MAX;
+constexpr I32 I32_Min = INT32_MIN;
+constexpr I32 I32_Max = INT32_MAX;
+constexpr I64 I64_Min = INT64_MIN;
+constexpr I64 I64_Max = INT64_MAX;
+constexpr U8 U8_Min = 0;
+constexpr U8 U8_Max = UINT8_MAX;
+constexpr U16 U16_Min = 0;
+constexpr U16 U16_Max = UINT16_MAX;
+constexpr U32 U32_Min = 0;
+constexpr U32 U32_Max = UINT32_MAX;
+constexpr U64 U64_Min = 0;
+constexpr U64 U64_Max = UINT64_MAX;
+// TODO : Float min/max/epsilon
+// TODO : Double min/max/epsilon
 
 // Temporary disable overflow detection
 #if defined(ENLIVE_COMPILER_MSVC)
 	#pragma warning(disable: 4307)
+#elif defined(ENLIVE_COMPILER_GCC)
+
 #endif
 
 static_assert(I8(I8_Max + 1) == I8_Min);
@@ -67,29 +68,17 @@ static_assert(I16(I16_Min - 1) == I16_Max);
 static_assert(I32(I32_Max + 1) == I32_Min);
 static_assert(I32(I32_Min - 1) == I32_Max);
 static_assert(I64(I64_Max + 1) == I64_Min);
-static_assert(I64(I64_Min - 1) == I64_Max); 
-
-// Re-enable overflow detection
-#if defined(ENLIVE_COMPILER_MSVC)
-	#pragma warning(default: 4307)
-#endif
-
-constexpr U8 U8_Min = 0; 
-constexpr U8 U8_Max = 255;
-constexpr U16 U16_Min = 0;
-constexpr U16 U16_Max = 65535;
-constexpr U32 U32_Min = 0;
-constexpr U32 U32_Max = 4294967295;
-constexpr U64 U64_Min = 0;
-constexpr U64 U64_Max = 18446744073709551615;
-
+static_assert(I64(I64_Min - 1) == I64_Max);
 static_assert(U8_Max == U8(-1));
 static_assert(U16_Max == U16(-1));
 static_assert(U32_Max == U32(-1));
 static_assert(U64_Max == U64(-1));
 
-// TODO : Float min/max/epsilon
-// TODO : Double min/max/epsilon
+// Re-enable overflow detection
+#if defined(ENLIVE_COMPILER_MSVC)
+	#pragma warning(default: 4307)
+#elif defined(ENLIVE_COMPILER_GCC)
+#endif
 
 union U32F32
 {
