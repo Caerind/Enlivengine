@@ -13,6 +13,7 @@
 // - Works fine with MSVC
 // - Issue with GCC on Travis
 #if defined(ENLIVE_COMPILER_GNUC)
+	#define DOCTEST_CONFIG_COLORS_NONE
 	#define DOCTEST_CONFIG_USE_STD_HEADERS
 #endif
 

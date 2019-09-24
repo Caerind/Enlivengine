@@ -1,7 +1,27 @@
 language: cpp
-dist: bionic
 compiler: gcc
 
-script: 
-  - g++ *.cpp -std=c++17 -o travis_gcc_cpp17
-  - ./travis_gcc_cpp17
+dist: bionic
+
+addons:
+  apt:
+    packages:
+      - gcc-7
+      - g++-7
+
+script:
+  - printf "CMAKE : \n"
+  - cmake --version
+  - printf "\n\nG++ : \n"
+  - g++ -v
+  - printf "\n\n\nBuilding..."
+  - rm -rf ./build
+  - mkdir build
+  - g++ -c tests/testrunner.cpp -std=c++17 -o build/testrunner.o -DNDEBUG -O2
+  - g++ -c main.cpp -std=c++14 -o build/main.o -DNDEBUG -O2
+  - cd build
+  - g++ testrunner.o main.o -o a.out
+  - printf "\n\n\nRunning: \n\n"
+  - ./a.out
+  - cd ..
+  - rm -rf ./build

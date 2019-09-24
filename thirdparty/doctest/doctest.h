@@ -3770,8 +3770,11 @@ namespace {
 #endif // DOCTEST_CONFIG_COLORS_ANSI
 
 #ifdef DOCTEST_CONFIG_COLORS_WINDOWS
-        if(g_no_colors ||
-           (isatty(fileno(stdout)) == false && getContextOptions()->force_colors == false))
+
+		// NOTE : I commented some code here to be able to compile with MinGW
+
+		if (g_no_colors /* || 
+			(isatty(fileno(stdout)) == false && getContextOptions()->force_colors == false)*/)
             return;
 
 #define DOCTEST_SET_ATTR(x) SetConsoleTextAttribute(g_stdoutHandle, x | g_origBgAttrs)
