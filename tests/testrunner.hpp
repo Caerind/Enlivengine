@@ -9,9 +9,12 @@
 // This could be enabled on Release
 //#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
 
-// Doctest is using some forward declaration. 
-// In case, we encounter a problem (which might not happen as it is heavily used/tested), we should enable this
-//#define DOCTEST_CONFIG_USE_STD_HEADERS
+// Doctest is using some forward declaration that aren't valid on every platform
+// - Works fine with MSVC
+// - Issue with GCC on Travis
+#if defined(ENLIVE_COMPILER_GNUC)
+	#define DOCTEST_CONFIG_USE_STD_HEADERS
+#endif
 
 #include "../thirdparty/doctest/doctest.h"
 
