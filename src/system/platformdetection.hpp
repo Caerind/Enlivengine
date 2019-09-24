@@ -170,7 +170,7 @@
 			#error Unknown processor
 		#endif
 
-    #elif defined(__linux__) || (defined(__linux)
+    #elif defined(__linux__) || defined(__linux)
 
         // Linux
         #define ENLIVE_PLATFORM_LINUX
