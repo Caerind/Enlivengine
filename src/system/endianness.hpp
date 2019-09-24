@@ -26,7 +26,7 @@ inline constexpr Endianness GetPlatformEndianness()
 	#endif
 }
 
-inline constexpr void swapBytes(void* buffer, U32 size)
+inline void swapBytes(void* buffer, U32 size) // TODO : constexpr
 {
 	if (buffer == nullptr || size == 0)
 		return;

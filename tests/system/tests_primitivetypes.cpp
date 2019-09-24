@@ -27,6 +27,7 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 	DOCTEST_SUBCASE("Signed integers")
 	{
 		// Values directly
+		/*
 		DOCTEST_CHECK(en::I8_Min == -128);
 		DOCTEST_CHECK(en::I8_Max == 127);
 		DOCTEST_CHECK(en::I16_Min == -32768);
@@ -35,6 +36,7 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 		DOCTEST_CHECK(en::I32_Max == 2147483647i32);
 		DOCTEST_CHECK(en::I64_Min == -9223372036854775808i64);
 		DOCTEST_CHECK(en::I64_Max == 9223372036854775807i64);
+		*/
 
 
 		// Correct type limits
@@ -64,6 +66,7 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 	DOCTEST_SUBCASE("Unsigned integers")
 	{
 		// Values directly
+		/*
 		DOCTEST_CHECK(en::U8_Min == 0);
 		DOCTEST_CHECK(en::U8_Max == 255);
 		DOCTEST_CHECK(en::U16_Min == 0);
@@ -72,6 +75,7 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 		DOCTEST_CHECK(en::U32_Max == 4294967295);
 		DOCTEST_CHECK(en::U64_Min == 0);
 		DOCTEST_CHECK(en::U64_Max == 18446744073709551615);
+		*/
 
 
 		// Correct type limits
