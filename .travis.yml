@@ -11,15 +11,12 @@ addons:
 
 script:
   - cmake --version
-  - g++ -v
   - rm -rf ./build
   - mkdir build
-  - g++ -c tests/system/tests_endianness.cpp -std=c++17 -o build/tests_endianness.o -D_DEBUG -O2
-  - g++ -c tests/system/tests_primitivetypes.cpp -std=c++17 -o build/tests_primitivetypes.o -D_DEBUG -O2
-  - g++ -c tests/testrunner.cpp -std=c++17 -o build/testrunner.o -D_DEBUG -O2
-  - g++ -c main.cpp -std=c++14 -o build/main.o -D_DEBUG -O2
   - cd build
-  - g++ tests_endianness.o tests_primitivetypes.o testrunner.o main.o -o a.out
+  - cmake ..
+  - make
+  - make a.out
   - ./a.out
   - cd ..
   - rm -rf ./build
