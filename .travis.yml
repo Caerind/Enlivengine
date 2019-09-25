@@ -16,7 +16,6 @@ script:
   - cd build
   - cmake ..
   - make
-  - make a.out
-  - ./a.out
+  - ./Enlivengine
   - cd ..
   - rm -rf ./build
