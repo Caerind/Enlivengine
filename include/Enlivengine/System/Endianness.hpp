@@ -1,9 +1,9 @@
 #pragma once
 
-#include "platformdetection.hpp"
-#include "primitivetypes.hpp"
-
 #include <utility> // std::swap
+
+#include <Enlivengine/System/PlatformDetection.hpp>
+#include <Enlivengine/System/PrimitiveTypes.hpp>
 
 namespace en
 {

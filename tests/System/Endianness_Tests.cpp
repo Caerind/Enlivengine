@@ -1,6 +1,6 @@
-#include "../testrunner.hpp"
+#include <Enlivengine/System/Endianness.hpp>
 
-#include "../../src/system/endianness.hpp"
+#include "../../thirdparty/doctest/doctest.h"
 
 DOCTEST_TEST_CASE("Bytes swapping")
 {

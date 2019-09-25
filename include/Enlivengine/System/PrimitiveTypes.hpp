@@ -1,8 +1,8 @@
 #pragma once
 
-#include "compilertraits.hpp"
-
 #include <cstdint>
+
+#include <Enlivengine/System/CompilerTraits.hpp>
 
 namespace en
 {

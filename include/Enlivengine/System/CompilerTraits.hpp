@@ -1,6 +1,6 @@
 #pragma once
 
-#include "compilerdetection.hpp"
+#include <Enlivengine/System/CompilerDetection.hpp>
 
 #if defined(__has_feature)
 	#define ENLIVE_HAS_FEATURE(x) __has_feature(x)

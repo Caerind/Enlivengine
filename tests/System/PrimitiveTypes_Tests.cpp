@@ -1,6 +1,6 @@
-#include "../testrunner.hpp"
+#include <Enlivengine/System/PrimitiveTypes.hpp>
 
-#include "../../src/system/primitivetypes.hpp"
+#include "../../thirdparty/doctest/doctest.h"
 
 DOCTEST_TEST_CASE("Testing primitive types size")
 {

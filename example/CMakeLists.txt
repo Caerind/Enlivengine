@@ -1,0 +1,2 @@
+add_executable(EnlivengineExample example.cpp)
+target_link_libraries(EnlivengineExample PRIVATE EnlivengineLibrary)

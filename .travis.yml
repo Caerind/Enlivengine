@@ -15,7 +15,10 @@ script:
   - mkdir build
   - cd build
   - cmake ..
+  - ls
   - make
-  - ./Enlivengine
+  - ls
+  - example/EnlivengineExample
+  - tests/EnlivengineTests
   - cd ..
   - rm -rf ./build
