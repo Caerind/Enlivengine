@@ -5,7 +5,7 @@
 #include <Enlivengine/System/ByteUnits.hpp>
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 #include <Enlivengine/System/Endianness.hpp>
-#include <Enlivengine/System/DebugTools.hpp>
+#include <Enlivengine/System/Debugger.hpp>
 
 // TODO : Remove
 #include <iostream>
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	std::cout << "ENLIVE_PLATFORM_NAME : " << ENLIVE_PLATFORM_NAME << std::endl;
 	std::cout << "ENLIVE_PLATFORM_DESCRIPTION : " << ENLIVE_PLATFORM_DESCRIPTION << std::endl;
 
-	en::DebugTools::test();
+	//en::Debugger::Break();
 
 	return 0;
 }

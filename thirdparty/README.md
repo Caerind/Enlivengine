@@ -1,1 +1,3 @@
-- https://github.com/onqtam/doctest
+- https://github.com/onqtam/doctest 
+- https://github.com/scottt/debugbreak 
+- https://github.com/wc-duck/dbgtools 

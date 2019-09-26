@@ -10,13 +10,15 @@ set(SRC
     ${INCROOT}/Macros.hpp
     ${INCROOT}/PlatformDetection.hpp
     ${INCROOT}/PrimitiveTypes.hpp
-    ${INCROOT}/DebugTools.hpp
-    ${SRCROOT}/DebugTools.cpp
+    ${INCROOT}/Debugger.hpp
+    ${SRCROOT}/Debugger.cpp
 )
 source_group("System" FILES ${SRC})
 
 add_library(EnlivengineLibrary ${SRC})
-target_include_directories(EnlivengineLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
-
-#target_include_directories(EnlivengineLibrary PRIVATE "${PROJECT_SOURCE_DIR}/thirdparty/debugbreak")
-
+target_include_directories(EnlivengineLibrary 
+	PUBLIC 
+		${PROJECT_SOURCE_DIR}/include
+	PRIVATE 
+		${PROJECT_SOURCE_DIR}/thirdparty/debugbreak
+)
