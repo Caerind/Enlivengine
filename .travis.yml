@@ -1,8 +1,8 @@
 notifications:
   email: false
   
-language: 
-  - cpp
+language: cpp
+  
 addons:
   apt:
     sources:
@@ -19,15 +19,11 @@ addons:
     - libgl1-mesa-dev
     - gcc-7
     - g++-7
-install:
-- pwd
-- ls
+    
+before_script:
 - git clone https://github.com/SFML/SFML.git
-- cd SFML
-- mkdir SFMLInstall
-- mkdir SFMLBuild
-- cd SFMLBuild
-- cmake -DCMAKE_INSTALL_PREFIX="../SFMLInstall" ..
+- cd SFML && mkdir build && cd build
+- cmake -DCMAKE_INSTALL_PREFIX=../install ..
 - make
 - make install
 - cd ../../
@@ -37,6 +33,6 @@ script:
 - cmake --version
 - mkdir build
 - cd build
-- cmake -DSFML_DIR="../SFML/SFMLInstall/lib/cmake/SFML" ..
+- cmake -DSFML_DIR=../SFML/install/lib/cmake/SFML ..
 - make
 - tests/EnlivengineTests
