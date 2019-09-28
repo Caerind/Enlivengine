@@ -14,6 +14,8 @@
 
 #include <Box2D/Box2D.h>
 
+#include <SFML/Graphics.hpp>
+
 // TODO : Remove
 #include <iostream>
 #include <cstdlib>
@@ -75,6 +77,8 @@ int main(int argc, char** argv)
 
 		LogInfo(en::LogChannel::System, 9, "%4.2f %4.2f %4.2f", position.x, position.y, angle);
 	}
+
+	sf::RenderWindow window;
 
 	return 0;
 }

@@ -1,26 +1,43 @@
-language: cpp
-compiler: gcc
-
-dist: bionic
-
+notifications:
+  email: false
+  
+language: 
+  - cpp
+os:
+  - linux
+  - osx
 addons:
   apt:
+    sources:
+    - ubuntu-toolchain-r-test
     packages:
-      - gcc-7
-      - g++-7
-
+    - libopenal-dev
+    - libjpeg-dev
+    - libudev-dev
+    - libxrandr-dev
+    - libfreetype6-dev
+    - libvorbis-dev
+    - libflac-dev
+    - gcc-7
+    - g++-7
+install:
+- pwd
+- ls
+- git clone https://github.com/SFML/SFML.git
+- cd SFML
+- mkdir SFMLInstall
+- mkdir SFMLBuild
+- cd SFMLBuild
+- cmake -DCMAKE_INSTALL_PREFIX="../SFMLInstall" ..
+- make
+- make install
+- cd ../../
 script:
-  - pwd
-  - ls
-  - cmake --version
-  - rm -rf ./build
-  - mkdir build
-  - cd build
-  - pwd
-  - cmake ..
-  - ls
-  - make
-  - ls
-  - tests/EnlivengineTests
-  - cd ..
-  - rm -rf ./build
+- pwd
+- ls
+- cmake --version
+- mkdir build
+- cd build
+- cmake -DSFML_DIR="../SFML/SFMLInstall/lib/cmake/SFML" ..
+- make
+- tests/EnlivengineTests

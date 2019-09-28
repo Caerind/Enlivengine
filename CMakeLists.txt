@@ -4,7 +4,6 @@ project(EnlivengineProject
     VERSION 0.1
     DESCRIPTION "Enlivengine"
     LANGUAGES CXX)
-
 	
 # Only on the main
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -23,15 +22,20 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	#endif()
 	
 endif()
-		
+	
+# SFML
+find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 
-# Add the subdirectories
+# Others 3rd
 add_subdirectory(thirdparty)
 
+# Enlivengine
 add_subdirectory(src/Enlivengine)
 
-add_subdirectory(example)
+# Examples !
+add_subdirectory(examples)
 
+# Tests
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     add_subdirectory(tests)
 endif()

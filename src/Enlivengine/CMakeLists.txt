@@ -69,5 +69,5 @@ source_group("Math" FILES ${SRC_MATH})
 add_library(EnlivengineLibrary ${SRC_SYSTEM} ${SRC_MATH})
 target_include_directories(EnlivengineLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-target_link_libraries(EnlivengineLibrary PRIVATE ThirdParty)
+target_link_libraries(EnlivengineLibrary sfml-system sfml-window sfml-graphics sfml-network sfml-audio EnlivengineThirdParty)
 target_include_directories(EnlivengineLibrary PUBLIC ${PROJECT_SOURCE_DIR}/thirdparty)

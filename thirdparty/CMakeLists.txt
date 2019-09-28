@@ -138,7 +138,7 @@ set(SRC_PUGIXML
 )
 source_group("pugixml" FILES ${SRC_PUGIXML})
 
-add_library(ThirdParty 
+add_library(EnlivengineThirdParty 
 	${SRC_BOX2D}
 	${SRC_COCOA}
 	${SRC_DBGTOOLS}
@@ -146,4 +146,5 @@ add_library(ThirdParty
 	${SRC_DOCTEST}
 	${SRC_PUGIXML}
 )
-target_include_directories(ThirdParty PUBLIC ${TPROOT})
+target_link_libraries(EnlivengineThirdParty sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
+target_include_directories(EnlivengineThirdParty PUBLIC ${TPROOT})

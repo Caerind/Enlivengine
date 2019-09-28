@@ -18,6 +18,8 @@
 [Xx]64/
 [Xx]86/
 [Bb]uild/
+[Bb]uildVS/
+[Bb]uildMinGW/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -246,3 +248,5 @@ ModelManifest.xml
 
 # VS Local Solution
 EnlivengineVS/
+buildVS.sh
+buildMinGW.sh
