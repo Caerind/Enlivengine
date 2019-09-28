@@ -1,6 +1,6 @@
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 
-#include "../../thirdparty/doctest/doctest.h"
+#include <doctest/doctest.h>
 
 DOCTEST_TEST_CASE("Testing primitive types size")
 {
@@ -42,6 +42,7 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 		// Correct type limits
 		#if defined(ENLIVE_COMPILER_MSVC)
 			#pragma warning(disable: 4307)
+            #pragma warning(disable: 26450)
 		#elif defined(ENLIVE_COMPILER_GNUC)
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Woverflow"
@@ -58,6 +59,7 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 
 		#if defined(ENLIVE_COMPILER_MSVC)
 			#pragma warning(default: 4307)
+            #pragma warning(default: 26450)
 		#elif defined(ENLIVE_COMPILER_GNUC)
 			#pragma GCC diagnostic pop
 		#endif
@@ -81,6 +83,7 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 		// Correct type limits
 		#if defined(ENLIVE_COMPILER_MSVC)
 			#pragma warning(disable: 4307)
+            #pragma warning(disable: 26450)
 		#elif defined(ENLIVE_COMPILER_GNUC)
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Woverflow"
@@ -93,6 +96,7 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 
 		#if defined(ENLIVE_COMPILER_MSVC)
 			#pragma warning(default: 4307)
+            #pragma warning(default: 26450)
 		#elif defined(ENLIVE_COMPILER_GNUC)
 			#pragma GCC diagnostic pop
 		#endif

@@ -26,6 +26,8 @@ endif()
 		
 
 # Add the subdirectories
+add_subdirectory(thirdparty)
+
 add_subdirectory(src/Enlivengine)
 
 add_subdirectory(example)

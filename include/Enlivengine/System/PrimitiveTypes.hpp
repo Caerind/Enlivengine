@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include <Enlivengine/System/CompilerTraits.hpp>
+#include <Enlivengine/System/Config.hpp>
 
 namespace en
 {
@@ -18,7 +19,7 @@ using U64 = std::int64_t;
 
 using F32 = float;
 using F64 = double;
-#if defined(ENLIVE_DOUBLE_PRECISION)
+#if defined(ENLIVE_ENABLE_DOUBLE_PRECISION)
 	using Real = F64;
 #else
 	using Real = F32;

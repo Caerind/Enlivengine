@@ -1,15 +1,14 @@
 #include <Enlivengine/System/Debugger.hpp>
 
-#include "../../thirdparty/debug_break/debugbreak.h"
-//#include "../../thirdparty/dbgtools/debugger.h"
+#include <debug_break/debugbreak.h>
+#include <dbgtools/debugger.h>
 
 namespace en
 {
 
 bool Debugger::IsPresent()
 {
-	//return debugger_present() > 0;
-	return true;
+	return debugger_present() > 0;
 }
 
 void Debugger::Break()

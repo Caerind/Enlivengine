@@ -1,3 +1,5 @@
 - https://github.com/onqtam/doctest 
 - https://github.com/scottt/debugbreak 
 - https://github.com/wc-duck/dbgtools 
+- https://github.com/r-lyeh-archived/cocoa 
+- https://github.com/zeux/pugixml 

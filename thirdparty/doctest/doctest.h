@@ -834,11 +834,11 @@ namespace detail {
         }
     };
 
-    DOCTEST_INTERFACE String rawMemoryToString(const void* object, unsigned size);
+    DOCTEST_INTERFACE String rawMemoryToStringDoc(const void* object, unsigned size);
 
     template <typename T>
-    String rawMemoryToString(const DOCTEST_REF_WRAP(T) object) {
-        return rawMemoryToString(&object, sizeof(object));
+    String rawMemoryToStringDoc(const DOCTEST_REF_WRAP(T) object) {
+        return rawMemoryToStringDoc(&object, sizeof(object));
     }
 
     template <typename T>
@@ -857,7 +857,7 @@ struct StringMaker<T*>
     template <typename U>
     static String convert(U* p) {
         if(p)
-            return detail::rawMemoryToString(p);
+            return detail::rawMemoryToStringDoc(p);
         return "NULL";
     }
 };
@@ -867,41 +867,41 @@ struct StringMaker<R C::*>
 {
     static String convert(R C::*p) {
         if(p)
-            return detail::rawMemoryToString(p);
+            return detail::rawMemoryToStringDoc(p);
         return "NULL";
     }
 };
 
 template <typename T>
-String toString(const DOCTEST_REF_WRAP(T) value) {
+String toStringDoc(const DOCTEST_REF_WRAP(T) value) {
     return StringMaker<T>::convert(value);
 }
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-DOCTEST_INTERFACE String toString(char* in);
-DOCTEST_INTERFACE String toString(const char* in);
+DOCTEST_INTERFACE String toStringDoc(char* in);
+DOCTEST_INTERFACE String toStringDoc(const char* in);
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-DOCTEST_INTERFACE String toString(bool in);
-DOCTEST_INTERFACE String toString(float in);
-DOCTEST_INTERFACE String toString(double in);
-DOCTEST_INTERFACE String toString(double long in);
+DOCTEST_INTERFACE String toStringDoc(bool in);
+DOCTEST_INTERFACE String toStringDoc(float in);
+DOCTEST_INTERFACE String toStringDoc(double in);
+DOCTEST_INTERFACE String toStringDoc(double long in);
 
-DOCTEST_INTERFACE String toString(char in);
-DOCTEST_INTERFACE String toString(char signed in);
-DOCTEST_INTERFACE String toString(char unsigned in);
-DOCTEST_INTERFACE String toString(int short in);
-DOCTEST_INTERFACE String toString(int short unsigned in);
-DOCTEST_INTERFACE String toString(int in);
-DOCTEST_INTERFACE String toString(int unsigned in);
-DOCTEST_INTERFACE String toString(int long in);
-DOCTEST_INTERFACE String toString(int long unsigned in);
-DOCTEST_INTERFACE String toString(int long long in);
-DOCTEST_INTERFACE String toString(int long long unsigned in);
-DOCTEST_INTERFACE String toString(std::nullptr_t in);
+DOCTEST_INTERFACE String toStringDoc(char in);
+DOCTEST_INTERFACE String toStringDoc(char signed in);
+DOCTEST_INTERFACE String toStringDoc(char unsigned in);
+DOCTEST_INTERFACE String toStringDoc(int short in);
+DOCTEST_INTERFACE String toStringDoc(int short unsigned in);
+DOCTEST_INTERFACE String toStringDoc(int in);
+DOCTEST_INTERFACE String toStringDoc(int unsigned in);
+DOCTEST_INTERFACE String toStringDoc(int long in);
+DOCTEST_INTERFACE String toStringDoc(int long unsigned in);
+DOCTEST_INTERFACE String toStringDoc(int long long in);
+DOCTEST_INTERFACE String toStringDoc(int long long unsigned in);
+DOCTEST_INTERFACE String toStringDoc(std::nullptr_t in);
 
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
 // see this issue on why this is needed: https://github.com/onqtam/doctest/issues/183
-DOCTEST_INTERFACE String toString(const std::string& in);
+DOCTEST_INTERFACE String toStringDoc(const std::string& in);
 #endif // VS 2019
 
 class DOCTEST_INTERFACE Approx
@@ -958,7 +958,7 @@ public:
     DOCTEST_INTERFACE friend bool operator> (double lhs, const Approx & rhs);
     DOCTEST_INTERFACE friend bool operator> (const Approx & lhs, double rhs);
 
-    DOCTEST_INTERFACE friend String toString(const Approx& in);
+    DOCTEST_INTERFACE friend String toStringDoc(const Approx& in);
 
 #ifdef DOCTEST_CONFIG_INCLUDE_TYPE_TRAITS
 #define DOCTEST_APPROX_PREFIX \
@@ -987,7 +987,7 @@ private:
     double m_value;
 };
 
-DOCTEST_INTERFACE String toString(const Approx& in);
+DOCTEST_INTERFACE String toStringDoc(const Approx& in);
 
 DOCTEST_INTERFACE const ContextOptions* getContextOptions();
 
@@ -1037,7 +1037,7 @@ namespace detail {
     template <typename L, typename R>
     String stringifyBinaryExpr(const DOCTEST_REF_WRAP(L) lhs, const char* op,
                                const DOCTEST_REF_WRAP(R) rhs) {
-        return toString(lhs) + op + toString(rhs);
+        return toStringDoc(lhs) + op + toStringDoc(rhs);
     }
 
 #define DOCTEST_DO_BINARY_EXPRESSION_COMPARISON(op, op_str, op_macro)                              \
@@ -1183,7 +1183,7 @@ namespace detail {
                 res = !res;
 
             if(!res || getContextOptions()->success)
-                return Result(res, toString(lhs));
+                return Result(res, toStringDoc(lhs));
             return Result(res);
         }
 
@@ -1360,7 +1360,7 @@ namespace detail {
                 m_failed = !m_failed;
 
             if(m_failed || getContextOptions()->success)
-                m_decomp = toString(val);
+                m_decomp = toStringDoc(val);
         }
 
         void translateException();
@@ -1436,8 +1436,8 @@ namespace detail {
         // IF THE DEBUGGER BREAKS HERE - GO 1 LEVEL UP IN THE CALLSTACK FOR THE FAILING ASSERT
         // THIS IS THE EFFECT OF HAVING 'DOCTEST_CONFIG_SUPER_FAST_ASSERTS' DEFINED
         // ###################################################################################
-        DOCTEST_ASSERT_OUT_OF_TESTS(toString(val));
-        DOCTEST_ASSERT_IN_TESTS(toString(val));
+        DOCTEST_ASSERT_OUT_OF_TESTS(toStringDoc(val));
+        DOCTEST_ASSERT_IN_TESTS(toStringDoc(val));
     }
 
     struct DOCTEST_INTERFACE IExceptionTranslator
@@ -1481,7 +1481,7 @@ namespace detail {
     {
         template <typename T>
         static void convert(std::ostream* s, const T& in) {
-            *s << toString(in);
+            *s << toStringDoc(in);
         }
 
         // always treat char* as a string in this context - no matter
@@ -2825,7 +2825,7 @@ namespace {
     }
 
     template <typename T>
-    String fpToString(T value, int precision) {
+    String fpToStringDoc(T value, int precision) {
         std::ostringstream oss;
         oss << std::setprecision(precision) << std::fixed << value;
         std::string d = oss.str();
@@ -2860,7 +2860,7 @@ namespace {
 namespace detail {
     void my_memcpy(void* dest, const void* src, unsigned num) { memcpy(dest, src, num); }
 
-    String rawMemoryToString(const void* object, unsigned size) {
+    String rawMemoryToStringDoc(const void* object, unsigned size) {
         // Reverse order for little endian architectures
         int i = 0, end = static_cast<int>(size), inc = 1;
         if(Endianness::which() == Endianness::Little) {
@@ -3311,16 +3311,16 @@ IContextScope::~IContextScope() = default;
 DOCTEST_DEFINE_DEFAULTS(ContextOptions);
 
 #ifdef DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-String toString(char* in) { return toString(static_cast<const char*>(in)); }
-String toString(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
+String toStringDoc(char* in) { return toStringDoc(static_cast<const char*>(in)); }
+String toStringDoc(const char* in) { return String("\"") + (in ? in : "{null string}") + "\""; }
 #endif // DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
-String toString(bool in) { return in ? "true" : "false"; }
-String toString(float in) { return fpToString(in, 5) + "f"; }
-String toString(double in) { return fpToString(in, 10); }
-String toString(double long in) { return fpToString(in, 15); }
+String toStringDoc(bool in) { return in ? "true" : "false"; }
+String toStringDoc(float in) { return fpToStringDoc(in, 5) + "f"; }
+String toStringDoc(double in) { return fpToStringDoc(in, 10); }
+String toStringDoc(double long in) { return fpToStringDoc(in, 15); }
 
 #define DOCTEST_TO_STRING_OVERLOAD(type, fmt)                                                      \
-    String toString(type in) {                                                                     \
+    String toStringDoc(type in) {                                                                  \
         char buf[64];                                                                              \
         std::sprintf(buf, fmt, in);                                                                \
         return buf;                                                                                \
@@ -3338,11 +3338,11 @@ DOCTEST_TO_STRING_OVERLOAD(int long unsigned, "%lu")
 DOCTEST_TO_STRING_OVERLOAD(int long long, "%lld")
 DOCTEST_TO_STRING_OVERLOAD(int long long unsigned, "%llu")
 
-String toString(std::nullptr_t) { return "NULL"; }
+String toStringDoc(std::nullptr_t) { return "NULL"; }
 
 #if DOCTEST_MSVC >= DOCTEST_COMPILER(19, 20, 0)
 // see this issue on why this is needed: https://github.com/onqtam/doctest/issues/183
-String toString(const std::string& in) { return in.c_str(); }
+String toStringDoc(const std::string& in) { return in.c_str(); }
 #endif // VS 2019
 
 Approx::Approx(double value)
@@ -3385,8 +3385,8 @@ bool operator<(const Approx& lhs, double rhs) { return lhs.m_value < rhs && lhs 
 bool operator>(double lhs, const Approx& rhs) { return lhs > rhs.m_value && lhs != rhs; }
 bool operator>(const Approx& lhs, double rhs) { return lhs.m_value > rhs && lhs != rhs; }
 
-String toString(const Approx& in) {
-    return String("Approx( ") + doctest::toString(in.m_value) + " )";
+String toStringDoc(const Approx& in) {
+    return String("Approx( ") + doctest::toStringDoc(in.m_value) + " )";
 }
 const ContextOptions* getContextOptions() { return DOCTEST_BRANCH_ON_DISABLED(nullptr, g_cs); }
 
@@ -5637,7 +5637,7 @@ void Context::clearFilters() {
 
 // allows the user to override procedurally the int/bool options from the command line
 void Context::setOption(const char* option, int value) {
-    setOption(option, toString(value).c_str());
+    setOption(option, toStringDoc(value).c_str());
 }
 
 // allows the user to override procedurally the string options from the command line
