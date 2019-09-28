@@ -23,7 +23,7 @@ addons:
 before_script:
 - git clone https://github.com/SFML/SFML.git
 - cd SFML && mkdir build && cd build
-- cmake -DCMAKE_INSTALL_PREFIX=../install ..
+- cmake ..
 - make
 - make install
 - cd ../../
@@ -33,6 +33,6 @@ script:
 - cmake --version
 - mkdir build
 - cd build
-- cmake -D SFML_DIR=../SFML/install/lib/cmake/SFML ..
+- cmake ..
 - make
 - tests/EnlivengineTests
