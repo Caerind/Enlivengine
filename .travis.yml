@@ -33,6 +33,6 @@ script:
 - cmake --version
 - mkdir build
 - cd build
-- cmake -DSFML_DIR=../SFML/install/lib/cmake/SFML ..
+- cmake -D SFML_DIR=../SFML/install/lib/cmake/SFML ..
 - make
 - tests/EnlivengineTests
