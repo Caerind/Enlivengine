@@ -21,7 +21,6 @@ script:
   - ls
   - make
   - ls
-  - example/EnlivengineExample
   - tests/EnlivengineTests
   - cd ..
   - rm -rf ./build
