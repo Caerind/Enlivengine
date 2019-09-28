@@ -18,3 +18,29 @@
 #define ENLIVE_ENABLE_DEFAULT_LOGGER
 //#define ENLIVE_ENABLE_DOUBLE_PRECISION
 #define ENLIVE_ENABLE_HASH_CRC32_COLLISION_DETECTION
+
+
+// TODO : Move this elsewhere ?
+#ifndef ENLIVE_MATH_FORWARD
+#define ENLIVE_MATH_FORWARD 0,0,1
+#endif
+
+#ifndef ENLIVE_MATH_BACK
+#define ENLIVE_MATH_BACK 0,0,-1
+#endif
+
+#ifndef ENLIVE_MATH_UP
+#define ENLIVE_MATH_UP 0,1,0
+#endif
+
+#ifndef ENLIVE_MATH_DOWN
+#define ENLIVE_MATH_DOWN 0,-1,0
+#endif
+
+#ifndef ENLIVE_MATH_RIGHT
+#define ENLIVE_MATH_RIGHT -1,0,0
+#endif
+
+#ifndef ENLIVE_MATH_LEFT
+#define ENLIVE_MATH_LEFT 1,0,0
+#endif
