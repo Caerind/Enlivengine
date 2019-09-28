@@ -9,6 +9,11 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - cmake
+    - libopenal-dev
+    - libjpeg-dev
+    - libfreetype6-dev
+    - libvorbis-dev
+    - libflac-dev
     - libudev-dev
     - libxrandr-dev
     - libgl1-mesa-dev
