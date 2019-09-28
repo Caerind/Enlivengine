@@ -10,10 +10,13 @@ addons:
       - g++-7
 
 script:
+  - pwd
+  - ls
   - cmake --version
   - rm -rf ./build
   - mkdir build
   - cd build
+  - pwd
   - cmake ..
   - ls
   - make

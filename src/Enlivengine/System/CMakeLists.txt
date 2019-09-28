@@ -16,6 +16,7 @@ set(SRC
     ${SRCROOT}/Debugger.cpp
     ${INCROOT}/Endianness.hpp
     ${INCROOT}/Hash.hpp
+    ${SRCROOT}/Hash.cpp
     ${INCROOT}/Log.hpp
     ${SRCROOT}/Log.cpp
     ${INCROOT}/Macros.hpp

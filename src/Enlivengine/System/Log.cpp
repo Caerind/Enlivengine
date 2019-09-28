@@ -1,5 +1,7 @@
 #include <Enlivengine/System/Log.hpp>
 
+#include <Enlivengine/System/String.hpp>
+
 #ifdef ENLIVE_PLATFORM_WINDOWS
 	#include <windows.h>
 #endif
@@ -359,7 +361,11 @@ void MessageBoxLogger::write(LogType type, LogChannel channel, U32 importance, c
 	static const U32 mDebugBufferSize = 256;
 	static char mDebugBuffer[mDebugBufferSize];
 
+	#ifdef ENLIVE_COMPILER_MSVC
 	sprintf_s(mDebugBuffer, "NumeaEngine [%s] [%d]", LogManager::channelToString(channel), importance);
+	#else
+	sprintf(mDebugBuffer, "NumeaEngine [%s] [%d]", LogManager::channelToString(channel), importance);
+	#endif
 
 	U32 mbOption;
 	switch (type)
