@@ -3,21 +3,15 @@ notifications:
   
 language: 
   - cpp
-os:
-  - linux
-  - osx
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - libopenal-dev
-    - libjpeg-dev
+    - cmake
     - libudev-dev
     - libxrandr-dev
-    - libfreetype6-dev
-    - libvorbis-dev
-    - libflac-dev
+    - libgl1-mesa-dev
     - gcc-7
     - g++-7
 install:
