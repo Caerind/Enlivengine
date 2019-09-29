@@ -130,6 +130,31 @@ set(SRC_DOCTEST
 )
 source_group("doctest" FILES ${SRC_DOCTEST})
 
+# imgui
+set(SRC_IMGUI
+	${TPROOT}/imgui/imconfig.h
+	${TPROOT}/imgui/imgui.cpp
+	${TPROOT}/imgui/imgui.h
+	${TPROOT}/imgui/imgui_demo.cpp
+	${TPROOT}/imgui/imgui_draw.cpp
+	${TPROOT}/imgui/imgui_internal.h
+	${TPROOT}/imgui/imgui_stdlib.cpp
+	${TPROOT}/imgui/imgui_stdlib.h
+	${TPROOT}/imgui/imgui_widgets.cpp
+	${TPROOT}/imgui/imstb_rectpack.h
+	${TPROOT}/imgui/imstb_textedit.h
+	${TPROOT}/imgui/imstb_truetype.h
+)
+source_group("imgui" FILES ${SRC_IMGUI})
+
+# imgui-sfml
+set(SRC_IMGUISFML
+	${TPROOT}/imgui-sfml/imgui-SFML.cpp
+	${TPROOT}/imgui-sfml/imgui-SFML.h
+	${TPROOT}/imgui-sfml/imgui-SFML_export.h
+)
+source_group("imgui-sfml" FILES ${SRC_IMGUISFML})
+
 # pugixml
 set(SRC_PUGIXML
 	${TPROOT}/pugixml/pugiconfig.hpp
@@ -144,6 +169,8 @@ add_library(EnlivengineThirdParty
 	${SRC_DBGTOOLS}
 	${SRC_DEBUGBREAK}
 	${SRC_DOCTEST}
+	${SRC_IMGUI}
+	${SRC_IMGUISFML}
 	${SRC_PUGIXML}
 )
 target_link_libraries(EnlivengineThirdParty sfml-system sfml-window sfml-graphics sfml-network sfml-audio)

@@ -4,3 +4,6 @@
 - https://github.com/r-lyeh-archived/cocoa 
 - https://github.com/zeux/pugixml 
 - https://github.com/erincatto/Box2D 
+- https://github.com/SFML/SFML
+- https://github.com/ocornut/imgui 
+- https://github.com/eliasdaler/imgui-sfml 
