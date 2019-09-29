@@ -21,18 +21,21 @@ addons:
     - g++-7
     
 before_script:
+- export SFML_ROOT=$HOME/SFML_LINUX
+- pwd
+- ls
 - git clone https://github.com/SFML/SFML.git
-- cd SFML && mkdir build && cd build
-- cmake ..
+- cd SFML
+- cmake -DCMAKE_INSTALL_PREFIX=$SFML_ROOT .
 - make
 - make install
-- cd ../../
+- cd ..
 script:
+- export SFML_ROOT=$HOME/SFML_LINUX
 - pwd
 - ls
 - cmake --version
-- mkdir build
-- cd build
-- cmake ..
+- mkdir build && cd build
+- cmake -DSFML_DIR=$SFML_ROOT ..
 - make
 - tests/EnlivengineTests
