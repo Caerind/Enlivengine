@@ -19,7 +19,7 @@ inline ResourceManager<T>::~ResourceManager()
 template<typename T>
 inline ResourceId ResourceManager<T>::create(const char* name, std::function<void(T& r)> loader)
 {
-	ResourceId index(Hash::Meow(name));
+	ResourceId index(Hash::CRC32(name));
 	if (!has(index))
 	{
 		loader(mResources[index]);
@@ -30,7 +30,7 @@ inline ResourceId ResourceManager<T>::create(const char* name, std::function<voi
 template<typename T>
 inline bool ResourceManager<T>::has(const char* name) const
 {
-	return has(Hash::Meow(name));
+	return has(Hash::CRC32(name));
 }
 
 template<typename T>
@@ -42,7 +42,7 @@ inline bool ResourceManager<T>::has(ResourceId resource) const
 template<typename T>
 inline T& ResourceManager<T>::get(const char* name)
 {
-	return get(Hash::Meow(name));
+	return get(Hash::CRC32(name));
 }
 
 template<typename T>
@@ -54,7 +54,7 @@ inline T& ResourceManager<T>::get(ResourceId resource)
 template<typename T>
 inline void ResourceManager<T>::release(const char* name)
 {
-	release(Hash::Meow(name));
+	release(Hash::CRC32(name));
 }
 
 template<typename T>

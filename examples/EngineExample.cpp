@@ -18,6 +18,8 @@
 
 #include <Box2D/Box2D.h>
 
+#include <imgui/imgui.h>
+
 #include <SFML/Graphics.hpp>
 
 class MyState : public en::State
@@ -49,6 +51,17 @@ public:
 		{
 			getApplication().getAudio().playSound("click");
 		}
+		return true;
+	}
+
+	bool update(en::Time dt)
+	{
+		ImGui::Begin("Test");
+		if (ImGui::Button("Click"))
+		{
+			getApplication().getAudio().stop();
+		}
+		ImGui::End();
 		return true;
 	}
 

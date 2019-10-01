@@ -45,7 +45,7 @@ void Window::create(sf::VideoMode mode, const std::string& title, sf::Uint32 sty
 			}
 			else
 			{
-				LogError(LogChannel::Application, 8, "No fullscreen mode available");
+				LogError(LogChannel::Application, 8, "No fullscreen mode available %d", sf::VideoMode::getFullscreenModes().size());
 				mFullscreenVideoMode = sf::VideoMode();
 			}
 		}
@@ -58,7 +58,7 @@ void Window::create(sf::VideoMode mode, const std::string& title, sf::Uint32 sty
 			}
 			else
 			{
-				LogError(LogChannel::Application, 8, "Invalid video mode");
+				LogError(LogChannel::Application, 8, "Invalid video mode (%d,%d)", mode.width, mode.height);
 				mNonFullscreenVideoMode = sf::VideoMode::getDesktopMode();
 			}
 		}

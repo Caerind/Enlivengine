@@ -118,7 +118,7 @@ class StringId
 		const char* getStringFromStorage() const;
 
 		static StringId hash(const std::string& string);
-		static StringId hash(const char* string) { return StringId(Hash::Meow(string)); }
+		static StringId hash(const char* string) { return StringId(Hash::CRC32(string)); }
 		static StringId hashAndStore(const std::string& string);
 		static StringId hashAndStore(const char* string);
 

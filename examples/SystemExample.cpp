@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 	LogInfo(en::LogChannel::System, 9, "ENLIVE_PLATFORM_NAME : %s", ENLIVE_PLATFORM_NAME);
 	LogInfo(en::LogChannel::System, 9, "ENLIVE_PLATFORM_DESCRIPTION : %s", ENLIVE_PLATFORM_DESCRIPTION);
 
-	en::U32 hash = en::Hash::Meow("Test");
+	en::U32 hash = en::Hash::CRC32("Test");
 	LogInfo(en::LogChannel::Global, 7, "Hash of \"Test\" : %d", hash);
 
 	LogInfo(en::LogChannel::System, 9, "SHA1 of \"Test\" from cocoa : %s", cocoa::SHA1("Test").str().c_str());

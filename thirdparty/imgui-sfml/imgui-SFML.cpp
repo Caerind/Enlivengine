@@ -151,8 +151,7 @@ ImVec2 getDownRightAbsolute(const sf::FloatRect& rect);
 ImTextureID convertGLTextureHandleToImTextureID(GLuint glTextureHandle);
 GLuint convertImTextureIDToGLTextureHandle(ImTextureID textureID);
 
-void RenderDrawLists(
-    ImDrawData* draw_data);  // rendering callback function prototype
+void RenderDrawLists();  // rendering callback function prototype
 
 // Implementation of ImageButton overload
 bool imageButtonImpl(const sf::Texture& texture,
@@ -451,20 +450,17 @@ void Update(const sf::Vector2i& mousePos, const sf::Vector2f& displaySize,
 
         updateJoystickDPadState(io);
         updateJoystickLStickState(io);
-    }
+	}
 
-    ImGui::NewFrame();
+	ImGui::NewFrame();
 }
 
 void Render(sf::RenderTarget& target) {
-    target.resetGLStates();
-    ImGui::Render();
-    RenderDrawLists(ImGui::GetDrawData());
+    RenderDrawLists();
 }
 
 void Render() {
-    ImGui::Render();
-    RenderDrawLists(ImGui::GetDrawData());
+    RenderDrawLists();
 }
 
 void Shutdown() {
@@ -694,9 +690,10 @@ GLuint convertImTextureIDToGLTextureHandle(ImTextureID textureID) {
 }
 
 // Rendering callback
-void RenderDrawLists(ImDrawData* draw_data) {
-    ImGui::GetDrawData();
-    if (draw_data->CmdListsCount == 0) {
+void RenderDrawLists() 
+{
+	ImDrawData* draw_data = ImGui::GetDrawData();
+    if (draw_data == nullptr || draw_data->CmdListsCount == 0) {
         return;
     }
 

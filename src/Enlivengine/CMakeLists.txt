@@ -111,5 +111,5 @@ add_library(EnlivengineLibrary
 )
 target_include_directories(EnlivengineLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-target_link_libraries(EnlivengineLibrary sfml-system sfml-window sfml-graphics sfml-network sfml-audio EnlivengineThirdParty)
+target_link_libraries(EnlivengineLibrary OpenGL::GL sfml-system sfml-window sfml-graphics sfml-network sfml-audio EnlivengineThirdParty)
 target_include_directories(EnlivengineLibrary PUBLIC ${PROJECT_SOURCE_DIR}/thirdparty)

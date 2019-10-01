@@ -14,7 +14,7 @@ AudioSystem::AudioSystem()
 
 MusicId AudioSystem::createMusic(const char* id, const std::string& filename)
 {
-	MusicId index(Hash::Meow(id));
+	MusicId index(Hash::CRC32(id));
 	if (mMusicFilenames.find(index) == mMusicFilenames.end())
 	{
 		mMusicFilenames[index] = filename;
@@ -43,7 +43,7 @@ AudioSystem::MusicPtr AudioSystem::playMusic(MusicId id, bool loop)
 
 AudioSystem::MusicPtr AudioSystem::playMusic(const char* id, bool loop)
 {
-	return playMusic(Hash::Meow(id), loop);
+	return playMusic(Hash::CRC32(id), loop);
 }
 
 SoundId AudioSystem::createSound(const char* id, const std::string& filename)
@@ -71,7 +71,7 @@ AudioSystem::SoundPtr AudioSystem::playSound(SoundId id)
 
 AudioSystem::SoundPtr AudioSystem::playSound(const char* id)
 {
-	return playSound(Hash::Meow(id));
+	return playSound(Hash::CRC32(id));
 }
 
 void AudioSystem::play()

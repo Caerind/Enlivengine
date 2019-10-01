@@ -28,7 +28,7 @@ add_executable(EnlivengineTests
 	${TESTS_MATH}
 )
 
-target_link_libraries(EnlivengineTests sfml-system sfml-window sfml-graphics sfml-network sfml-audio EnlivengineThirdParty EnlivengineLibrary)
+target_link_libraries(EnlivengineTests OpenGL::GL sfml-system sfml-window sfml-graphics sfml-network sfml-audio EnlivengineThirdParty EnlivengineLibrary)
 
 add_test(NAME Tests COMMAND EnlivengineTests)
 	

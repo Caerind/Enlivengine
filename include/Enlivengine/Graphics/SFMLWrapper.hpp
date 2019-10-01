@@ -28,7 +28,7 @@ inline sf::Color toSF(const Color& color)
 
 inline Rectf toEN(const sf::FloatRect& rect)
 {
-	return Rect(rect.left, rect.top, rect.width, rect.height);
+	return Rectf(rect.left, rect.top, rect.width, rect.height);
 }
 
 inline sf::FloatRect toSF(const Rectf& rect)
@@ -74,7 +74,7 @@ inline sf::Vector2f toSF(const Vector2f& vector)
 
 inline Vector3f toEN(const sf::Vector3f& vector)
 {
-	return Vector3(vector.x, vector.y, vector.z);
+	return Vector3f(vector.x, vector.y, vector.z);
 }	
 inline sf::Vector3f toSF(const Vector3f& vector)
 {

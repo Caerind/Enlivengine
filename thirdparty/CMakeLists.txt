@@ -155,12 +155,6 @@ set(SRC_IMGUISFML
 )
 source_group("imgui-sfml" FILES ${SRC_IMGUISFML})
 
-# meow_hash
-set(SRC_MEOWHASH
-	${TPROOT}/meow_hash/meow_hash.h
-)
-source_group("meow_hash" FILES ${SRC_MEOWHASH})
-
 # pugixml
 set(SRC_PUGIXML
 	${TPROOT}/pugixml/pugiconfig.hpp
@@ -177,8 +171,7 @@ add_library(EnlivengineThirdParty
 	${SRC_DOCTEST}
 	${SRC_IMGUI}
 	${SRC_IMGUISFML}
-	${SRC_MEOWHASH}
 	${SRC_PUGIXML}
 )
-target_link_libraries(EnlivengineThirdParty sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
+target_link_libraries(EnlivengineThirdParty OpenGL::GL sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 target_include_directories(EnlivengineThirdParty PUBLIC ${TPROOT})

@@ -13,7 +13,7 @@ namespace en
 
 Application::Application()
 	: mStates(*this)
-	, mWindow(sf::VideoMode(800, 600), "Enlivengine") // TODO : Name from config
+	, mWindow(sf::VideoMode(800, 600), "")
 	, mAudioSystem()
 	, mFps(0)
 	, mRunning(true)
@@ -21,26 +21,26 @@ Application::Application()
 	LogManager::initialize();
 
 	#ifdef ENLIVE_ENABLE_IMGUI
-	//ImGuiWrapper::init(mWindow);
+	ImGui::SFML::Init(mWindow.getHandle()); 
 	#endif
 }
 
 Application::~Application()
 {
-	#ifdef ENLIVE_ENABLE_IMGUI
-	//ImGuiWrapper::shutdown();
-	#endif
+	mAudioSystem.stop();
 
 	if (mWindow.isOpen())
 	{
 		mWindow.close();
 	}
 
-	mAudioSystem.stop();
+#ifdef ENLIVE_ENABLE_IMGUI
+	ImGui::SFML::Shutdown();
+#endif
 
-	#ifdef ENLIVE_PLATFORM_MOBILE
+#ifdef ENLIVE_PLATFORM_MOBILE
 	std::exit(0);
-	#endif
+#endif
 }
 
 Window& Application::getWindow()
@@ -122,9 +122,17 @@ void Application::run()
 		{
 			accumulator -= TimePerFrame;
 
+#ifdef ENLIVE_ENABLE_IMGUI
+			ImGui::SFML::Update(mWindow.getHandle(), toSF(dt));
+#endif
+
 			preUpdate();
 			update(dt);
 			postUpdate();
+
+#ifdef ENLIVE_ENABLE_IMGUI
+			ImGui::Render();
+#endif
 		}
 
 		render();
@@ -165,9 +173,9 @@ void Application::events()
 			mAudioSystem.pause();
 		}
 
-		#ifdef ENLIVE_ENABLE_IMGUI
-		//ImGuiWrapper::handleEvent(mWindow.getHandle(), event);
-		#endif	
+#ifdef ENLIVE_ENABLE_IMGUI
+		ImGui::SFML::ProcessEvent(event);
+#endif	
 
 		mStates.handleEvent(event);
 	}
@@ -180,29 +188,23 @@ void Application::preUpdate()
 
 void Application::update(Time dt)
 {
-	#ifdef ENLIVE_ENABLE_IMGUI
-	//ImGuiWrapper::newFrame();
-	#endif
-
 	mStates.update(dt);
 }
 
 void Application::postUpdate()
 {
-	#ifdef ENLIVE_ENABLE_IMGUI
-	//ImGuiWrapper::endFrame();
-	#endif
 }
 
 void Application::render()
 {
 	mWindow.clear();
+
 	mStates.render(mWindow.getHandle());
 
-	#ifdef ENLIVE_ENABLE_IMGUI
-	//mWindow.draw(sf::RectangleShape()); // This fix a bug when rendering with the World // Empty window ? // ResetOpenGLState ?
-	//ImGuiWrapper::render();
-	#endif
+#ifdef ENLIVE_ENABLE_IMGUI
+	mWindow.getHandle().resetGLStates();
+	ImGui::SFML::Render(mWindow.getHandle());
+#endif	
 
 	mWindow.display();
 }
