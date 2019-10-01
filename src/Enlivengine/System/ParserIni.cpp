@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include <Enlivengine/System/Assert.hpp>
+#include <Enlivengine/System/Hash.hpp>
 
 namespace en
 {
@@ -99,7 +100,7 @@ bool ParserIni::saveToFile(const std::string& filename)
 
 void ParserIni::set(const std::string& value, const std::string& index, const std::string& section)
 {
-	StringId key = StringId::hash(section + ":" + index);
+	U32 key = Hash::Meow(std::string(section + ":" + index).c_str());
 	bool found = false;
 	for (U32 i = 0; i < mValues.size(); i++)
 	{
@@ -119,7 +120,7 @@ void ParserIni::set(const std::string& value, const std::string& index, const st
 
 std::string ParserIni::get(const std::string& index, const std::string& section)
 {
-	StringId key = StringId::hash(section + ":" + index);
+	U32 key = Hash::Meow(std::string(section + ":" + index).c_str());
 	for (U32 i = 0; i < mValues.size(); i++)
 	{
 		if (mValues[i].hash == key)
@@ -153,7 +154,7 @@ const std::string& ParserIni::getFilename() const
 }
 
 ParserIni::IniProperty::IniProperty(const std::string& pValue, const std::string& pIndex, const std::string& pSection)
-	: hash(StringId::hash(pSection + ":" + pIndex))
+	: hash(Hash::Meow(std::string(pSection + ":" + pIndex).c_str()))
 	, value(pValue)
 	, index(pIndex)
 	, section(pSection)

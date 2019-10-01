@@ -26,7 +26,7 @@ class ParserIni
 		{
 			IniProperty(const std::string& pValue, const std::string& pIndex, const std::string& pSection = "");
 
-			StringId hash;
+			U32 hash;
 
 			std::string value;
 			std::string index;

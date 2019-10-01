@@ -39,3 +39,4 @@ script:
 - cmake -DSFML_DIR=$SFML_ROOT ..
 - make
 - tests/EnlivengineTests
+- examples/SystemExample

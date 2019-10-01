@@ -3,7 +3,7 @@
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 #include <Enlivengine/System/Hash.hpp>
 
-#include <map>
+#include <unordered_map>
 #include <sstream>
 #include <string>
 #include <locale>
@@ -90,6 +90,9 @@ template <> inline char fromString<char>(const std::string& string)
 	return '\0';
 }
 
+// TODO : Fix string id hash
+
+/*
 class StringId
 {
 	public:
@@ -115,12 +118,12 @@ class StringId
 		const char* getStringFromStorage() const;
 
 		static StringId hash(const std::string& string);
-		static constexpr StringId hash(const char* string) { return Hash::CRC32(string); }
+		static StringId hash(const char* string) { return StringId(Hash::Meow(string)); }
 		static StringId hashAndStore(const std::string& string);
 		static StringId hashAndStore(const char* string);
 
 	private:
-		static std::map<U32, const char*> gStrings;
+		static std::unordered_map<U32, const char*> gStrings;
 
 	private:
 		U32 mStringId;
@@ -130,5 +133,6 @@ inline bool operator==(U32 id, const StringId& stringId)
 {
 	return stringId == id;
 }
+*/
 
 } // namespace en

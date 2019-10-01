@@ -761,4 +761,4 @@ typedef Quaternion<F32> Quaternionf;
 
 typedef Quaternionf quat; // GLSL-like
 
-} // namespace nu
+} // namespace en

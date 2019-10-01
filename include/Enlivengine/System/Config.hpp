@@ -6,7 +6,7 @@
 
 // Some configurables choices
 // If they are not specifically given, the default value depend on the current build
-#define ENLIVE_BUILD_DEBUG
+#define ENLIVE_DEBUG
 #define ENLIVE_ENABLE_ASSERT
 #define ENLIVE_ENABLE_LOG
 #define ENLIVE_ENABLE_PROFILE
@@ -17,7 +17,7 @@
 // Some more specific choices
 #define ENLIVE_ENABLE_DEFAULT_LOGGER
 //#define ENLIVE_ENABLE_DOUBLE_PRECISION
-#define ENLIVE_ENABLE_HASH_CRC32_COLLISION_DETECTION
+#define ENLIVE_ENABLE_HASH_COLLISION_DETECTION
 
 
 // TODO : Move this elsewhere ?

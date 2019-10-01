@@ -10,7 +10,7 @@ namespace en
 
 std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> gWideConverter;
 
-std::map<U32, const char*> StringId::gStrings;
+//std::unordered_map<U32, const char*> StringId::gStrings;
 
 void toLower(std::string& string)
 {
@@ -107,6 +107,7 @@ std::wstring toWideString(const std::string& narrowString)
 	return gWideConverter.from_bytes(narrowString);
 }
 
+/*
 const char* StringId::getStringFromStorage() const
 {
 	auto itr = gStrings.find(mStringId);
@@ -131,7 +132,7 @@ StringId StringId::hashAndStore(const char* string)
 {
 	U32 stringId = hash(string);
 
-#ifdef ENLIVE_ENABLE_HASH_CRC32_COLLISION_DETECTION
+#ifdef ENLIVE_ENABLE_HASH_COLLISION_DETECTION
 	auto itr = gStrings.find(stringId);
 	if (itr != gStrings.end())
 	{
@@ -141,7 +142,8 @@ StringId StringId::hashAndStore(const char* string)
 
 	gStrings[stringId] = string;
 
-	return stringId;
+	return StringId(stringId);
 }
+*/
 
 } // namespace en

@@ -101,23 +101,31 @@ DOCTEST_TEST_CASE("Strings")
 	en::I32 testFromStringI32 = en::fromString<en::I32>("-234");
 	DOCTEST_CHECK(testFromStringI32 == -234);
 
-	constexpr en::StringId id1Ct = en::StringId::hash("Test");
-	en::StringId id2 = en::StringId::hashAndStore("Test2");
-	en::StringId id3;
+	/*
+	en::StringId id1 = en::StringId::hash("Test");
+	en::StringId id2 = en::StringId::hash("TestTest");
+	en::StringId id3 = en::StringId::hashAndStore("TestTestTest");
+	en::StringId id4;
 
-	DOCTEST_CHECK(id1Ct.isValid());
+	DOCTEST_CHECK(id1.isValid());
 	DOCTEST_CHECK(id2.isValid());
-	DOCTEST_CHECK(!id3.isValid());
+	DOCTEST_CHECK(id3.isValid());
+	DOCTEST_CHECK(!id4.isValid());
 
-	DOCTEST_CHECK(id1Ct != id2);
-	DOCTEST_CHECK(id1Ct != id3);
+	DOCTEST_CHECK(id1 != id2);
+	DOCTEST_CHECK(id1 != id3);
+	DOCTEST_CHECK(id1 != id4);
 	DOCTEST_CHECK(id2 != id3);
+	DOCTEST_CHECK(id2 != id4);
+	DOCTEST_CHECK(id3 != id4);
 
-	DOCTEST_CHECK(!id1Ct.isStored());
-	DOCTEST_CHECK(id2.isStored());
+	DOCTEST_CHECK(!id1.isStored());
+	DOCTEST_CHECK(!id2.isStored());
+	DOCTEST_CHECK(id3.isStored());
 
-	std::string testStorage;
-	DOCTEST_CHECK(id1Ct.getStringFromStorage() == nullptr);
-	DOCTEST_CHECK(id2.getStringFromStorage() != nullptr);
-	DOCTEST_CHECK(strcmp(id2.getStringFromStorage(), "Test2") == 0);
+	DOCTEST_CHECK(id1.getStringFromStorage() == nullptr);
+	DOCTEST_CHECK(id2.getStringFromStorage() == nullptr);
+	DOCTEST_CHECK(id3.getStringFromStorage() != nullptr);
+	DOCTEST_CHECK(strcmp(id3.getStringFromStorage(), "TestTestTest") == 0);
+	*/
 }

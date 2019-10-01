@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include <Enlivengine/System/Assert.hpp>
+
 #define EnDetailSignal(Keyword, SignalName, ...) using SignalName ## Type = ::en::Signal<__VA_ARGS__>; Keyword SignalName ## Type SignalName
 
 #define EnSignal(SignalName, ...) EnDetailSignal(mutable, SignalName, __VA_ARGS__)

@@ -66,7 +66,49 @@ set(SRC_MATH
 )
 source_group("Math" FILES ${SRC_MATH})
 
-add_library(EnlivengineLibrary ${SRC_SYSTEM} ${SRC_MATH})
+set(INCROOT_GRAPHICS ${PROJECT_SOURCE_DIR}/include/Enlivengine/Graphics)
+set(SRCROOT_GRAPHICS ${PROJECT_SOURCE_DIR}/src/Enlivengine/Graphics)
+set(SRC_GRAPHICS
+	${INCROOT_GRAPHICS}/Animation.hpp
+	${SRCROOT_GRAPHICS}/Animation.cpp
+	${INCROOT_GRAPHICS}/Color.hpp
+	${SRCROOT_GRAPHICS}/Color.cpp
+	${INCROOT_GRAPHICS}/DebugDraw.hpp
+	${SRCROOT_GRAPHICS}/DebugDraw.cpp
+	${INCROOT_GRAPHICS}/LinearColor.hpp
+	${SRCROOT_GRAPHICS}/LinearColor.cpp
+	${INCROOT_GRAPHICS}/SFMLResources.hpp
+	${SRCROOT_GRAPHICS}/SFMLResources.cpp
+	${INCROOT_GRAPHICS}/SFMLWrapper.hpp
+	${INCROOT_GRAPHICS}/Tileset.hpp
+	${SRCROOT_GRAPHICS}/Tileset.cpp
+	${INCROOT_GRAPHICS}/View.hpp
+	${SRCROOT_GRAPHICS}/View.cpp
+)
+source_group("Graphics" FILES ${SRC_GRAPHICS})
+
+set(INCROOT_APPLICATION ${PROJECT_SOURCE_DIR}/include/Enlivengine/Application)
+set(SRCROOT_APPLICATION ${PROJECT_SOURCE_DIR}/src/Enlivengine/Application)
+set(SRC_APPLICATION
+	${INCROOT_APPLICATION}/Application.hpp
+	${SRCROOT_APPLICATION}/Application.cpp
+	${INCROOT_APPLICATION}/AudioSystem.hpp
+	${SRCROOT_APPLICATION}/AudioSystem.cpp
+	${INCROOT_APPLICATION}/ResourceManager.hpp
+	${INCROOT_APPLICATION}/ResourceManager.inl
+	${INCROOT_APPLICATION}/StateManager.hpp
+	${SRCROOT_APPLICATION}/StateManager.cpp
+	${INCROOT_APPLICATION}/Window.hpp
+	${SRCROOT_APPLICATION}/Window.cpp
+)
+source_group("Application" FILES ${SRC_APPLICATION})
+
+add_library(EnlivengineLibrary 
+	${SRC_SYSTEM} 
+	${SRC_MATH} 
+	${SRC_GRAPHICS}
+	${SRC_APPLICATION}
+)
 target_include_directories(EnlivengineLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 target_link_libraries(EnlivengineLibrary sfml-system sfml-window sfml-graphics sfml-network sfml-audio EnlivengineThirdParty)

@@ -3,6 +3,8 @@
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 #include <Enlivengine/System/Time.hpp>
 
+#include <string>
+
 // TODO : Check C++20 to improve this !
 
 namespace en
