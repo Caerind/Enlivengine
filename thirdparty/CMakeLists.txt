@@ -130,6 +130,12 @@ set(SRC_DOCTEST
 )
 source_group("doctest" FILES ${SRC_DOCTEST})
 
+# entt
+set(SRC_ENTT
+	${TPROOT}/entt/entt.hpp
+)
+source_group("entt" FILES ${SRC_ENTT})
+
 # imgui
 set(SRC_IMGUI
 	${TPROOT}/imgui/imconfig.h
@@ -155,6 +161,13 @@ set(SRC_IMGUISFML
 )
 source_group("imgui-sfml" FILES ${SRC_IMGUISFML})
 
+# miniz
+set(SRC_MINIZ
+	${TPROOT}/miniz/miniz.c
+	${TPROOT}/miniz/miniz.h
+)
+source_group("miniz" FILES ${SRC_MINIZ})
+
 # pugixml
 set(SRC_PUGIXML
 	${TPROOT}/pugixml/pugiconfig.hpp
@@ -169,8 +182,10 @@ add_library(EnlivengineThirdParty
 	${SRC_DBGTOOLS}
 	${SRC_DEBUGBREAK}
 	${SRC_DOCTEST}
+	${SRC_ENTT}
 	${SRC_IMGUI}
 	${SRC_IMGUISFML}
+	${SRC_MINIZ}
 	${SRC_PUGIXML}
 )
 target_link_libraries(EnlivengineThirdParty OpenGL::GL sfml-system sfml-window sfml-graphics sfml-network sfml-audio)

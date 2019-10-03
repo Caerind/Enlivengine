@@ -4,6 +4,7 @@ include_directories("${PROJECT_SOURCE_DIR}/thirdparty/doctest")
 set(TESTS_ROOT ${PROJECT_SOURCE_DIR}/tests)
 
 set(TESTS_SYSTEM
+    ${TESTS_ROOT}/System/Compression_Tests.cpp
     ${TESTS_ROOT}/System/Endianness_Tests.cpp
     ${TESTS_ROOT}/System/Hash_Tests.cpp
     ${TESTS_ROOT}/System/PrimitiveTypes_Tests.cpp

@@ -2,12 +2,28 @@
 
 #include <Enlivengine/System/String.hpp>
 
+#ifdef ENLIVE_ENABLE_IMGUI
+	#include <imgui/imgui.h>
+#endif
+
 #ifdef ENLIVE_PLATFORM_WINDOWS
 	#include <windows.h>
 #endif
 
 namespace en
 {
+
+const char* LogTypeToString(LogType type)
+{
+	switch (type)
+	{
+	case LogType::Info: return "Info";
+	case LogType::Warning: return "Warning";
+	case LogType::Error: return "Error";
+	}
+	assert(false);
+	return nullptr;
+}
 
 Logger::Logger()
 	: mTypeFilter(static_cast<U32>(LogType::All))
@@ -380,5 +396,55 @@ void MessageBoxLogger::write(LogType type, LogChannel channel, U32 importance, c
 }
 
 #endif // ENLIVE_PLATFORM_WINDOWS
+
+#ifdef ENLIVE_ENABLE_IMGUI
+ImGuiLogger::ImGuiLogger(U32 maxSize)
+	: Logger()
+	, mMessages()
+	, mMaxSize(maxSize)
+{
+}
+
+ImGuiLogger::~ImGuiLogger()
+{
+	unregisterLogger();
+}
+
+void ImGuiLogger::write(LogType type, LogChannel channel, U32 importance, const std::string& message)
+{
+	if (mMessages.size() + 1 > mMaxSize)
+	{
+		mMessages.erase(mMessages.begin());
+	}
+	mMessages.push_back("[" + std::string(LogTypeToString(type)) + "] : " + message);
+}
+
+void ImGuiLogger::draw()
+{
+	ImGui::Begin("Logger");
+
+	if (ImGui::Button("Clear"))
+	{
+		mMessages.clear();
+		mMessages.reserve(mMaxSize);
+	}
+
+	ImGui::BeginChild("", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
+	for (U32 i = 0; i < mMessages.size(); ++i)
+	{
+		ImVec4 col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		if (mMessages[i].find("[Error]") != std::string::npos) col = ImColor(1.0f, 0.4f, 0.4f, 1.0f);
+		else if (mMessages[i].find("[Warning]") != std::string::npos) col = ImColor(1.0f, 0.78f, 0.58f, 1.0f);
+		ImGui::PushStyleColor(ImGuiCol_Text, col);
+		ImGui::TextUnformatted(mMessages[i].c_str());
+		ImGui::PopStyleColor();
+	}
+	ImGui::PopStyleVar();
+	ImGui::EndChild();
+
+	ImGui::End();
+}
+#endif // ENLIVE_ENABLE_IMGUI
 
 } // namespace en

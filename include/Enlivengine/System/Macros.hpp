@@ -51,5 +51,3 @@
 #undef ENLIVE_ASSERT_BASE_OF
 #endif
 #define ENLIVE_ASSERT_BASE_OF(Base, Derived) static_assert(std::is_base_of<Base, Derived>::value, #Derived " must be a descendant of " #Base);
-
-class EmptyClass {}; // Used for operator==(), used to restrict only to nullptr comparasion 

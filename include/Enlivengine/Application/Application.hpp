@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Enlivengine/System/Time.hpp>
+#include <Enlivengine/System/Profiler.hpp>
 
 #include <Enlivengine/Application/Window.hpp>
 #include <Enlivengine/Application/StateManager.hpp>
@@ -32,6 +33,8 @@ class Application
 		void clearStates();
 
 		U32 getFPS() const;
+		U32 getTotalFrames() const;
+		Time getTotalDuration() const;
 
 	private:
 		void run();
@@ -40,6 +43,7 @@ class Application
 		void update(Time dt);
 		void postUpdate();
 		void render();
+		void ImGuiMain();
 
 	private:
 		StateManager mStates;
@@ -51,6 +55,19 @@ class Application
 
 		U32 mFps;
 		bool mRunning;
+
+		U32 mTotalFrames;
+		Clock mTotalDuration;
+
+#ifdef ENLIVE_ENABLE_IMGUI
+		bool mShowImGui;
+
+		ImGuiLogger mLogger;
+
+#ifdef ENLIVE_ENABLE_PROFILE
+		ImGuiProfiler mProfiler;
+#endif
+#endif // ENLIVE_ENABLE_IMGUI
 };
 
 template <typename State, typename ... Args>

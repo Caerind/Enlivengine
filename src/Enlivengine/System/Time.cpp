@@ -218,7 +218,7 @@ I64 Time::asMicroseconds() const
 
 Time Time::now()
 {
-	return milliseconds(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+	return microseconds(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 }
 
 Time days(I32 amount)

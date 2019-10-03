@@ -10,6 +10,8 @@
 #include <Enlivengine/System/Time.hpp>
 #include <Enlivengine/System/Hash.hpp>
 
+#include <Enlivengine/Math/Random.hpp>
+
 #include <Enlivengine/Application/ResourceManager.hpp>
 #include <Enlivengine/Graphics/SFMLResources.hpp>
 
@@ -18,17 +20,43 @@
 
 #include <Box2D/Box2D.h>
 
+#include <entt/entt.hpp>
+
 #include <imgui/imgui.h>
 
 #include <SFML/Graphics.hpp>
+
+struct PositionComp : public sf::Transformable
+{
+};
+
+struct RenderableComp
+{
+	en::U32 z;
+};
+
+struct SpriteComp : public sf::Sprite
+{
+};
+
+struct TextComp : public sf::Text
+{
+};
+
+struct AnimationComp
+{
+};
 
 class MyState : public en::State
 {
 public:
 	MyState(en::StateManager& manager) : en::State(manager)
 	{
+		getApplication().getWindow().setMainView(en::View(0.f, 0.f, 1024.f, 768.f));
+
 		getApplication().getTextures().create("atmog", en::TextureLoader::loadFromFile("Assets/Textures/atmog.png"));
-		getApplication().getTextures().create("asteroids", en::TextureLoader::loadFromFile("Assets/Textures/asteroids.png"));
+		asteroidTextureId = getApplication().getTextures().create("asteroids", en::TextureLoader::loadFromFile("Assets/Textures/asteroids.png"));
+		fontId = getApplication().getFonts().create("font", en::FontLoader::loadFromFile("Assets/Fonts/ErasBoldITC.ttf"));
 
 		getApplication().getAudio().createMusic("mainTheme", "Assets/Musics/MainTheme.ogg");
 		getApplication().getAudio().playMusic("mainTheme");
@@ -37,8 +65,7 @@ public:
 
 		getApplication().getWindow().create(sf::VideoMode(1024, 768), "EngineExample");
 
-		sprite1.setTexture(getApplication().getTextures().get("atmog"));
-		sprite2.setTexture(getApplication().getTextures().get("asteroids"));
+		background.setTexture(getApplication().getTextures().get("atmog"));
 	}
 
 	bool handleEvent(const sf::Event& event)
@@ -50,35 +77,107 @@ public:
 		if (event.type == sf::Event::MouseButtonPressed)
 		{
 			getApplication().getAudio().playSound("click");
+			createEntity(getApplication().getWindow().getCursorPosition().x, getApplication().getWindow().getCursorPosition().y);
+		}
+		if (event.type == sf::Event::KeyPressed)
+		{
+#ifdef ENLIVE_ENABLE_IMGUI
+			if (event.key.code == sf::Keyboard::F3)
+			{
+				mShowMetrics = !mShowMetrics;
+			}
+#endif
 		}
 		return true;
 	}
 
 	bool update(en::Time dt)
 	{
-		ImGui::Begin("Test");
-		if (ImGui::Button("Click"))
+#ifdef ENLIVE_ENABLE_IMGUI
+		if (mShowMetrics)
 		{
-			getApplication().getAudio().stop();
+			ImGui::Begin("Metrics");
+			ImGui::Text("Entities : %d", registry.size());
+			ImGui::Text("Mouse X : %d", (int)getApplication().getWindow().getCursorPosition().x);
+			ImGui::Text("Mouse Y : %d", (int)getApplication().getWindow().getCursorPosition().y);
+			ImGui::Text("View X : %d", (int)getApplication().getWindow().getMainView().getCenter().x);
+			ImGui::Text("View Y : %d", (int)getApplication().getWindow().getMainView().getCenter().y);
+			ImGui::End();
 		}
-		ImGui::End();
+#endif
+
 		return true;
 	}
 
 	void render(sf::RenderTarget& target) 
 	{
-		target.draw(sprite1);
-		target.draw(sprite2);
+		registry.sort<RenderableComp>([](const auto& lhs, const auto& rhs) 
+		{
+			return lhs.z < rhs.z;
+		});
+
+		target.draw(background);
+
+		auto view = registry.view<RenderableComp, PositionComp>();
+		for (auto entity : view) 
+		{
+			const auto& renderable = view.get<RenderableComp>(entity);
+			const auto& position = view.get<PositionComp>(entity);
+
+			sf::RenderStates states;
+			states.transform = position.getTransform();
+
+			if (registry.has<SpriteComp>(entity))
+			{
+				target.draw(registry.get<SpriteComp>(entity), states);
+			}
+			if (registry.has<AnimationComp>(entity))
+			{
+
+			}
+			if (registry.has<TextComp>(entity))
+			{
+				target.draw(registry.get<TextComp>(entity), states);
+			}
+		}
+	}
+
+	void createEntity(en::F32 x, en::F32 y)
+	{
+		auto entity = registry.create();
+		auto& position = registry.assign<PositionComp>(entity);
+		position.setPosition(x, y);
+		auto& renderable = registry.assign<RenderableComp>(entity);
+		renderable.z = 0;
+		auto& sprite = registry.assign<SpriteComp>(entity);
+		sprite.setTexture(getApplication().getTextures().get(asteroidTextureId));
+		sprite.setTextureRect(en::toSF(en::Recti(0, 0, 120, 120)));
+		sprite.setOrigin(60, 60);
+		auto& text = registry.assign<TextComp>(entity);
+		text.setFont(getApplication().getFonts().get(fontId));
+		text.setPosition(10, 10);
+		text.setString("Asteroid");
+		text.setFillColor(sf::Color::White);
+		text.setOutlineColor(sf::Color::Black);
+		text.setOutlineThickness(1.f);
 	}
 
 private:
-	sf::Sprite sprite1;
-	sf::Sprite sprite2;
+	entt::registry registry;
+	sf::Sprite background;
+	en::U32 asteroidTextureId;
+	en::U32 fontId;
+
+#ifdef ENLIVE_ENABLE_IMGUI
+	bool mShowMetrics;
+#endif
 };
 
 int main(int argc, char** argv)
 {
 	en::LogManager::initialize();
+
+	en::Application app; // Moved this before just to see the logs inside ImGui
 
 	b2Vec2 gravity(0.0f, -10.0f);
 	b2World world(gravity);
@@ -123,7 +222,10 @@ int main(int argc, char** argv)
 	}
 	LogInfo(en::LogChannel::System, 9, "%4.2f %4.2f %4.2f", body->GetPosition().x, body->GetPosition().y, body->GetAngle());
 
-	en::Application app;
+	LogWarning(en::LogChannel::System, 9, "%4.2f %4.2f %4.2f", body->GetPosition().x, body->GetPosition().y, body->GetAngle());
+
+	LogError(en::LogChannel::System, 9, "%4.2f %4.2f %4.2f", body->GetPosition().x, body->GetPosition().y, body->GetAngle());
+
 	app.start<MyState>();
 
 	return 0;

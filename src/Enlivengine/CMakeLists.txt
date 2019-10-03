@@ -8,6 +8,8 @@ set(SRC_SYSTEM
     ${SRCROOT_SYSTEM}/CallOnExit.cpp
     ${INCROOT_SYSTEM}/CompilerDetection.hpp
     ${INCROOT_SYSTEM}/CompilerTraits.hpp
+    ${INCROOT_SYSTEM}/Compression.hpp
+    ${SRCROOT_SYSTEM}/Compression.cpp
     ${INCROOT_SYSTEM}/Config.hpp
     ${INCROOT_SYSTEM}/DateTime.hpp
     ${SRCROOT_SYSTEM}/DateTime.cpp
@@ -25,7 +27,10 @@ set(SRC_SYSTEM
     ${SRCROOT_SYSTEM}/ParserXml.cpp
     ${INCROOT_SYSTEM}/PlatformDetection.hpp
     ${INCROOT_SYSTEM}/PrimitiveTypes.hpp
+    ${INCROOT_SYSTEM}/Profiler.hpp
+    ${SRCROOT_SYSTEM}/Profiler.cpp
     ${INCROOT_SYSTEM}/Signal.hpp
+    ${INCROOT_SYSTEM}/Singleton.hpp
     ${INCROOT_SYSTEM}/String.hpp
     ${SRCROOT_SYSTEM}/String.cpp
     ${INCROOT_SYSTEM}/Time.hpp

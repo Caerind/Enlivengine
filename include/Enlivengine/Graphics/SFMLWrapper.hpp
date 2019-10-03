@@ -36,6 +36,16 @@ inline sf::FloatRect toSF(const Rectf& rect)
 	return sf::FloatRect(rect.left(), rect.top(), rect.width(), rect.height());
 }
 
+inline Recti toEN(const sf::IntRect& rect)
+{
+	return Recti(rect.left, rect.top, rect.width, rect.height);
+}
+
+inline sf::IntRect toSF(const Recti& rect)
+{
+	return sf::IntRect(rect.left(), rect.top(), rect.width(), rect.height());
+}
+
 inline Matrix4f toEN(const sf::Transform& transform)
 {
 	return Matrix4f(transform.getMatrix()[0], transform.getMatrix()[1], transform.getMatrix()[2],  transform.getMatrix()[3],

@@ -8,17 +8,20 @@
 #include <Enlivengine/System/PlatformDetection.hpp>
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 
+// TODO : Encapsulate info in class Message for 'post-filter' (now its filtered out on write())
+
 namespace en
 {
 
 enum class LogType : U32
 {
-	None = 0x0,
-	Info = 0x1,
-	Warning = 0x2,
-	Error = 0x4,
-	All = 0x7
+	None = 0,
+	Info = 1 << 0,
+	Warning = 1 << 1,
+	Error = 1 << 2,
+	All = (1 << 3) - 1
 };
+static const char* LogTypeToString(LogType type);
 
 enum class LogChannel : U32
 {
@@ -147,7 +150,6 @@ class FileLogger : public Logger
 };
 
 #ifdef ENLIVE_COMPILER_MSVC
-
 class VisualStudioLogger : public Logger
 {
 	public:
@@ -156,11 +158,9 @@ class VisualStudioLogger : public Logger
 
 		virtual void write(LogType type, LogChannel channel, U32 importance, const std::string& message);
 };
-
 #endif // ENLIVE_COMPILER_MSVC
 
 #ifdef ENLIVE_PLATFORM_WINDOWS
-
 class MessageBoxLogger : public Logger
 {
 	public:
@@ -169,7 +169,23 @@ class MessageBoxLogger : public Logger
 
 		virtual void write(LogType type, LogChannel channel, U32 importance, const std::string& message);
 };
-
 #endif // ENLIVE_PLATFORM_WINDOWS
+
+#ifdef ENLIVE_ENABLE_IMGUI
+class ImGuiLogger : public Logger
+{
+public:
+	ImGuiLogger(U32 maxSize = 128);
+	virtual ~ImGuiLogger();
+
+	virtual void write(LogType type, LogChannel channel, U32 importance, const std::string& message);
+
+	void draw();
+
+private:
+	std::vector<std::string> mMessages;
+	U32 mMaxSize;
+};
+#endif // ENLIVE_ENABLE_IMGUI
 
 } // namespace en
