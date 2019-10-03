@@ -2751,7 +2751,7 @@ class connection {
     {}
 
 public:
-    /*! @brief Default constructor. */
+    /*! Default constructor. */
     connection() = default;
 
     /*! @brief Default copy constructor. */
@@ -2818,7 +2818,7 @@ private:
  * when it goes out of scope.
  */
 struct scoped_connection: private connection {
-    /*! @brief Default constructor. */
+    /*! Default constructor. */
     scoped_connection() = default;
 
     /**
@@ -3751,7 +3751,7 @@ public:
      */
     template<typename It>
     void batch(It first, It last) {
-        std::for_each(first, last, [this, next = direct.size()](const auto entt) mutable {
+        std::for_each(std::make_reverse_iterator(last), std::make_reverse_iterator(first), [this, next = direct.size()](const auto entt) mutable {
             ENTT_ASSERT(!has(entt));
             auto [page, offset] = map(entt);
             assure(page);
@@ -4064,9 +4064,9 @@ class basic_runtime_view {
 
 public:
     /*! @brief Underlying entity identifier. */
-    using entity_type = Entity;
+    using entity_type = typename sparse_set<Entity>::entity_type;
     /*! @brief Unsigned integer type. */
-    using size_type = std::size_t;
+    using size_type = typename sparse_set<Entity>::size_type;
     /*! @brief Input iterator type. */
     using iterator_type = iterator;
 
@@ -4942,9 +4942,9 @@ public:
     /*! @brief Type of the objects associated with the entities. */
     using object_type = Type;
     /*! @brief Underlying entity identifier. */
-    using entity_type = Entity;
+    using entity_type = typename underlying_type::entity_type;
     /*! @brief Unsigned integer type. */
-    using size_type = std::size_t;
+    using size_type = typename underlying_type::size_type;
     /*! @brief Random access iterator type. */
     using iterator_type = iterator<false>;
     /*! @brief Constant random access iterator type. */
@@ -5381,9 +5381,9 @@ public:
     /*! @brief Type of the objects associated with the entities. */
     using object_type = Type;
     /*! @brief Underlying entity identifier. */
-    using entity_type = Entity;
+    using entity_type = typename underlying_type::entity_type;
     /*! @brief Unsigned integer type. */
-    using size_type = std::size_t;
+    using size_type = typename underlying_type::size_type;
     /*! @brief Random access iterator type. */
     using iterator_type = iterator;
 
@@ -6386,9 +6386,13 @@ public:
         }
 
         for(auto next = *length; next; --next) {
-            const auto pos = next - 1;
-            const auto entt = cpool->data()[pos];
-            (std::get<pool_type<Other> *>(pools)->swap(pos, std::get<pool_type<Other> *>(pools)->index(entt)), ...);
+            ([next = next-1, curr = cpool->data()[next-1]](auto *cpool) {
+                const auto pos = cpool->index(curr);
+
+                if(pos != next) {
+                    cpool->swap(next, cpool->index(curr));
+                }
+            }(std::get<pool_type<Other> *>(pools)), ...);
         }
     }
 
@@ -6603,9 +6607,9 @@ class basic_view {
 
 public:
     /*! @brief Underlying entity identifier. */
-    using entity_type = Entity;
+    using entity_type = typename sparse_set<Entity>::entity_type;
     /*! @brief Unsigned integer type. */
-    using size_type = std::size_t;
+    using size_type = typename sparse_set<Entity>::size_type;
     /*! @brief Input iterator type. */
     using iterator_type = iterator;
 
@@ -6951,9 +6955,9 @@ public:
     /*! @brief Type of component iterated by the view. */
     using raw_type = Component;
     /*! @brief Underlying entity identifier. */
-    using entity_type = Entity;
+    using entity_type = typename pool_type::entity_type;
     /*! @brief Unsigned integer type. */
-    using size_type = std::size_t;
+    using size_type = typename pool_type::size_type;
     /*! @brief Input iterator type. */
     using iterator_type = typename sparse_set<Entity>::iterator_type;
 
@@ -7355,7 +7359,7 @@ class basic_registry {
     struct group_data {
         const std::size_t extent[3];
         std::unique_ptr<void, void(*)(void *)> group;
-        bool(* const is_same)(const component *) ENTT_NOEXCEPT;
+        bool(* const is_same)(const component *);
     };
 
     struct ctx_variable {
@@ -7761,8 +7765,7 @@ public:
         });
 
         if constexpr(sizeof...(Component) > 0) {
-            // the reverse iterators guarantee the ordering between entities and components (hint: the pools return begin())
-            return std::make_tuple(assure<Component>()->batch(*this, std::make_reverse_iterator(last), std::make_reverse_iterator(first))...);
+            return std::make_tuple(assure<Component>()->batch(*this, first, last)...);
         }
     }
 
@@ -7770,14 +7773,6 @@ public:
      * @brief Creates a new entity from a prototype entity.
      *
      * @sa create
-     *
-     * The components must be copyable for obvious reasons. The source entity
-     * must be a valid one.<br/>
-     * If no components are provided, the registry will try to copy all the
-     * existing types. The non-copyable ones will be ignored.
-     *
-     * @note
-     * Specifying the list of components is ways faster than an opaque copy.
      *
      * @tparam Component Types of components to copy.
      * @tparam Exclude Types of components not to be copied.
@@ -7796,15 +7791,6 @@ public:
      * @brief Assigns each element in a range an entity from a prototype entity.
      *
      * @sa create
-     *
-     * The components must be copyable for obvious reasons. The entities must be
-     * all valid.<br/>
-     * If no components are provided, the registry will try to copy all the
-     * existing types. The non-copyable ones will be ignored.
-     *
-     * @note
-     * Specifying the list of components is ways faster than an opaque copy and
-     * uses the batch creation under the hood.
      *
      * @tparam Component Types of components to copy.
      * @tparam Exclude Types of components not to be copied.
@@ -8534,7 +8520,7 @@ public:
             groups.push_back(group_data{
                 { sizeof...(Owned), sizeof...(Get), sizeof...(Exclude) },
                 decltype(group_data::group){new handler_type{}, [](void *gptr) { delete static_cast<handler_type *>(gptr); }},
-                [](const component *other) ENTT_NOEXCEPT {
+                [](const component *other) {
                     const component ctypes[] = { type<Owned>()..., type<Get>()..., type<Exclude>()... };
                     return std::equal(std::begin(ctypes), std::end(ctypes), other);
                 }
@@ -9616,7 +9602,7 @@ public:
     /*! @brief Underlying entity identifier. */
     using entity_type = Entity;
     /*! @brief Unsigned integer type. */
-    using size_type = std::size_t;
+    using size_type = typename sparse_set<Entity>::size_type;
     /*! @brief Input iterator type. */
     using iterator_type = typename sparse_set<Entity>::iterator_type;
 
@@ -12491,10 +12477,9 @@ class meta_factory {
         }
     }
 
-public:
-    /*! @brief Default constructor. */
     meta_factory() ENTT_NOEXCEPT = default;
 
+public:
     /**
      * @brief Extends a meta type by assigning it an identifier and properties.
      * @tparam Property Types of properties to assign to the meta type.
@@ -15531,7 +15516,7 @@ class connection {
     {}
 
 public:
-    /*! @brief Default constructor. */
+    /*! Default constructor. */
     connection() = default;
 
     /*! @brief Default copy constructor. */
@@ -15598,7 +15583,7 @@ private:
  * when it goes out of scope.
  */
 struct scoped_connection: private connection {
-    /*! @brief Default constructor. */
+    /*! Default constructor. */
     scoped_connection() = default;
 
     /**

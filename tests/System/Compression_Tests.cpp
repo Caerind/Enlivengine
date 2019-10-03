@@ -16,6 +16,7 @@ DOCTEST_TEST_CASE("Compression determinism")
 	DOCTEST_CHECK(decode64Valid);
 	DOCTEST_CHECK(myStr == myStrEncode);
 
+	/*
 	std::string myStrCompress = myStr;
 	bool compressValid = en::Compression::compress(myStrCompress);
 	//DOCTEST_INFO(myStrCompress);
@@ -24,6 +25,7 @@ DOCTEST_TEST_CASE("Compression determinism")
 	DOCTEST_CHECK(compressValid);
 	DOCTEST_CHECK(decompressValid);
 	DOCTEST_CHECK(myStr == myStrCompress);
+	*/
 
 	std::string myStrCompress64 = myStr;
 	bool compress64Valid = en::Compression::compress(myStrCompress64);

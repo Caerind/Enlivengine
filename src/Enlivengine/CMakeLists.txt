@@ -108,11 +108,19 @@ set(SRC_APPLICATION
 )
 source_group("Application" FILES ${SRC_APPLICATION})
 
+set(INCROOT_CORE ${PROJECT_SOURCE_DIR}/include/Enlivengine/Core)
+set(SRCROOT_CORE ${PROJECT_SOURCE_DIR}/src/Enlivengine/Core)
+set(SRC_CORE
+	${INCROOT_CORE}/Components.hpp
+)
+source_group("Core" FILES ${SRC_CORE})
+
 add_library(EnlivengineLibrary 
 	${SRC_SYSTEM} 
 	${SRC_MATH} 
 	${SRC_GRAPHICS}
 	${SRC_APPLICATION}
+	${SRC_CORE}
 )
 target_include_directories(EnlivengineLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
 

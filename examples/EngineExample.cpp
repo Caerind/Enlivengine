@@ -12,11 +12,14 @@
 
 #include <Enlivengine/Math/Random.hpp>
 
-#include <Enlivengine/Application/ResourceManager.hpp>
 #include <Enlivengine/Graphics/SFMLResources.hpp>
+#include <Enlivengine/Graphics/DebugDraw.hpp>
 
+#include <Enlivengine/Application/ResourceManager.hpp>
 #include <Enlivengine/Application/StateManager.hpp>
 #include <Enlivengine/Application/Application.hpp>
+
+#include <Enlivengine/Core/Components.hpp>
 
 #include <Box2D/Box2D.h>
 
@@ -26,26 +29,6 @@
 
 #include <SFML/Graphics.hpp>
 
-struct PositionComp : public sf::Transformable
-{
-};
-
-struct RenderableComp
-{
-	en::U32 z;
-};
-
-struct SpriteComp : public sf::Sprite
-{
-};
-
-struct TextComp : public sf::Text
-{
-};
-
-struct AnimationComp
-{
-};
 
 class MyState : public en::State
 {
@@ -102,6 +85,10 @@ public:
 			ImGui::Text("Mouse Y : %d", (int)getApplication().getWindow().getCursorPosition().y);
 			ImGui::Text("View X : %d", (int)getApplication().getWindow().getMainView().getCenter().x);
 			ImGui::Text("View Y : %d", (int)getApplication().getWindow().getMainView().getCenter().y);
+#ifdef ENLIVE_DEBUG
+			ImGui::Text("DebugDisplay Rectangles : %d", en::DebugDraw::getCurrentRectangleCount());
+			ImGui::Text("DebugDisplay Circles : %d", en::DebugDraw::getCurrentCircleCount());
+#endif // ENLIVE_DEBUG
 			ImGui::End();
 		}
 #endif
@@ -111,33 +98,33 @@ public:
 
 	void render(sf::RenderTarget& target) 
 	{
-		registry.sort<RenderableComp>([](const auto& lhs, const auto& rhs) 
+		registry.sort<en::RenderableComponent>([](const auto& lhs, const auto& rhs) 
 		{
 			return lhs.z < rhs.z;
 		});
 
 		target.draw(background);
 
-		auto view = registry.view<RenderableComp, PositionComp>();
+		auto view = registry.view<en::RenderableComponent, en::PositionComponent>();
 		for (auto entity : view) 
 		{
-			const auto& renderable = view.get<RenderableComp>(entity);
-			const auto& position = view.get<PositionComp>(entity);
+			const auto& renderable = view.get<en::RenderableComponent>(entity);
+			const auto& position = view.get<en::PositionComponent>(entity);
 
 			sf::RenderStates states;
 			states.transform = position.getTransform();
 
-			if (registry.has<SpriteComp>(entity))
+			if (registry.has<en::SpriteComponent>(entity))
 			{
-				target.draw(registry.get<SpriteComp>(entity), states);
+				target.draw(registry.get<en::SpriteComponent>(entity), states);
 			}
-			if (registry.has<AnimationComp>(entity))
+			if (registry.has<en::AnimationComponent>(entity))
 			{
 
 			}
-			if (registry.has<TextComp>(entity))
+			if (registry.has<en::TextComponent>(entity))
 			{
-				target.draw(registry.get<TextComp>(entity), states);
+				target.draw(registry.get<en::TextComponent>(entity), states);
 			}
 		}
 	}
@@ -145,15 +132,15 @@ public:
 	void createEntity(en::F32 x, en::F32 y)
 	{
 		auto entity = registry.create();
-		auto& position = registry.assign<PositionComp>(entity);
+		auto& position = registry.assign<en::PositionComponent>(entity);
 		position.setPosition(x, y);
-		auto& renderable = registry.assign<RenderableComp>(entity);
+		auto& renderable = registry.assign<en::RenderableComponent>(entity);
 		renderable.z = 0;
-		auto& sprite = registry.assign<SpriteComp>(entity);
+		auto& sprite = registry.assign<en::SpriteComponent>(entity);
 		sprite.setTexture(getApplication().getTextures().get(asteroidTextureId));
 		sprite.setTextureRect(en::toSF(en::Recti(0, 0, 120, 120)));
 		sprite.setOrigin(60, 60);
-		auto& text = registry.assign<TextComp>(entity);
+		auto& text = registry.assign<en::TextComponent>(entity);
 		text.setFont(getApplication().getFonts().get(fontId));
 		text.setPosition(10, 10);
 		text.setString("Asteroid");

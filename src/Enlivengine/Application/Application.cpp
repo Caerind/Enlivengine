@@ -3,6 +3,10 @@
 #include <Enlivengine/System/Config.hpp>
 #include <Enlivengine/System/String.hpp>
 
+#ifdef ENLIVE_DEBUG
+#include <Enlivengine/Graphics/DebugDraw.hpp>
+#endif // ENLIVE_DEBUG
+
 #ifdef ENLIVE_ENABLE_IMGUI
 #include <imgui/imgui.h>
 #include <imgui-sfml/imgui-SFML.h>
@@ -249,6 +253,10 @@ void Application::render()
 	mWindow.clear();
 
 	mStates.render(mWindow.getHandle());
+
+#ifdef ENLIVE_DEBUG
+	en::DebugDraw::render(mWindow.getHandle());
+#endif // ENLIVE_DEBUG
 
 #ifdef ENLIVE_ENABLE_IMGUI
 	if (mShowImGui)
