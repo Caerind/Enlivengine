@@ -1,9 +1,11 @@
 language: cpp
-dist: bionic
 compiler: gcc
+os: linux  
   
 addons:
   apt:
+    sources:
+    - ubuntu-toolchain-r-test
     packages:
     - cmake
     - libopenal-dev
@@ -14,15 +16,17 @@ addons:
     - libudev-dev
     - libxrandr-dev
     - libgl1-mesa-dev
-    - gcc
-    - g++
+    - gcc-7
+    - g++-7
     
 script:
 - pwd
 - ls
-- cmake --version
+- export CC=gcc-7
+- export CXX=g++-7
 - g++ --version
 - mkdir build && cd build
+- cmake --version
 - cmake ..
 - make
 - Enlivengine/EnlivengineTests/EnlivengineTests
