@@ -29,6 +29,11 @@ script:
 - cmake --version
 - cmake ..
 - make
-- ls
+- ls -al
+- cd EnlivengineTests
+- ls -al
 - ./EnlivengineTests
+- cd ..
+- cd EnlivengineExamples
+- ls -al
 - ./SystemExample
