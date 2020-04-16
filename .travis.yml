@@ -1,9 +1,10 @@
-language: cpp
 notifications:
   email: false
   
- os: linux
- dist: bionic
+language: cpp
+  
+os: linux
+dist: bionic
   
 addons:
   apt:
