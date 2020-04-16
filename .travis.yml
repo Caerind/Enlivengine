@@ -16,14 +16,14 @@ addons:
     - libudev-dev
     - libxrandr-dev
     - libgl1-mesa-dev
-    - gcc-7
-    - g++-7
+    - gcc-9
+    - g++-9
     
 script:
 - pwd
 - ls
-- export CC=gcc-7
-- export CXX=g++-7
+- export CC=gcc-9
+- export CXX=g++-9
 - g++ --version
 - mkdir build && cd build
 - cmake --version
