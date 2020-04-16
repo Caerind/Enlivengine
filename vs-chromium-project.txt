@@ -11,6 +11,10 @@
 *.ini
 *.txt
 *.rc
+*.json
+*.astm
+*.tmx
+*.tsx
 
 [SearchableFiles.ignore]
 bin/

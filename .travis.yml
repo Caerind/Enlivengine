@@ -17,26 +17,15 @@ addons:
     - libudev-dev
     - libxrandr-dev
     - libgl1-mesa-dev
-    - gcc-7
-    - g++-7
+    - gcc
+    - g++
     
-before_script:
-- export SFML_ROOT=$HOME/SFML_LINUX
-- pwd
-- ls
-- git clone https://github.com/SFML/SFML.git
-- cd SFML
-- cmake -DCMAKE_INSTALL_PREFIX=$SFML_ROOT .
-- make
-- make install
-- cd ..
 script:
-- export SFML_ROOT=$HOME/SFML_LINUX
 - pwd
 - ls
 - cmake --version
 - mkdir build && cd build
-- cmake -DSFML_DIR=$SFML_ROOT ..
+- cmake ..
 - make
-- tests/EnlivengineTests
-- examples/SystemExample
+- Enlivengine/EnlivengineTests/EnlivengineTests
+- Enlivengine/EnlivengineExamples/SystemExample

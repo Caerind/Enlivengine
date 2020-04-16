@@ -1,0 +1,15 @@
+- https://github.com/erincatto/Box2D  
+- https://github.com/scottt/debugbreak  
+- https://github.com/tronkko/dirent  
+- https://github.com/onqtam/doctest  
+- https://github.com/skypjack/entt  
+- https://github.com/juliettef/IconFontCppHeaders 
+- https://github.com/ocornut/imgui   
+- https://github.com/aiekick/ImGuiFileDialog  
+- https://github.com/thedmd/imgui-node-editor  
+- https://github.com/eliasdaler/imgui-sfml  
+- https://github.com/nlohmann/json  
+- https://github.com/GameTechDev/MetricsGui 
+- https://github.com/richgel999/miniz   
+- https://github.com/zeux/pugixml  
+- https://github.com/SFML/SFML  
