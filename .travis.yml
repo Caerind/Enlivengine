@@ -17,12 +17,13 @@ addons:
     - libudev-dev
     - libxrandr-dev
     - libgl1-mesa-dev
-    - g++-7
+    - g++-9
     
 script:
 - pwd
 - ls
 - cmake --version
+- g++ --version
 - mkdir build && cd build
 - cmake ..
 - make
