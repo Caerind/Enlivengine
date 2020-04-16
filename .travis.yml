@@ -29,5 +29,6 @@ script:
 - cmake --version
 - cmake ..
 - make
-- Enlivengine/EnlivengineTests/EnlivengineTests
-- Enlivengine/EnlivengineExamples/SystemExample
+- ls
+- ./EnlivengineTests
+- ./SystemExample
