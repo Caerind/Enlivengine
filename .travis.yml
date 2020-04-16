@@ -17,8 +17,7 @@ addons:
     - libudev-dev
     - libxrandr-dev
     - libgl1-mesa-dev
-    - gcc
-    - g++
+    - g++-7
     
 script:
 - pwd
