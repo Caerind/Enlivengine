@@ -37,3 +37,6 @@ bin/
 *.dep
 *.ico
 *.lib
+
+Enlivengine/EnlivengineTests/
+Enlivengine/EnlivengineThirdParty/
