@@ -14,7 +14,7 @@ en::SoundSourceStatus toEN(const sf::SoundSource::Status& status)
 	case sf::SoundSource::Status::Paused: return SoundSourceStatus::Paused; break;
 	case sf::SoundSource::Status::Stopped: return SoundSourceStatus::Stopped; break;
 	}
-	assert(false); // Unimplemented
+	enAssert(false); // Unimplemented
 	return SoundSourceStatus::Playing;
 }
 
@@ -520,7 +520,7 @@ F32 AudioSystem::GetCurrentMusicsVolume() const
 
 MusicID AudioSystem::PrepareMusic(const char* id, const std::string& filename)
 {
-	MusicID index(priv::StringToResourceID(id));
+	MusicID index(ResourceManager::StringToResourceID(id));
 	if (mMusicFilenames.find(index) == mMusicFilenames.end())
 	{
 		mMusicFilenames[index] = filename;
@@ -544,15 +544,15 @@ MusicPtr AudioSystem::PlayMusic(MusicID id, bool loop /*= true*/)
 			{
 				music->Pause();
 			}
-			return std::move(MusicPtr(this, music->GetMusicID(), music->GetUID()));
+			return MusicPtr(this, music->GetMusicID(), music->GetUID());
 		}
 	}
-	return std::move(MusicPtr());
+	return MusicPtr();
 }
 
 MusicPtr AudioSystem::PlayMusic(const char* id, bool loop /*= true*/)
 {
-	return std::move(PlayMusic(priv::StringToResourceID(id), loop));
+	return PlayMusic(ResourceManager::StringToResourceID(id), loop);
 }
 
 U32 AudioSystem::GetCurrentMusicsCount() const
@@ -656,7 +656,7 @@ bool AudioSystem::IsSoundLoaded(SoundID id) const
 
 bool AudioSystem::IsSoundLoaded(const char* id) const
 {
-	return IsSoundLoaded(priv::StringToResourceID(id));
+	return IsSoundLoaded(ResourceManager::StringToResourceID(id));
 }
 
 U32 AudioSystem::GetLoadedSoundsCount() const
@@ -666,9 +666,9 @@ U32 AudioSystem::GetLoadedSoundsCount() const
 
 SoundPtr AudioSystem::PlaySound(SoundID id)
 {
-	if (mSounds.size() < MAX_SOUNDS && ResourceManager::GetInstance().Has(id))
+	if (mSounds.size() < MAX_SOUNDS)
 	{
-		const SoundBufferPtr soundBuffer = ResourceManager::GetInstance().Get<en::SoundBuffer>(id);
+		const SoundBufferPtr soundBuffer = ResourceManager::GetInstance().Get<SoundBuffer>(id);
 		if (soundBuffer.IsValid())
 		{
 			mSounds.push_back(new Sound(soundBuffer, this));
@@ -681,16 +681,16 @@ SoundPtr AudioSystem::PlaySound(SoundID id)
 				{
 					sound->Pause();
 				}
-				return std::move(SoundPtr(this, sound->GetSoundID(), sound->GetUID()));
+				return SoundPtr(this, sound->GetSoundID(), sound->GetUID());
 			}
 		}
 	}
-	return std::move(SoundPtr());
+	return SoundPtr();
 }
 
 SoundPtr AudioSystem::PlaySound(const char* id)
 {
-	return std::move(PlaySound(priv::StringToResourceID(id)));
+	return PlaySound(ResourceManager::StringToResourceID(id));
 }
 
 U32 AudioSystem::GetCurrentSoundsCount() const
@@ -705,7 +705,7 @@ void AudioSystem::ReleaseSound(SoundID id)
 	{
 		if (mLoadedSounds[i] == id)
 		{
-			ResourceManager::GetInstance().Release(id);
+			ResourceManager::GetInstance().Release<SoundBuffer>(id);
 			mLoadedSounds.erase(mLoadedSounds.begin() + i);
 			return;
 		}
@@ -714,7 +714,7 @@ void AudioSystem::ReleaseSound(SoundID id)
 
 void AudioSystem::ReleaseSound(const char* id)
 {
-	ReleaseSound(priv::StringToResourceID(id));
+	ReleaseSound(ResourceManager::StringToResourceID(id));
 }
 
 void AudioSystem::PlaySounds()
@@ -751,7 +751,7 @@ void AudioSystem::ReleaseSounds()
 	const size_t size = mLoadedSounds.size();
 	for (size_t i = 0; i < size; ++i)
 	{
-		ResourceManager::GetInstance().Release(mLoadedSounds[i]);
+		ResourceManager::GetInstance().Release<SoundBuffer>(mLoadedSounds[i]);
 	}
 	mLoadedSounds.clear();
 }

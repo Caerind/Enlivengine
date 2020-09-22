@@ -5,12 +5,13 @@
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <Enlivengine/Application/ImGuiToolManager.hpp>
-#include <Enlivengine/System/Console.hpp>
 
 namespace en
 {
 
-class ImGuiConsole : public ImGuiTool, public ConsoleInstance
+// TODO : The old Console class from System didn't belong there + was too dirty
+// Maybe something can be done directly here using C++17, tuple, ...
+class ImGuiConsole : public ImGuiTool
 {
 	ENLIVE_SINGLETON(ImGuiConsole);
 	~ImGuiConsole();
@@ -21,7 +22,8 @@ public:
 
 	virtual void Display();
 
-	virtual void AddLine(const std::string& line);
+	// Only display
+	void AddLine(const std::string& line);
 
 	static constexpr U32 kMaxInputBufSize{ 256 };
 	static constexpr U32 kDefaultMaxSize{ 20 };

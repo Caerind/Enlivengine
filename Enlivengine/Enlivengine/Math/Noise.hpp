@@ -1,43 +1,50 @@
 #pragma once
 
-#include <Enlivengine/Math/Random.hpp>
-#include <Enlivengine/Math/Utilities.hpp>
+#include <Enlivengine/System/PrimitiveTypes.hpp>
+
+#include <FastNoise/FastNoise.h>
 
 namespace en
 {
 
 class Noise
 {
-	public:
-		Noise(U32 seed = 1337);
+public:
+	enum class NoiseType { Value = 0, ValueFractal, Perlin, PerlinFractal, Simplex, SimplexFractal, WhiteNoise, Cubic, CubicFractal };
+	enum class Interpolation { Linear = 0, Hermite, Quintic };
+	enum class FractalType { FBM = 0, Billow, RigidMulti };
 
-		void setSeed(U32 seed);
-		U32 getSeed() const;
+	Noise(I32 seed = 1337);
 
-		void setOctaves(U32 octaves);
-		U32 getOctaves() const;
+	void SetSeed(I32 seed);
+	I32 GetSeed() const;
 
-		void setLacunarity(F32 lacunarity);
-		F32 getLacunarity() const;
+	void SetFrequency(F32 frequency);
+	F32 GetFrequency() const;
 
-		void setGain(F32 gain);
-		F32 getGain() const;
+	void SetInterpolation(Interpolation interpolation);
+	Interpolation GetInterpolation() const;
 
-		F32 getNoise(F32 x) const;
-		F32 getNoise(F32 x, F32 y) const;
-		F32 getNoise(F32 x, F32 y, F32 z) const;
+	void SetNoiseType(NoiseType type);
+	NoiseType GetNoiseType() const;
 
-	private:
-		static F32 grad(I32 hash, F32 x, F32 y, F32 z);
+	void SetFractalOctaves(I32 octaves);
+	I32 GetFractalOctaves() const;
 
-		F32 perlin(F32 x, F32 y, F32 z) const;
+	void SetFractalLacunarity(F32 lacunarity);
+	F32 GetFractalLacunarity() const;
 
-	private:
-		I32 mPermutations[512];
-		RandomEngine mRandom;
-		U32 mOctaves;
-		F32 mLacunarity;
-		F32 mGain;
+	void SetFractalGain(F32 fractalGain);
+	F32 GetFractalGain() const;
+
+	void SetFractalType(FractalType fractalType);
+	FractalType GetFractalType() const;
+
+	F32 Get(F32 x, F32 y) const;
+	F32 Get(F32 x, F32 y, F32 z) const;
+
+private:
+	FastNoise mNoise;
 };
 
 } // namespace en

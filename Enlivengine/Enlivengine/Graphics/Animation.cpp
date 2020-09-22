@@ -15,7 +15,7 @@ Animation::Frame::Frame(const Rectu& rect, Time duration)
 
 Animation::Clip::Clip(const std::string& name, U32 from, U32 to, Direction direction)
 	: mName(name)
-	, mHashedName(Hash::CRC32(name.c_str()))
+	, mHashedName(Hash::SlowHash(name.c_str()))
 	, mFrom(from)
 	, mTo(to)
 	, mDirection(direction)
@@ -24,7 +24,7 @@ Animation::Clip::Clip(const std::string& name, U32 from, U32 to, Direction direc
 
 U32 Animation::Clip::GetFrameCount() const
 {
-    assert(mTo >= mFrom);
+   	enAssert(mTo >= mFrom);
     const U32 distance = (mTo - mFrom);
     if (mDirection != Direction::PingPong)
     {
@@ -38,7 +38,7 @@ U32 Animation::Clip::GetFrameCount() const
 
 U32 Animation::Clip::GetFrameIndex(U32 index) const
 {
-    assert(index < GetFrameCount());
+	enAssert(index < GetFrameCount());
     if (mDirection == Direction::Forward)
     {
         return mFrom + index;
@@ -58,7 +58,7 @@ U32 Animation::Clip::GetFrameIndex(U32 index) const
             return 2 * mTo - index;
         }
     }
-    assert(false);
+	enAssert(false);
     return 0;
 }
 
@@ -83,7 +83,7 @@ bool Animation::LoadFromFile(const std::string& filename)
 				for (auto& frame : itr.value())
 				{
 					const Rectu rect{ { frame["frame"]["x"].get<U32>(), frame["frame"]["y"].get<U32>() }, { frame["frame"]["w"].get<U32>(), frame["frame"]["h"].get<U32>() } };
-					const Time duration{ milliseconds(frame["duration"].get<I32>()) };
+					const Time duration{ Time::Milliseconds(frame["duration"].get<I32>()) };
 					AddFrame(rect, duration);
 				}
 
@@ -136,11 +136,11 @@ bool Animation::LoadFromFile(const std::string& filename)
 				mTexture = ResourceManager::GetInstance().GetFromFilename<Texture>(filepath);
 				if (!mTexture.IsValid())
 				{
-					LogWarning(en::LogChannel::Animation, 5, "ResourceDependencyNeeded: %s from %s", filepath.c_str(), filename.c_str());
+					enLogWarning(en::LogChannel::Animation, "ResourceDependencyNeeded: {} from {}", filepath.c_str(), filename.c_str());
 					mTexture = ResourceManager::GetInstance().Create<Texture>(GetIdentifier() + "-texture", TextureLoader::FromFile(filepath));
 					if (!mTexture.IsValid())
 					{
-						LogError(en::LogChannel::Animation, 10, "Can't load tileset texture : %s", filepath.c_str());
+						enLogError(en::LogChannel::Animation, "Can't load tileset texture : {}", filepath.c_str());
 					}
 				}
 			}
@@ -168,7 +168,7 @@ U32 Animation::GetFrameCount() const
 
 const Animation::Frame& Animation::GetFrame(U32 index) const
 {
-	assert(index < GetFrameCount());
+	enAssert(index < GetFrameCount());
 	return mFrames[index];
 }
 
@@ -189,7 +189,7 @@ U32 Animation::GetClipCount() const
 
 const Animation::Clip& Animation::GetClip(U32 index) const
 {
-	assert(index < GetClipCount());
+	enAssert(index < GetClipCount());
 	return mClips[index];
 }
 

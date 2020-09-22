@@ -2,7 +2,7 @@
 
 #include <Enlivengine/Math/Utilities.hpp>
 
-// TODO : constexpr
+// TODO : constexpr Atan2 : GetPolarAngle
 
 namespace en
 {
@@ -11,623 +11,143 @@ template <typename T>
 class Vector2
 {
 public:
-	static constexpr I32 d = 2;
+	static constexpr I32 dim = 2;
 
-	inline Vector2();
-	inline Vector2(const Vector2<T>& v);
+	constexpr Vector2() : x(T(0)), y(T(0)) {}
+	constexpr Vector2(const Vector2<T>& v) : x(v.x), y(v.y) {}
 	template <typename U>
-	explicit inline Vector2(const Vector2<U>& v);
-	explicit inline Vector2(const T& s);
-	explicit inline Vector2(const T* a);
-	inline Vector2(const T& s1, const T& s2);
+	constexpr Vector2(const Vector2<U>& v) : x(static_cast<T>(v.x)), y(static_cast<T>(v.y)) {}
+	constexpr Vector2(const T& s) : x(s), y(s) {}
+	constexpr Vector2(const T* a) : x(a[0]), y(a[1]) {}
+	constexpr Vector2(const T& s1, const T& s2) : x(s1), y(s2) {}
 	~Vector2() = default;
 
-	inline Vector2<T>& set(const Vector2<T> & v);
+	constexpr Vector2<T>& Set(const Vector2<T>& v) { x = v.x; y = v.y; return *this; }
 	template <typename U>
-	inline Vector2<T>& set(const Vector2<U> & v);
-	inline Vector2<T>& set(const T & s);
-	inline Vector2<T>& set(const T * a);
-	inline Vector2<T>& set(const T & s1, const T & s2);
+	constexpr Vector2<T>& Set(const Vector2<U>& v) { x = static_cast<T>(v.x); y = static_cast<T>(v.y); return *this; }
+	constexpr Vector2<T>& Set(const T& s) { x = s; y = s; return *this; }
+	constexpr Vector2<T>& Set(const T* a) { x = a[0]; y = a[1]; return *this; }
+	constexpr Vector2<T>& Set(const T& s1, const T& s2) { x = s1; y = s2; return *this; }
 
-	inline T& operator()(U32 i);
-	inline const T& operator()(U32 i) const;
-	inline T& operator[](U32 i);
-	inline const T& operator[](U32 i) const;
+	constexpr T& operator()(U32 i) { if (i == 0) return x; return y; }
+	constexpr const T& operator()(U32 i) const { if (i == 0) return x; return y; }
+	constexpr T& operator[](U32 i) { if (i == 0) return x; return y; }
+	constexpr const T& operator[](U32 i) const { if (i == 0) return x; return y; }
 
-	inline Vector2<T>& operator=(const Vector2<T> & vec);
-	inline const Vector2<T>& operator+() const;
-	inline Vector2<T> operator-() const;
+	constexpr Vector2<T>& operator=(const Vector2<T>& vec) { x = vec.x; y = vec.y; return *this; }
+	constexpr const Vector2<T>& operator+() const { return *this; }
+	constexpr Vector2<T> operator-() const { return Vector2<T>(-x, -y); }
 
-	inline Vector2<T> operator+(const Vector2<T> & vec) const;
-	inline Vector2<T> operator-(const Vector2<T> & vec) const;
-	inline Vector2<T> operator*(const Vector2<T> & vec) const;
-	inline Vector2<T> operator/(const Vector2<T> & vec) const;
-	inline Vector2<T>& operator+=(const Vector2<T> & vec);
-	inline Vector2<T>& operator-=(const Vector2<T> & vec);
-	inline Vector2<T>& operator*=(const Vector2<T> & vec);
-	inline Vector2<T>& operator/=(const Vector2<T> & vec);
+	constexpr Vector2<T> operator+(const Vector2<T>& vec) const { return Vector2<T>(x + vec.x, y + vec.y); }
+	constexpr Vector2<T> operator-(const Vector2<T>& vec) const { return Vector2<T>(x - vec.x, y - vec.y); }
+	constexpr Vector2<T> operator*(const Vector2<T>& vec) const { return Vector2<T>(x * vec.x, y * vec.y); }
+	constexpr Vector2<T> operator/(const Vector2<T>& vec) const { return Vector2<T>(x / vec.x, y / vec.y); }
+	constexpr Vector2<T>& operator+=(const Vector2<T>& vec) { x += vec.x; y += vec.y; return *this; }
+	constexpr Vector2<T>& operator-=(const Vector2<T>& vec) { x -= vec.x; y -= vec.y; return *this; }
+	constexpr Vector2<T>& operator*=(const Vector2<T>& vec) { x *= vec.x; y *= vec.y; return *this; }
+	constexpr Vector2<T>& operator/=(const Vector2<T>& vec) { x /= vec.x; y /= vec.y; return *this; }
 
-	inline Vector2<T> operator+(T scale) const;
-	inline Vector2<T> operator-(T scale) const;
-	inline Vector2<T> operator*(T scale) const;
-	inline Vector2<T> operator/(T scale) const;
-	inline Vector2<T>& operator+=(T scale);
-	inline Vector2<T>& operator-=(T scale);
-	inline Vector2<T>& operator*=(T scale);
-	inline Vector2<T>& operator/=(T scale);
+	constexpr Vector2<T> operator+(T scalar) const { return Vector2<T>(x + scalar, y + scalar); }
+	constexpr Vector2<T> operator-(T scalar) const { return Vector2<T>(x - scalar, y - scalar); }
+	constexpr Vector2<T> operator*(T scalar) const { return Vector2<T>(x * scalar, y * scalar); }
+	constexpr Vector2<T> operator/(T scalar) const { const T inv = T(1) / scalar; return Vector2<T>(x * inv, y * inv); }
+	constexpr Vector2<T>& operator+=(T scalar) { x += scalar; y += scalar; return *this; }
+	constexpr Vector2<T>& operator-=(T scalar) { x -= scalar; y -= scalar; return *this; }
+	constexpr Vector2<T>& operator*=(T scalar) { x *= scalar; y *= scalar; return *this; }
+	constexpr Vector2<T>& operator/=(T scalar) { const T inv = T(1) / scalar; x *= inv; y *= inv; return *this; }
 
-	inline bool isZero() const;
-	inline bool operator==(const Vector2<T> & vec) const;
-	inline bool operator!=(const Vector2<T> & vec) const;
-	inline bool operator<(const Vector2<T> & vec) const;
-	inline bool operator<=(const Vector2<T> & vec) const;
-	inline bool operator>(const Vector2<T> & vec) const;
-	inline bool operator>=(const Vector2<T> & vec) const;
-	static inline bool Equals(const Vector2<T> & v1, const Vector2<T> & v2, const T & epsilon = std::numeric_limits<T>::epsilon());
+	constexpr bool IsZero() const { return operator==(Zero()); }
+	constexpr bool operator==(const Vector2<T>& vec) const { return Math::Equals(x, vec.x) && Math::Equals(y, vec.y); }
+	constexpr bool operator!=(const Vector2<T>& vec) const { return !operator==(vec); }
+	constexpr bool operator<(const Vector2<T>& vec) const { return x < vec.x && y < vec.y; }
+	constexpr bool operator<=(const Vector2<T>& vec) const { return x <= vec.x && y <= vec.y; }
+	constexpr bool operator>(const Vector2<T>& vec) const { return !operator<=(vec); }
+	constexpr bool operator>=(const Vector2<T>& vec) const { return !operator<(vec); }
+	static constexpr bool Equals(const Vector2<T>& v1, const Vector2<T>& v2, const T& epsilon = std::numeric_limits<T>::epsilon()) { return Math::Equals(v1.x, v2.x, epsilon) && Math::Equals(v1.y, v2.y, epsilon); }
 
-	inline T dotProduct(const Vector2<T> & v) const;
-	static inline T dotProduct(const Vector2<T> & v1, const Vector2<T> & v2);
+	constexpr T DotProduct(const Vector2<T>& v) const { return x * v.x + y * v.y; }
+	static constexpr T DotProduct(const Vector2<T>& v1, const Vector2<T>& v2) { return v1.x * v2.x + v1.y * v2.y; }
 
-	inline T getSquaredLength() const;
-	inline T getLength() const;
+	constexpr T GetSquaredLength() const { return DotProduct(*this); }
+	constexpr T GetLength() const { return Math::Sqrt(GetSquaredLength()); }
+	constexpr Vector2<T>& SetLength(const T& length, T* oldLength = nullptr)
+	{
+		const T currentLength = GetLength();
+		if (oldLength != nullptr)
+		{
+			*oldLength = currentLength;
+		}
+		const T factor = length / currentLength;
+		x *= factor;
+		y *= factor;
+		return *this;
+	}
 
-	inline Vector2<T>& setLength(const T & length, T * oldLength = nullptr);
+	constexpr Vector2<T>& Normalize(T* oldLength = nullptr) { return SetLength(T(1), oldLength); }
+	constexpr Vector2<T> Normalized(T* oldLength = nullptr) const { return Vector2<T>(*this).Normalize(oldLength); }
 
-	inline Vector2<T>& normalize(T * oldLength = nullptr);
-	inline Vector2<T> normalized(T * oldLength = nullptr) const;
+	inline T GetPolarAngle() const { Vector2<T> n = Normalized(); return Math::Atan2(n.x, n.y); }
+	constexpr Vector2<T>& SetPolarAngle(const T& angle)
+	{
+		const T length = GetLength();
+		x = Math::Cos(angle) * length;
+		y = Math::Sin(angle) * length;
+		return *this;
+	}
+	static constexpr Vector2<T> Polar(const T& angle, const T& length = T(1)) { return Vector2<T>(Math::Cos(angle) * length, Math::Sin(angle) * length); }
 
-	inline T getPolarAngle() const;
-	inline Vector2<T>& setPolarAngle(T angle);
+	constexpr Vector2<T>& Rotate(const T& angle)
+	{
+		const T c = Math::Cos(angle);
+		const T s = Math::Sin(angle);
+		const T tx = c * x - s * y;
+		y = s * x + c * y;
+		x = tx;
+		return *this;
+	}
+	constexpr Vector2<T> Rotated(const T& angle) const
+	{
+		const T c = Math::Cos(angle);
+		const T s = Math::Sin(angle);
+		return Vector2<T>(c * x - s * y, s * x + c * y);
+	}
 
-	inline Vector2<T>& rotate(T angle);
-	inline Vector2<T> rotated(T angle) const;
+	static constexpr Vector2<T> Lerp(const Vector2<T>& v1, const Vector2<T>& v2, const T& percent) { const T one_minus_percent = T(1) - percent; return Vector2<T>(one_minus_percent * v1.x + percent * v2.x, one_minus_percent * v1.y + percent * v2.y); }
 
-	static inline Vector2<T> lerp(const Vector2<T> & v1, const Vector2<T> & v2, const T & percent);
+	constexpr Vector2<T>& Maximize(const Vector2<T>& v) { if (v.x > x) x = v.x; if (v.y > y) y = v.y; return *this; }
+	static constexpr Vector2<T> Maximum(const Vector2<T>& v1, const Vector2<T>& v2) { return Vector2<T>(Math::Max(v1.x, v2.x), Math::Max(v1.y, v2.y)); }
 
-	inline Vector2<T>& maximize(const Vector2<T> & v);
-	static inline Vector2<T> maximum(const Vector2<T> & v1, const Vector2<T> & v2);
+	constexpr Vector2<T>& Minimize(const Vector2<T>& v) { if (v.x < x) x = v.x; if (v.y < y) y = v.y; return *this; }
+	static constexpr Vector2<T> Minimum(const Vector2<T>& v1, const Vector2<T>& v2) { return Vector2<T>(Math::Min(v1.x, v2.x), Math::Min(v1.y, v2.y)); }
 
-	inline Vector2<T>& minimize(const Vector2<T> & v);
-	static inline Vector2<T> minimum(const Vector2<T> & v1, const Vector2<T> & v2);
+	constexpr Vector2<T>& MakeUnit() { return Set(Unit()); }
+	constexpr Vector2<T>& MakeUnitX() { return Set(UnitX()); }
+	constexpr Vector2<T>& MakeUnitY() { return Set(UnitY()); }
+	constexpr Vector2<T>& MakeZero() { return Set(Zero()); }
+	constexpr Vector2<T>& MakePolar(T angle, T length = T(1)) { return Set(Math::Cos(angle) * length, Math::Sin(angle) * length); }
 
-	inline Vector2<T>& makeUnit();
-	inline Vector2<T>& makeUnitX();
-	inline Vector2<T>& makeUnitY();
-	inline Vector2<T>& makeZero();
-	inline Vector2<T>& makePolar(T angle, T length = 1);
-
-	static inline Vector2<T> polar(T angle, T length = 1);
-
-	static const Vector2<T> unit;
-	static const Vector2<T> unitX;
-	static const Vector2<T> unitY;
-	static const Vector2<T> zero;
+	static constexpr Vector2<T> Unit() { return Vector2<T>(1, 1); }
+	static constexpr Vector2<T> UnitX() { return Vector2<T>(1, 0); }
+	static constexpr Vector2<T> UnitY() { return Vector2<T>(0, 1); }
+	static constexpr Vector2<T> Zero() { return Vector2<T>(0, 0); }
 
 	T x;
 	T y;
 };
 
-template <typename T> Vector2<T> operator+(const T& scale, const Vector2<T>& vector);
-template <typename T> Vector2<T> operator-(const T& scale, const Vector2<T>& vector);
-template <typename T> Vector2<T> operator*(const T& scale, const Vector2<T>& vector);
-template <typename T> Vector2<T> operator/(const T& scale, const Vector2<T>& vector);
-
-template <typename T> T dot(const Vector2<T>& v1, const Vector2<T>& v2);
-
-template <typename T> Vector2<T> normalize(const Vector2<T>& vector, T* oldLength = nullptr);
-
-template<typename T>
-inline Vector2<T>::Vector2()
-	: x(T(0))
-	, y(T(0))
-{
-}
-
-template<typename T>
-inline Vector2<T>::Vector2(const Vector2<T>& v)
-	: x(v.x)
-	, y(v.y)
-{
-}
-
-template<typename T>
-template<typename U>
-inline Vector2<T>::Vector2(const Vector2<U>& v)
-	: x(static_cast<T>(v.x))
-	, y(static_cast<T>(v.y))
-{
-}
-
-template<typename T>
-inline Vector2<T>::Vector2(const T& s)
-	: x(s)
-	, y(s)
-{
-}
-
-template<typename T>
-inline Vector2<T>::Vector2(const T* a)
-	: x(a[0])
-	, y(a[1])
-{
-}
-
-template<typename T>
-inline Vector2<T>::Vector2(const T& s1, const T& s2)
-	: x(s1)
-	, y(s2)
-{
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::set(const Vector2<T>& v)
-{
-	x = v.x;
-	y = v.y;
-	return *this;
-}
-
-template<typename T>
-template<typename U>
-inline Vector2<T>& Vector2<T>::set(const Vector2<U>& v)
-{
-	x = static_cast<T>(v.x);
-	y = static_cast<T>(v.y);
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::set(const T& s)
-{
-	x = s;
-	y = s;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::set(const T* a)
-{
-	x = a[0];
-	y = a[1];
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::set(const T& s1, const T& s2)
-{
-	x = s1;
-	y = s2;
-	return *this;
-}
-
-template<typename T>
-inline T& Vector2<T>::operator()(U32 i)
-{
-	assert(i < 2);
-	if (i == 0) return x;
-	return y;
-}
-
-template<typename T>
-inline const T& Vector2<T>::operator()(U32 i) const
-{
-	assert(i < 2);
-	if (i == 0) return x;
-	return y;
-}
-
-template<typename T>
-inline T& Vector2<T>::operator[](U32 i)
-{
-	assert(i < 2);
-	if (i == 0) return x;
-	return y;
-}
-
-template<typename T>
-inline const T& Vector2<T>::operator[](U32 i) const
-{
-	assert(i < 2);
-	if (i == 0) return x;
-	return y;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::operator=(const Vector2<T>& vec)
-{
-	x = vec.x;
-	y = vec.y;
-	return *this;
-}
-
-template<typename T>
-inline const Vector2<T>& Vector2<T>::operator+() const
-{
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::operator-() const
-{
-	return Vector2<T>(-x, -y);
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::operator+(const Vector2<T>& vec) const
-{
-	return Vector2<T>(x + vec.x, y + vec.y);
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::operator-(const Vector2<T>& vec) const
-{
-	return Vector2<T>(x - vec.x, y - vec.y);
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::operator*(const Vector2<T>& vec) const
-{
-	return Vector2<T>(x * vec.x, y * vec.y);
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::operator/(const Vector2<T>& vec) const
-{
-	assert(vec.x != T(0));
-	assert(vec.y != T(0));
-	return Vector2<T>(x / vec.x, y / vec.y);
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::operator+=(const Vector2<T>& vec)
-{
-	x += vec.x;
-	y += vec.y;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::operator-=(const Vector2<T>& vec)
-{
-	x -= vec.x;
-	y -= vec.y;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::operator*=(const Vector2<T>& vec)
-{
-	x *= vec.x;
-	y *= vec.y;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::operator/=(const Vector2<T>& vec)
-{
-	assert(vec.x != T(0));
-	assert(vec.y != T(0));
-	x /= vec.x;
-	y /= vec.y;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::operator+(T scale) const
-{
-	return Vector2<T>(x + scale, y + scale);
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::operator-(T scale) const
-{
-	return Vector2<T>(x - scale, y - scale);
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::operator*(T scale) const
-{
-	return Vector2<T>(x * scale, y * scale);
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::operator/(T scale) const
-{
-	assert(scale != T(0));
-	const T inv = 1 / scale;
-	return Vector2<T>(x * inv, y * inv);
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::operator+=(T scale)
-{
-	x += scale;
-	y += scale;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::operator-=(T scale)
-{
-	x -= scale;
-	y -= scale;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::operator*=(T scale)
-{
-	x *= scale;
-	y *= scale;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::operator/=(T scale)
-{
-	assert(scale != T(0));
-	const T inv = 1 / scale;
-	x *= inv;
-	y *= inv;
-	return *this;
-}
-
-template<typename T>
-inline bool Vector2<T>::isZero() const
-{
-	return operator==(Vector2<T>::zero);
-}
-
-template<typename T>
-inline bool Vector2<T>::operator==(const Vector2<T>& vec) const
-{
-	if (!Math::Equals(x, vec.x)) return false;
-	return Math::Equals(y, vec.y);
-}
-
-template<typename T>
-inline bool Vector2<T>::operator!=(const Vector2<T>& vec) const
-{
-	return !operator==(vec);
-}
-
-template<typename T>
-inline bool Vector2<T>::operator<(const Vector2<T>& vec) const
-{
-	if (x >= vec.x) return false;
-	return (y < vec.y);
-}
-
-template<typename T>
-inline bool Vector2<T>::operator<=(const Vector2<T>& vec) const
-{
-	if (x > vec.x) return false;
-	return (y <= vec.y);
-}
-
-template<typename T>
-inline bool Vector2<T>::operator>(const Vector2<T>& vec) const
-{
-	return !operator<=(vec);
-}
-
-template<typename T>
-inline bool Vector2<T>::operator>=(const Vector2<T>& vec) const
-{
-	return !operator<(vec);
-}
-
-template<typename T>
-inline bool Vector2<T>::Equals(const Vector2<T>& v1, const Vector2<T>& v2, const T& epsilon)
-{
-	if (!Math::Equals(v1.x, v2.x, epsilon)) return false;
-	return Math::Equals(v1.y, v2.y, epsilon);
-}
-
-template<typename T>
-inline T Vector2<T>::dotProduct(const Vector2<T>& v) const
-{
-	return x * v.x + y * v.y;
-}
-
-template<typename T>
-inline T Vector2<T>::dotProduct(const Vector2<T>& v1, const Vector2<T>& v2)
-{
-	return v1.x * v2.x + v1.y * v2.y;
-}
-
-template<typename T>
-inline T Vector2<T>::getSquaredLength() const
-{
-	return dotProduct(*this);
-}
-
-template<typename T>
-inline T Vector2<T>::getLength() const
-{
-	return Math::Sqrt(getSquaredLength());
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::setLength(const T& length, T* oldLength)
-{
-	const T currentLength = getLength();
-	assert(currentLength != T(0));
-	if (oldLength != nullptr)
-	{
-		*oldLength = currentLength;
-	}
-	const T factor = length / currentLength;
-	x *= factor;
-	y *= factor;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::normalize(T* oldLength)
-{
-	return setLength(T(1), oldLength);
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::normalized(T* oldLength) const
-{
-	return Vector2<T>(*this).normalize(oldLength);
-}
-
-template<typename T>
-inline T Vector2<T>::getPolarAngle() const
-{
-	return Math::Atan2(x, y);
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::setPolarAngle(T angle)
-{
-	const T length = getLength();
-	x = Math::Cos(angle) * length;
-	y = Math::Sin(angle) * length;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::rotate(T angle)
-{
-	const T c = Math::Cos(angle);
-	const T s = Math::Sin(angle);
-	const T tx = c * x - s * y;
-	y = s * x + c * y;
-	x = tx;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::rotated(T angle) const
-{
-	const T c = Math::Cos(angle);
-	const T s = Math::Sin(angle);
-	return Vector2<T>(c * x - s * y, s * x + c * y);
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::lerp(const Vector2<T>& v1, const Vector2<T>& v2, const T& percent)
-{
-	const T one_minus_percent = T(1) - percent;
-	return Vector2<T>(one_minus_percent * v1.x + percent * v2.x, one_minus_percent * v1.y + percent * v2.y);
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::maximize(const Vector2<T>& v)
-{
-	if (v.x > x) x = v.x;
-	if (v.y > y) y = v.y;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::maximum(const Vector2<T>& v1, const Vector2<T>& v2)
-{
-	return Vector2<T>(Math::Max(v1.x, v2.x), Math::Max(v1.y, v2.y));
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::minimize(const Vector2<T>& v)
-{
-	if (v.x < x) x = v.x;
-	if (v.y < y) y = v.y;
-	return *this;
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::minimum(const Vector2<T>& v1, const Vector2<T>& v2)
-{
-	return Vector2<T>(Math::Min(v1.x, v2.x), Math::Min(v1.y, v2.y));
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::makeUnit()
-{
-	return set(T(1), T(1));
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::makeUnitX()
-{
-	return set(T(1), T(0));
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::makeUnitY()
-{
-	return set(T(0), T(1));
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::makeZero()
-{
-	return set(T(0), T(0));
-}
-
-template<typename T>
-inline Vector2<T>& Vector2<T>::makePolar(T angle, T length)
-{
-	return set(Math::Cos(angle) * length, Math::Sin(angle) * length);
-}
-
-template<typename T>
-inline Vector2<T> Vector2<T>::polar(T angle, T length)
-{
-	return Vector2<T>(Math::Cos(angle) * length, Math::Sin(angle) * length);
-}
-
-template<typename T>
-Vector2<T> operator+(const T & scale, const Vector2<T>& vector)
-{
-	return vector + scale;
-}
-
-template<typename T>
-Vector2<T> operator-(const T& scale, const Vector2<T>& vector)
-{
-	return scale + (vector.operator-());
-}
-
-template<typename T>
-inline Vector2<T> operator*(const T& scale, const Vector2<T>& vector)
-{
-	return vector * scale;
-}
-
-template<typename T>
-Vector2<T> operator/(const T& scale, const Vector2<T>& vector)
-{
-	assert(vector[0] != T(0));
-	assert(vector[1] != T(0));
-	return Vector2<T>(scale / vector[0], scale / vector[1]);
-}
-
-template<typename T>
-T dot(const Vector2<T>& v1, const Vector2<T>& v2)
-{
-	return v1.dotProduct(v2);
-}
-
-template<typename T>
-Vector2<T> normalize(const Vector2<T>& vector, T* oldLength)
-{
-	return vector.normalized(oldLength);
-}
-
-template <typename T> const Vector2<T> Vector2<T>::unit(1, 1);
-template <typename T> const Vector2<T> Vector2<T>::unitX(1, 0);
-template <typename T> const Vector2<T> Vector2<T>::unitY(0, 1);
-template <typename T> const Vector2<T> Vector2<T>::zero(0, 0);
+template <typename T> constexpr Vector2<T> operator+(const T& scalar, const Vector2<T>& vector) { return vector + scalar; }
+template <typename T> constexpr Vector2<T> operator-(const T& scalar, const Vector2<T>& vector) { return scalar + (-vector); }
+template <typename T> constexpr Vector2<T> operator*(const T& scalar, const Vector2<T>& vector) { return vector * scalar; }
+template <typename T> constexpr Vector2<T> operator/(const T& scalar, const Vector2<T>& vector) { return Vector2<T>(scalar / vector.x, scalar / vector.y); }
 
 typedef Vector2<Real> Vector2r;
 typedef Vector2<F32> Vector2f;
+typedef Vector2<F64> Vector2d;
 typedef Vector2<I32> Vector2i;
 typedef Vector2<U32> Vector2u;
 
 typedef Vector2f vec2; // GLSL-like
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector2)

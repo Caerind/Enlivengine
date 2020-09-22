@@ -2,6 +2,8 @@
 
 #include <Enlivengine/Math/Vector2.hpp>
 
+// TODO : constexpr
+
 namespace en 
 {
 
@@ -100,13 +102,13 @@ const Vector2<T>& Rect<T>::getMinimum() const
 template <typename T>
 void Rect<T>::setMinimum(const Vector2<T>& minimum)
 {
-	mMin.set(minimum);
+	mMin.Set(minimum);
 }
 
 template <typename T>
 void Rect<T>::setMinimum(T x, T y)
 {
-	mMin.set(x, y);
+	mMin.Set(x, y);
 }
 
 template <typename T>
@@ -118,13 +120,13 @@ const Vector2<T>& Rect<T>::getSize() const
 template <typename T>
 void Rect<T>::setSize(const Vector2<T>& size)
 {
-	mSize.set(size);
+	mSize.Set(size);
 }
 
 template <typename T>
 void Rect<T>::setSize(T x, T y)
 {
-	mSize.set(x, y);
+	mSize.Set(x, y);
 }
 
 template <typename T>
@@ -190,15 +192,15 @@ void Rect<T>::merge(T x, T y)
 template <typename T>
 void Rect<T>::merge(const Vector2<T>& point)
 {
-	mMin.minimize(point);
-	setMaximum(getMaximum().maximize(point));
+	mMin.Minimize(point);
+	setMaximum(getMaximum().Maximize(point));
 }
 
 template <typename T>
 void Rect<T>::merge(const Rect<T>& rect)
 {
-	mMin.minimize(rect.mMin);
-	setMaximum(getMaximum().maximize(rect.getMaximum()));
+	mMin.Minimize(rect.mMin);
+	setMaximum(getMaximum().Maximize(rect.getMaximum()));
 }
 
 template <typename T>
@@ -273,7 +275,7 @@ T Rect<T>::getDistanceSquared(const Vector2<T>& point) const
 		else if (y > max.y)
 			maxDist.y = y - max.y;
 
-		return maxDist.getSquaredLength();
+		return maxDist.GetSquaredLength();
 	}
 }
 
@@ -322,8 +324,8 @@ inline bool Rect<T>::intersects(const Rect<T>& rect, Rect<T>* intersection) cons
 
 	if (intersection != nullptr)
 	{
-		intersection->mMin.set(left, top);
-		intersection->mSize.set(right - left, bottom - top);
+		intersection->mMin.Set(left, top);
+		intersection->mSize.Set(right - left, bottom - top);
 	}
 
 	return true;
@@ -342,3 +344,5 @@ bool Rect<T>::operator!=(const Rect<T>& rect) const
 }
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Rect)

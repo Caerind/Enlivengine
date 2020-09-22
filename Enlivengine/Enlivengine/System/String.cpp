@@ -1,55 +1,54 @@
 #include <Enlivengine/System/String.hpp>
 
-#include <Enlivengine/System/Config.hpp>
-#include <Enlivengine/System/Assert.hpp>
-
 #include <algorithm> // std::transform
 #include <cctype>
+
+#include <Enlivengine/System/Assert.hpp>
 
 namespace en
 {
 
-void ltrim(std::string& s)
+void LTrim(std::string& s)
 {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch)
 	{
-		return !std::isspace(ch);
+		return (ch >= 0 && ch < 255) ? !std::isspace(ch) : false; // TODO : false or true ?
 	}));
 }
 
-void rtrim(std::string& s)
+void RTrim(std::string& s)
 {
 	s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch)
 	{
-		return !std::isspace(ch);
+		return (ch >= 0 && ch < 255) ? !std::isspace(ch) : false; // TODO : false or true ?
 	}).base(), s.end());
 }
 
-void trim(std::string& s)
+void Trim(std::string& s)
 {
-	ltrim(s);
-	rtrim(s);
+	LTrim(s);
+	RTrim(s);
 }
 
-std::string ltrim_copy(std::string s)
+std::string LTrimCopy(std::string s)
 {
-	ltrim(s);
+	LTrim(s);
 	return s;
 }
 
-std::string rtrim_copy(std::string s)
+std::string RTrimCopy(std::string s)
 {
-	rtrim(s);
+	RTrim(s);
 	return s;
 }
 
-std::string trim_copy(std::string s)
+std::string TrimCopy(std::string s)
 {
-	trim(s);
+	Trim(s);
 	return s;
 }
 
-void toLower(std::string& string)
+void ToLower(std::string& string)
 {
 	std::transform(string.begin(), string.end(), string.begin(), [](unsigned char c) -> unsigned char
 	{
@@ -57,7 +56,7 @@ void toLower(std::string& string)
 	});
 }
 
-void toUpper(std::string& string)
+void ToUpper(std::string& string)
 {
 	std::transform(string.begin(), string.end(), string.begin(), [](unsigned char c) -> unsigned char
 	{
@@ -65,21 +64,29 @@ void toUpper(std::string& string)
 	});
 }
 
-void toLower(const std::string& string, std::string& result)
+bool IsNumber(const std::string& string)
 {
-	result = string;
-	toLower(result);
+	return !string.empty() && std::find_if(string.begin(), string.end(), [](unsigned char c)
+	{ 
+		return !std::isdigit(c) && c != '-' && c != '.'; 
+	}) == string.end();
 }
 
-void toUpper(const std::string& string, std::string& result)
+void ToLower(const std::string& string, std::string& result)
 {
 	result = string;
-	toUpper(result);
+	ToLower(result);
 }
 
-bool split(std::string& base, std::string& result, char separator)
+void ToUpper(const std::string& string, std::string& result)
 {
-	size_t found = base.find(separator);
+	result = string;
+	ToUpper(result);
+}
+
+bool Split(std::string& base, std::string& result, char separator)
+{
+	std::size_t found = base.find(separator);
 	if (found != std::string::npos)
 	{
 		result = base.substr(0, found);
@@ -89,9 +96,9 @@ bool split(std::string& base, std::string& result, char separator)
 	return false;
 }
 
-bool split(std::string& base, std::string& result, const std::string& separator)
+bool Split(std::string& base, std::string& result, const std::string& separator)
 {
-	size_t found = base.find(separator);
+	std::size_t found = base.find(separator);
 	if (found != std::string::npos)
 	{
 		result = base.substr(0, found);
@@ -101,17 +108,17 @@ bool split(std::string& base, std::string& result, const std::string& separator)
 	return false;
 }
 
-bool contains(const std::string& string, char c)
+bool Contains(const std::string& string, char c)
 {
 	return string.find(c) != std::string::npos;
 }
 
-bool contains(const std::string& string, const std::string& c)
+bool Contains(const std::string& string, const std::string& c)
 {
 	return string.find(c) != std::string::npos;
 }
 
-bool limitSize(std::string& string, U32 size)
+bool LimitSize(std::string& string, U32 size)
 {
 	if (string.size() > size)
 	{
@@ -121,7 +128,7 @@ bool limitSize(std::string& string, U32 size)
 	return false;
 }
 
-bool limitSize(const std::string& string, std::string& result, U32 size)
+bool LimitSize(const std::string& string, std::string& result, U32 size)
 {
 	if (string.size() > size)
 	{
@@ -134,44 +141,5 @@ bool limitSize(const std::string& string, std::string& result, U32 size)
 		return false;
 	}
 }
-
-/*
-const char* StringId::getStringFromStorage() const
-{
-	auto itr = gStrings.find(mStringId);
-	if (itr != gStrings.end())
-	{
-		return itr->second;
-	}
-	return nullptr;
-}
-
-StringId StringId::hash(const std::string& string)
-{
-	return hash(string.c_str());
-}
-
-StringId StringId::hashAndStore(const std::string& string)
-{
-	return hashAndStore(string.c_str());
-}
-
-StringId StringId::hashAndStore(const char* string)
-{
-	U32 stringId = hash(string);
-
-#ifdef ENLIVE_ENABLE_HASH_COLLISION_DETECTION
-	auto itr = gStrings.find(stringId);
-	if (itr != gStrings.end())
-	{
-		assert(strcmp(string, itr->second) == 0);
-	}
-#endif
-
-	gStrings[stringId] = string;
-
-	return StringId(stringId);
-}
-*/
 
 } // namespace en

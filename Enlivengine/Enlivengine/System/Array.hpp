@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Enlivengine/MetaData/MetaData.hpp>
+#include <algorithm> // sort
+#include <cstdlib> // memcmp, memcpy
+
 #include <Enlivengine/System/Assert.hpp>
 #include <Enlivengine/System/Macros.hpp>
+#include <Enlivengine/System/MemoryAllocator.hpp>
 #include <Enlivengine/System/TypeTraits.hpp>
-
-#include <cstdlib> // malloc, realloc, free
-#include <algorithm> // sort
+#include <Enlivengine/System/TypeInfo.hpp>
 
 namespace en
 {
@@ -15,21 +16,58 @@ template <typename T>
 class Array
 {
 public:
-	ENLIVE_META_CLASS_DECL(Array<T>);
-
 	using Iterator = T*;
 	using ConstIterator = const T*;
 
-	constexpr Array() : mArray(nullptr), mSize(0), mCapacity(0) {}
-	constexpr Array(const Array& other) = delete;
-	constexpr Array(Array&& other) { Move(other); }
+	constexpr Array() 
+		: mArray(nullptr)
+		, mSize(0)
+		, mCapacity(0)
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+		, mDebugMemoryContext(TypeInfo<Array<T>>::GetName())
+#endif // ENLIVE_ENABLE_DEBUG_MEMORY
+	{
+	}
+
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+	constexpr Array(const char* debugMemoryContext) 
+		: mArray(nullptr)
+		, mSize(0)
+		, mCapacity(0)
+		, mDebugMemoryContext(debugMemoryContext)
+	{
+	}
+#endif // ENLIVE_ENABLE_DEBUG_MEMORY
+
+	constexpr Array(const Array& other) 
+		: mArray(nullptr)
+		, mSize(0)
+		, mCapacity(0)
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+		, mDebugMemoryContext(TypeInfo<Array<T>>::GetName())
+#endif // ENLIVE_ENABLE_DEBUG_MEMORY
+	{ 
+		Copy(other); 
+	}
+	constexpr Array(Array&& other) 
+		: mArray(other.mArray)
+		, mSize(other.mSize)
+		, mCapacity(other.mCapacity)
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+		, mDebugMemoryContext(other.mDebugMemoryContext)
+#endif // ENLIVE_ENABLE_DEBUG_MEMORY
+	{  
+		other.mArray = nullptr;
+		other.mSize = 0;
+		other.mCapacity = 0;
+	}
 	~Array() 
 	{
 		Free();
 	}
 
-	constexpr Array& operator=(const Array& other) = delete;
-	constexpr Array& operator=(Array& other) { Move(other); return *this; }
+	constexpr Array& operator=(const Array& other) { Copy(other); return *this; }
+	constexpr Array& operator=(Array&& other) { Move(other); return *this; }
 
 	constexpr bool operator==(const Array& other) const { return Equals(other); }
 	constexpr bool operator!=(const Array& other) const { return !Equals(other); }
@@ -41,7 +79,6 @@ public:
 		}
 		else
 		{
-			// TODO : Optim memcmp ?
 			for (U32 i = 0; i < mSize; ++i)
 			{
 				if (mArray[i] != other.mArray[i])
@@ -65,7 +102,7 @@ public:
 
 	constexpr void Copy(const Array& other)
 	{
-		assert(this != &other);
+		enAssert(this != &other);
 		Clear();
 		if (other.mSize > 0)
 		{
@@ -73,18 +110,11 @@ public:
 			{
 				Reserve(other.mSize);
 			}
-			if constexpr (Traits::IsPOD<T>::value)
+			for (U32 i = 0; i < other.mSize; ++i)
 			{
-				std::memcpy((void*)mArray, (const void*)other.mArray, static_cast<U64>(other.mSize)* ENLIVE_SIZE_OF(T));
-				mSize = other.mSize;
+				Add(other.mArray[i]);
 			}
-			else
-			{
-				for (U32 i = 0; i < other.mSize; ++i)
-				{
-					Add(other.mArray[i]);
-				}
-			}
+			mSize = other.mSize;
 		}
 	}
 
@@ -113,7 +143,7 @@ public:
 			if (newSize > mSize)
 			{
 				Iterator itr = Begin() + mSize;
-				Iterator end = Begin() + newSize;
+				const Iterator end = Begin() + newSize;
 				for (; itr != end; ++itr)
 				{
 					new(itr) T;
@@ -125,7 +155,7 @@ public:
 				if constexpr (!Traits::IsTriviallyDestructible<T>::value)
 				{
 					Iterator itr = Begin() + mSize - newSize;
-					Iterator end = End();
+					const Iterator end = End();
 					for (; itr != end; ++itr)
 					{
 						itr->~T();
@@ -138,8 +168,8 @@ public:
 
 	void Reserve(U32 newCapacity)
 	{
-		assert(newCapacity > mCapacity);
-		//if (newCapacity > mCapacity)
+		enAssert(newCapacity > mCapacity);
+		if (newCapacity > mCapacity)
 		{
 			Realloc(newCapacity);
 		}
@@ -147,37 +177,29 @@ public:
 
 	void Shrink(U32 newCapacity)
 	{
-		assert(newCapacity >= mSize);
-		assert(newCapacity < mCapacity);
-		//if (newCapacity < mCapacity)
+		enAssert(newCapacity >= mSize);
+		enAssert(newCapacity < mCapacity);
+		if (newCapacity < mCapacity)
 		{
 			Realloc(newCapacity);
 		}
 	}
 
-	void ShrinkToFit()
-	{
-		Shrink(mSize);
-	}
-
 	void Free()
 	{
 		Clear();
-		if (mArray != nullptr)
-		{
-			free(mArray);
-			mArray = nullptr;
-		}
-		mCapacity = 0;
+		Realloc(0);
 	}
 
 	constexpr void Clear()
 	{
 		if constexpr (!Traits::IsTriviallyDestructible<T>::value)
 		{
-			for (U32 i = 0; i < mSize; ++i)
+			Iterator itr = Begin();
+			const Iterator end = End();
+			for (; itr != end; ++itr)
 			{
-				mArray[i].~T();
+				itr->~T();
 			}
 		}
 		mSize = 0;
@@ -186,8 +208,8 @@ public:
 	constexpr void Sort() { std::sort(begin(), end()); }
 	template <typename Predicate> constexpr void Sort(Predicate predicate) { std::sort(begin(), end(), predicate); }
 
-	constexpr T& operator[](U32 index) { assert(index < mSize); return mArray[index]; }
-	constexpr const T& operator[](U32 index) const { assert(index < mSize); return mArray[index]; }
+	constexpr T& operator[](U32 index) { enAssert(index < mSize); return mArray[index]; }
+	constexpr const T& operator[](U32 index) const { enAssert(index < mSize); return mArray[index]; }
 
 	constexpr U32 Size() const { return mSize; }
 	constexpr U32 GetSize() const { return mSize; }
@@ -220,10 +242,10 @@ public:
 	constexpr const U8* GetArrayData() const { return (U8*)mArray; }
 	constexpr U32 GetArrayDataSize() const { return mSize * ENLIVE_SIZE_OF(T); }
 
-	constexpr T& Front() { assert(mSize > 0); return mArray[0]; }
-	constexpr const T& Front() const { assert(mSize > 0); return mArray[0]; }
-	constexpr T& Back() { assert(mSize > 0); return mArray[mSize - 1]; }
-	constexpr const T& Back() const { assert(mSize > 0); return mArray[mSize - 1]; }
+	constexpr T& Front() { enAssert(mSize > 0); return mArray[0]; }
+	constexpr const T& Front() const { enAssert(mSize > 0); return mArray[0]; }
+	constexpr T& Back() { enAssert(mSize > 0); return mArray[mSize - 1]; }
+	constexpr const T& Back() const { enAssert(mSize > 0); return mArray[mSize - 1]; }
 
 	constexpr Iterator Find(const T& value)
 	{ 
@@ -232,7 +254,7 @@ public:
 			return nullptr; 
 		}
 		Iterator itr = Begin();
-		Iterator end = End();
+		const Iterator end = End();
 		for (; itr != end; ++itr)
 		{
 			if (*itr == value)
@@ -318,16 +340,27 @@ public:
 
 	void RemoveAtIndex(U32 index)
 	{
-		assert(index < mSize); 
+		enAssert(index < mSize);
+		if constexpr (!Traits::IsTriviallyDestructible<T>::value)
+		{
+			mArray[index].~T();
+		}
 		if (index + 1 < mSize)
 		{
-			if constexpr (!Traits::IsTriviallyDestructible<T>::value)
-			{
-				mArray[index].~T();
-			}
 			mArray[index] = mArray[mSize - 1];
 		}
 		mSize--;
+	}
+
+	void DeleteAll()
+	{
+		if constexpr (Traits::IsPointer<T>::value)
+		{
+			for (U32 i = 0; i < mSize; ++i)
+			{
+				enDelete(Traits::RemovePointer<T>::type, mArray[i]);
+			}
+		}
 	}
 
 	//constexpr bool Exists(const T& value) const { return false; }
@@ -337,38 +370,43 @@ public:
 	//constexpr T& Pop(T& element) {}
 	//constexpr T Pop() {}
 
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+	const char* GetDebugMemoryContext() const { return mDebugMemoryContext; }
+	void SetDebugMemoryContext(const char* context) { mDebugMemoryContext = context; }
+#endif // ENLIVE_ENABLE_DEBUG_MEMORY
+
 private:
 	// To ensure the user knows what he is doing, Realloc is private
 	// Use Reserve/Shrink/ShrinkToFit instead
 	void Realloc(U32 newCapacity)
 	{
 		mCapacity = newCapacity;
-		if (mArray == nullptr)
+		if (mArray != nullptr)
 		{
-			mArray = (T*)malloc(static_cast<U64>(mCapacity) * ENLIVE_SIZE_OF(T));
+			const bool result = enDelete(T, mArray);
+			enAssert(result && mArray == nullptr);
 		}
-		else
+		if (mCapacity > 0)
 		{
-			void* currentArray = (void*)mArray;
-			mArray = (T*)realloc(currentArray, static_cast<U64>(mCapacity) * ENLIVE_SIZE_OF(T));
-			if (mArray == nullptr)
-			{
-				free(currentArray);
-			}
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+			mArray = enNewCount(T, mDebugMemoryContext, mCapacity);
+#else
+			mArray = enNewCount(T, "Array", mCapacity);
+#endif // ENLIVE_ENABLE_DEBUG_MEMORY
+			enAssert(mArray != nullptr);
 		}
-		assert(mArray != nullptr); // OOM
 	}
 
 private:
 	T* mArray;
 	U32 mSize;
 	U32 mCapacity;
+
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+	const char* mDebugMemoryContext;
+#endif // ENLIVE_ENABLE_DEBUG_MEMORY
 };
 
-ENLIVE_META_CLASS_DEF_TEMPLATE(Array)
-	ENLIVE_META_CLASS_PROPERTY_TRAITS(T, mArray, en::TypeTraits_Pointer) ENLIVE_METADATA_COMMA()
-	ENLIVE_META_CLASS_PROPERTY(U32, mSize) ENLIVE_METADATA_COMMA()
-	ENLIVE_META_CLASS_PROPERTY(U32, mCapacity)
-ENLIVE_META_CLASS_DEF_END_ATTR_TEMPLATE(en::Attribute_CustomSerialization, Array)
-
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Array)

@@ -4,7 +4,7 @@
 
 #include <imgui/imgui.h>
 #include <Enlivengine/System/Hash.hpp>
-#include <Enlivengine/Graphics/LinearColor.hpp>
+#include <Enlivengine/Math/Color.hpp>
 
 namespace en
 {
@@ -18,7 +18,7 @@ ImGuiProfiler::ImGuiProfiler()
 
 ImGuiToolTab ImGuiProfiler::GetTab() const
 {
-	return ImGuiToolTab::Game;
+	return ImGuiToolTab::Engine;
 }
 
 const char* ImGuiProfiler::GetName() const
@@ -46,7 +46,7 @@ void ImGuiProfiler::Display()
 
 		ImGui::SameLine();
 
-		assert(mCaptureFrames >= 1);
+		enAssert(mCaptureFrames >= 1);
 		int captureFrames = static_cast<int>(mCaptureFrames);
 		if (ImGui::InputInt("NbFrames", &captureFrames))
 		{
@@ -148,7 +148,7 @@ bool ImGuiProfiler::IsCapturing() const
 void ImGuiProfiler::DisplayFrame(const ProfilerFrame& frame) const
 {
 	const Time duration = frame.GetDuration();
-	const I64 us = duration.asMicroseconds();
+	const I64 us = duration.AsMicroseconds();
 	const F32 ms = static_cast<F32>(us) * 0.001f;
 
 	ImGui::Spacing();
@@ -164,7 +164,7 @@ void ImGuiProfiler::DisplayFrame(const ProfilerFrame& frame) const
 
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 1));
 	const U32 tasks = static_cast<U32>(frame.tasks.size());
-	for (U32 level = 0; level < maxDepth; ++level)
+	for (U32 level = 0; level <= maxDepth; ++level)
 	{
 		Time levelTime = frame.start;
 		if (level > 0)
@@ -178,7 +178,7 @@ void ImGuiProfiler::DisplayFrame(const ProfilerFrame& frame) const
 			if (task.depth == level)
 			{
 				const Time taskDuration = task.GetDuration();
-				const F32 taskDurationMs = static_cast<F32>(taskDuration.asMicroseconds()) * 0.001f;
+				const F32 taskDurationMs = static_cast<F32>(taskDuration.AsMicroseconds()) * 0.001f;
 
 				const Time prevTime = frame.start + task.start - levelTime;
 				const F32 invisibleWidth = frame.GetPercentTime(prevTime) * frameSize;
@@ -192,9 +192,9 @@ void ImGuiProfiler::DisplayFrame(const ProfilerFrame& frame) const
 				const F32 width = percent * frameSize;
 				if (width >= 1.0f)
 				{
-					const U32 taskNameHash = Hash::CRC32(task.name);
-					const LinearColor color(taskNameHash);
-					const ImVec4 imColor(color.r, color.g, color.b, 1.0f);
+					const U32 taskNameHash = Hash::SlowHash(task.name);
+					const Color color(taskNameHash);
+					const ImVec4 imColor = color.toImGuiColor();
 
 					ImGui::PushStyleColor(ImGuiCol_Button, imColor);
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, imColor);

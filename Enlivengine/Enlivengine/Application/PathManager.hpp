@@ -13,8 +13,10 @@ class PathManager
 	ENLIVE_SINGLETON(PathManager);
 
 public:	
+	void SetExecutablePath(const char* executablePath);
+
 	const std::string& GetAssetsPath() const;
-	const std::string& GetResourcesPath() const;
+	const std::string& GetAssetsPathAbsolute() const;
 	
 	const std::string& GetFontsPath() const;
 	const std::string& GetMapsPath() const;
@@ -26,6 +28,7 @@ public:
 	const std::string& GetScreenshotPath() const;
 
 private:
+	std::string mExecutablePath;
 	std::string mScreenshotPath;
 };
 

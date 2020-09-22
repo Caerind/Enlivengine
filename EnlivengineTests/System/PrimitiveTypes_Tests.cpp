@@ -104,8 +104,3 @@ DOCTEST_TEST_CASE("Testing primitive types min/max")
 		#endif
 	}
 }
-
-DOCTEST_TEST_CASE("Conversion between U32 / F32")
-{
-	// TODO : Test this
-}

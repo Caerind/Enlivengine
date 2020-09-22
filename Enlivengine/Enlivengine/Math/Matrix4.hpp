@@ -46,6 +46,8 @@ public:
 
 	inline Vector4<T> getColumn(U32 i) const;
 	inline Vector4<T> getRow(U32 j) const;
+	inline Matrix4<T>& setColumn(U32 i, const Vector4<T>& column);
+	inline Matrix4<T>& setRow(U32 j, const Vector4<T>& row);
 
 	inline Matrix4<T>& operator=(const Matrix4<T>& m);
 	inline const Matrix4<T>& operator+() const;
@@ -357,7 +359,7 @@ inline Matrix4<T>& Matrix4<T>::set(const T& a11, const T& a21, const T& a31, con
 {
 	data[0] = a11;
 	data[1] = a21;
-	data[2] = a21;
+	data[2] = a31;
 	data[3] = a41;
 	data[4] = a12;
 	data[5] = a22;
@@ -411,6 +413,26 @@ inline Vector4<T> Matrix4<T>::getRow(U32 j) const
 }
 
 template<typename T>
+inline Matrix4<T>& Matrix4<T>::setColumn(U32 i, const Vector4<T>& column)
+{
+	data[0 + rows * i] = column.x;
+	data[1 + rows * i] = column.y;
+	data[2 + rows * i] = column.z;
+	data[3 + rows * i] = column.w;
+	return *this;
+}
+
+template<typename T>
+inline Matrix4<T>& Matrix4<T>::setRow(U32 j, const Vector4<T>& row)
+{
+	data[j + rows * 0] = row.x;
+	data[j + rows * 1] = row.y;
+	data[j + rows * 2] = row.z;
+	data[j + rows * 3] = row.w;
+	return *this;
+}
+
+template<typename T>
 inline Matrix4<T>& Matrix4<T>::operator=(const Matrix4<T>& m)
 {
 	std::memcpy(data, m.data, sizeof(*this));
@@ -457,31 +479,31 @@ inline Matrix4<T> Matrix4<T>::operator*(const Matrix4<T>& m) const
 	Vector4<T> c3(m.getColumn(3));
 	{
 		Vector4<T> row(getRow(0));
-		out.data[0] = c0.dotProduct(row);
-		out.data[4] = c1.dotProduct(row);
-		out.data[8] = c2.dotProduct(row);
-		out.data[12] = c3.dotProduct(row);
+		out.data[0] = c0.DotProduct(row);
+		out.data[4] = c1.DotProduct(row);
+		out.data[8] = c2.DotProduct(row);
+		out.data[12] = c3.DotProduct(row);
 	}
 	{
 		Vector4<T> row(getRow(1));
-		out.data[1] = c0.dotProduct(row);
-		out.data[5] = c1.dotProduct(row);
-		out.data[9] = c2.dotProduct(row);
-		out.data[13] = c3.dotProduct(row);
+		out.data[1] = c0.DotProduct(row);
+		out.data[5] = c1.DotProduct(row);
+		out.data[9] = c2.DotProduct(row);
+		out.data[13] = c3.DotProduct(row);
 	}
 	{
 		Vector4<T> row(getRow(2));
-		out.data[2] = c0.dotProduct(row);
-		out.data[6] = c1.dotProduct(row);
-		out.data[10] = c2.dotProduct(row);
-		out.data[14] = c3.dotProduct(row);
+		out.data[2] = c0.DotProduct(row);
+		out.data[6] = c1.DotProduct(row);
+		out.data[10] = c2.DotProduct(row);
+		out.data[14] = c3.DotProduct(row);
 	}
 	{
 		Vector4<T> row(getRow(3));
-		out.data[3] = c0.dotProduct(row);
-		out.data[7] = c1.dotProduct(row);
-		out.data[11] = c2.dotProduct(row);
-		out.data[15] = c3.dotProduct(row);
+		out.data[3] = c0.DotProduct(row);
+		out.data[7] = c1.DotProduct(row);
+		out.data[11] = c2.DotProduct(row);
+		out.data[15] = c3.DotProduct(row);
 	}
 	return out;
 }
@@ -541,22 +563,22 @@ inline Matrix4<T>& Matrix4<T>::operator*=(const Matrix4<T>& m)
 	Vector4<T> c1(m.getColumn(1));
 	Vector4<T> c2(m.getColumn(2));
 	Vector4<T> c3(m.getColumn(3));
-	data[0] = c0.dotProduct(r0);
-	data[4] = c1.dotProduct(r0);
-	data[8] = c2.dotProduct(r0);
-	data[12] = c3.dotProduct(r0);
-	data[1] = c0.dotProduct(r1);
-	data[5] = c1.dotProduct(r1);
-	data[9] = c2.dotProduct(r1);
-	data[13] = c3.dotProduct(r1);
-	data[2] = c0.dotProduct(r2);
-	data[6] = c1.dotProduct(r2);
-	data[10] = c2.dotProduct(r2);
-	data[14] = c3.dotProduct(r2);
-	data[3] = c0.dotProduct(r3);
-	data[7] = c1.dotProduct(r3);
-	data[11] = c2.dotProduct(r3);
-	data[15] = c3.dotProduct(r3);
+	data[0] = c0.DotProduct(r0);
+	data[4] = c1.DotProduct(r0);
+	data[8] = c2.DotProduct(r0);
+	data[12] = c3.DotProduct(r0);
+	data[1] = c0.DotProduct(r1);
+	data[5] = c1.DotProduct(r1);
+	data[9] = c2.DotProduct(r1);
+	data[13] = c3.DotProduct(r1);
+	data[2] = c0.DotProduct(r2);
+	data[6] = c1.DotProduct(r2);
+	data[10] = c2.DotProduct(r2);
+	data[14] = c3.DotProduct(r2);
+	data[3] = c0.DotProduct(r3);
+	data[7] = c1.DotProduct(r3);
+	data[11] = c2.DotProduct(r3);
+	data[15] = c3.DotProduct(r3);
 	return *this;
 }
 
@@ -590,7 +612,7 @@ inline Matrix4<T> Matrix4<T>::operator*(const T& s) const
 template<typename T>
 inline Matrix4<T> Matrix4<T>::operator/(const T& s) const
 {
-	assert(s != T(0));
+	enAssert(s != T(0));
 	const T inv = 1 / s;
 	return Matrix4<T>(data[0] * inv, data[1] * inv, data[2] * inv, data[3] * inv,
 		data[4] * inv, data[5] * inv, data[6] * inv, data[7] * inv,
@@ -667,7 +689,7 @@ inline Matrix4<T>& Matrix4<T>::operator*=(const T& s)
 template<typename T>
 inline Matrix4<T>& Matrix4<T>::operator/=(const T& s)
 {
-	assert(s != T(0));
+	enAssert(s != T(0));
 	const T inv = 1 / s;
 	data[0] *= inv;
 	data[1] *= inv;
@@ -1313,6 +1335,7 @@ inline Matrix4<T> Matrix4<T>::translation(const T & tx, const T & ty, const T & 
 template<typename T>
 inline Matrix4<T> Matrix4<T>::transform(const Vector3<T>& translation, const Quaternion<T>& rotation)
 {
+	enAssert(false); // Wrong, do not use
 	Matrix4<T> m;
 	m.setRotation(rotation);
 	m.setTranslation(translation);
@@ -1326,6 +1349,7 @@ inline Matrix4<T> Matrix4<T>::transform(const Vector3<T>& translation, const Qua
 template<typename T>
 inline Matrix4<T> Matrix4<T>::transform(const Vector3<T>& translation, const Quaternion<T>& rotation, const Vector3<T>& scale)
 {
+	enAssert(false); // Wrong, do not use
 	Matrix4<T> m;
 	m.setRotation(rotation);
 	m.setTranslation(translation);
@@ -1347,10 +1371,10 @@ inline Matrix4<T> Matrix4<T>::viewMatrix(const Vector3<T>& translation, const Qu
 template<typename T>
 inline Matrix4<T> Matrix4<T>::lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up)
 {
-	const Vector3f f((target - eye).normalized());
-	const Vector3f s(f.crossProduct(up).normalized());
-	const Vector3f u(s.crossProduct(f));
-	return Matrix4<T>(s.x, u.x, -f.x, 0, s.y, u.y, -f.y, 0, s.z, u.z, -f.z, 0, -s.dotProduct(eye), -u.dotProduct(eye), f.dotProduct(eye), 1);
+	const Vector3f f((target - eye).Normalized());
+	const Vector3f s(f.CrossProduct(up).Normalized());
+	const Vector3f u(s.CrossProduct(f));
+	return Matrix4<T>(s.x, u.x, -f.x, 0, s.y, u.y, -f.y, 0, s.z, u.z, -f.z, 0, -s.DotProduct(eye), -u.DotProduct(eye), f.DotProduct(eye), 1);
 }
 
 template<typename T>
@@ -1365,7 +1389,7 @@ inline Matrix4<T> Matrix4<T>::ortho(const T& left, const T& right, const T& top,
 template<typename T>
 inline Matrix4<T> Matrix4<T>::perspective(const T& fov, const T& ratio, const T& zNear, const T& zFar)
 {
-	assert(ratio != 0.0f);
+	enAssert(ratio != 0.0f);
 	const T y = 1 / Math::Tan(fov * T(0.5));
 	const T x = y / ratio;
 	const T zDist = zFar - zNear;
@@ -1380,3 +1404,5 @@ typedef Matrix4<F32> Matrix4f;
 typedef Matrix4f mat4; // GLSL-like
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Matrix4)

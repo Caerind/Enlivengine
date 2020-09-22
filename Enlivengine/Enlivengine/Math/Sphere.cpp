@@ -30,7 +30,7 @@ const Vector3f& Sphere::getCenter() const
 
 void Sphere::setCenter(const Vector3f& center)
 {
-	mCenter.set(center);
+	mCenter.Set(center);
 }
 
 F32 Sphere::getRadius() const
@@ -55,18 +55,18 @@ bool Sphere::operator!=(const Sphere& p) const
 
 F32 Sphere::getDistance(const Vector3f& point) const
 {
-	return (mCenter - point).getLength() - mRadius;
+	return (mCenter - point).GetLength() - mRadius;
 }
 
 bool Sphere::contains(const Vector3f& point) const
 {
-	return (point - mCenter).getSquaredLength() <= mRadius * mRadius;
+	return (point - mCenter).GetSquaredLength() <= mRadius * mRadius;
 }
 
 bool Sphere::contains(const AABB& box) const
 {
 	Vector3f d = box.getCenter() - mCenter;
-	if (d.getLength() > mRadius)
+	if (d.GetLength() > mRadius)
 	{
 		return false;
 	}
@@ -77,22 +77,22 @@ bool Sphere::contains(const AABB& box) const
 		{
 			if (d.z > 0.0f)
 			{
-				return contains(box.contains(7));
+				return contains(box.getCorner(7));
 			}
 			else
 			{
-				return contains(box.contains(2));
+				return contains(box.getCorner(2));
 			}
 		}
 		else
 		{
 			if (d.z > 0.0f)
 			{
-				return contains(box.contains(4));
+				return contains(box.getCorner(4));
 			}
 			else
 			{
-				return contains(box.contains(3));
+				return contains(box.getCorner(3));
 			}
 		}
 	}
@@ -102,22 +102,22 @@ bool Sphere::contains(const AABB& box) const
 		{
 			if (d.z > 0.0f)
 			{
-				return contains(box.contains(6));
+				return contains(box.getCorner(6));
 			}
 			else
 			{
-				return contains(box.contains(1));
+				return contains(box.getCorner(1));
 			}
 		}
 		else
 		{
 			if (d.z > 0.0f)
 			{
-				return contains(box.contains(5));
+				return contains(box.getCorner(5));
 			}
 			else
 			{
-				return contains(box.contains(0));
+				return contains(box.getCorner(0));
 			}
 		}
 	}
@@ -130,7 +130,7 @@ bool Sphere::contains(const Sphere& sphere) const
 		return false;
 	}
 	Vector3f d = mCenter - sphere.mCenter;
-	return (sphere.mRadius - d.getLength() - mRadius > 0.0f);
+	return (sphere.mRadius - d.GetLength() - mRadius > 0.0f);
 }
 
 bool Sphere::intersects(const AABB& box) const
@@ -159,7 +159,7 @@ bool Sphere::intersects(const AABB& box) const
 
 bool Sphere::intersects(const Sphere& sphere) const
 {
-	return (mCenter - sphere.mCenter).getSquaredLength() <= (mRadius + sphere.mRadius) * (mRadius + sphere.mRadius);
+	return (mCenter - sphere.mCenter).GetSquaredLength() <= (mRadius + sphere.mRadius) * (mRadius + sphere.mRadius);
 }
 
 bool Sphere::intersects(const Plane& plane) const
@@ -179,7 +179,7 @@ AABB Sphere::getAABB() const
 
 void Sphere::fromAABB(const AABB& aabb)
 {
-	mCenter.set(aabb.getCenter());
+	mCenter = aabb.getCenter();
 	Vector3f hs = aabb.getHalfSize();
 	mRadius = Math::Max(hs.x, Math::Max(hs.y, hs.z));
 }
@@ -195,7 +195,7 @@ void Sphere::merge(const Vector3f& point)
 
 void Sphere::transform(const Matrix4f& m)
 {
-	mCenter.set(m.transformPosition(mCenter));
+	mCenter = m.transformPosition(mCenter);
 }
 
 } // namespace en

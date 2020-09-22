@@ -10,15 +10,36 @@ class CallOnExit
 	public:
 		using Func = std::function<void()>;
 
-		CallOnExit(Func func = nullptr);
+		CallOnExit(Func&& func = nullptr)
+			: mFunc(func)
+		{
+		}
+
 		CallOnExit(const CallOnExit&) = delete;
 		CallOnExit(CallOnExit&&) = delete;
-		~CallOnExit();
+
+		~CallOnExit()
+		{
+			Call();
+		}
 		
-		void call();
-		void reset(Func func = nullptr);
-		bool isValid() const;
-		Func getFunction() const;
+		void Call()
+		{
+			if (IsValid())
+			{
+				mFunc();
+			}
+		}
+
+		void Reset(Func&& func = nullptr)
+		{
+			mFunc = func;
+		}
+
+		bool IsValid() const
+		{
+			return static_cast<bool>(mFunc);
+		}
 
 		CallOnExit& operator=(const CallOnExit&) = delete;
 		CallOnExit& operator=(CallOnExit&&) = default;

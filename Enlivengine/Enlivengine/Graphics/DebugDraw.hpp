@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Enlivengine/System/PrimitiveTypes.hpp>
-#include <Enlivengine/System/Config.hpp>
+#include <Enlivengine/Config.hpp>
 
 #ifdef ENLIVE_DEBUG
 
@@ -9,7 +9,7 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
-#include <Enlivengine/Graphics/Color.hpp>
+#include <Enlivengine/Math/Color.hpp>
 #include <Enlivengine/Math/Rect.hpp>
 
 namespace en
@@ -17,35 +17,38 @@ namespace en
 
 class DebugDraw
 {
+	private:
+		DebugDraw();
+
 	public:
-		DebugDraw() = delete;
+		static DebugDraw& GetInstance() { static DebugDraw instance; return instance; }
 
-		static void drawPoint(F32 x, F32 y, const Color& color = Color::Red, F32 r = 2.0f);
-		static void drawPoint(const Vector2f& point, const Color& color = Color::Red, F32 r = 2.0f);
-		static void drawRect(F32 x, F32 y, F32 w, F32 h, const Color& c1 = Color::Red, const Color& c2 = Color::Transparent);
-		static void drawRect(const Rectf& rect, const Color& c1 = Color::Red, const Color& c2 = Color::Transparent);
-		static void drawCircle(F32 x, F32 y, const Color& color = Color::Red, F32 r = 10.f); // TODO : Improve
-		static void drawLine(F32 x1, F32 y1, F32 x2, F32 y2, const Color& color = Color::Red, F32 thickness = 2.0f); // TODO : Improve
+		void drawPoint(F32 x, F32 y, const Color& color = Color::Red, F32 r = 2.0f);
+		void drawPoint(const Vector2f& point, const Color& color = Color::Red, F32 r = 2.0f);
+		void drawRect(F32 x, F32 y, F32 w, F32 h, const Color& c1 = Color::Red, const Color& c2 = Color::Transparent);
+		void drawRect(const Rectf& rect, const Color& c1 = Color::Red, const Color& c2 = Color::Transparent);
+		void drawCircle(F32 x, F32 y, const Color& color = Color::Red, F32 r = 10.f); // TODO : Improve
+		void drawLine(F32 x1, F32 y1, F32 x2, F32 y2, const Color& color = Color::Red, F32 thickness = 2.0f); // TODO : Improve
 
-		static U32 getCurrentRectangleCount();
-		static U32 getCurrentCircleCount();
-		static void render(sf::RenderTarget& target);
+		U32 getCurrentRectangleCount();
+		U32 getCurrentCircleCount();
+		void render(sf::RenderTarget& target);
 
-		static void reset();
+		void reset();
 
-		static void setMaxSize(U32 maxSize);
-		static U32 getMaxSize();
+		void setMaxSize(U32 maxSize);
+		U32 getMaxSize();
 
-		static void setVisible(bool visible);
-		static bool isVisible();
+		void setVisible(bool visible);
+		bool isVisible();
 		
 	private:
-		static bool mVisible;
-		static U32 mMaxSize;
-		static U32 mCurrentCircleIndex;
-		static U32 mCurrentRectangleIndex;
-		static std::vector<sf::CircleShape> mCircles;
-		static std::vector<sf::RectangleShape> mRectangles;
+		bool mVisible;
+		U32 mMaxSize;
+		U32 mCurrentCircleIndex;
+		U32 mCurrentRectangleIndex;
+		std::vector<sf::CircleShape> mCircles;
+		std::vector<sf::RectangleShape> mRectangles;
 };
 
 } // namespace en

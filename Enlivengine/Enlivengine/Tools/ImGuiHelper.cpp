@@ -130,7 +130,7 @@ void PreviewAnimation(const en::Animation& animation, en::F32 maxSize, en::U32& 
 
 		ImGui::PreviewTexture(texture, frame.GetRect(), maxSize, true);
 
-		accumulator += en::seconds(ImGui::GetIO().DeltaTime * speedScale);
+		accumulator += en::Time::Seconds(ImGui::GetIO().DeltaTime * speedScale);
 		if (accumulator > frame.GetDuration())
 		{
 			accumulator -= frame.GetDuration();

@@ -12,12 +12,12 @@ class Frustum
 {
 	public:
 		Frustum();
-		Frustum(F32 fov, F32 ratio, F32 zNear, F32 zFar, const Vector3f& eye, const Vector3f& target, const Vector3f& up = Vector3f::up);
+		Frustum(F32 fov, F32 ratio, F32 zNear, F32 zFar, const Vector3f& eye, const Vector3f& target, const Vector3f& up);
 
 		enum Planes { Near = 0, Far, Top, Bottom, Right, Left };
 		enum Corners { FTL = 0, FTR, FBR, FBL, NTL, NTR, NBR, NBL };
 
-		void build(F32 fov, F32 ratio, F32 zNear, F32 zFar, const Vector3f& eye, const Vector3f& target, const Vector3f& up = Vector3f::up);
+		void build(F32 fov, F32 ratio, F32 zNear, F32 zFar, const Vector3f& eye, const Vector3f& target, const Vector3f& up);
 
 		bool contains(const Vector3f& point) const;
 		bool contains(const AABB& box) const;

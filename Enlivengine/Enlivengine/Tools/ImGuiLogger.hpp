@@ -21,7 +21,7 @@ public:
 
 	virtual void Display();
 
-	virtual void Write(LogType type, LogChannel channel, U32 importance, const std::string& message);
+	virtual void Write(const LogMessage& message);
 
 	static constexpr U32 kDefaultMaxSize{ 128 };
 	void SetMaxSize(U32 size);

@@ -9,30 +9,30 @@ namespace en
 
 Time ProfilerTask::GetDuration() const
 {
-	assert(start <= end);
+	enAssert(start <= end);
 	return end - start;
 }
 
 Time ProfilerFrame::GetDuration() const
 {
-	assert(start <= end);
+	enAssert(start <= end);
 	return end - start;
 }
 
 F32 ProfilerFrame::GetPercentTime(const Time& timePoint) const
 {
-	assert(start <= timePoint && timePoint <= end);
-	const I64 durationMS = GetDuration().asMicroseconds();
-	const I64 delta = (timePoint - start).asMicroseconds();
+	enAssert(start <= timePoint && timePoint <= end);
+	const I64 durationMS = GetDuration().AsMicroseconds();
+	const I64 delta = (timePoint - start).AsMicroseconds();
 	const F64 percent = (1.0 * delta) / (1.0 * durationMS);
 	return static_cast<F32>(percent);
 }
 
 F32 ProfilerFrame::GetPercentDuration(const Time& subDuration) const
 {
-	assert(subDuration <= GetDuration());
-	const I64 durationMS = GetDuration().asMicroseconds();
-	const I64 subDurationMS = subDuration.asMicroseconds();
+	enAssert(subDuration <= GetDuration());
+	const I64 durationMS = GetDuration().AsMicroseconds();
+	const I64 subDurationMS = subDuration.AsMicroseconds();
 	const F64 percent = (1.0 * subDurationMS) / (1.0 * durationMS);
 	return static_cast<F32>(percent);
 }
@@ -115,7 +115,7 @@ bool Profiler::CanCurrentFrameBeCaptured() const
 
 void Profiler::CaptureCurrentFrame()
 {
-	assert(CanCurrentFrameBeCaptured());
+	enAssert(CanCurrentFrameBeCaptured());
 	CaptureFrames(1);
 }
 
@@ -137,13 +137,13 @@ bool Profiler::IsCapturing() const
 
 const std::vector<ProfilerFrame>& Profiler::GetProfilerFrames() const
 {
-	assert(!IsCapturing());
+	enAssert(!IsCapturing());
 	return mProfilerFrames;
 }
 
 void Profiler::StartFrame(U32 frameNumber)
 {
-	const Time frameStart = Time::now();
+	const Time frameStart = Time::Now();
 
 	if (IsEnabled() && mWasEnabledThisFrame)
 	{
@@ -155,8 +155,8 @@ void Profiler::StartFrame(U32 frameNumber)
 	if (CanCurrentFrameBeCaptured())
 	{
 		// 1 because of the ENLIVE_PROFILE_FUNCTION already opened
-		assert(mCurrentFrame.tasks.size() == 1);
-		assert(mIndexStack.size() == 1); 
+		enAssert(mCurrentFrame.tasks.size() == 1);
+		enAssert(mIndexStack.size() == 1);
 
 		mCurrentFrame.frame = frameNumber;
 		mCurrentFrame.start = frameStart;
@@ -170,10 +170,10 @@ void Profiler::EndFrame()
 
 	if (CanCurrentFrameBeCaptured())
 	{
-		mCurrentFrame.end = Time::now();
+		mCurrentFrame.end = Time::Now();
 		EndFunction();
 
-		assert(mIndexStack.size() == 0);
+		enAssert(mIndexStack.size() == 0);
 
 		if (IsCapturing())
 		{
@@ -203,7 +203,7 @@ void Profiler::StartFunction(const char* name)
 	{
 		ProfilerTask task;
 		task.name = name;
-		task.start = Time::now();
+		task.start = Time::Now();
 		task.depth = GetCurrentDepth();
 		mCurrentFrame.tasks.push_back(task);
 		mIndexStack.push_back(static_cast<U32>(mCurrentFrame.tasks.size() - 1));
@@ -214,9 +214,9 @@ void Profiler::EndFunction()
 {
 	if (CanCurrentFrameBeCaptured())
 	{
-		assert(mIndexStack.size() > 0);
+		enAssert(mIndexStack.size() > 0);
 		const U32 index = mIndexStack.back();
-		mCurrentFrame.tasks[index].end = Time::now();
+		mCurrentFrame.tasks[index].end = Time::Now();
 		mIndexStack.pop_back();
 	}
 }

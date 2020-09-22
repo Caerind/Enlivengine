@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Enlivengine/System/Time.hpp>
-#include <Enlivengine/System/Config.hpp>
+#include <Enlivengine/Config.hpp>
 #include <Enlivengine/System/Profiler.hpp>
 
 #include <Enlivengine/Graphics/ScreenshotSystem.hpp>
@@ -29,6 +29,7 @@ public:
 	template <typename State, typename ... Args>
 	void Start(Args&& ... args);
 	void Stop();
+	bool IsRunning() const;
 
 	template <typename T, typename ... Args>
 	void PushState(Args&& ... args);
@@ -40,7 +41,13 @@ public:
 	Time GetTotalDuration() const;
 
 	bool LoadResources();
-	bool LoadResource(I32 type, const std::string& identifier, const std::string& filename, ResourceID& resourceID);
+#ifdef ENLIVE_DEBUG
+	bool LoadResource(ResourceID resourceID, U32 type, const std::string& filename, const std::string& identifier);
+#else
+	bool LoadResource(ResourceID resourceID, U32 type, const std::string& filename);
+#endif // ENLIVE_DEBUG
+
+	enSignal(onApplicationStopped, const Application*);
 
 private:
 	~Application();
@@ -60,7 +67,7 @@ private:
 	ScreenshotSystem mScreenshotSystem;
 	ActionSystem mActionSystem;
 
-	EnSlot(en::Window, onWindowClosed, mWindowClosedSlot);
+	enSlot(en::Window, onWindowClosed, mWindowClosedSlot);
 
 	U32 mFps;
 	bool mRunning;
@@ -74,12 +81,14 @@ template <typename State, typename ... Args>
 void Application::Start(Args&& ... args)
 {
 	PushState<State>(std::forward<Args>(args)...);
-
 	mStates.applyPendingChanges();
 
 	mRunning = true;
 
 	Run();
+
+	ClearStates();
+	mStates.applyPendingChanges();
 }
 
 template <typename T, typename ... Args>

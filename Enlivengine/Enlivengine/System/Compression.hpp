@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 
 namespace en

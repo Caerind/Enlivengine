@@ -25,43 +25,43 @@ Tileset::Tileset()
 bool Tileset::LoadFromFile(const std::string& filename)
 {
 	ParserXml xml;
-	if (!xml.loadFromFile(filename))
+	if (!xml.LoadFromFile(filename))
 	{
-		LogError(en::LogChannel::Map, 9, "Can't open tileset file at %s", filename.c_str());
+		enLogError(en::LogChannel::Map, "Can't open tileset file at {}", filename.c_str());
 		return false;
 	}
 
-	if (xml.readNode("tileset"))
+	if (xml.ReadNode("tileset"))
 	{
-		xml.getAttribute("name", mName);
-		xml.getAttribute("tilewidth", mTileSize.x);
-		xml.getAttribute("tileheight", mTileSize.y);
-		xml.getAttribute("tilecount", mTileCount);
-		xml.getAttribute("columns", mColumns);
-		xml.getAttribute("spacing", mSpacing);
-		xml.getAttribute("margin", mMargin);
+		xml.GetAttribute("name", mName);
+		xml.GetAttribute("tilewidth", mTileSize.x);
+		xml.GetAttribute("tileheight", mTileSize.y);
+		xml.GetAttribute("tilecount", mTileCount);
+		xml.GetAttribute("columns", mColumns);
+		xml.GetAttribute("spacing", mSpacing);
+		xml.GetAttribute("margin", mMargin);
 
 		mPath = std::filesystem::path(filename).remove_filename().string();
 
-		if (xml.readNode("image"))
+		if (xml.ReadNode("image"))
 		{
-			xml.getAttribute("source", mImageSource);
+			xml.GetAttribute("source", mImageSource);
 			
-			if (xml.hasAttribute("trans"))
+			if (xml.HasAttribute("trans"))
 			{
 				std::string transparentStr;
-				xml.getAttribute("trans", transparentStr);
+				xml.GetAttribute("trans", transparentStr);
 				mImageTransparent.fromString(transparentStr);
 			}
 
-			xml.closeNode();
+			xml.CloseNode();
 		}
 
-		xml.closeNode();
+		xml.CloseNode();
 	}
 	else
 	{
-		LogError(en::LogChannel::Map, 9, "Invalid tileset file at %s", filename.c_str());
+		enLogError(en::LogChannel::Map, "Invalid tileset file at {}", filename.c_str());
 		return false;
 	}
 
@@ -69,16 +69,16 @@ bool Tileset::LoadFromFile(const std::string& filename)
     const std::string filepath = mPath + mImageSource;
     if (mImageTransparent != Color::Transparent)
     {
-        LogWarning(en::LogChannel::Map, 8, "%s : Transparent color for Tileset isn't supported yet -> Use alpha values", filepath.c_str());
+        enLogWarning(en::LogChannel::Map, "{} : Transparent color for Tileset isn't supported yet -> Use alpha values", filepath.c_str());
     }
     mTexture = ResourceManager::GetInstance().GetFromFilename<Texture>(filepath);
     if (!mTexture.IsValid())
 	{
-		LogWarning(en::LogChannel::Map, 5, "ResourceDependencyNeeded: %s from %s", filepath.c_str(), filename.c_str());
+		enLogWarning(en::LogChannel::Map, "ResourceDependencyNeeded: {} from {}", filepath.c_str(), filename.c_str());
         mTexture = ResourceManager::GetInstance().Create<Texture>(GetIdentifier() + "-texture", TextureLoader::FromFile(filepath));
         if (!mTexture.IsValid())
         {
-            LogError(en::LogChannel::Map, 10, "Can't load tileset texture : %s", filepath.c_str());
+            enLogError(en::LogChannel::Map, "Can't load tileset texture : {}", filepath.c_str());
         }
     }
 
@@ -149,7 +149,7 @@ Vector2f Tileset::ToPos(U32 tileId) const
 			(F32)((tileId / mColumns) * (mTileSize.y + mSpacing) + mMargin)
 		};
 	}
-	return Vector2f::zero;
+	return Vector2f::Zero();
 }
 
 } // namespace tmx

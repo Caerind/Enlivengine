@@ -23,34 +23,11 @@ public:
 	bool LoadResourceInfosFromFile(const std::string& filename);
 	bool SaveResourceInfosToFile(const std::string& filename);
 
-	struct ResourceInfo
-	{
-		enum class Type : I32
-		{
-			Unknown = -1,
-			Font,
-			Texture,
-			Tileset,
-			Map,
-			Animation,
-			AnimationStateMachine,
-			Music,
-			Sound,
-			Count
-		};
-
-		std::string identifier;
-		std::string filename;
-		Type type;
-		ResourceID resourceID;
-
-		static Type DetectTypeFromFilename(const std::string& filename);
-		static const char* ResourceInfoTypeToString(Type type);
-		static const LinearColor& ResourceInfoTypeToColor(Type type);
-	};
+	static U32 GetResourceTypeFromFilename(const std::string& filename);
 
 private:
 	void FontPreview(ResourceInfo& resourceInfo);
+	void ImagePreview(ResourceInfo& resourceInfo);
 	void TexturePreview(ResourceInfo& resourceInfo);
 	void TilesetPreview(ResourceInfo& resourceInfo);
 	void MapPreview(ResourceInfo& resourceInfo);
@@ -64,7 +41,7 @@ private:
 	char mIdentifierBuffer[kBufferSize];
 	char mFilenameBuffer[kBufferSize];
 
-	std::vector<ResourceInfo> mResourceInfos;
+	Array<ResourceInfo> mResourceInfos;
 };
 
 } // namespace en

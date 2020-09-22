@@ -1,159 +1,153 @@
 #pragma once
 
 #include <Enlivengine/System/PrimitiveTypes.hpp>
-#include <Enlivengine/MetaData/MetaData.hpp>
+#include <Enlivengine/System/TypeInfo.hpp>
 
 namespace en
 {
 
 class Time
 {
-	public:
-		ENLIVE_META_CLASS_DECL(Time)
+public:
+	static constexpr const I64 TicksPerMicrosecond = 1;
+	static constexpr const I64 TicksPerMillisecond = 1000 * TicksPerMicrosecond;
+	static constexpr const I64 TicksPerSecond = 1000 * TicksPerMillisecond;
+	static constexpr const I64 TicksPerMinute = 60 * TicksPerSecond;
+	static constexpr const I64 TicksPerHour = 60 * TicksPerMinute;
+	static constexpr const I64 TicksPerDay = 24 * TicksPerHour;
 
-	public:
-		static const I64 NanosecondsPerTick = 100;
-		static const I64 TicksPerMicrosecond = 10;
-		static const I64 TicksPerMillisecond = 10000;
-		static const I64 TicksPerSecond = 10000000;
-		static const I64 TicksPerMinute = 600000000;
-		static const I64 TicksPerHour = 36000000000;
-		static const I64 TicksPerDay = 864000000000;
-		static const I64 TicksPerWeek = 6048000000000;
+public:
+	constexpr Time() : mTicks(0LL) {}
+	constexpr Time(I64 ticks) : mTicks(ticks) {}
 
-		static const Time Zero;
-		static const Time Second;
+	constexpr Time& Set(I32 minutes, I32 seconds) { return Set(0, 0, minutes, seconds, 0, 0); }
+	constexpr Time& Set(I32 hours, I32 minutes, I32 seconds) { return Set(0, hours, minutes, seconds, 0); }
+	constexpr Time& Set(I32 days, I32 hours, I32 minutes, I32 seconds) { return Set(days, hours, minutes, seconds, 0); }
+	constexpr Time& Set(I32 days, I32 hours, I32 minutes, I32 seconds, I32 milliseconds, I32 microseconds = 0)
+	{
+		mTicks = days * TicksPerDay
+			+ hours * TicksPerHour
+			+ minutes * TicksPerMinute
+			+ seconds * TicksPerSecond
+			+ milliseconds * TicksPerMillisecond
+			+ microseconds * TicksPerMicrosecond;
+		return *this;
+	}
 
-	public:
-		Time();
-		Time(I64 ticks);
-		Time(I32 hours, I32 minutes, I32 seconds);
-		Time(I32 days, I32 hours, I32 minutes, I32 seconds);
-		Time(I32 days, I32 hours, I32 minutes, I32 seconds, I32 milliseconds, I32 microseconds = 0);
+	constexpr Time operator+(const Time& time) const { return Time(mTicks + time.mTicks); }
+	constexpr Time& operator+=(const Time& time) { mTicks += time.mTicks; return *this; }
+	constexpr Time operator-() const { return Time(-mTicks); }
+	constexpr Time operator-(const Time& time) const { return Time(mTicks - time.mTicks); }
+	constexpr Time& operator-=(const Time& time) { mTicks -= time.mTicks; return *this; }
+	constexpr Time operator*(const Time& time) const = delete;
+	constexpr Time& operator*=(const Time& time) = delete;
+	constexpr Time operator/(const Time& time) const = delete;
+	constexpr Time& operator/=(const Time& time) = delete;
+	constexpr Time operator%(const Time& time) const { return Time(mTicks % time.mTicks); }
+	constexpr Time& operator%=(const Time& time) { mTicks %= time.mTicks; return *this; }
 
-		Time& set(I64 ticks);
-		Time& set(I32 hours, I32 minutes, I32 seconds);
-		Time& set(I32 days, I32 hours, I32 minutes, I32 seconds);
-		Time& set(I32 days, I32 hours, I32 minutes, I32 seconds, I32 milliseconds, I32 microseconds = 0);
+	constexpr Time operator+(F32 scalar) const = delete;
+	constexpr Time& operator+=(F32 scalar) = delete;
+	constexpr Time operator-(F32 scalar) const = delete;
+	constexpr Time& operator-=(F32 scalar) = delete;
+	constexpr Time operator*(F32 scalar) const { return Time(static_cast<I64>(mTicks * scalar)); }
+	constexpr Time& operator*=(F32 scalar) { mTicks = static_cast<I64>(mTicks * scalar); return *this; }
+	constexpr Time operator/(F32 scalar) const { return Time(static_cast<I64>(mTicks / scalar)); }
+	constexpr Time& operator/=(F32 scalar) { mTicks = static_cast<I64>(mTicks / scalar); return *this; }
+	constexpr Time operator%(F32 scalar) const = delete;
+	constexpr Time& operator%=(F32 scalar) = delete;
 
-		Time operator+(const Time& time) const;
-		Time& operator+=(const Time& time);
-		Time operator-() const;
-		Time operator-(const Time& time) const;
-		Time& operator-=(const Time& time);
-		Time operator*(F32 scalar) const;
-		Time& operator*=(F32 scalar);
-		Time operator/(F32 scalar) const;
-		Time& operator/=(F32 scalar);
-		Time operator%(const Time& time) const;
-		Time& operator%=(const Time& time);
+	constexpr bool operator==(const Time& time) const { return mTicks == time.mTicks; }
+	constexpr bool operator!=(const Time& time) const { return mTicks != time.mTicks; }
+	constexpr bool operator>(const Time& time) const { return mTicks > time.mTicks; }
+	constexpr bool operator>=(const Time& time) const { return mTicks >= time.mTicks; }
+	constexpr bool operator<(const Time& time) const { return mTicks < time.mTicks; }
+	constexpr bool operator<=(const Time& time) const { return mTicks <= time.mTicks; }
+	constexpr bool IsZero() const { return mTicks == 0LL; }
 
-		bool operator==(const Time& time) const;
-		bool operator!=(const Time& time) const;
-		bool operator>(const Time& time) const;
-		bool operator>=(const Time& time) const;
-		bool operator<(const Time& time) const;
-		bool operator<=(const Time& time) const;
-		bool isZero() const;
+	constexpr Time GetDuration() const { return Time(mTicks >= 0LL ? mTicks : -mTicks); }
 
-		Time getDuration() const;
-		I32 getDays() const;
-		I32 getHours() const;
-		I32 getMinutes() const;
-		I32 getSeconds() const;
-		I32 getMilliseconds() const;
-		I32 getMicroseconds() const;
-		I64 getTicks() const;
+	constexpr F32 AsSeconds() const { return mTicks / static_cast<F32>(TicksPerSecond); }
+	constexpr I32 AsMilliseconds() const { return static_cast<I32>(mTicks / TicksPerMillisecond); }
+	constexpr I64 AsMicroseconds() const { return static_cast<I64>(mTicks / TicksPerMicrosecond); }
+	constexpr I64 GetTicks() const { return mTicks; }
 
-		F32 asSeconds() const;
-		I32 asMilliseconds() const;
-		I64 asMicroseconds() const;
+	static Time Now();
+	static constexpr Time Days(I32 amount) { return Time(amount * TicksPerDay); }
+	static constexpr Time Hours(I32 amount) { return Time(amount * TicksPerMinute); }
+	static constexpr Time Minutes(I32 amount) { return Time(amount * TicksPerMinute); }
+	static constexpr Time Seconds(F32 amount) { return Time(static_cast<I64>(amount * TicksPerSecond)); }
+	static constexpr Time Milliseconds(I32 amount) { return Time(amount * TicksPerMillisecond); }
+	static constexpr Time Microseconds(I64 amount) { return Time(amount * TicksPerMicrosecond); }
 
-		static Time now();
+	static constexpr Time Zero() { return Time(0LL); }
+	static constexpr Time Second() { return Time(TicksPerSecond); }
+	static constexpr Time Millisecond() { return Time(TicksPerMillisecond); }
+	static constexpr Time Microsecond() { return Time(TicksPerMicrosecond); }
 
-	private:
-		I64 mTicks;
+	static void Sleep(const Time& duration);
+
+private:
+	I64 mTicks;
 };
-ENLIVE_META_CLASS_DEF(Time)
-	ENLIVE_META_CLASS_PROPERTY(I64, mTicks)
-ENLIVE_META_CLASS_DEF_END_ATTR(en::Attribute_CustomSerialization)
 
-inline Time operator*(F32 scalar, const Time& time)
+constexpr Time operator*(F32 scalar, const Time& time)
 {
 	return time.operator*(scalar);
 }
 
-/*
-template <> inline std::string toString<Time>(const Time& value)
-{
-	return std::string(); // TODO : toString<Time>()
-}
-
-template <> inline Time fromString<Time>(const std::string& value)
-{
-	return Time(); // TODO : fromString<Time>()
-}	
-*/
-
-Time days(I32 amount);
-Time hours(I32 amount);
-Time minutes(I32 amount);
-Time seconds(F32 amount);
-Time milliseconds(I32 amount);
-Time microseconds(I64 amount);
-
-void sleep(Time duration);
-
 class Clock
 {
-	public:
-		Clock();
+public:
+	Clock();
 
-		Time getElapsedTime() const;
-		Time restart();
+	Time GetElapsedTime() const;
+	Time Restart();
 
-	private:
-		Time mStart;
+private:
+	Time mStart;
 };
 
 class StopWatch
 {
-   public:
-	   StopWatch();
+public:
+	StopWatch();
 
-	   Time getElapsedTime() const;
-	   bool isRunning() const;
-	   
-	   void start();
-	   void stop();
+	Time GetElapsedTime() const;
+	bool IsRunning() const;
 
-	   void reset();
-	   void restart();
+	void Start();
+	void Stop();
 
-	private:
-		Clock mClock;
-		Time mTimeBuffer;
-		bool mRunning;
+	void Reset(); // Reset and stop
+	void Restart(); // Reset and start again
+
+private:
+	Clock mClock;
+	Time mTimeBuffer;
+	bool mRunning;
 };
 
 class Timer
 {
-	public:
-		Timer();
+public:
+	Timer();
 
-		Time getRemainingTime() const;
-		bool isRunning() const;
-		bool isExpired() const;
+	Time GetRemainingTime() const;
+	bool IsRunning() const;
+	bool IsExpired() const;
 
-		void start();
-		void stop();
+	void Start();
+	void Stop();
 
-		void reset(Time time); // Reset and stop
-		void restart(Time time); // Reset and start again
+	void Reset(Time time); // Reset and stop
+	void Restart(Time time); // Reset and start again
 
-	private:
-		StopWatch mStopWatch;
-		Time mLimit;
+private:
+	StopWatch mStopWatch;
+	Time mLimit;
 };
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO(en::Time)

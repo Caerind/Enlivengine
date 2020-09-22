@@ -14,7 +14,7 @@ class Sphere
 	public:
 		Sphere();
 		Sphere(const Vector3f& center, F32 radius = 1.f);
-		Sphere(F32 radius, const Vector3f& center = Vector3f::zero);
+		Sphere(F32 radius, const Vector3f& center = Vector3f::Zero());
 		
 		const Vector3f& getCenter() const;
 		void setCenter(const Vector3f& center);

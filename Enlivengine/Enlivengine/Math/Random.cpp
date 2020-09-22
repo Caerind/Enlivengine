@@ -7,7 +7,7 @@ namespace en
 
 RandomEngine::RandomEngine()
 {
-	setSeed(static_cast<U32>(Time::now().asMilliseconds()));
+	setSeed(static_cast<U32>(Time::Now().AsMilliseconds()));
 }
 
 RandomEngine::RandomEngine(U32 seed)

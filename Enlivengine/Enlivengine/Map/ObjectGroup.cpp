@@ -24,13 +24,13 @@ const Color& ObjectGroup::GetColor() const
 
 ObjectBase* ObjectGroup::GetObjectByIndex(U32 objectIndex)
 {
-	assert(objectIndex < GetObjectCount());
+	enAssert(objectIndex < GetObjectCount());
 	return mObjects[objectIndex].get();
 }
 
 ObjectBase::ObjectType ObjectGroup::GetObjectTypeByIndex(U32 objectIndex) const
 {
-	assert(objectIndex < GetObjectCount());
+	enAssert(objectIndex < GetObjectCount());
 	return mObjects[objectIndex]->GetObjectType();
 }
 
@@ -55,7 +55,7 @@ ObjectBase::ObjectType ObjectGroup::GetObjectTypeByID(U32 objectID) const
 			return object->GetObjectType();
 		}
 	}
-	assert(false);
+	enAssert(false);
 	return ObjectBase::ObjectType::Rectangle;
 }
 
@@ -72,7 +72,7 @@ bool ObjectGroup::Parse(ParserXml& parser)
 	}
 
 	std::string attribStr = "";
-	parser.getAttribute("color", attribStr);
+	parser.GetAttribute("color", attribStr);
 	if (attribStr.size() > 0)
 	{
 		if (attribStr[0] == '#')
@@ -103,11 +103,11 @@ bool ObjectGroup::Parse(ParserXml& parser)
 	}
     */
 
-	if (parser.readNode("object"))
+	if (parser.ReadNode("object"))
 	{
 		do 
 		{
-			if (parser.hasChild("point"))
+			if (parser.HasNode("point"))
 			{
 				std::unique_ptr<PointObject> object = std::make_unique<PointObject>(*this);
 				if (object != nullptr && object->Parse(parser))
@@ -115,7 +115,7 @@ bool ObjectGroup::Parse(ParserXml& parser)
 					mObjects.emplace_back(std::move(object));
 				}
 			}
-			else if (parser.hasChild("ellipse"))
+			else if (parser.HasNode("ellipse"))
 			{
 				std::unique_ptr<EllipseObject> object = std::make_unique<EllipseObject>(*this);
 				if (object != nullptr && object->Parse(parser))
@@ -123,7 +123,7 @@ bool ObjectGroup::Parse(ParserXml& parser)
 					mObjects.emplace_back(std::move(object));
 				}
 			}
-			else if (parser.hasChild("polygon"))
+			else if (parser.HasNode("polygon"))
 			{
 				std::unique_ptr<PolygonObject> object = std::make_unique<PolygonObject>(*this);
 				if (object != nullptr && object->Parse(parser))
@@ -142,8 +142,8 @@ bool ObjectGroup::Parse(ParserXml& parser)
 				}
 			}
 
-		} while (parser.nextSibling("object"));
-		parser.closeNode();
+		} while (parser.NextSibling("object"));
+		parser.CloseNode();
 	}
 
 	return true;

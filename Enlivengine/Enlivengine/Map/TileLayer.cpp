@@ -37,10 +37,10 @@ TileLayer::CompressionType TileLayer::GetCompression() const
 
 void TileLayer::SetTile(const Vector2u& tileCoords, U32 tileID)
 {
-	assert(tileCoords.x < mSize.x);
-	assert(tileCoords.y < mSize.y);
+	enAssert(tileCoords.x < mSize.x);
+	enAssert(tileCoords.y < mSize.y);
 	const U32 tileIndex = tileCoords.y * mSize.x + tileCoords.x;
-	assert(tileIndex < static_cast<U32>(mTiles.size()));
+	enAssert(tileIndex < static_cast<U32>(mTiles.size()));
 	const U32 vertexIndex = tileIndex * 4;
 
 	const U32 previousTileID = mTiles[tileIndex];
@@ -82,27 +82,27 @@ void TileLayer::SetTile(const Vector2u& tileCoords, U32 tileID)
 
 U32 TileLayer::GetTile(const Vector2u& tileCoords) const
 {
-	assert(tileCoords.x < mSize.x);
-	assert(tileCoords.y < mSize.y);
+	enAssert(tileCoords.x < mSize.x);
+	enAssert(tileCoords.y < mSize.y);
 	const U32 index = tileCoords.y * mSize.x + tileCoords.x;
-	assert(index < static_cast<U32>(mTiles.size()));
+	enAssert(index < static_cast<U32>(mTiles.size()));
 	return mTiles[index];
 }
 
 void TileLayer::Render(sf::RenderTarget& target) const
 {
     const U32 size = static_cast<U32>(mVertexArrays.size());
-    assert(size <= mMap.GetTilesetCount());
+	enAssert(size <= mMap.GetTilesetCount());
     for (U32 i = 0; i < size; ++i)
     {
         sf::RenderStates states;
 
         const TilesetPtr& tilesetPtr = mMap.GetTileset(i);
-        assert(tilesetPtr.IsValid());
+		enAssert(tilesetPtr.IsValid());
         const Tileset& tileset = tilesetPtr.Get();
 
         const TexturePtr& texturePtr = tileset.GetTexture();
-        assert(texturePtr.IsValid());
+		enAssert(texturePtr.IsValid());
         const Texture& texture = texturePtr.Get();
 
         states.texture = &texture;
@@ -117,15 +117,15 @@ bool TileLayer::Parse(ParserXml& parser)
 		return false;
 	}
 
-	parser.getAttribute("width", mSize.x);
-	parser.getAttribute("height", mSize.y);
+	parser.GetAttribute("width", mSize.x);
+	parser.GetAttribute("height", mSize.y);
 
 	Update();
 
-	if (parser.readNode("data"))
+	if (parser.ReadNode("data"))
 	{
 		std::string attribStr = "base64";
-		parser.getAttribute("encoding", attribStr);
+		parser.GetAttribute("encoding", attribStr);
 		if (attribStr == "base64")
 		{
 			mEncoding = EncodingType::Base64;
@@ -140,12 +140,12 @@ bool TileLayer::Parse(ParserXml& parser)
 		}
 		else
 		{
-			LogError(en::LogChannel::Map, 7, "Unknown encoding %s", attribStr.c_str());
+			enLogError(en::LogChannel::Map, "Unknown encoding {}", attribStr.c_str());
 			return false;
 		}
 
 		attribStr = "";
-		parser.getAttribute("compression", attribStr);
+		parser.GetAttribute("compression", attribStr);
 		if (attribStr == "zlib")
 		{
 			mCompression = CompressionType::Zlib;
@@ -160,7 +160,7 @@ bool TileLayer::Parse(ParserXml& parser)
 		}
 		else
 		{
-			LogError(en::LogChannel::Map, 7, "Unknown compression %s", attribStr.c_str());
+			enLogError(en::LogChannel::Map, "Unknown compression {}", attribStr.c_str());
 			return false;
 		}
 
@@ -178,16 +178,16 @@ bool TileLayer::Parse(ParserXml& parser)
 		}
 		else
 		{
-			assert(false);
+			enAssert(false);
 		}
 
-		parser.closeNode();
+		parser.CloseNode();
 	}
 
-	if (parser.readNode("properties"))
+	if (parser.ReadNode("properties"))
 	{
 		PropertyHolder::Parse(parser);
-		parser.closeNode();
+		parser.CloseNode();
 	}
 
 	return true;
@@ -196,8 +196,8 @@ bool TileLayer::Parse(ParserXml& parser)
 bool TileLayer::ParseBase64(ParserXml& parser)
 {
 	std::string data;
-	parser.getValue(data);
-	trim(data);
+	parser.GetValue(data);
+	Trim(data);
 
 	std::vector<U8> decodedBytes;
 	if (!Compression::Decode64(data, decodedBytes))
@@ -217,7 +217,7 @@ bool TileLayer::ParseBase64(ParserXml& parser)
 	}
 	if (!decompression)
 	{
-		LogError(en::LogChannel::Map, 8, "Can't decompress %d", mCompression);
+		enLogError(en::LogChannel::Map, "Can't decompress %d", mCompression);
 		return false;
 	}
 
@@ -240,7 +240,7 @@ bool TileLayer::ParseBase64(ParserXml& parser)
 bool TileLayer::ParseCsv(ParserXml& parser)
 {
 	std::string data;
-	parser.getValue(data);
+	parser.GetValue(data);
 
 	std::stringstream ss(data);
 
@@ -266,13 +266,13 @@ bool TileLayer::ParseCsv(ParserXml& parser)
 
 bool TileLayer::ParseXml(ParserXml& parser)
 {
-	if (parser.readNode("tile"))
+	if (parser.ReadNode("tile"))
 	{
 		Vector2u coords(0, 0);
 		do
 		{
 			U32 gid = 0;
-			parser.getAttribute("gid", gid);
+			parser.GetAttribute("gid", gid);
 			// TODO : Read Flip Flag
 			SetTile(coords, gid);
 			coords.x = (coords.x + 1) % mSize.x;
@@ -281,8 +281,8 @@ bool TileLayer::ParseXml(ParserXml& parser)
 				coords.y++;
 			}
 
-		} while (parser.nextSibling("tile"));
-		parser.closeNode();
+		} while (parser.NextSibling("tile"));
+		parser.CloseNode();
 
 		return true;
 	}

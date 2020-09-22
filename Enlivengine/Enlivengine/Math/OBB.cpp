@@ -122,7 +122,7 @@ Vector3f OBB::getCorner(U8 index) const
 	|/      |/
 	5-------4
 	*/
-	assert(index < 8);
+	enAssert(index < 8);
 	return mTransformedCorners[index]; 
 }
 

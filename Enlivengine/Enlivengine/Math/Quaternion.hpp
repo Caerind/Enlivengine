@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Enlivengine/Math/Utilities.hpp>
+
 // TODO : constexpr
 
 namespace en
@@ -74,10 +76,12 @@ public:
 	inline Matrix3<T> toMatrix3() const;
 	inline void toMatrix4(Matrix4<T>& matrix) const;
 	inline Matrix4<T> toMatrix4() const;
+	inline Vector4<T> toVector4() const;
 
 	inline Quaternion<T>& fromEulerAngles(const Vector3<T>& vector);
 	inline Quaternion<T>& fromAngleAxis(const T& angle, const Vector3<T>& axis);
 	inline Quaternion<T>& fromMatrix3(const Matrix3<T>& matrix);
+	inline Quaternion<T>& fromVector4(const Vector4<T>& vector);
 
 	static inline Quaternion<T> slerp(const Quaternion<T>& start, const Quaternion<T>& end, const T& percent);
 
@@ -590,6 +594,36 @@ inline Matrix3<T> Quaternion<T>::toMatrix3() const
 }
 
 template<typename T>
+inline void Quaternion<T>::toMatrix4(Matrix4<T>& matrix) const
+{
+	const T x2 = v.x * v.x; const T y2 = v.y * v.y; const T z2 = v.z * v.z;
+	const T xs = v.x * s;   const T ys = v.y * s;   const T zs = v.z * s;
+	const T xy = v.x * v.y; const T xz = v.x * v.z; const T yz = v.y * v.z;
+	matrix.set(1 - 2 * (y2 + z2), 2 * (xy + zs), 2 * (xz - ys), 0,
+		2 * (xy - zs), 1 - 2 * (x2 + z2), 2 * (xs + yz), 0,
+		2 * (ys + xz), 2 * (yz - xs), 1 - 2 * (x2 + y2), 0,
+		0, 0, 0, 1);
+}
+
+template<typename T>
+inline Matrix4<T> Quaternion<T>::toMatrix4() const
+{
+	const T x2 = v.x * v.x; const T y2 = v.y * v.y; const T z2 = v.z * v.z;
+	const T xs = v.x * s;   const T ys = v.y * s;   const T zs = v.z * s;
+	const T xy = v.x * v.y; const T xz = v.x * v.z; const T yz = v.y * v.z;
+	return Matrix4<T>(1 - 2 * (y2 + z2), 2 * (xy + zs), 2 * (xz - ys), 0,
+		2 * (xy - zs), 1 - 2 * (x2 + z2), 2 * (xs + yz), 0,
+		2 * (ys + xz), 2 * (yz - xs), 1 - 2 * (x2 + y2), 0,
+		0, 0, 0, 1);
+}
+
+template <typename T>
+inline Vector4<T> Quaternion<T>::toVector4() const
+{
+	return Vector4<T>(v.x, v.y, v.z, s);
+}
+
+template<typename T>
 inline Quaternion<T>& Quaternion<T>::fromEulerAngles(const Vector3<T>& vector)
 {
 	Vector3<T> halfAngles(T(0.5) * vector);
@@ -663,27 +697,13 @@ inline Quaternion<T>& Quaternion<T>::fromMatrix3(const Matrix3<T>& matrix)
 }
 
 template<typename T>
-inline void Quaternion<T>::toMatrix4(Matrix4<T>& matrix) const
+inline Quaternion<T>& Quaternion<T>::fromVector4(const Vector4<T>& vector)
 {
-	const T x2 = v.x * v.x; const T y2 = v.y * v.y; const T z2 = v.z * v.z;
-	const T xs = v.x * s;   const T ys = v.y * s;   const T zs = v.z * s;
-	const T xy = v.x * v.y; const T xz = v.x * v.z; const T yz = v.y * v.z;
-	matrix.set(1 - 2 * (y2 + z2), 2 * (xy + zs), 2 * (xz - ys), 0,
-		2 * (xy - zs), 1 - 2 * (x2 + z2), 2 * (xs + yz), 0,
-		2 * (ys + xz), 2 * (yz - xs), 1 - 2 * (x2 + y2), 0,
-		0, 0, 0, 1);
-}
-
-template<typename T>
-inline Matrix4<T> Quaternion<T>::toMatrix4() const
-{
-	const T x2 = v.x * v.x; const T y2 = v.y * v.y; const T z2 = v.z * v.z;
-	const T xs = v.x * s;   const T ys = v.y * s;   const T zs = v.z * s;
-	const T xy = v.x * v.y; const T xz = v.x * v.z; const T yz = v.y * v.z;
-	return Matrix4<T>(1 - 2 * (y2 + z2), 2 * (xy + zs), 2 * (xz - ys), 0,
-		2 * (xy - zs), 1 - 2 * (x2 + z2), 2 * (xs + yz), 0,
-		2 * (ys + xz), 2 * (yz - xs), 1 - 2 * (x2 + y2), 0,
-		0, 0, 0, 1);
+	v.x = vector.x;
+	v.y = vector.y;
+	v.z = vector.z;
+	s = vector.w;
+	return *this;
 }
 
 template<typename T>
@@ -753,3 +773,5 @@ typedef Quaternion<F32> Quaternionf;
 typedef Quaternionf quat; // GLSL-like
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Quaternion)

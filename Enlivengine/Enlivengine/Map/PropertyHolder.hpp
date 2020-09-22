@@ -3,7 +3,7 @@
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 #include <Enlivengine/System/Hash.hpp>
 #include <Enlivengine/System/ParserXml.hpp>
-#include <Enlivengine/Graphics/Color.hpp>
+#include <Enlivengine/Math/Color.hpp>
 
 #include <memory>
 #include <unordered_map>

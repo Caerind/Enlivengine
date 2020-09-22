@@ -65,21 +65,21 @@ void LayerBase::Render(sf::RenderTarget& target) const
 
 bool LayerBase::Parse(ParserXml& parser)
 {
-	parser.getAttribute("id", mID);
+	parser.GetAttribute("id", mID);
 
-	parser.getAttribute("name", mName);
+	parser.GetAttribute("name", mName);
 
-	parser.getAttribute("offsetx", mOffset.x);
-	parser.getAttribute("offsety", mOffset.y);
+	parser.GetAttribute("offsetx", mOffset.x);
+	parser.GetAttribute("offsety", mOffset.y);
 
-	parser.getAttribute("opacity", mOpacity);
+	parser.GetAttribute("opacity", mOpacity);
 
 	I32 visibleInt = 1;
-	parser.getAttribute("visible", visibleInt);
+	parser.GetAttribute("visible", visibleInt);
 	mVisible = static_cast<bool>(visibleInt);
 
 	I32 lockedInt = 0;
-	parser.getAttribute("locked", lockedInt);
+	parser.GetAttribute("locked", lockedInt);
 	mLocked = static_cast<bool>(lockedInt);
 
 	return true;

@@ -54,17 +54,17 @@ F32 ObjectBase::GetRotation() const
 
 bool ObjectBase::Parse(ParserXml& parser)
 {
-	parser.getAttribute("id", mID);
-    parser.getAttribute("name", mName);
-    parser.getAttribute("type", mType);
-	parser.getAttribute("x", mPosition.x);
-	parser.getAttribute("y", mPosition.y);
-    parser.getAttribute("rotation", mRotation);
+	parser.GetAttribute("id", mID);
+    parser.GetAttribute("name", mName);
+    parser.GetAttribute("type", mType);
+	parser.GetAttribute("x", mPosition.x);
+	parser.GetAttribute("y", mPosition.y);
+    parser.GetAttribute("rotation", mRotation);
 
-	if (parser.readNode("properties"))
+	if (parser.ReadNode("properties"))
 	{
 		PropertyHolder::Parse(parser);
-		parser.closeNode();
+		parser.CloseNode();
 	}
 
 	return true;

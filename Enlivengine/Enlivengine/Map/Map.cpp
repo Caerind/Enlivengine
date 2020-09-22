@@ -29,20 +29,20 @@ Map::Map()
 bool Map::LoadFromFile(const std::string& filename)
 {
 	ParserXml xml;
-	if (!xml.loadFromFile(filename))
+	if (!xml.LoadFromFile(filename))
 	{
-		LogError(en::LogChannel::Map, 9, "Can't open file at %s", filename.c_str());
+		enLogError(en::LogChannel::Map, "Can't open file at {}", filename.c_str());
 		return false;
 	}
 
-	if (xml.readNode("map"))
+	if (xml.ReadNode("map"))
 	{
-		xml.getAttribute("name", mName);
+		xml.GetAttribute("name", mName);
 
 		std::string attribStr;
 		
 		attribStr = "orthogonal";
-		xml.getAttribute("orientation", attribStr);
+		xml.GetAttribute("orientation", attribStr);
 		if (attribStr == "orthogonal")
 		{
 			mOrientation = Orientation::Orthogonal;
@@ -61,12 +61,12 @@ bool Map::LoadFromFile(const std::string& filename)
 		}
 		else
 		{
-			LogError(en::LogChannel::Map, 9, "%s maps aren't supported yet", attribStr.c_str());
+			enLogError(en::LogChannel::Map, "{} maps aren't supported yet", attribStr.c_str());
 			return false;
 		}
 
 		attribStr = "right-down";
-		xml.getAttribute("renderorder", attribStr);
+		xml.GetAttribute("renderorder", attribStr);
 		if (attribStr == "right-down")
 		{
 			mRenderOrder = RenderOrder::RightDown;
@@ -85,23 +85,23 @@ bool Map::LoadFromFile(const std::string& filename)
 		}
 		else
 		{
-			LogWarning(en::LogChannel::Map, 7, "Invalid renderorder %s", attribStr.c_str());
+			enLogWarning(en::LogChannel::Map, "Invalid renderorder {}", attribStr.c_str());
 		}
 
-		xml.getAttribute("width", mSize.x);
-		xml.getAttribute("height", mSize.y);
+		xml.GetAttribute("width", mSize.x);
+		xml.GetAttribute("height", mSize.y);
 
-		xml.getAttribute("tilewidth", mTileSize.x);
-		xml.getAttribute("tileheight", mTileSize.y);
+		xml.GetAttribute("tilewidth", mTileSize.x);
+		xml.GetAttribute("tileheight", mTileSize.y);
 
-		xml.getAttribute("hexsidelength", mHexSideLength);
+		xml.GetAttribute("hexsidelength", mHexSideLength);
 		if (mOrientation == Orientation::Hexagonal && mHexSideLength <= 0)
 		{
-			LogWarning(en::LogChannel::Map, 7, "Invalid hexsidelength %s", attribStr.c_str());
+			enLogWarning(en::LogChannel::Map, "Invalid hexsidelength {}", attribStr.c_str());
 		}
 
 		attribStr = "y";
-		xml.getAttribute("staggeraxis", attribStr);
+		xml.GetAttribute("staggeraxis", attribStr);
 		if (attribStr == "y")
 		{
 			mStaggerAxis = StaggerAxis::Y;
@@ -114,12 +114,12 @@ bool Map::LoadFromFile(const std::string& filename)
 		{
 			if (mOrientation == Orientation::Staggered || mOrientation == Orientation::Hexagonal)
 			{
-				LogWarning(en::LogChannel::Map, 7, "Invalid staggeraxis %s", attribStr.c_str());
+				enLogWarning(en::LogChannel::Map, "Invalid staggeraxis {}", attribStr.c_str());
 			}
 		}
 
 		attribStr = "odd";
-		xml.getAttribute("staggerindex", attribStr);
+		xml.GetAttribute("staggerindex", attribStr);
 		if (attribStr == "odd")
 		{
 			mStaggerIndex = StaggerIndex::Odd;
@@ -132,12 +132,12 @@ bool Map::LoadFromFile(const std::string& filename)
 		{
 			if (mOrientation == Orientation::Staggered || mOrientation == Orientation::Hexagonal)
 			{
-				LogWarning(en::LogChannel::Map, 7, "Invalid staggerindex %s", attribStr.c_str());
+				enLogWarning(en::LogChannel::Map, "Invalid staggerindex {}", attribStr.c_str());
 			}
 		}
 
 		attribStr = "";
-		xml.getAttribute("backgroundcolor", attribStr);
+		xml.GetAttribute("backgroundcolor", attribStr);
 		if (attribStr.size() > 0)
 		{
 			if (attribStr[0] == '#')
@@ -151,22 +151,22 @@ bool Map::LoadFromFile(const std::string& filename)
 		}
 
 		I32 infinite = 0;
-		xml.getAttribute("infinite", infinite);
+		xml.GetAttribute("infinite", infinite);
 		if (infinite > 0)
 		{
 			// TODO : Infinite maps
-			LogError(en::LogChannel::Map, 9, "Infinite maps aren't supported yet for %s", mName.c_str());
+			enLogError(en::LogChannel::Map, "Infinite maps aren't supported yet for {}", mName.c_str());
 			return false;
 		}
 
-		xml.getAttribute("nextlayerid", mNextLayerID);
-		xml.getAttribute("nextobjectid", mNextObjectID);
+		xml.GetAttribute("nextlayerid", mNextLayerID);
+		xml.GetAttribute("nextobjectid", mNextObjectID);
 
-		if (xml.readFirstNode())
+		if (xml.ReadFirstNode())
 		{
 			do 
 			{
-				std::string nodeName = xml.getNodeName();
+				std::string nodeName = xml.GetNodeName();
 				if (nodeName == "tileset")
 				{
 					TilesetMapData tilesetData;
@@ -175,15 +175,15 @@ bool Map::LoadFromFile(const std::string& filename)
 
 					bool validTileset = true;
 
-					xml.getAttribute("firstgid", tilesetData.firstGid);
+					xml.GetAttribute("firstgid", tilesetData.firstGid);
 					if (tilesetData.firstGid <= 0)
 					{
 						validTileset = false;
-						LogWarning(en::LogChannel::Map, 7, "Invalid firstGid for %s", mName.c_str());
+						enLogWarning(en::LogChannel::Map, "Invalid firstGid for {}", mName.c_str());
 					}
 
 					std::string source = "";
-					xml.getAttribute("source", source);
+					xml.GetAttribute("source", source);
 					if (source.size() > 0)
 					{
 						const std::string currentPath = std::filesystem::path(filename).remove_filename().string();
@@ -197,14 +197,14 @@ bool Map::LoadFromFile(const std::string& filename)
 							if (!tilesetData.tileset.IsValid())
 							{
 								validTileset = false;
-								LogError(en::LogChannel::Map, 8, "Can't load tileset %s", source.c_str());
+								enLogError(en::LogChannel::Map, "Can't load tileset {}", source.c_str());
 							}
 						}
 					}
 					else
 					{
 						validTileset = false;
-						LogError(en::LogChannel::Map, 8, "Tileset inside maps aren't supported yet for %s", mName.c_str());
+						enLogError(en::LogChannel::Map, "Tileset inside maps aren't supported yet for {}", mName.c_str());
 						// TODO : Tilesets inside maps
 					}
 
@@ -243,15 +243,15 @@ bool Map::LoadFromFile(const std::string& filename)
 				}
 				else
 				{
-					LogError(en::LogChannel::Map, 8, "Unknown layer type %s", nodeName.c_str());
+					enLogError(en::LogChannel::Map, "Unknown layer type {}", nodeName.c_str());
 				}
-			} while (xml.nextSibling());
-			xml.closeNode();
+			} while (xml.NextSibling());
+			xml.CloseNode();
 		}
 	}
 	else
 	{
-		LogError(en::LogChannel::Map, 9, "Invalid map file at %s", filename.c_str());
+		enLogError(en::LogChannel::Map, "Invalid map file at {}", filename.c_str());
 		return false;
 	}
 
@@ -328,13 +328,13 @@ U32 Map::GetTilesetIndexFromGID(U32 gid) const
 
 TilesetPtr Map::GetTileset(U32 tilesetIndex) const
 {
-	assert(tilesetIndex < GetTilesetCount());
+	enAssert(tilesetIndex < GetTilesetCount());
 	return mTilesets[tilesetIndex].tileset;
 }
 
 U32 Map::GetTilesetFirstGid(U32 tilesetIndex) const
 {
-	assert(tilesetIndex < GetTilesetCount());
+	enAssert(tilesetIndex < GetTilesetCount());
 	return mTilesets[tilesetIndex].firstGid;
 }
 
@@ -345,13 +345,13 @@ U32 Map::GetTilesetCount() const
 
 LayerBase* Map::GetLayerByIndex(U32 layerIndex)
 {
-	assert(layerIndex < GetLayerCount());
+	enAssert(layerIndex < GetLayerCount());
 	return mLayers[layerIndex].get();
 }
 
 LayerBase::LayerType Map::GetLayerTypeByIndex(U32 layerIndex) const
 {
-	assert(layerIndex < GetLayerCount());
+	enAssert(layerIndex < GetLayerCount());
 	return mLayers[layerIndex]->GetLayerType();
 }
 
@@ -376,7 +376,7 @@ LayerBase::LayerType Map::GetLayerTypeByID(U32 layerID) const
 			return layer->GetLayerType();
 		}
 	}
-	assert(false);
+	enAssert(false);
 	return LayerBase::LayerType::TileLayer;
 }
 
@@ -392,31 +392,31 @@ std::vector<Vector2u> Map::GetNeighbors(const Vector2u& tileCoords, bool diag /*
 	if (mOrientation == Orientation::Orthogonal)
 	{
 		n.resize(diag ? 8 : 4);
-		n[0].set(tileCoords.x, tileCoords.y - 1);
-		n[1].set(tileCoords.x, tileCoords.y + 1);
-		n[2].set(tileCoords.x - 1, tileCoords.y);
-		n[3].set(tileCoords.x + 1, tileCoords.y);
+		n[0].Set(tileCoords.x, tileCoords.y - 1);
+		n[1].Set(tileCoords.x, tileCoords.y + 1);
+		n[2].Set(tileCoords.x - 1, tileCoords.y);
+		n[3].Set(tileCoords.x + 1, tileCoords.y);
 		if (diag)
 		{
-			n[4].set(tileCoords.x + 1, tileCoords.y - 1);
-			n[5].set(tileCoords.x + 1, tileCoords.y + 1);
-			n[6].set(tileCoords.x - 1, tileCoords.y + 1);
-			n[7].set(tileCoords.x - 1, tileCoords.y - 1);
+			n[4].Set(tileCoords.x + 1, tileCoords.y - 1);
+			n[5].Set(tileCoords.x + 1, tileCoords.y + 1);
+			n[6].Set(tileCoords.x - 1, tileCoords.y + 1);
+			n[7].Set(tileCoords.x - 1, tileCoords.y - 1);
 		}
 	}
 	else if (mOrientation == Orientation::Isometric)
 	{
 		n.resize(diag ? 8 : 4);
-		n[0].set(tileCoords.x - 1, tileCoords.y);
-		n[1].set(tileCoords.x, tileCoords.y - 1);
-		n[2].set(tileCoords.x + 1, tileCoords.y);
-		n[3].set(tileCoords.x, tileCoords.y + 1);
+		n[0].Set(tileCoords.x - 1, tileCoords.y);
+		n[1].Set(tileCoords.x, tileCoords.y - 1);
+		n[2].Set(tileCoords.x + 1, tileCoords.y);
+		n[3].Set(tileCoords.x, tileCoords.y + 1);
 		if (diag)
 		{
-			n[4].set(tileCoords.x - 1, tileCoords.y - 1);
-			n[5].set(tileCoords.x + 1, tileCoords.y - 1);
-			n[6].set(tileCoords.x + 1, tileCoords.y + 1);
-			n[7].set(tileCoords.x - 1, tileCoords.y + 1);
+			n[4].Set(tileCoords.x - 1, tileCoords.y - 1);
+			n[5].Set(tileCoords.x + 1, tileCoords.y - 1);
+			n[6].Set(tileCoords.x + 1, tileCoords.y + 1);
+			n[7].Set(tileCoords.x - 1, tileCoords.y + 1);
 		}
 	}
 	else if (mOrientation == Orientation::Staggered)
@@ -424,25 +424,25 @@ std::vector<Vector2u> Map::GetNeighbors(const Vector2u& tileCoords, bool diag /*
 		n.resize(diag ? 8 : 4);
 		if (tileCoords.y % 2 == 0)
 		{
-			n[0].set(tileCoords.x - 1, tileCoords.y - 1);
-			n[1].set(tileCoords.x, tileCoords.y - 1);
-			n[2].set(tileCoords.x, tileCoords.y + 1);
-			n[3].set(tileCoords.x - 1, tileCoords.y + 1);
+			n[0].Set(tileCoords.x - 1, tileCoords.y - 1);
+			n[1].Set(tileCoords.x, tileCoords.y - 1);
+			n[2].Set(tileCoords.x, tileCoords.y + 1);
+			n[3].Set(tileCoords.x - 1, tileCoords.y + 1);
 		}
 		else
 		{
-			n[0].set(tileCoords.x, tileCoords.y - 1);
-			n[1].set(tileCoords.x + 1, tileCoords.y - 1);
-			n[2].set(tileCoords.x + 1, tileCoords.y + 1);
-			n[3].set(tileCoords.x, tileCoords.y + 1);
+			n[0].Set(tileCoords.x, tileCoords.y - 1);
+			n[1].Set(tileCoords.x + 1, tileCoords.y - 1);
+			n[2].Set(tileCoords.x + 1, tileCoords.y + 1);
+			n[3].Set(tileCoords.x, tileCoords.y + 1);
 		}
 
 		if (diag)
 		{
-			n[4].set(tileCoords.x, tileCoords.y - 2);
-			n[5].set(tileCoords.x + 1, tileCoords.y);
-			n[6].set(tileCoords.x, tileCoords.y + 2);
-			n[7].set(tileCoords.x - 1, tileCoords.y);
+			n[4].Set(tileCoords.x, tileCoords.y - 2);
+			n[5].Set(tileCoords.x + 1, tileCoords.y);
+			n[6].Set(tileCoords.x, tileCoords.y + 2);
+			n[7].Set(tileCoords.x - 1, tileCoords.y);
 		}
 	}
 	else if (mOrientation == Orientation::Hexagonal)
@@ -452,42 +452,42 @@ std::vector<Vector2u> Map::GetNeighbors(const Vector2u& tileCoords, bool diag /*
 		{
 			if ((tileCoords.y % 2) == static_cast<U32>(mStaggerIndex))
 			{
-				n[0].set(tileCoords.x - 1, tileCoords.y - 1);
-				n[1].set(tileCoords.x, tileCoords.y - 1);
-				n[2].set(tileCoords.x + 1, tileCoords.y);
-				n[3].set(tileCoords.x, tileCoords.y + 1);
-				n[4].set(tileCoords.x - 1, tileCoords.y + 1);
-				n[5].set(tileCoords.x - 1, tileCoords.y);
+				n[0].Set(tileCoords.x - 1, tileCoords.y - 1);
+				n[1].Set(tileCoords.x, tileCoords.y - 1);
+				n[2].Set(tileCoords.x + 1, tileCoords.y);
+				n[3].Set(tileCoords.x, tileCoords.y + 1);
+				n[4].Set(tileCoords.x - 1, tileCoords.y + 1);
+				n[5].Set(tileCoords.x - 1, tileCoords.y);
 			}
 			else
 			{
-				n[0].set(tileCoords.x, tileCoords.y - 1);
-				n[1].set(tileCoords.x + 1, tileCoords.y - 1);
-				n[2].set(tileCoords.x + 1, tileCoords.y);
-				n[3].set(tileCoords.x + 1, tileCoords.y + 1);
-				n[4].set(tileCoords.x, tileCoords.y + 1);
-				n[5].set(tileCoords.x - 1, tileCoords.y);
+				n[0].Set(tileCoords.x, tileCoords.y - 1);
+				n[1].Set(tileCoords.x + 1, tileCoords.y - 1);
+				n[2].Set(tileCoords.x + 1, tileCoords.y);
+				n[3].Set(tileCoords.x + 1, tileCoords.y + 1);
+				n[4].Set(tileCoords.x, tileCoords.y + 1);
+				n[5].Set(tileCoords.x - 1, tileCoords.y);
 			}
 		}
 		else // Flat
 		{
 			if ((tileCoords.x % 2) == static_cast<U32>(mStaggerIndex))
 			{
-				n[0].set(tileCoords.x - 1, tileCoords.y - 1);
-				n[1].set(tileCoords.x, tileCoords.y - 1);
-				n[2].set(tileCoords.x + 1, tileCoords.y - 1);
-				n[3].set(tileCoords.x + 1, tileCoords.y);
-				n[4].set(tileCoords.x, tileCoords.y + 1);
-				n[5].set(tileCoords.x - 1, tileCoords.y);
+				n[0].Set(tileCoords.x - 1, tileCoords.y - 1);
+				n[1].Set(tileCoords.x, tileCoords.y - 1);
+				n[2].Set(tileCoords.x + 1, tileCoords.y - 1);
+				n[3].Set(tileCoords.x + 1, tileCoords.y);
+				n[4].Set(tileCoords.x, tileCoords.y + 1);
+				n[5].Set(tileCoords.x - 1, tileCoords.y);
 			}
 			else
 			{
-				n[0].set(tileCoords.x - 1, tileCoords.y);
-				n[1].set(tileCoords.x, tileCoords.y - 1);
-				n[2].set(tileCoords.x + 1, tileCoords.y);
-				n[3].set(tileCoords.x + 1, tileCoords.y + 1);
-				n[4].set(tileCoords.x, tileCoords.y + 1);
-				n[5].set(tileCoords.x - 1, tileCoords.y + 1);
+				n[0].Set(tileCoords.x - 1, tileCoords.y);
+				n[1].Set(tileCoords.x, tileCoords.y - 1);
+				n[2].Set(tileCoords.x + 1, tileCoords.y);
+				n[3].Set(tileCoords.x + 1, tileCoords.y + 1);
+				n[4].Set(tileCoords.x, tileCoords.y + 1);
+				n[5].Set(tileCoords.x - 1, tileCoords.y + 1);
 			}
 		}
 	}
@@ -545,7 +545,7 @@ Vector2f Map::CoordsToWorld(const Vector2u& tileCoords) const
 		}
 	}
 
-    assert(false);
+	enAssert(false);
     return Vector2f(0.0f, 0.0f);
 }
 
@@ -560,21 +560,21 @@ Vector2u Map::WorldToCoords(const Vector2f& worldPos) const
     }
     else if (mOrientation == Orientation::Isometric)
     {
-        LogError(en::LogChannel::Map, 5, "Isometric WorldToCoords unimplemented for %s", mName.c_str());
+        enLogError(en::LogChannel::Map, "Isometric WorldToCoords unimplemented for {}", mName.c_str());
         return Vector2u(0, 0);
     }
     else if (mOrientation == Orientation::Staggered)
     {
-        LogError(en::LogChannel::Map, 5, "Staggered WorldToCoords unimplemented for %s", mName.c_str());
+        enLogError(en::LogChannel::Map, "Staggered WorldToCoords unimplemented for {}", mName.c_str());
         return Vector2u(0, 0);
     }
     else if (mOrientation == Orientation::Hexagonal)
     {
-        LogError(en::LogChannel::Map, 5, "Hexagonal WorldToCoords unimplemented for %s", mName.c_str());
+        enLogError(en::LogChannel::Map, "Hexagonal WorldToCoords unimplemented for {}", mName.c_str());
         return Vector2u(0, 0);
     }
 
-    assert(false);
+	enAssert(false);
 	return Vector2u(0, 0);
 }
 

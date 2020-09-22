@@ -106,10 +106,10 @@ class Window
 
 		sf::RenderWindow& getHandle();
 
-		EnSignal(onWindowResized, const Window*, U32, U32);
-		EnSignal(onWindowClosed, const Window*);
-		EnSignal(onWindowGainedFocus, const Window*);
-		EnSignal(onWindowLostFocus, const Window*);
+		enSignal(onWindowResized, const Window*, U32, U32);
+		enSignal(onWindowClosed, const Window*);
+		enSignal(onWindowGainedFocus, const Window*);
+		enSignal(onWindowLostFocus, const Window*);
 
 	private:
 		void init();

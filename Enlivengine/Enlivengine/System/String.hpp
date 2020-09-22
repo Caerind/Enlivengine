@@ -1,67 +1,67 @@
 #pragma once
 
-#include <Enlivengine/System/PrimitiveTypes.hpp>
-#include <Enlivengine/System/Hash.hpp>
-
-#include <unordered_map>
+#include <codecvt>
+#include <locale>
 #include <sstream>
 #include <string>
-#include <locale>
-#include <codecvt>
+
+#include <Enlivengine/System/PrimitiveTypes.hpp>
+#include <Enlivengine/System/Hash.hpp>
 
 namespace en
 {
 
-constexpr U32 StringLength(const char* const str) { return *str ? 1 + StringLength(str + 1) : 0; }
+void LTrim(std::string& s);
+void RTrim(std::string& s);
+void Trim(std::string& s);
+std::string LTrimCopy(std::string s);
+std::string RTrimCopy(std::string s);
+std::string TrimCopy(std::string s);
 
-void ltrim(std::string& s);
-void rtrim(std::string& s);
-void trim(std::string& s);
-std::string ltrim_copy(std::string s);
-std::string rtrim_copy(std::string s);
-std::string trim_copy(std::string s);
+void ToLower(std::string& string);
+void ToUpper(std::string& string);
+void ToLower(const std::string& string, std::string& result);
+void ToUpper(const std::string& string, std::string& result);
 
-void toLower(std::string& string);
-void toUpper(std::string& string);
-void toLower(const std::string& string, std::string& result);
-void toUpper(const std::string& string, std::string& result);
+bool IsNumber(const std::string& string);
 
-bool split(std::string& base, std::string& result, char separator);
-bool split(std::string& base, std::string& result, const std::string& separator);
+bool Split(std::string& base, std::string& result, char separator);
+bool Split(std::string& base, std::string& result, const std::string& separator);
 
-bool contains(const std::string& string, char c);
-bool contains(const std::string& string, const std::string& c);
+bool Contains(const std::string& string, char c);
+bool Contains(const std::string& string, const std::string& c);
 
-bool limitSize(std::string& string, U32 size);
-bool limitSize(const std::string& string, std::string& result, U32 size);
+bool LimitSize(std::string& string, U32 size);
+bool LimitSize(const std::string& string, std::string& result, U32 size);
 
-inline std::string toBoolString(bool value) { return (value) ? "true" : "false"; }
+inline std::string ToBoolString(bool value) { return (value) ? "true" : "false"; }
+inline bool FromBoolString(const std::string& string) { return string == "true" ? true : false; }
 
 template <typename T>
-std::string toString(const T& value)
+std::string ToString(const T& value)
 {
 	std::ostringstream oss;
 	oss << value;
 	return oss.str();
 }
 
-template <> inline std::string toString<std::string>(const std::string& value)
+template <> inline std::string ToString<std::string>(const std::string& value)
 {
 	return value;
 }
 
-template <> inline std::string toString<bool>(const bool& value)
+template <> inline std::string ToString<bool>(const bool& value)
 {
 	return (value) ? "1" : "0";
 }
 
-template <> inline std::string toString<char>(const char& value)
+template <> inline std::string ToString<char>(const char& value)
 {
 	return std::string(1, value);
 }
 
 template <typename T>
-T fromString(const std::string& string)
+T FromString(const std::string& string)
 {
 	T value;
 	std::istringstream iss(string);
@@ -69,73 +69,22 @@ T fromString(const std::string& string)
 	return value;
 }
 
-template <> inline std::string fromString<std::string>(const std::string& string)
+template <> inline std::string FromString<std::string>(const std::string& string)
 {
 	return string;
 }
 
-template <> inline bool fromString<bool>(const std::string& string)
+template <> inline bool FromString<bool>(const std::string& string)
 {
-	if (string == "true" || string == "1")
-	{
-		return true;
-	}
-	return false;
+	return (string == "1" || string == "true");
 }
 
-template <> inline char fromString<char>(const std::string& string)
+template <> inline char FromString<char>(const std::string& string)
 {
-	if (string.size() >= 1)
-	{
-		return string[0];
-	}
-	return '\0';
+	return (string.size() >= 1) ? string[0] : '\0';
 }
 
-// TODO : Fix string id hash
-
-/*
-class StringId
-{
-	public:
-		inline constexpr StringId() : mStringId(U32_Max) { }
-		inline constexpr StringId(U32 stringId) : mStringId(stringId) { }
-		inline constexpr StringId(const StringId& stringId) : mStringId(stringId.mStringId) { }
-		inline constexpr StringId(StringId&& stringId) : mStringId(stringId.mStringId) { stringId.mStringId = U32_Max; }
-
-		inline constexpr StringId& operator=(U32 stringId) { mStringId = stringId; return *this; }
-		inline constexpr StringId& operator=(const StringId& stringId) { mStringId = stringId.mStringId; return *this; }
-		inline constexpr StringId& operator=(StringId&& stringId) { if (this != &stringId) { mStringId = stringId.mStringId; stringId.mStringId = U32_Max; } return *this; }
-
-		inline constexpr bool operator==(U32 stringId) const { return mStringId == stringId; }
-		inline constexpr bool operator==(const StringId& stringId) const { return mStringId == stringId.mStringId; }
-
-		inline constexpr bool operator!=(U32 stringId) const { return !operator==(stringId); }
-		inline constexpr bool operator!=(const StringId& stringId) const { return !operator==(stringId); }
-
-		inline constexpr operator bool() const { return mStringId != U32_Max; }
-		inline constexpr bool isValid() const { return mStringId != U32_Max; }
-		inline bool isStored() const { return gStrings.find(mStringId) != gStrings.end(); }
-
-		const char* getStringFromStorage() const;
-
-		static StringId hash(const std::string& string);
-		static StringId hash(const char* string) { return StringId(Hash::CRC32(string)); }
-		static StringId hashAndStore(const std::string& string);
-		static StringId hashAndStore(const char* string);
-
-	private:
-		static std::unordered_map<U32, const char*> gStrings;
-
-	private:
-		U32 mStringId;
-};
-
-inline bool operator==(U32 id, const StringId& stringId)
-{
-	return stringId == id;
-}
-*/
+constexpr U32 StringLength(const char* const str) { return *str ? 1 + StringLength(str + 1) : 0; }
 
 template <U32 N>
 struct ConstexprStringStorage
@@ -173,6 +122,15 @@ struct ConstexprStringStorage
 		Add(s4);
 	}
 
+	constexpr ConstexprStringStorage(const char* s1, const char* s2, const char* s3, const char* s4, const char* s5)
+	{
+		Add(s1);
+		Add(s2);
+		Add(s3);
+		Add(s4);
+		Add(s5);
+	}
+
 	constexpr void Add(const char* s)
 	{
 		const U32 length = StringLength(s);
@@ -190,5 +148,25 @@ struct ConstexprStringStorage
 	char mData[N]{};
 	U32 mSize{ 0 };
 };
+
+namespace priv
+{
+	template <U8... digits> 
+	struct positive_to_chars 
+	{ 
+		static constexpr const char value[] = { ('0' + digits)..., 0 }; 
+	};
+
+	template <U32 rem, U8... digits>
+	struct explode : explode<rem / 10, rem % 10, digits...> {};
+
+	template <U8... digits>
+	struct explode<0, digits...> : positive_to_chars<digits...> {};
+
+} // namespace priv
+
+template <U32 number>
+struct ConstexprIntToString : priv::explode<number>{};
+
 
 } // namespace en

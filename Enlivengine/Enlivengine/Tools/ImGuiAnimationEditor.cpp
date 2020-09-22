@@ -197,7 +197,7 @@ void ImGuiAnimationEditor::StateMachine(AnimationStateMachine& stateMachine)
     {
         if (!stateMachine.SaveToFile(stateMachine.GetFilename()))
         {
-            LogError(en::LogChannel::Animation, 7, "Can't save file %s", stateMachine.GetFilename().c_str());
+            enLogError(en::LogChannel::Animation, "Can't save file {}", stateMachine.GetFilename().c_str());
         }
     }
 
@@ -372,7 +372,7 @@ void ImGuiAnimationEditor::SelectedNode(AnimationStateMachine& stateMachine, ax:
 
 			ImGui::Spacing();
 
-			static AnimInfo animNewMotion{ state.GetClipIndex(), Time::Zero };
+			static AnimInfo animNewMotion{ state.GetClipIndex(), Time::Zero() };
 			static int animClipNewMotion = 0;
 			ImGui::PreviewAnimationClip(stateMachine.GetAnimation().Get(), 30.0f, static_cast<U32>(animClipNewMotion), animNewMotion.clipFrameIndex, animNewMotion.accumulator, state.GetSpeedScale());
 			ImGui::PushItemWidth(90.0f);
@@ -588,7 +588,7 @@ void ImGuiAnimationEditor::SelectedLink(AnimationStateMachine& stateMachine, ax:
 					ImGui::PopItemWidth();
 				} break;
 				case AnimationStateMachine::Parameter::Type::Trigger: break;
-				default: assert(false); break;
+				default: enAssert(false); break;
 				}
 				ImGui::Unindent();
 			}
@@ -752,7 +752,7 @@ void ImGuiAnimationEditor::NewParameter(AnimationStateMachine& stateMachine)
 
 		// Type
 		static const char* paramTypes[] = { "Boolean", "Float", "Integer", "Trigger" };
-		assert(IM_ARRAYSIZE(paramTypes) == static_cast<int>(AnimationStateMachine::Parameter::Type::Count));
+		static_assert(IM_ARRAYSIZE(paramTypes) == static_cast<int>(AnimationStateMachine::Parameter::Type::Count));
 		int previousType = parameterType;
 		if (ImGui::Combo("Type##NewParameterTypeInput", &parameterType, paramTypes, IM_ARRAYSIZE(paramTypes)))
 		{
@@ -1052,7 +1052,7 @@ void ImGuiAnimationEditor::Preview(AnimationStateMachine& stateMachine)
 		}
 
 		// Update
-		mAnimationController.Update(seconds(ImGui::GetIO().DeltaTime));
+		mAnimationController.Update(Time::Seconds(ImGui::GetIO().DeltaTime));
 
 		// Render
 		if (mAnimationController.IsStateMachineValid() && mAnimationController.AreIndicesValid())
@@ -1268,7 +1268,7 @@ void ImGuiAnimationEditor::GetStatePinPositions(const AnimationStateMachine& sta
 			withState[transition.GetToState()].outputs.push_back(transitionIndex);
 		}
 	}
-	assert(withState[stateIndex].inputs.size() + withState[stateIndex].outputs.size() == 0);
+	enAssert(withState[stateIndex].inputs.size() + withState[stateIndex].outputs.size() == 0);
 
 	const U32 stateCount = stateMachine.GetStateCount();
 	for (U32 otherStateIndex = 0; otherStateIndex < stateCount; ++otherStateIndex)

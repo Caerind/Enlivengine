@@ -124,11 +124,44 @@ set(SRC_DOCTEST
 )
 source_group("doctest" FILES ${SRC_DOCTEST})
 
+# Dyma
+set(SRC_DYMA
+	Dyma/Dyma.cpp
+	Dyma/Dyma.hpp
+)
+source_group("Dyma" FILES ${SRC_DYMA})
+
 # entt
 set(SRC_ENTT
 	entt/entt.hpp
 )
 source_group("entt" FILES ${SRC_ENTT})
+
+# FastNoise
+set(SRC_FASTNOISE
+	FastNoise/FastNoise.cpp
+	FastNoise/FastNoise.h
+)
+source_group("FastNoise" FILES ${SRC_FASTNOISE})
+
+# fmt
+set(SRC_FMT
+	fmt/chrono.h
+	fmt/color.h
+	fmt/compile.h
+	fmt/core.h
+	fmt/format.cc
+	fmt/format.h
+	fmt/format-inl.h
+	fmt/locale.h
+	fmt/os.cc
+	fmt/os.h
+	fmt/ostream.h
+	fmt/posix.h
+	fmt/printf.h
+	fmt/ranges.h
+)
+source_group("fmt" FILES ${SRC_FMT})
 
 # IconFontCppHeaders
 set(SRC_ICONFONTCPPHEADERS
@@ -192,12 +225,11 @@ set(SRC_JSON
 )
 source_group("json" FILES ${SRC_JSON})
 
-# metrics-gui
-set(SRC_METRICSGUI
-	metrics_gui/metrics_gui.cpp
-	metrics_gui/metrics_gui.h
+# magic_enum
+set(SRC_MAGICENUM
+	magic_enum/magic_enum.hpp
 )
-source_group("metrics_gui" FILES ${SRC_METRICSGUI})
+source_group("magic_enum" FILES ${SRC_MAGICENUM})
 
 # miniz
 set(SRC_MINIZ
@@ -219,15 +251,18 @@ add_library(EnlivengineThirdParty STATIC
 	${SRC_DEBUGBREAK}
 	${SRC_DIRENT}
 	${SRC_DOCTEST}
+	${SRC_DYMA}
 	${SRC_ENTT}
+	${SRC_FASTNOISE}
+	${SRC_FMT}
 	${SRC_ICONFONTCPPHEADERS}
 	${SRC_IMGUI}
 	${SRC_IMGUIFILEDIALOG}
 	${SRC_IMGUINODEEDITOR}
 	${SRC_IMGUISFML}
 	${SRC_JSON}
+	${SRC_MAGICENUM}
 	${SRC_MINIZ}
-	${SRC_METRICSGUI}
 	${SRC_PUGIXML}
 )
 target_include_directories(EnlivengineThirdParty PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)

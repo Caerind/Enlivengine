@@ -42,25 +42,28 @@ void ImGuiInputEditor::Display()
 		"Event", 
 		"Key",
 		"Mouse",
+		"JoystickConnect",
+		"JoystickButton",
+		"JoystickAxis",
 		"And",
 		"Or",
 		"Not"
 	};
-	assert(IM_ARRAYSIZE(actionInputTypeNames) == static_cast<int>(ActionInputType::Count));
+	static_assert(IM_ARRAYSIZE(actionInputTypeNames) == static_cast<int>(ActionInputType::Count));
 
 	static const char* actionTypeNames[] = {
 		"Hold",
 		"Pressed",
 		"Released"
 	};
-	assert(IM_ARRAYSIZE(actionTypeNames) == static_cast<int>(ActionType::Count)); 
+	static_assert(IM_ARRAYSIZE(actionTypeNames) == static_cast<int>(ActionType::Count));
 	
 	static const char* actionInputLogicalOperatorNames[] = {
 		"And",
 		"Or",
 		"Not"
 	};
-	assert(IM_ARRAYSIZE(actionInputLogicalOperatorNames) == static_cast<int>(ActionInputLogicalOperator::Count));
+	static_assert(IM_ARRAYSIZE(actionInputLogicalOperatorNames) == static_cast<int>(ActionInputLogicalOperator::Count));
 
 	static const char* mouseButtonNames[] = {
 		"Left",
@@ -69,7 +72,7 @@ void ImGuiInputEditor::Display()
 		"XButton1",
 		"XButton2"
 	};
-	assert(IM_ARRAYSIZE(mouseButtonNames) == static_cast<int>(sf::Mouse::Button::ButtonCount));
+	static_assert(IM_ARRAYSIZE(mouseButtonNames) == static_cast<int>(sf::Mouse::Button::ButtonCount));
 
 	static bool keysSet = false;
 	static std::vector<const char*> keyNames;
@@ -83,7 +86,7 @@ void ImGuiInputEditor::Display()
 		}
 		keysSet = true;
 	}
-	assert(keyNames.size() == static_cast<std::size_t>(sf::Keyboard::Key::KeyCount));
+	enAssert(keyNames.size() == static_cast<std::size_t>(sf::Keyboard::Key::KeyCount));
 
 	ActionSystem& actionSystem = Application::GetInstance().GetActionSystem();
 
@@ -150,7 +153,7 @@ void ImGuiInputEditor::Display()
 
 			ImGui::Combo("Input##NewActionInput", &newActionInputAIndex, inputNames.data(), static_cast<int>(inputNames.size()));
 		} break;
-		default: assert(false); break;
+		default: enAssert(false); break;
 		}
 
 		bool validNewInput = true;
@@ -185,9 +188,9 @@ void ImGuiInputEditor::Display()
 			{
 				switch (actionInputType)
 				{
-				case ActionInputType::Variable: assert(false); break;
-				case ActionInputType::Function: assert(false); break;
-				case ActionInputType::Event: assert(false); break;
+				case ActionInputType::Variable: enAssert(false); break;
+				case ActionInputType::Function: enAssert(false); break;
+				case ActionInputType::Event: enAssert(false); break;
 				case ActionInputType::Key: actionSystem.AddInputKey(std::string(newActionInputName), static_cast<sf::Keyboard::Key>(newActionInputKey), static_cast<ActionType>(newActionInputActionType)); break;
 				case ActionInputType::Mouse: actionSystem.AddInputMouse(std::string(newActionInputName), static_cast<sf::Mouse::Button>(newActionInputButton), static_cast<ActionType>(newActionInputActionType)); break;
 				case ActionInputType::And:
@@ -209,7 +212,7 @@ void ImGuiInputEditor::Display()
 					const U32 inputAID = actionSystem.GetInputByIndex(newActionInputAIndex)->GetID();
 					actionSystem.AddInputNot(std::string(newActionInputName), inputAID);
 				} break;
-				default: assert(false); break;
+				default: enAssert(false); break;
 				}
 
 				
@@ -280,7 +283,7 @@ void ImGuiInputEditor::Display()
 				}
 				else
 				{
-					assert(false);
+					enAssert(false);
 				}
 			} break;
 			case ActionInputType::Mouse:
@@ -301,8 +304,20 @@ void ImGuiInputEditor::Display()
 				}
 				else
 				{
-					assert(false);
+					enAssert(false);
 				}
+			} break;
+			case ActionInputType::JoystickConnect:
+			{
+
+			} break;
+			case ActionInputType::JoystickButton:
+			{
+
+			} break;
+			case ActionInputType::JoystickAxis:
+			{
+
 			} break;
 			case ActionInputType::And:
 			case ActionInputType::Or:
@@ -342,10 +357,10 @@ void ImGuiInputEditor::Display()
 				}
 				else
 				{
-					assert(false);
+					enAssert(false);
 				}
 			} break;
-                        default: assert(false); break;
+                        default: enAssert(false); break;
 			}
 
 			if (ImGui::Button("Remove"))

@@ -1,21 +1,70 @@
 #include <Enlivengine/Application/PathManager.hpp>
 
+#include <filesystem>
+#include <Enlivengine/System/Assert.hpp>
+
 namespace en
 {
 
 PathManager::PathManager()
-	: mScreenshotPath("")
+	: mExecutablePath("")
+	, mScreenshotPath("")
 {
+}
+
+void PathManager::SetExecutablePath(const char* executablePath)
+{
+	if (executablePath != nullptr)
+	{
+		mExecutablePath = executablePath;
+		std::filesystem::path cleanExePath = mExecutablePath;
+		mExecutablePath = cleanExePath.parent_path().generic_string();
+	}
 }
 
 const std::string& PathManager::GetAssetsPath() const
 {
 #ifdef ENLIVE_DEBUG
-	static std::string assetsPath = "../../Assets/";
+	static bool assetsPathDefined = false;
+	static std::string assetsPath = "";
+
+	if (!assetsPathDefined)
+	{
+		std::filesystem::path closeAssetsPath = std::filesystem::path(mExecutablePath + "/Assets");
+		std::filesystem::path farAssetsPath = std::filesystem::path(mExecutablePath + "/../../../Assets");
+		if (std::filesystem::exists(closeAssetsPath))
+		{
+			assetsPath = "Assets/";
+		}
+		else if (std::filesystem::exists(farAssetsPath))
+		{
+			assetsPath = "../../Assets/";
+		}
+
+		assetsPathDefined = true;
+	}
 #else
-	static std::string assetsPath = "Assets/";
+	static const std::string assetsPath = "Assets/";
 #endif // ENLIVE_DEBUG
+
 	return assetsPath;
+}
+
+const std::string& PathManager::GetAssetsPathAbsolute() const
+{
+	static bool initialized = false;
+	static std::string assetsPathAbsolute;
+	if (!initialized)
+	{
+		std::filesystem::path p = GetAssetsPath();
+		if (!p.is_absolute())
+		{
+			p = std::filesystem::absolute(p);
+		}
+		assetsPathAbsolute = p.string();
+		std::replace(assetsPathAbsolute.begin(), assetsPathAbsolute.end(), '\\', '/');
+	}
+	return assetsPathAbsolute;
 }
 
 const std::string& PathManager::GetFontsPath() const

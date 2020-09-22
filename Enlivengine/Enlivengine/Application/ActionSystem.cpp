@@ -9,7 +9,7 @@ namespace en
 
 ActionInput::ActionInput(const std::string& name)
     : mName(name)
-    , mID(Hash::CRC32(name.c_str()))
+    , mID(Hash::SlowHash(name.c_str()))
     , mActive(false) 
 {
 }
@@ -113,10 +113,11 @@ bool ActionInputEvent::IsCurrentlyActive(ActionSystem* system) const
 	return false;
 }
 
-ActionInputKey::ActionInputKey(const std::string& name, sf::Keyboard::Key key, ActionType actionType /*= ActionType::Pressed*/)
+ActionInputKey::ActionInputKey(const std::string& name, sf::Keyboard::Key key, ActionType actionType /*= ActionType::Pressed*/, U32 keyCombination /*= static_cast<U32>(KeyCombination::None)*/)
 	: ActionInput(name)
 	, mKey(key)
 	, mActionType(actionType)
+	, mKeyCombination(keyCombination)
 {
 }
 
@@ -129,7 +130,26 @@ bool ActionInputKey::IsCurrentlyActive(ActionSystem* system) const
 {
 	if (mActionType == ActionType::Hold)
 	{
-		return sf::Keyboard::isKeyPressed(mKey);
+		if (sf::Keyboard::isKeyPressed(mKey))
+		{
+			if ((mKeyCombination & static_cast<U32>(KeyCombination::Ctrl)) != 0 && !(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)))
+			{
+				return false;
+			}
+			if ((mKeyCombination & static_cast<U32>(KeyCombination::Alt)) != 0 && !(sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)))
+			{
+				return false;
+			}
+			if ((mKeyCombination & static_cast<U32>(KeyCombination::Shift)) != 0 && !(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift)))
+			{
+				return false;
+			}
+			if ((mKeyCombination & static_cast<U32>(KeyCombination::System)) != 0 && !(sf::Keyboard::isKeyPressed(sf::Keyboard::LSystem) || sf::Keyboard::isKeyPressed(sf::Keyboard::RSystem)))
+			{
+				return false;
+			}
+			return true;
+		}
 	}
 	else if (system != nullptr)
 	{
@@ -141,6 +161,22 @@ bool ActionInputKey::IsCurrentlyActive(ActionSystem* system) const
 			{
 				if (event.type == sf::Event::EventType::KeyPressed && event.key.code == mKey)
 				{
+					if ((mKeyCombination & static_cast<U32>(KeyCombination::Ctrl)) != 0 && !event.key.control)
+					{
+						return false;
+					}
+					if ((mKeyCombination & static_cast<U32>(KeyCombination::Alt)) != 0 && !event.key.alt)
+					{
+						return false;
+					}
+					if ((mKeyCombination & static_cast<U32>(KeyCombination::Shift)) != 0 && !event.key.shift)
+					{
+						return false;
+					}
+					if ((mKeyCombination & static_cast<U32>(KeyCombination::System)) != 0 && !event.key.system)
+					{
+						return false;
+					}
 					return true;
 				}
 			}
@@ -148,6 +184,22 @@ bool ActionInputKey::IsCurrentlyActive(ActionSystem* system) const
 			{
 				if (event.type == sf::Event::EventType::KeyReleased && event.key.code == mKey)
 				{
+					if ((mKeyCombination & static_cast<U32>(KeyCombination::Ctrl)) != 0 && !event.key.control)
+					{
+						return false;
+					}
+					if ((mKeyCombination & static_cast<U32>(KeyCombination::Alt)) != 0 && !event.key.alt)
+					{
+						return false;
+					}
+					if ((mKeyCombination & static_cast<U32>(KeyCombination::Shift)) != 0 && !event.key.shift)
+					{
+						return false;
+					}
+					if ((mKeyCombination & static_cast<U32>(KeyCombination::System)) != 0 && !event.key.system)
+					{
+						return false;
+					}
 					return true;
 				}
 			}
@@ -166,6 +218,11 @@ ActionType ActionInputKey::GetType() const
 	return mActionType;
 }
 
+U32 ActionInputKey::GetKeyCombination() const
+{
+	return mKeyCombination;
+}
+
 void ActionInputKey::SetKey(sf::Keyboard::Key key)
 {
 	mKey = key;
@@ -174,6 +231,11 @@ void ActionInputKey::SetKey(sf::Keyboard::Key key)
 void ActionInputKey::SetActionType(ActionType actionType)
 {
 	mActionType = actionType;
+}
+
+void ActionInputKey::SetKeyCombination(U32 keyCombination)
+{
+	mKeyCombination = keyCombination;
 }
 
 ActionInputMouse::ActionInputMouse(const std::string& name, sf::Mouse::Button button, ActionType actionType /*= ActionType::Pressed*/)
@@ -239,6 +301,202 @@ void ActionInputMouse::SetActionType(ActionType actionType)
 	mActionType = actionType;
 }
 
+ActionInputJoystickConnect::ActionInputJoystickConnect(const std::string& name, U32 joystickID, ActionType actionType /*= ActionType::Pressed*/)
+	: ActionInput(name)
+	, mJoystickID(joystickID)
+	, mActionType(actionType)
+{
+}
+
+ActionInputType ActionInputJoystickConnect::GetInputType() const
+{
+	return ActionInputType::JoystickConnect;
+}
+
+bool ActionInputJoystickConnect::IsCurrentlyActive(ActionSystem* system) const
+{
+	if (mActionType == ActionType::Hold)
+	{
+		return sf::Joystick::isConnected(static_cast<unsigned int>(mJoystickID));
+	}
+	else if (system != nullptr)
+	{
+		const U32 eventCount = system->GetEventCount();
+		for (U32 i = 0; i < eventCount; ++i)
+		{
+			const sf::Event& event = system->GetEvent(i);
+			if (mActionType == ActionType::Pressed)
+			{
+				if (event.type == sf::Event::EventType::JoystickConnected && event.joystickConnect.joystickId == static_cast<unsigned int>(mJoystickID))
+				{
+					return true;
+				}
+			}
+			else if (mActionType == ActionType::Released)
+			{
+				if (event.type == sf::Event::EventType::JoystickDisconnected && event.joystickConnect.joystickId == static_cast<unsigned int>(mJoystickID))
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+U32 ActionInputJoystickConnect::GetJoystickID() const
+{
+	return mJoystickID;
+}
+
+ActionType ActionInputJoystickConnect::GetType() const
+{
+	return mActionType;
+}
+
+void ActionInputJoystickConnect::SetJoystickID(U32 joystickID)
+{
+	mJoystickID = joystickID;
+}
+
+void ActionInputJoystickConnect::SetActionType(ActionType actionType)
+{
+	mActionType = actionType;
+}
+
+ActionInputJoystickButton::ActionInputJoystickButton(const std::string& name, U32 joystickID, U32 buttonID, ActionType actionType /*= ActionType::Pressed*/)
+	: ActionInput(name)
+	, mJoystickID(joystickID)
+	, mButtonID(buttonID)
+	, mActionType(actionType)
+{
+}
+
+ActionInputType ActionInputJoystickButton::GetInputType() const
+{
+	return ActionInputType::JoystickButton;
+}
+
+bool ActionInputJoystickButton::IsCurrentlyActive(ActionSystem* system) const
+{
+	if (mActionType == ActionType::Hold)
+	{
+		return sf::Joystick::isButtonPressed(static_cast<unsigned int>(mJoystickID), static_cast<unsigned int>(mButtonID));
+	}
+	else if (system != nullptr)
+	{
+		const U32 eventCount = system->GetEventCount();
+		for (U32 i = 0; i < eventCount; ++i)
+		{
+			const sf::Event& event = system->GetEvent(i);
+			if (mActionType == ActionType::Pressed)
+			{
+				if (event.type == sf::Event::EventType::JoystickButtonPressed 
+					&& event.joystickButton.joystickId == static_cast<unsigned int>(mJoystickID)
+					&& event.joystickButton.button == static_cast<unsigned int>(mButtonID))
+				{
+					return true;
+				}
+			}
+			else if (mActionType == ActionType::Released)
+			{
+				if (event.type == sf::Event::EventType::JoystickButtonReleased
+					&& event.joystickButton.joystickId == static_cast<unsigned int>(mJoystickID)
+					&& event.joystickButton.button == static_cast<unsigned int>(mButtonID))
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+U32 ActionInputJoystickButton::GetJoystickID() const
+{
+	return mJoystickID;
+}
+
+U32 ActionInputJoystickButton::GetButtonID() const
+{
+	return mButtonID;
+}
+
+ActionType ActionInputJoystickButton::GetType() const
+{
+	return mActionType;
+}
+
+void ActionInputJoystickButton::SetJoystickID(U32 joystickID)
+{
+	mJoystickID = joystickID;
+}
+
+void ActionInputJoystickButton::SetButtonID(U32 buttonID)
+{
+	mButtonID = buttonID;
+}
+
+void ActionInputJoystickButton::SetActionType(ActionType actionType)
+{
+	mActionType = actionType;
+}
+
+ActionInputJoysticAxis::ActionInputJoysticAxis(const std::string& name, U32 joystickID, sf::Joystick::Axis axis)
+	: ActionInput(name)
+	, mJoystickID(joystickID)
+	, mAxis(axis)
+{
+}
+
+ActionInputType ActionInputJoysticAxis::GetInputType() const
+{
+	return ActionInputType::JoystickAxis;
+}
+
+bool ActionInputJoysticAxis::IsCurrentlyActive(ActionSystem* system) const
+{
+	if (!sf::Joystick::hasAxis(mJoystickID, mAxis))
+	{
+		return false;
+	}
+	else if (system != nullptr)
+	{
+		const U32 eventCount = system->GetEventCount();
+		for (U32 i = 0; i < eventCount; ++i)
+		{
+			const sf::Event& event = system->GetEvent(i);
+			if (event.type == sf::Event::EventType::JoystickMoved
+				&& event.joystickMove.joystickId == static_cast<unsigned int>(mJoystickID)
+				&& event.joystickMove.axis == mAxis)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+U32 ActionInputJoysticAxis::GetJoystickID() const
+{
+	return mJoystickID;
+}
+
+sf::Joystick::Axis ActionInputJoysticAxis::GetAxis() const
+{
+	return mAxis;
+}
+
+void ActionInputJoysticAxis::SetJoystickID(U32 joystickID)
+{
+	mJoystickID = joystickID;
+}
+
+void ActionInputJoysticAxis::SetAxis(sf::Joystick::Axis axis)
+{
+	mAxis = axis;
+}
+
 ActionInputLogical::ActionInputLogical(const std::string& name, ActionInputLogicalOperator logic, U32 inputAID, U32 inputBID /*= U32_Max*/)
 	: ActionInput(name)
 	, mLogicOperator(logic)
@@ -257,7 +515,7 @@ ActionInputType ActionInputLogical::GetInputType() const
 	case ActionInputLogicalOperator::And: return ActionInputType::And;
 	case ActionInputLogicalOperator::Or: return ActionInputType::Or;
 	case ActionInputLogicalOperator::Not: return ActionInputType::Not;
-	default: assert(false);
+	default: enAssert(false);
 	}
 	return ActionInputType::Not;
 }
@@ -276,7 +534,7 @@ bool ActionInputLogical::IsCurrentlyActive(ActionSystem* system) const
 		case ActionInputLogicalOperator::And: return system->GetInputByIndex(mInputAIndex)->IsActive() && system->GetInputByIndex(mInputBIndex)->IsActive();
 		case ActionInputLogicalOperator::Or: return system->GetInputByIndex(mInputAIndex)->IsActive() || system->GetInputByIndex(mInputBIndex)->IsActive();
 		case ActionInputLogicalOperator::Not: return !system->GetInputByIndex(mInputAIndex)->IsActive();
-		default: assert(false);
+		default: enAssert(false);
 		}
 	}
 	return false;
@@ -368,13 +626,13 @@ void ActionSystem::Update()
 
 bool ActionSystem::IsInputActive(const std::string& inputName) const
 {
-    assert(IsInputExisting(inputName));
-    return IsInputActive(Hash::CRC32(inputName.c_str()));
+	enAssert(IsInputExisting(inputName));
+    return IsInputActive(Hash::SlowHash(inputName.c_str()));
 }
 
 bool ActionSystem::IsInputActive(U32 inputID) const
 {
-    assert(IsInputExisting(inputID));
+	enAssert(IsInputExisting(inputID));
     const U32 inputCount = GetInputCount();
     for (U32 i = 0; i < inputCount; ++i)
     {
@@ -391,7 +649,7 @@ bool ActionSystem::IsInputActive(U32 inputID) const
 
 bool ActionSystem::IsInputExisting(const std::string& inputName) const
 {
-    return IsInputExisting(Hash::CRC32(inputName.c_str()));
+    return IsInputExisting(Hash::SlowHash(inputName.c_str()));
 }
 
 bool ActionSystem::IsInputExisting(U32 inputID) const
@@ -422,14 +680,29 @@ void ActionSystem::AddInputEvent(const std::string& name, ActionInputEvent::Func
 	AddInput_Internal(new ActionInputEvent(name, eventValidator));
 }
 
-void ActionSystem::AddInputKey(const std::string& name, sf::Keyboard::Key key, ActionType actionType /*= ActionType::Pressed*/)
+void ActionSystem::AddInputKey(const std::string& name, sf::Keyboard::Key key, ActionType actionType /*= ActionType::Pressed*/, U32 keyCombination /*= static_cast<U32>(ActionInputKey::KeyCombination::None)*/)
 {
-	AddInput_Internal(new ActionInputKey(name, key, actionType));
+	AddInput_Internal(new ActionInputKey(name, key, actionType, keyCombination));
 }
 
 void ActionSystem::AddInputMouse(const std::string& name, sf::Mouse::Button button, ActionType actionType /*= ActionType::Pressed*/)
 {
 	AddInput_Internal(new ActionInputMouse(name, button, actionType));
+}
+
+void ActionSystem::AddInputJoystickConnect(const std::string& name, U32 joystickID, ActionType actionType /*= ActionType::Pressed*/)
+{
+	AddInput_Internal(new ActionInputJoystickConnect(name, joystickID, actionType));
+}
+
+void ActionSystem::AddInputJoystickButton(const std::string& name, U32 joystickID, U32 buttonID, ActionType actionType /*= ActionType::Pressed*/)
+{
+	AddInput_Internal(new ActionInputJoystickButton(name, joystickID, buttonID, actionType));
+}
+
+void ActionSystem::AddInputJoystickAxis(const std::string& name, U32 joystickID, sf::Joystick::Axis axis)
+{
+	AddInput_Internal(new ActionInputJoysticAxis(name, joystickID, axis));
 }
 
 void ActionSystem::AddInputAnd(const std::string& name, U32 inputAID, U32 inputBID)
@@ -454,13 +727,13 @@ U32 ActionSystem::GetInputCount() const
 
 const ActionInput* ActionSystem::GetInputByIndex(U32 index) const
 {
-    assert(index < GetInputCount());
+	enAssert(index < GetInputCount());
     return mInputs[index];
 }
 
 const ActionInput* ActionSystem::GetInputByName(const std::string& inputName) const
 {
-    return GetInputByID(Hash::CRC32(inputName.c_str()));
+    return GetInputByID(Hash::SlowHash(inputName.c_str()));
 }
 
 const ActionInput* ActionSystem::GetInputByID(U32 inputID) const
@@ -478,7 +751,7 @@ const ActionInput* ActionSystem::GetInputByID(U32 inputID) const
 
 void ActionSystem::RemoveInputByIndex(U32 index)
 {
-	assert(index < GetInputCount());
+	enAssert(index < GetInputCount());
 	delete mInputs[index];
 	mInputs[index] = nullptr;
 	mInputs.erase(mInputs.begin() + index);
@@ -487,7 +760,7 @@ void ActionSystem::RemoveInputByIndex(U32 index)
 
 U32 ActionSystem::GetInputIndexFromName(const std::string& inputName) const
 {
-	return GetInputIndexFromID(Hash::CRC32(inputName.c_str()));
+	return GetInputIndexFromID(Hash::SlowHash(inputName.c_str()));
 }
 
 U32 ActionSystem::GetInputIndexFromID(U32 inputID) const
@@ -529,7 +802,7 @@ U32 ActionSystem::GetEventCount() const
 
 const sf::Event& ActionSystem::GetEvent(U32 index) const
 {
-    assert(index < GetEventCount());
+	enAssert(index < GetEventCount());
     return mEvents[index];
 }
 
@@ -540,7 +813,7 @@ void ActionSystem::ClearEvents()
 
 ActionInput* ActionSystem::GetInputByIndexNonConst(U32 index)
 {
-	assert(index < GetInputCount());
+	enAssert(index < GetInputCount());
 	return mInputs[index];
 }
 
@@ -582,8 +855,8 @@ void ActionSystem::Update_Internal()
     {
         std::sort(mInputs.begin(), mInputs.end(), [](const ActionInput* a, const ActionInput* b)
         {
-            assert(a != nullptr); //if (!a) return false;
-            assert(b != nullptr); //if (!b) return true;
+			enAssert(a != nullptr); //if (!a) return false;
+			enAssert(b != nullptr); //if (!b) return true;
             const U32 pA = a->GetPriorityLevel();
             const U32 pB = b->GetPriorityLevel();
             if (pA == pB)

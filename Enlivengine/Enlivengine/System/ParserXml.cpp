@@ -8,19 +8,13 @@ ParserXml::ParserXml()
 {
 }
 
-ParserXml::ParserXml(const std::string& filename)
-	: mFilename("")
-{
-	loadFromFile(filename);
-}
-
-void ParserXml::newFile()
+void ParserXml::NewFile()
 {
 	mDocument.reset();
 	mCurrentNode = mDocument.root();
 }
 
-bool ParserXml::loadFromFile(const std::string& filename)
+bool ParserXml::LoadFromFile(const std::string& filename)
 {
 	if (mDocument.load_file(filename.c_str()))
 	{
@@ -31,205 +25,221 @@ bool ParserXml::loadFromFile(const std::string& filename)
 	return false;
 }
 
-bool ParserXml::saveToFile(const std::string& filename)
+bool ParserXml::SaveToFile(const std::string& filename)
 {
-	if (!filename.empty())
-	{
-		return mDocument.save_file(filename.c_str());
-	}
-	return mDocument.save_file(mFilename.c_str());
+	return mDocument.save_file(!filename.empty() ? filename.c_str() : mFilename.c_str());
 }
 
-bool ParserXml::readNode(const std::string& childName)
-{
-	const char* n = childName.c_str();
-	if (mCurrentNode.child(n))
-	{
-		mCurrentNode = mCurrentNode.child(n);
-		return true;
-	}
-	return false;
-}
-
-bool ParserXml::readFirstNode()
-{
-	if (mCurrentNode.first_child())
-	{
-		mCurrentNode = mCurrentNode.first_child();
-		return true;
-	}
-	return false;
-}
-
-bool ParserXml::nextSibling(const std::string& sibling)
-{
-    pugi::xml_node n;
-    if (sibling == "")
-    {
-        n = mCurrentNode.next_sibling();
-    }
-    else
-    {
-        n = mCurrentNode.next_sibling(sibling.c_str());
-    }
-
-	if (n)
-	{
-		mCurrentNode = n;
-		return true;
-	}
-	return false;
-}
-
-void ParserXml::closeNode()
-{
-	mCurrentNode = mCurrentNode.parent();
-}
-
-bool ParserXml::hasChild(const std::string& nodeName) const
+bool ParserXml::HasNode(const std::string& nodeName) const
 {
 	return mCurrentNode.child(nodeName.c_str());
 }
 
-bool ParserXml::createChild(const std::string& nodeName)
+bool ParserXml::ReadNode(const std::string& nodeName)
 {
-	pugi::xml_node n = mCurrentNode.append_child(nodeName.c_str());
-	if (n)
+	if (auto node = mCurrentNode.child(nodeName.c_str()))
+	{
+		mCurrentNode = node;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool ParserXml::ReadFirstNode()
+{
+	if (auto n = mCurrentNode.first_child())
 	{
 		mCurrentNode = n;
 		return true;
 	}
-	return false;
+	else
+	{
+		return false;
+	}
 }
 
-bool ParserXml::removeChild(const std::string& nodeName)
+bool ParserXml::NextSibling(const std::string& sibling)
+{
+	if (auto n = ((sibling == "") ? mCurrentNode.next_sibling() : mCurrentNode.next_sibling(sibling.c_str())))
+	{
+		mCurrentNode = n;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void ParserXml::CloseNode()
+{
+	mCurrentNode = mCurrentNode.parent();
+}
+
+bool ParserXml::CreateNode(const std::string& nodeName)
+{
+	if (auto n = mCurrentNode.append_child(nodeName.c_str()))
+	{
+		mCurrentNode = n;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool ParserXml::RemoveNode(const std::string& nodeName)
 {
 	return mCurrentNode.remove_child(nodeName.c_str());
 }
 
-bool ParserXml::hasAttribute(const std::string& attributeName) const
+bool ParserXml::HasAttribute(const std::string& attributeName) const
 {
 	if (mCurrentNode.attribute(attributeName.c_str()))
 	{
 		return true;
 	}
-	return false;
+	else
+	{
+		return false;
+	}
 }
 
-void ParserXml::setAttribute(const std::string& attributeName, const std::string& value)
+void ParserXml::SetAttribute(const std::string& attributeName, const std::string& value)
 {
-	const char* n = attributeName.c_str();
-	if (mCurrentNode.attribute(n))
+	const char* val = value.c_str();
+	const char* attrName = attributeName.c_str();
+	if (auto attr = mCurrentNode.attribute(attrName))
 	{
-		mCurrentNode.attribute(n) = value.c_str();
+		attr = val;
 	}
 	else
 	{
-		mCurrentNode.append_attribute(n) = value.c_str();
+		mCurrentNode.append_attribute(attrName) = val;
 	}
 }
 
-void ParserXml::setAttribute(const std::string& attributeName, I32 value)
+void ParserXml::SetAttribute(const std::string& attributeName, I32 value)
 {
-	const char* n = attributeName.c_str();
-	if (mCurrentNode.attribute(n))
+	const char* attrName = attributeName.c_str();
+	if (auto attr = mCurrentNode.attribute(attrName))
 	{
-		mCurrentNode.attribute(n) = value;
+		attr = value;
 	}
 	else
 	{
-		mCurrentNode.append_attribute(n) = value;
+		mCurrentNode.append_attribute(attrName) = value;
 	}
 }
 
-void ParserXml::setAttribute(const std::string& attributeName, U32 value)
+void ParserXml::SetAttribute(const std::string& attributeName, U32 value)
 {
-	const char* n = attributeName.c_str();
-	if (mCurrentNode.attribute(n))
+	const char* attrName = attributeName.c_str();
+	if (auto attr = mCurrentNode.attribute(attrName))
 	{
-		mCurrentNode.attribute(n) = value;
+		attr = value;
 	}
 	else
 	{
-		mCurrentNode.append_attribute(n) = value;
+		mCurrentNode.append_attribute(attrName) = value;
 	}
 }
 
-void ParserXml::setAttribute(const std::string& attributeName, F32 value)
+void ParserXml::SetAttribute(const std::string& attributeName, F32 value)
 {
-	const char* n = attributeName.c_str();
-	if (mCurrentNode.attribute(n))
+	const char* attrName = attributeName.c_str();
+	if (auto attr = mCurrentNode.attribute(attrName))
 	{
-		mCurrentNode.attribute(n) = value;
+		attr = value;
 	}
 	else
 	{
-		mCurrentNode.append_attribute(n) = value;
+		mCurrentNode.append_attribute(attrName) = value;
 	}
 }
 
-void ParserXml::getAttribute(const std::string& attributeName, std::string& value)
+bool ParserXml::GetAttribute(const std::string& attributeName, std::string& value) const
 {
-	const char* n = attributeName.c_str();
-	if (mCurrentNode.attribute(n))
+	if (auto attr = mCurrentNode.attribute(attributeName.c_str()))
 	{
-		value = mCurrentNode.attribute(n).as_string();
+		value = attr.as_string();
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
-void ParserXml::getAttribute(const std::string& attributeName, I32& value)
+bool ParserXml::GetAttribute(const std::string& attributeName, I32& value) const
 {
-	const char* n = attributeName.c_str();
-	if (mCurrentNode.attribute(n))
+	if (auto attr = mCurrentNode.attribute(attributeName.c_str()))
 	{
-		value = mCurrentNode.attribute(n).as_int();
+		value = attr.as_int();
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
-void ParserXml::getAttribute(const std::string& attributeName, U32& value)
+bool ParserXml::GetAttribute(const std::string& attributeName, U32& value) const
 {
-	const char* n = attributeName.c_str();
-	if (mCurrentNode.attribute(n))
+	if (auto attr = mCurrentNode.attribute(attributeName.c_str()))
 	{
-		value = mCurrentNode.attribute(n).as_uint();
+		value = attr.as_uint();
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
-void ParserXml::getAttribute(const std::string& attributeName, F32& value)
+bool ParserXml::GetAttribute(const std::string& attributeName, F32& value) const
 {
-	const char* n = attributeName.c_str();
-	if (mCurrentNode.attribute(n))
+	if (auto attr = mCurrentNode.attribute(attributeName.c_str()))
 	{
-		value = mCurrentNode.attribute(n).as_float();
+		value = attr.as_float();
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
-void ParserXml::createAttribute(const std::string& attributeName)
+void ParserXml::CreateAttribute(const std::string& attributeName)
 {
 	mCurrentNode.append_attribute(attributeName.c_str());
 }
 
-void ParserXml::removeAttribute(const std::string& attributeName)
+void ParserXml::RemoveAttribute(const std::string& attributeName)
 {
 	mCurrentNode.remove_attribute(attributeName.c_str());
 }
 
-void ParserXml::setValue(const std::string& value)
+void ParserXml::SetValue(const std::string& value)
 {
 	mCurrentNode.text().set(value.c_str());
 }
 
-void ParserXml::getValue(std::string& value)
+void ParserXml::GetValue(std::string& value) const
 {
 	value = mCurrentNode.text().as_string();
 }
 
-const std::string ParserXml::getNodeName() const
+const std::string ParserXml::GetNodeName() const
 {
 	return mCurrentNode.name();
 }
 
-const std::string& ParserXml::getFilename() const
+const std::string& ParserXml::GetFilename() const
 {
 	return mFilename;
 }

@@ -73,19 +73,19 @@ bool Ray::contains(const Vector3f& point) const
 	{
 		return true;
 	}
-	F32 t = (point - mOrigin).getLength();
+	F32 t = (point - mOrigin).GetLength();
 	return (mOrigin + t * mDirection) == point;
 }
 
 bool Ray::intersects(const AABB& box, F32* distance) const
 {
-	assert(mDirection.x != 0.0f);
-	assert(mDirection.y != 0.0f);
-	assert(mDirection.z != 0.0f);
+	enAssert(mDirection.x != 0.0f);
+	enAssert(mDirection.y != 0.0f);
+	enAssert(mDirection.z != 0.0f);
 	Vector3f t1 = (box.getMinimum() - mOrigin) / mDirection;
 	Vector3f t2 = (box.getMaximum() - mOrigin) / mDirection;
-	Vector3f vmax = Vector3f::maximum(t1, t2);
-	Vector3f vmin = Vector3f::minimum(t1, t2);
+	Vector3f vmax = Vector3f::Maximum(t1, t2);
+	Vector3f vmin = Vector3f::Minimum(t1, t2);
 	F32 tmax = Math::Min(vmax.x, Math::Min(vmax.y, vmax.z));
 	F32 tmin = Math::Min(vmin.x, Math::Min(vmin.y, vmin.z));
 	if (distance != nullptr)
@@ -97,7 +97,7 @@ bool Ray::intersects(const AABB& box, F32* distance) const
 
 bool Ray::intersects(const Sphere& sphere, F32* distance) const
 {
-	F32 i = mDirection.dotProduct(sphere.getCenter() - mOrigin);
+	F32 i = mDirection.DotProduct(sphere.getCenter() - mOrigin);
 	if (i < 0.0f)
 	{
 		if (distance != nullptr)
@@ -107,7 +107,7 @@ bool Ray::intersects(const Sphere& sphere, F32* distance) const
 		return false;
 	}
 	Vector3f interior = mOrigin + mDirection * i;
-	F32 lSquared = (sphere.getRadius() * sphere.getRadius()) - (interior - sphere.getCenter()).getSquaredLength();
+	F32 lSquared = (sphere.getRadius() * sphere.getRadius()) - (interior - sphere.getCenter()).GetSquaredLength();
 	if (lSquared < 0.0f)
 	{
 		if (distance != nullptr)
@@ -125,7 +125,7 @@ bool Ray::intersects(const Sphere& sphere, F32* distance) const
 
 bool Ray::intersects(const Plane& plane, F32* distance) const
 {
-	F32 den = mDirection.dotProduct(plane.getNormal());
+	F32 den = mDirection.DotProduct(plane.getNormal());
 	if (Math::Equals(den, 0.0f))
 	{
 		if (distance != nullptr)
@@ -134,7 +134,7 @@ bool Ray::intersects(const Plane& plane, F32* distance) const
 		}
 		return false;
 	}
-	F32 nom = mOrigin.dotProduct(plane.getNormal()) + plane.getConstant();
+	F32 nom = mOrigin.DotProduct(plane.getNormal()) + plane.getConstant();
 	F32 t = -(nom / den);
 	if (distance != nullptr)
 	{

@@ -4,184 +4,229 @@
 
 #ifdef ENLIVE_ENABLE_LOG
 
-#include <cstdarg>
 #include <fstream>
 #include <vector>
+#include <string>
 
-#include <Enlivengine/System/PlatformDetection.hpp>
+#include <fmt/format.h>
+
 #include <Enlivengine/System/Singleton.hpp>
-
-// TODO : Encapsulate info in class Message for 'post-filter' (now its filtered out on write())
+#include <Enlivengine/System/MetaEnum.hpp>
 
 namespace en
 {
 
-enum class LogType : U32
+enum class LogType
 {
-	None = 0,
-	Info = 1 << 0,
-	Warning = 1 << 1,
-	Error = 1 << 2,
-	All = (1 << 3) - 1
+	Info = 0,
+	Warning,
+	Error,
+	Fatal
 };
-const char* LogTypeToString(LogType type);
 
-enum class LogChannel : U32
+enum class LogChannel
 {
-	None = 0,
-	Global = 1 << 0,
-	System = 1 << 1,
-	Math = 1 << 2,
-	Application = 1 << 3,
-	Graphics = 1 << 4,
-    Map = 1 << 5,
-	Animation = 1 << 6,
+	Global = 0,
+	System,
+	Math,
+	Application,
+	Graphics,
+	Map,
+	Animation,
+	Core,
+	Physic,
+
 	// TODO : Add others
-	All = (1 << 7) - 1,
+
+	Max
 };
-const char* LogChannelToString(LogChannel type);
+
+/*
+Register your own LogChannels :
+
+enum class LogChannelClient
+{
+	GameplayChannel1 = static_cast<en::U32>(en::LogChannel::Max),
+	GameplayChannel2
+	...
+};
+
+Then use LogManager::InitializeClientChannels<LogChannelClient>() in your main and check that the returned value is true :)
+*/
 
 struct LogMessage
 {
+	std::string message; // TODO : Might this be transformed to string_view ?
+	U32 channel; 
 	LogType type;
-	LogChannel channel;
-	U32 verbosity;
-	std::string message;
+
+	std::string_view GetTypeString() const;
+	std::string_view GetChannelString() const;
+	std::string_view GetMessageString() const;
 };
 
 class Logger
 {
-	public:
-		Logger();
-		virtual ~Logger();
+public:
+	Logger();
+	virtual ~Logger();
 
-		void Enable(bool enable);
-		bool IsEnabled() const;
+	void Enable(bool enable);
+	bool IsEnabled() const;
 
-		void SetTypeFilter(U32 typeFilter);
-		U32 GetTypeFilter() const;
+	void SetTypeFilter(U32 typeFilter);
+	U32 GetTypeFilter() const;
 
-		void SetChannelFilter(U32 channelFilter);
-		U32 GetChannelFilter() const;
+	void SetChannelFilter(U64 channelFilter);
+	U64 GetChannelFilter() const;
 
-		void SetImportanceFilter(U32 importanceFilter);
-		U32 GetImportanceFilter() const;
+	bool PassFilters(LogType type, U32 channelID) const;
 
-		bool PassFilters(LogType type, LogChannel channel, U32 importance) const;
+	virtual void Write(const LogMessage& message) = 0;
 
-		virtual void Write(LogType type, LogChannel channel, U32 verbosity, const std::string& message) = 0;
-	
-		bool IsRegistered() const;
+protected:
+	void RegisterLogger();
+	void UnregisterLogger();
 
-	protected:
-		void RegisterLogger();
-		void UnregisterLogger();
-
-	private:
-		U32 mTypeFilter;
-		U32 mChannelFilter;
-		U32 mImportanceFilter;
-		bool mEnabled;
+private:
+	U64 mChannelFilter;
+	U32 mTypeFilter;
+	bool mEnabled;
 };
 
 class LogManager
 {
 	ENLIVE_SINGLETON(LogManager);
 
-	public:
-		void Write(LogType type, LogChannel channel, U32 importance, const char* message, ...);
-		void Error(const char* message, ...);
+public:
+	template <typename... Args>
+	void Write(LogType type, U32 channelID, Args&& ...args);
 
-		void SetTypeFilter(U32 typeFilter);
-		U32 GetTypeFilter() const;
+	void SetTypeFilter(U32 typeFilter);
+	U32 GetTypeFilter() const;
 
-		void SetChannelFilter(U32 channelFilter);
-		U32 GetChannelFilter() const;
+	void SetChannelFilter(U64 channelFilter);
+	U64 GetChannelFilter() const;
 
-		void SetImportanceFilter(U32 importanceFilter);
-		U32 GetImportanceFilter() const;
+	bool PassFilters(LogType type, U32 channelID) const;
 
-		U32 GetLoggerCount() const;
+	U32 GetLoggerCount() const;
 
-		bool Initialize();
-		bool Uninitialize();
-		bool IsInitialized() const;
+	template <typename EnumClient>
+	bool InitializeClientChannels();
+	std::string_view GetChannelName(U32 channelID) const;
 
-	private:
-		friend class Logger;
-		void RegisterLogger(Logger* logger);
-		void UnregisterLogger(Logger* logger);
-		bool IsRegistered(const Logger* logger) const;
+private:
+	friend class Logger;
+	void RegisterLogger(Logger* logger);
+	void UnregisterLogger(Logger* logger);
+	bool IsRegistered(const Logger* logger) const;
 
-	private:
-		void InternalWrite(LogType type, LogChannel channel, U32 importance, const char* message, va_list argList);
-
-	private:
-		std::vector<Logger*> mLoggers;
-		Logger* mDefaultLogger;
-		U32 mTypeFilter;
-		U32 mChannelFilter;
-		U32 mImportanceFilter;
-		bool mInitialized;
+private:
+	std::vector<Logger*> mLoggers;
+	std::vector<std::string_view> mClientChannelNames;
+	U64 mChannelFilter;
+	U32 mTypeFilter;
 };
+
+template <typename... Args>
+void LogManager::Write(LogType type, U32 channelID, Args&& ...args)
+{
+	if (PassFilters(type, channelID))
+	{
+		LogMessage message;
+		message.message = fmt::format(std::forward<Args>(args)...);
+		message.type = type;
+		message.channel = channelID;
+
+		for (const auto& logger : mLoggers)
+		{
+			if (logger->IsEnabled() && logger->PassFilters(type, channelID))
+			{
+				logger->Write(message);
+			}
+		}
+	}
+}
+
+template <typename EnumClient>
+bool LogManager::InitializeClientChannels()
+{
+	const auto enumValues = Meta::GetEnumValues<EnumClient>();
+	mClientChannelNames.clear();
+	if (static_cast<U32>(enumValues[0]) == static_cast<U32>(LogChannel::Max))
+	{
+		mClientChannelNames.reserve(enumValues.size());
+		for (const auto& enumValue : enumValues)
+		{
+			mClientChannelNames.push_back(Meta::GetEnumName(enumValue));
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 class ConsoleLogger : public Logger
 {
-	public:
-		ConsoleLogger();
-		virtual ~ConsoleLogger();
+public:
+	ConsoleLogger();
+	virtual ~ConsoleLogger();
 
-		virtual void Write(LogType type, LogChannel channel, U32 importance, const std::string& message);
+	virtual void Write(const LogMessage& message);
+
+#ifdef ENLIVE_ENABLE_DEFAULT_LOGGER
+private:
+	static ConsoleLogger sConsoleLogger;
+#endif // ENLIVE_ENABLE_DEFAULT_LOGGER
 };
 
 class FileLogger : public Logger
 {
-	public:
-		FileLogger(const std::string& filename = "");
-		virtual ~FileLogger();
+public:
+	FileLogger(const std::string& filename = "");
+	virtual ~FileLogger();
 
-		void SetFilename(const std::string& filename);
-		const std::string& GetFilename() const;
+	void SetFilename(const std::string& filename);
+	const std::string& GetFilename() const;
 
-		virtual void Write(LogType type, LogChannel channel, U32 importance, const std::string& message);
+	virtual void Write(const LogMessage& message);
 
-	private:
-		std::ofstream mFile;
-		std::string mFilename;
+private:
+	std::ofstream mFile;
+	std::string mFilename;
 };
 
-#ifdef ENLIVE_COMPILER_MSVC
+#if defined(ENLIVE_PLATFORM_WINDOWS) && defined(ENLIVE_COMPILER_MSVC) && defined(ENLIVE_DEBUG)
 class VisualStudioLogger : public Logger
 {
-	public:
-		VisualStudioLogger();
-		virtual ~VisualStudioLogger();
+public:
+	VisualStudioLogger();
+	virtual ~VisualStudioLogger();
 
-		virtual void Write(LogType type, LogChannel channel, U32 importance, const std::string& message);
+	virtual void Write(const LogMessage& message);
+
+#ifdef ENLIVE_ENABLE_DEFAULT_LOGGER
+private:
+	static VisualStudioLogger sVisualStudioLogger;
+#endif // ENLIVE_ENABLE_DEFAULT_LOGGER
 };
-#endif // ENLIVE_COMPILER_MSVC
-
-#ifdef ENLIVE_PLATFORM_WINDOWS
-class MessageBoxLogger : public Logger
-{
-	public:
-		MessageBoxLogger();
-		virtual ~MessageBoxLogger();
-
-		virtual void Write(LogType type, LogChannel channel, U32 importance, const std::string& message);
-};
-#endif // ENLIVE_PLATFORM_WINDOWS
+#endif // defined(ENLIVE_PLATFORM_WINDOWS) && defined(ENLIVE_COMPILER_MSVC) && defined(ENLIVE_DEBUG)
 
 } // namespace en
 
-#define LogInfo(channel, importance, message, ...) ::en::LogManager::GetInstance().Write(en::LogType::Info, channel, importance, message, __VA_ARGS__);
-#define LogWarning(channel, importance, message, ...) ::en::LogManager::GetInstance().Write(en::LogType::Warning, channel, importance, message, __VA_ARGS__);
-#define LogError(channel, importance, message, ...) ::en::LogManager::GetInstance().Write(en::LogType::Error, channel, importance, message, __VA_ARGS__);
+#define enLogInfo(channel, ...) ::en::LogManager::GetInstance().Write(::en::LogType::Info, static_cast<::en::U32>(channel), __VA_ARGS__);
+#define enLogWarning(channel, ...) ::en::LogManager::GetInstance().Write(::en::LogType::Warning, static_cast<::en::U32>(channel), __VA_ARGS__);
+#define enLogError(channel, ...) ::en::LogManager::GetInstance().Write(::en::LogType::Error, static_cast<::en::U32>(channel), __VA_ARGS__);
+#define enLogFatal(channel, ...) ::en::LogManager::GetInstance().Write(::en::LogType::Fatal, static_cast<::en::U32>(channel), __VA_ARGS__);
 
 #else
 
-#define LogInfo(channel, importance, message, ...)
-#define LogWarning(channel, importance, message, ...)
-#define LogError(channel, importance, message, ...)
+#define enLogInfo(channel, message, ...) 
+#define enLogWarning(channel, message, ...) 
+#define enLogError(channel, message, ...) 
+#define enLogFatal(channel, message, ...) 
 
 #endif // ENLIVE_ENABLE_LOG

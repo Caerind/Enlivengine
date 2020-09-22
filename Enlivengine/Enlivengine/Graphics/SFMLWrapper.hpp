@@ -12,8 +12,8 @@
 #include <Enlivengine/Math/Vector4.hpp>
 #include <Enlivengine/Math/Matrix4.hpp>
 #include <Enlivengine/Math/Rect.hpp>
+#include <Enlivengine/Math/Color.hpp>
 #include <Enlivengine/System/Time.hpp>
-#include <Enlivengine/Graphics/Color.hpp>
 
 namespace en
 {
@@ -99,11 +99,11 @@ inline sf::Vector3f toSF(const Vector3f& vector)
 
 inline Time toEN(const sf::Time& time)
 {
-	return microseconds(time.asMicroseconds());
+	return Time::Microseconds(time.asMicroseconds());
 }
 inline sf::Time toSF(const Time& time)
 {
-	return sf::microseconds(time.asMicroseconds());
+	return sf::microseconds(time.AsMicroseconds());
 }
 
 const char* sfKeyToString(sf::Keyboard::Key key);

@@ -1,35 +1,34 @@
 
 set(SRC_SYSTEM
+    Enlivengine/Config.hpp
     Enlivengine/System/Array.hpp
     Enlivengine/System/Assert.hpp
     Enlivengine/System/ByteUnits.hpp
-    Enlivengine/System/CallOnExit.cpp
     Enlivengine/System/CallOnExit.hpp
+    Enlivengine/System/ClassManager.cpp
+    Enlivengine/System/ClassManager.hpp
     Enlivengine/System/CompilerDetection.hpp
     Enlivengine/System/CompilerTraits.hpp
     Enlivengine/System/Compression.cpp
     Enlivengine/System/Compression.hpp
-    Enlivengine/System/Config.hpp
-    Enlivengine/System/Console.cpp
-    Enlivengine/System/Console.hpp
     Enlivengine/System/DateTime.cpp
     Enlivengine/System/DateTime.hpp
     Enlivengine/System/Debugger.cpp
     Enlivengine/System/Debugger.hpp
     Enlivengine/System/Endianness.hpp
-    Enlivengine/System/Hash.cpp
     Enlivengine/System/Hash.hpp
     Enlivengine/System/Log.cpp
     Enlivengine/System/Log.hpp
     Enlivengine/System/Macros.hpp
+    Enlivengine/System/MemoryAllocator.cpp
+    Enlivengine/System/MemoryAllocator.hpp
+    Enlivengine/System/Meta.hpp
+    Enlivengine/System/MetaEnum.hpp
     Enlivengine/System/NonCopyable.hpp
-    Enlivengine/System/ParserIni.cpp
-    Enlivengine/System/ParserIni.hpp
-    Enlivengine/System/ParserJson.cpp
-    Enlivengine/System/ParserJson.hpp
     Enlivengine/System/ParserXml.cpp
     Enlivengine/System/ParserXml.hpp
     Enlivengine/System/PlatformDetection.hpp
+    Enlivengine/System/PlatformTraits.hpp
     Enlivengine/System/Preprocessor.hpp
     Enlivengine/System/PrimitiveTypes.hpp
     Enlivengine/System/Profiler.cpp
@@ -40,6 +39,7 @@ set(SRC_SYSTEM
     Enlivengine/System/String.hpp
     Enlivengine/System/Time.cpp
     Enlivengine/System/Time.hpp
+    Enlivengine/System/TypeInfo.hpp
     Enlivengine/System/TypeTraits.hpp
 )
 source_group("System" FILES ${SRC_SYSTEM})
@@ -47,6 +47,8 @@ source_group("System" FILES ${SRC_SYSTEM})
 set(SRC_MATH
 	Enlivengine/Math/AABB.cpp
 	Enlivengine/Math/AABB.hpp
+	Enlivengine/Math/Color.cpp
+	Enlivengine/Math/Color.hpp
 	Enlivengine/Math/Distribution.hpp
 	Enlivengine/Math/Frustum.cpp
 	Enlivengine/Math/Frustum.hpp
@@ -76,17 +78,6 @@ set(SRC_MATH
 )
 source_group("Math" FILES ${SRC_MATH})
 
-set(SRC_METADATA
-	Enlivengine/MetaData/MetaData.hpp
-	Enlivengine/MetaData/MetaDataBase.hpp
-	Enlivengine/MetaData/MetaDataEnum.hpp
-	Enlivengine/MetaData/MetaDataType.hpp
-	Enlivengine/MetaData/TestClassA.hpp
-	Enlivengine/MetaData/TestClassB.hpp
-	Enlivengine/MetaData/TestClassC.hpp
-)
-source_group("MetaData" FILES ${SRC_METADATA})
-
 set(SRC_GRAPHICS
 	Enlivengine/Graphics/Animation.cpp
 	Enlivengine/Graphics/Animation.hpp
@@ -94,18 +85,19 @@ set(SRC_GRAPHICS
 	Enlivengine/Graphics/AnimationController.hpp
 	Enlivengine/Graphics/AnimationStateMachine.cpp
 	Enlivengine/Graphics/AnimationStateMachine.hpp
-	Enlivengine/Graphics/Color.cpp
-	Enlivengine/Graphics/Color.hpp
+	Enlivengine/Graphics/ColorGradient.hpp
 	Enlivengine/Graphics/DebugDraw.cpp
 	Enlivengine/Graphics/DebugDraw.hpp
-	Enlivengine/Graphics/LinearColor.cpp
-	Enlivengine/Graphics/LinearColor.hpp
 	Enlivengine/Graphics/ScreenshotSystem.cpp
 	Enlivengine/Graphics/ScreenshotSystem.hpp
 	Enlivengine/Graphics/SFMLResources.cpp
 	Enlivengine/Graphics/SFMLResources.hpp
 	Enlivengine/Graphics/SFMLWrapper.cpp
 	Enlivengine/Graphics/SFMLWrapper.hpp
+	Enlivengine/Graphics/Sprite.cpp
+	Enlivengine/Graphics/Sprite.hpp
+	Enlivengine/Graphics/Text.cpp
+	Enlivengine/Graphics/Text.hpp
 	Enlivengine/Graphics/View.cpp
 	Enlivengine/Graphics/View.hpp
 )
@@ -159,7 +151,34 @@ set(SRC_APPLICATION
 source_group("Application" FILES ${SRC_APPLICATION})
 
 set(SRC_CORE
+	Enlivengine/Core/ComponentManager.cpp
+	Enlivengine/Core/ComponentManager.hpp
 	Enlivengine/Core/Components.hpp
+	Enlivengine/Core/CustomTraits.hpp
+	Enlivengine/Core/DataFile.cpp
+	Enlivengine/Core/DataFile.hpp
+	Enlivengine/Core/DataFileSpecialization.inl
+	Enlivengine/Core/Entity.cpp
+	Enlivengine/Core/Entity.hpp
+	Enlivengine/Core/EntityManager.cpp
+	Enlivengine/Core/EntityManager.hpp
+	Enlivengine/Core/EntityManagerSpecialization.hpp
+	Enlivengine/Core/EntitySpecialization.hpp
+	Enlivengine/Core/ObjectEditor.cpp
+	Enlivengine/Core/ObjectEditor.hpp
+	Enlivengine/Core/ObjectEditorSpecialization.inl
+	Enlivengine/Core/PhysicComponent.cpp
+	Enlivengine/Core/PhysicComponent.hpp
+	Enlivengine/Core/PhysicSystem.cpp
+	Enlivengine/Core/PhysicSystem.hpp
+	Enlivengine/Core/System.cpp
+	Enlivengine/Core/System.hpp
+	Enlivengine/Core/Transform.cpp
+	Enlivengine/Core/Transform.hpp
+	Enlivengine/Core/Universe.cpp
+	Enlivengine/Core/Universe.hpp
+	Enlivengine/Core/World.cpp
+	Enlivengine/Core/World.hpp
 )
 source_group("Core" FILES ${SRC_CORE})
 
@@ -170,14 +189,18 @@ set(SRC_TOOLS
 	Enlivengine/Tools/ImGuiConsole.hpp
 	Enlivengine/Tools/ImGuiDemoWindow.cpp
 	Enlivengine/Tools/ImGuiDemoWindow.hpp
-	Enlivengine/Tools/ImGuiEntt.cpp
-	Enlivengine/Tools/ImGuiEntt.hpp
+	Enlivengine/Tools/ImGuiEntityBrowser.cpp
+	Enlivengine/Tools/ImGuiEntityBrowser.hpp
 	Enlivengine/Tools/ImGuiLogger.cpp
 	Enlivengine/Tools/ImGuiLogger.hpp
 	Enlivengine/Tools/ImGuiHelper.cpp
 	Enlivengine/Tools/ImGuiHelper.hpp
 	Enlivengine/Tools/ImGuiInputEditor.cpp
 	Enlivengine/Tools/ImGuiInputEditor.hpp
+	Enlivengine/Tools/ImGuiMemoryDebugger.cpp
+	Enlivengine/Tools/ImGuiMemoryDebugger.hpp
+	Enlivengine/Tools/ImGuiPhysic.cpp
+	Enlivengine/Tools/ImGuiPhysic.hpp
 	Enlivengine/Tools/ImGuiProfiler.cpp
 	Enlivengine/Tools/ImGuiProfiler.hpp
 	Enlivengine/Tools/ImGuiResourceBrowser.cpp
@@ -188,7 +211,6 @@ source_group("Tools" FILES ${SRC_TOOLS})
 add_library(Enlivengine STATIC
 	${SRC_SYSTEM} 
 	${SRC_MATH} 
-	${SRC_METADATA}
 	${SRC_GRAPHICS}
 	${SRC_MAP}
 	${SRC_APPLICATION}

@@ -8,21 +8,22 @@
 namespace en
 {
 
-bool DebugDraw::mVisible = true;
-U32 DebugDraw::mMaxSize = 32;
-U32 DebugDraw::mCurrentCircleIndex = 0;
-U32 DebugDraw::mCurrentRectangleIndex = 0;
-std::vector<sf::CircleShape> DebugDraw::mCircles;
-std::vector<sf::RectangleShape> DebugDraw::mRectangles;
+DebugDraw::DebugDraw()
+	: mVisible(true)
+	, mMaxSize(32)
+	, mCurrentCircleIndex(0)
+	, mCurrentRectangleIndex(0)
+	, mCircles()
+	, mRectangles()
+{
+	mCircles.resize(mMaxSize);
+	mRectangles.resize(mMaxSize);
+}
 
 void DebugDraw::drawPoint(F32 x, F32 y, const Color& color, F32 r)
 {
 	if (mVisible && mCurrentCircleIndex < mMaxSize)
 	{
-		if (mCurrentCircleIndex <= mCircles.size())
-		{
-			mCircles.push_back(sf::CircleShape());
-		}
 		mCurrentCircleIndex++;
 		sf::CircleShape& circle = mCircles.back();
 		circle.setFillColor(toSF(color));
@@ -39,10 +40,6 @@ void DebugDraw::drawRect(F32 x, F32 y, F32 w, F32 h, const Color& c1, const Colo
 {
 	if (mVisible && mCurrentRectangleIndex < mMaxSize)
 	{
-		if (mCurrentRectangleIndex < mRectangles.size())
-		{
-			mRectangles.push_back(sf::RectangleShape());
-		}
 		mCurrentRectangleIndex++;
 		sf::RectangleShape& rectangle = mRectangles.back();
 		rectangle.setOutlineThickness(1.5f);
@@ -62,10 +59,6 @@ void DebugDraw::drawCircle(F32 x, F32 y, const Color& color, F32 r)
 {
 	if (mVisible && mCurrentCircleIndex < mMaxSize)
 	{
-		if (mCurrentCircleIndex < mCircles.size())
-		{
-			mCircles.push_back(sf::CircleShape());
-		}
 		mCurrentCircleIndex++;
 		sf::CircleShape& circle = mCircles.back();
 		circle.setFillColor(sf::Color::Transparent);
@@ -78,17 +71,13 @@ void DebugDraw::drawLine(F32 x1, F32 y1, F32 x2, F32 y2, const Color& color, F32
 {
 	if (mVisible && mCurrentRectangleIndex < mMaxSize)
 	{
-		if (mCurrentRectangleIndex < mRectangles.size())
-		{
-			mRectangles.push_back(sf::RectangleShape());
-		}
 		mCurrentRectangleIndex++;
 		sf::RectangleShape& rectangle = mRectangles.back();
 		rectangle.setFillColor(toSF(color));
 		rectangle.setPosition(x1, y1 - thickness * 0.5f);
 		const Vector2f v(x2 - x1, y2 - y1);
-		rectangle.setSize(sf::Vector2f(v.getLength(), thickness));
-		rectangle.setRotation(v.getPolarAngle());
+		rectangle.setSize(sf::Vector2f(v.GetLength(), thickness));
+		rectangle.setRotation(v.GetPolarAngle());
 	}
 }
 
@@ -112,13 +101,11 @@ void DebugDraw::render(sf::RenderTarget& target)
 		{
 			target.draw(mCircles[i]);
 		}
-		mCurrentCircleIndex = 0;
 
 		for (U32 i = 0; i < mCurrentRectangleIndex; ++i)
 		{
 			target.draw(mRectangles[i]);
 		}
-		mCurrentRectangleIndex = 0;
 	}
 }
 

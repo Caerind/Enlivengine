@@ -1,6 +1,7 @@
 #include <Enlivengine/Application/Window.hpp>
 
 #include <Enlivengine/System/Log.hpp>
+#include <Enlivengine/System/Profiler.hpp>
 
 namespace en
 {
@@ -42,7 +43,7 @@ void Window::create(sf::VideoMode mode, const std::string& title, sf::Uint32 sty
 			}
 			else
 			{
-				LogError(LogChannel::Application, 8, "No fullscreen mode available %d", sf::VideoMode::getFullscreenModes().size());
+				enLogError(LogChannel::Application, "No fullscreen mode available %d", sf::VideoMode::getFullscreenModes().size());
 				mFullscreenVideoMode = sf::VideoMode();
 			}
 		}
@@ -55,7 +56,7 @@ void Window::create(sf::VideoMode mode, const std::string& title, sf::Uint32 sty
 			}
 			else
 			{
-				LogError(LogChannel::Application, 8, "Invalid video mode (%d,%d)", mode.width, mode.height);
+				enLogError(LogChannel::Application, "Invalid video mode (%d,%d)", mode.width, mode.height);
 				mNonFullscreenVideoMode = sf::VideoMode::getDesktopMode();
 			}
 		}
@@ -66,6 +67,10 @@ void Window::create(sf::VideoMode mode, const std::string& title, sf::Uint32 sty
 		}
 		mSettings = settings;
 	#else
+		ENLIVE_UNUSED(mode);
+		ENLIVE_UNUSED(title);
+		ENLIVE_UNUSED(style);
+
 		mFullscreen = true;
 		mFullscreenVideoMode = sf::VideoMode::getDesktopMode();
 		mTitle = "";
@@ -248,7 +253,7 @@ void Window::setIcon(const std::string& icon)
 	}
 	else
 	{
-		LogWarning(LogChannel::Application, 5, "Can't load the icon from : %s", icon.c_str());
+		enLogWarning(LogChannel::Application, "Can't load the icon from : {}", icon.c_str());
 		mIconPath = "";
 	}
 }
@@ -326,6 +331,8 @@ void Window::draw(const sf::Vertex* vertices, std::size_t vertexCount, sf::Primi
 
 void Window::display()
 {
+	ENLIVE_PROFILE_FUNCTION();
+
 	if (mCursor == Cursor::Custom)
 	{
 		sf::View oldView = mWindow.getView();
@@ -378,7 +385,7 @@ sf::IntRect Window::getViewport(const View& view) const
 
 Vector2f Window::mapPixelToCoords(const Vector2f& point, const View& view)
 {
-	if (view.getSize().isZero())
+	if (view.getSize().IsZero())
 	{	
 		return toEN(mWindow.mapPixelToCoords({ (I32)point.x, (I32)point.y }));
 	}
@@ -390,7 +397,7 @@ Vector2f Window::mapPixelToCoords(const Vector2f& point, const View& view)
 
 Vector2f Window::mapCoordsToPixel(const Vector2f& point, const View& view)
 {
-	if (view.getSize().isZero())
+	if (view.getSize().IsZero())
 	{
 		return toEN(static_cast<sf::Vector2f>(mWindow.mapCoordsToPixel(toSF(point))));
 	}
@@ -404,6 +411,8 @@ void Window::setCursorPosition(const Vector2f& position)
 {
 	#ifdef ENLIVE_PLATFORM_DESKTOP
 		sf::Mouse::setPosition(mWindow.mapCoordsToPixel(toSF(position), mMainView.getHandle()));
+	#else
+		ENLIVE_UNUSED(position);
 	#endif
 }
 
@@ -528,7 +537,7 @@ void Window::setCursorTexture(const std::string& texture)
 	}
 	else
 	{
-		LogWarning(LogChannel::Application, 5, "Can't load cursor from : %s", texture.c_str());
+		enLogWarning(LogChannel::Application, "Can't load cursor from : {}", texture.c_str());
 		mCursorTextureData = "";
 		setCursor(Cursor::Default);
 	}
@@ -680,6 +689,7 @@ void Window::targetSignals(const sf::Event& event)
 	if (event.type == sf::Event::Closed)
 	{
 		onWindowClosed(this);
+		return;
 	}
 
 	// Gained Focus

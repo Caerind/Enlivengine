@@ -12,7 +12,7 @@ PointObject::PointObject(ObjectGroup& objectGroup)
 
 bool PointObject::Parse(ParserXml& parser)
 {
-	assert(parser.hasChild("point"));
+	enAssert(parser.HasNode("point"));
 	return ObjectBase::Parse(parser);
 }
 

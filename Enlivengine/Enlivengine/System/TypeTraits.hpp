@@ -1,18 +1,13 @@
-
 #pragma once
 
 #include <type_traits>
-
 #include <Enlivengine/System/PrimitiveTypes.hpp>
-#include <Enlivengine/System/Hash.hpp>
-#include <Enlivengine/System/Macros.hpp>
-#include <Enlivengine/System/String.hpp>
 
 namespace en
 {
 
 // All std::type_traits are in this namespace (traits specific to the engine are not)
-// "Recreate" this might be a bad idea, but also might reveal useful for specific traits in the future
+// "Recreate" this might be a bad idea, but also might reveal useful for specific traits or override in the future
 namespace Traits
 {
 #define ENLIVE_DEFINE_TYPE_TRAITS_VALUE(name, expr) \
@@ -21,8 +16,8 @@ namespace Traits
 	{ \
 		static constexpr auto value = expr; \
 	};
-#define ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2(name, expr) \
-	template <typename T1, typename T2> \
+#define ENLIVE_DEFINE_TYPE_TRAITS_ARGS(name, expr) \
+	template <typename T, typename... Args> \
 	struct name \
 	{ \
 		static constexpr auto value = expr; \
@@ -79,6 +74,7 @@ namespace Traits
 	//ENLIVE_DEFINE_TYPE_TRAITS(IsUnboundedArray, std::is_union<T>::value) // New C++20
 
 	// Supported operations
+	// TODO : Args...
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsConstructible, std::is_constructible<T>::value)
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsTriviallyConstructible, std::is_trivially_constructible<T>::value)
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsNothrowConstructible, std::is_nothrow_constructible<T>::value)
@@ -91,9 +87,21 @@ namespace Traits
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsMoveConstructible, std::is_move_constructible<T>::value)
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsTriviallyMoveConstructible, std::is_trivially_move_constructible<T>::value)
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsNothrowMoveConstructible, std::is_nothrow_move_constructible<T>::value)
-	ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2(IsAssignable, (std::is_assignable<T1, T2>::value))
-	ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2(IsTriviallyAssignable, (std::is_trivially_assignable<T1, T2>::value))
-	ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2(IsNothrowAssignable, (std::is_nothrow_assignable<T1, T2>::value))
+	template <typename T1, typename T2>
+	struct IsAssignable
+	{
+		static constexpr auto value = std::is_assignable<T1, T2>::value;
+	};
+	template <typename T1, typename T2>
+	struct IsTriviallyAssignable
+	{
+		static constexpr auto value = std::is_trivially_assignable<T1, T2>::value;
+	};
+	template <typename T1, typename T2>
+	struct IsNothrowAssignable
+	{
+		static constexpr auto value = std::is_nothrow_assignable<T1, T2>::value;
+	};
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsCopyAssignable, std::is_copy_assignable<T>::value)
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsTriviallyCopyAssignable, std::is_trivially_copy_assignable<T>::value)
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsNothrowCopyAssignable, std::is_nothrow_copy_assignable<T>::value)
@@ -104,9 +112,17 @@ namespace Traits
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsTriviallyDestructible, std::is_trivially_destructible<T>::value)
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsNothrowDestructible, std::is_nothrow_destructible<T>::value)
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(HasVirtualDestructor, std::has_virtual_destructor<T>::value)
-	ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2(IsSwappableWith, (std::is_swappable_with<T1, T2>::value))
+	template <typename T1, typename T2>
+	struct IsSwappableWith
+	{
+		static constexpr auto value = std::is_swappable_with<T1, T2>::value;
+	};
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsSwappable, std::is_swappable<T>::value)
-	ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2(IsNothrowSwappableWith, (std::is_nothrow_swappable_with<T1, T2>::value))
+	template <typename T1, typename T2>
+	struct IsNothrowSwappableWith
+	{
+		static constexpr auto value = std::is_nothrow_swappable_with<T1, T2>::value;
+	};
 	ENLIVE_DEFINE_TYPE_TRAITS_VALUE(IsNothrowSwappable, std::is_nothrow_swappable<T>::value)
 
 	// Properties queries
@@ -119,9 +135,21 @@ namespace Traits
 	};
 
 	// Type relationships
-	ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2(IsSame, (std::is_same<T1, T2>::value))
-	ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2(IsBaseOf, (std::is_base_of<T1, T2>::value)) // T1:Base, T2:Derived
-	ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2(IsConvertible, (std::is_convertible<T1, T2>::value)) // T1:From, T2:To
+	template <typename T1, typename T2>
+	struct IsSame
+	{
+		static constexpr auto value = std::is_same<T1, T2>::value;
+	};
+	template <typename Base, typename Derived>
+	struct IsBaseOf
+	{
+		static constexpr auto value = std::is_base_of<Base, Derived>::value;
+	};
+	template <typename From, typename To>
+	struct IsConvertible
+	{
+		static constexpr auto value = std::is_convertible<From, To>::value;
+	};
 	//ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2(IsNothrowConvertible, (std::is_nothrow_convertible<T1, T2>::value)) // T1:From, T2:To // New C++20
 	//ENLIVE_DEFINE_TYPE_TRAITS_2(IsLayoutCompatible, std::is_layout_compatible<T1, T2>::value) // New C++20
 	//ENLIVE_DEFINE_TYPE_TRAITS_2(IsPointerInterconvertibleBaseOf, std::is_pointer_interconvertible_base_of<T1, T2>::value) // New C++20 // T1:Base, T2:Derived
@@ -211,17 +239,17 @@ namespace Traits
 	//ENLIVE_DEFINE_TYPE_TRAITS_TYPE(TypeIdentity, std::type_identity<T>::type); // New C++20
 
 	// Operations on traits
-	template <class... B>
+	template <typename... B>
 	struct Conjunction
 	{
 		static constexpr auto value = std::conjunction<B...>::value;
 	};
-	template <class... B>
+	template <typename... B>
 	struct Disjunction
 	{
 		static constexpr auto value = std::disjunction<B...>::value;
 	};
-	template <class B>
+	template <typename B>
 	struct Negation
 	{
 		static constexpr auto value = std::negation<B>::value;
@@ -236,58 +264,9 @@ namespace Traits
 
 #undef ENLIVE_DEFINE_TYPE_TRAITS_VALUE
 #undef ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2
+#undef ENLIVE_DEFINE_TYPE_TRAITS_ARGS
 #undef ENLIVE_DEFINE_TYPE_TRAITS_TYPE
 
 } // namespace Traits
-
-template <typename T>
-struct TypeName
-{
-	static constexpr const char* name = "<Unknown>";
-	static constexpr U32 hash = Hash::CRC32(name);
-};
-#define ENLIVE_DEFINE_TYPE_TRAITS_NAME(type) \
-	template <> \
-	struct TypeName<type> \
-	{ \
-		static constexpr const char* name = #type; \
-		static constexpr en::U32 hash = en::Hash::CRC32(name); \
-	};
-
-#define ENLIVE_DEFINE_TYPE_TRAITS_NAME_TEMPLATE(templateBase) \
-	template <typename T> \
-	struct TypeName<templateBase<T>> \
-	{ \
-	private: \
-		static constexpr en::U32 s_stringStorageSize = en::StringLength(#templateBase) + en::StringLength(en::TypeName<T>::name) + en::StringLength("<>") + 1; \
-		static constexpr en::ConstexprStringStorage s_stringStorage = en::ConstexprStringStorage<s_stringStorageSize>(#templateBase, "<", en::TypeName<T>::name, ">"); \
-	public: \
-		static constexpr const char* name = s_stringStorage.GetData(); \
-		static constexpr en::U32 hash = en::Hash::CRC32(name); \
-	};
-
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(bool)
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(I8)
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(U8)
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(I16)
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(U16)
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(I32)
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(U32)
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(I64)
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(U64)
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(F32)
-ENLIVE_DEFINE_TYPE_TRAITS_NAME(F64)
-
-template <typename T>
-struct TypeSize
-{
-	static constexpr U32 size = ENLIVE_SIZE_OF(T);
-};
-
-template <typename T>
-struct TypeAlign
-{
-	static constexpr U32 align = ENLIVE_ALIGN_OF(T);
-};
 
 } // namespace en

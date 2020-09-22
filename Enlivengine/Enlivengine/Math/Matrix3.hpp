@@ -41,6 +41,8 @@ public:
 
 	inline Vector3<T> getColumn(U32 i) const;
 	inline Vector3<T> getRow(U32 j) const;
+	inline Matrix3<T>& setColumn(U32 i, const Vector3<T>& column);
+	inline Matrix3<T>& setRow(U32 j, const Vector3<T>& row);
 
 	inline Matrix3<T>& operator=(const Matrix3<T> & m);
 	inline const Matrix3<T>& operator+() const;
@@ -258,6 +260,24 @@ inline Vector3<T> Matrix3<T>::getRow(U32 j) const
 }
 
 template<typename T>
+inline Matrix3<T>& Matrix3<T>::setColumn(U32 i, const Vector3<T>& column)
+{
+	data[0 + rows * i] = column.x;
+	data[1 + rows * i] = column.y;
+	data[2 + rows * i] = column.z;
+	return *this;
+}
+
+template<typename T>
+inline Matrix3<T>& Matrix3<T>::setRow(U32 j, const Vector3<T>& row)
+{
+	data[j + rows * 0] = row.x;
+	data[j + rows * 1] = row.y;
+	data[j + rows * 2] = row.z;
+	return *this;
+}
+
+template<typename T>
 inline Matrix3<T>& Matrix3<T>::operator=(const Matrix3<T>& m)
 {
 	std::memcpy(data, m.data, sizeof(*this));
@@ -301,21 +321,21 @@ inline Matrix3<T> Matrix3<T>::operator*(const Matrix3<T>& m) const
 	Vector3<T> c2(m.getColumn(2));
 	{
 		Vector3<T> row(getRow(0));
-		out.data[0] = c0.dotProduct(row);
-		out.data[3] = c1.dotProduct(row);
-		out.data[6] = c2.dotProduct(row);
+		out.data[0] = c0.DotProduct(row);
+		out.data[3] = c1.DotProduct(row);
+		out.data[6] = c2.DotProduct(row);
 	}
 	{
 		Vector3<T> row(getRow(1));
-		out.data[1] = c0.dotProduct(row);
-		out.data[4] = c1.dotProduct(row);
-		out.data[7] = c2.dotProduct(row);
+		out.data[1] = c0.DotProduct(row);
+		out.data[4] = c1.DotProduct(row);
+		out.data[7] = c2.DotProduct(row);
 	}
 	{
 		Vector3<T> row(getRow(2));
-		out.data[2] = c0.dotProduct(row);
-		out.data[5] = c1.dotProduct(row);
-		out.data[8] = c2.dotProduct(row);
+		out.data[2] = c0.DotProduct(row);
+		out.data[5] = c1.DotProduct(row);
+		out.data[8] = c2.DotProduct(row);
 	}
 	return out;
 }
@@ -359,15 +379,15 @@ inline Matrix3<T>& Matrix3<T>::operator*=(const Matrix3<T>& m)
 	Vector3<T> c0(m.getColumn(0));
 	Vector3<T> c1(m.getColumn(1));
 	Vector3<T> c2(m.getColumn(2));
-	data[0] = c0.dotProduct(r0);
-	data[3] = c1.dotProduct(r0);
-	data[6] = c2.dotProduct(r0);
-	data[1] = c0.dotProduct(r1);
-	data[4] = c1.dotProduct(r1);
-	data[7] = c2.dotProduct(r1);
-	data[2] = c0.dotProduct(r2);
-	data[5] = c1.dotProduct(r2);
-	data[8] = c2.dotProduct(r2);
+	data[0] = c0.DotProduct(r0);
+	data[3] = c1.DotProduct(r0);
+	data[6] = c2.DotProduct(r0);
+	data[1] = c0.DotProduct(r1);
+	data[4] = c1.DotProduct(r1);
+	data[7] = c2.DotProduct(r1);
+	data[2] = c0.DotProduct(r2);
+	data[5] = c1.DotProduct(r2);
+	data[8] = c2.DotProduct(r2);
 	return *this;
 }
 
@@ -398,7 +418,7 @@ inline Matrix3<T> Matrix3<T>::operator*(const T& s) const
 template<typename T>
 inline Matrix3<T> Matrix3<T>::operator/(const T& s) const
 {
-	assert(s != T(0));
+	enAssert(s != T(0));
 	const T inv = 1 / s;
 	return Matrix3<T>(data[0] * inv, data[1] * inv, data[2] * inv,
 					  data[3] * inv, data[4] * inv, data[5] * inv,
@@ -453,7 +473,7 @@ inline Matrix3<T>& Matrix3<T>::operator*=(const T& s)
 template<typename T>
 inline Matrix3<T>& Matrix3<T>::operator/=(const T& s)
 {
-	assert(s != T(0));
+	enAssert(s != T(0));
 	const T inv = 1 / s;
 	data[0] *= inv;
 	data[1] *= inv;
@@ -701,3 +721,5 @@ typedef Matrix3<F32> Matrix3f;
 typedef Matrix3f mat3; // GLSL-like
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Matrix3)

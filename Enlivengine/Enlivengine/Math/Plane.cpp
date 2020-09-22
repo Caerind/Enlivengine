@@ -41,12 +41,12 @@ void Plane::set(const Vector3f& normal, F32 constant)
 void Plane::set(const Vector3f& normal, const Vector3f& point)
 {
 	setNormal(normal);
-	mConstant = -mNormal.dotProduct(point);
+	mConstant = -mNormal.DotProduct(point);
 }
 
 void Plane::set(F32 a, F32 b, F32 c, F32 d)
 {
-	mNormal.set(a, b, c);
+	mNormal.Set(a, b, c);
 	mConstant = d;
 	normalize();
 }
@@ -55,8 +55,8 @@ void Plane::set(const Vector3f& point1, const Vector3f& point2, const Vector3f& 
 {
 	Vector3f edge1 = point2 - point1;
 	Vector3f edge2 = point3 - point1;
-	mNormal.set(edge1.crossProduct(edge2).normalized());
-	mConstant = -mNormal.dotProduct(point1);
+	mNormal.Set(edge1.CrossProduct(edge2).Normalized());
+	mConstant = -mNormal.DotProduct(point1);
 }
 
 const Vector3f& Plane::getNormal() const
@@ -66,13 +66,13 @@ const Vector3f& Plane::getNormal() const
 
 void Plane::setNormal(const Vector3f& normal)
 {
-	if (normal.getSquaredLength() != 1.0f)
+	if (Math::Equals(normal.GetSquaredLength(), 1.0f))
 	{
-		mNormal.set(normal.normalized());
+		mNormal = normal;
 	}
 	else
 	{
-		mNormal.set(normal);
+		mNormal = normal.Normalized();
 	}
 }
 
@@ -88,8 +88,8 @@ void Plane::setConstant(F32 constant)
 
 F32 Plane::normalize()
 {
-	F32 length = mNormal.getLength();
-	assert(length > 0.0f);
+	F32 length = mNormal.GetLength();
+	enAssert(length > 0.0f);
 	F32 inv = 1.0f / length;
 	mNormal *= inv;
 	mConstant *= inv;
@@ -120,7 +120,7 @@ Plane::Side Plane::getSide(const Vector3f& point) const
 Plane::Side Plane::getSide(const AABB& box) const
 {
 	F32 distance = getDistance(box.getCenter());
-	F32 maxAbsDistance = Math::Abs(mNormal.dotProduct(box.getHalfSize()));
+	F32 maxAbsDistance = Math::Abs(mNormal.DotProduct(box.getHalfSize()));
 	if (distance < -maxAbsDistance)
 	{
 		return Plane::Side::Negative;
@@ -169,7 +169,7 @@ Vector3f Plane::getClosestPoint(const Vector3f& point)
 
 bool Plane::operator==(const Plane& p) const
 {
-	return Vector4f(mNormal, mConstant).normalized() == Vector4f(p.mNormal, p.mConstant).normalized();
+	return Vector4f(mNormal, mConstant).Normalized() == Vector4f(p.mNormal, p.mConstant).Normalized();
 }
 
 bool Plane::operator!=(const Plane& p) const
@@ -179,7 +179,7 @@ bool Plane::operator!=(const Plane& p) const
 
 F32 Plane::getDistance(const Vector3f& point) const
 {
-	return mNormal.dotProduct(point) + mConstant;
+	return mNormal.DotProduct(point) + mConstant;
 }
 
 bool Plane::contains(const Vector3f& point) const
@@ -189,7 +189,7 @@ bool Plane::contains(const Vector3f& point) const
 
 bool Plane::contains(const Ray& ray) const
 {
-	return Math::Equals(mNormal.dotProduct(ray.getDirection()), 0.0f) && contains(ray.getOrigin());
+	return Math::Equals(mNormal.DotProduct(ray.getDirection()), 0.0f) && contains(ray.getOrigin());
 }
 
 bool Plane::intersects(const AABB& box) const

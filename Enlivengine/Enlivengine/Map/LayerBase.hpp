@@ -31,6 +31,7 @@ public:
 	using Ptr = std::unique_ptr<LayerBase>;
 
 	LayerBase(Map& map);
+	virtual ~LayerBase() {}
 
 	virtual LayerType GetLayerType() const = 0;
 

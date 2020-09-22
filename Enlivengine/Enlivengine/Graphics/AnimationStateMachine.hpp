@@ -9,6 +9,9 @@ namespace en
 class AnimationStateMachine : public Resource<AnimationStateMachine>
 {
 public:
+	static U32 GetStaticResourceType() { return static_cast<U32>(ResourceType::AnimationStateMachine); }
+	U32 GetResourceType() const override { return GetStaticResourceType(); }
+
 	class State
 	{
 	public:
@@ -301,7 +304,8 @@ public:
 		return ResourceLoader<AnimationStateMachine>([&filename](AnimationStateMachine& r)
 		{
 			const bool result = r.LoadFromFile(filename);
-			r.mFilename = (result) ? filename : "";
+			r.SetLoaded(result);
+			r.SetLoadInfo(ResourceLoadInfo(true, filename));
 			return result;
 		});
 	}

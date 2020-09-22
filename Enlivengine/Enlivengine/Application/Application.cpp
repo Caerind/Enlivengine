@@ -1,6 +1,5 @@
 #include <Enlivengine/Application/Application.hpp>
 
-#include <Enlivengine/System/Config.hpp>
 #include <Enlivengine/System/String.hpp>
 #include <Enlivengine/System/ParserXml.hpp>
 
@@ -11,13 +10,15 @@
 #ifdef ENLIVE_ENABLE_IMGUI
 #include <Enlivengine/Application/ImGuiToolManager.hpp>
 #include <Enlivengine/Tools/ImGuiConsole.hpp>
-#include <Enlivengine/Tools/ImGuiEntt.hpp>
+#include <Enlivengine/Tools/ImGuiEntityBrowser.hpp>
 #include <Enlivengine/Tools/ImGuiLogger.hpp>
 #include <Enlivengine/Tools/ImGuiProfiler.hpp>
 #include <Enlivengine/Tools/ImGuiDemoWindow.hpp>
 #include <Enlivengine/Tools/ImGuiResourceBrowser.hpp>
 #include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
 #include <Enlivengine/Tools/ImGuiInputEditor.hpp>
+#include <Enlivengine/Tools/ImGuiMemoryDebugger.hpp>
+#include <Enlivengine/Tools/ImGuiPhysic.hpp>
 #endif // ENLIVE_ENABLE_IMGUI
 
 // Resources
@@ -47,15 +48,9 @@ Application::~Application()
 
 bool Application::Initialize()
 {
-#ifdef ENLIVE_ENABLE_LOG
-	LogManager::GetInstance().Initialize();
-#endif // ENLIVE_ENABLE_LOG
-
 	mInitialized = true;
 
-	ImGuiConsole::GetInstance().RegisterConsole();
-
-	mWindowClosedSlot.connect(mWindow.onWindowClosed, [this](const en::Window*) { Stop(); });
+	mWindowClosedSlot.Connect(mWindow.onWindowClosed, [this](const en::Window*) { Stop(); });
 
 	RegisterTools();
 
@@ -71,25 +66,37 @@ Window& Application::GetWindow()
 
 void Application::Stop()
 {
-	AudioSystem::GetInstance().Stop();
-	AudioSystem::GetInstance().Clear();
-
-#ifdef ENLIVE_ENABLE_IMGUI
-	ImGuiResourceBrowser::GetInstance().SaveResourceInfosToFile(PathManager::GetInstance().GetAssetsPath() + "resources.xml");
-#endif // ENLIVE_ENABLE_IMGUI
-
-#ifdef ENLIVE_ENABLE_IMGUI
-	ImGuiToolManager::GetInstance().Shutdown();
-#endif // ENLIVE_ENABLE_IMGUI
-
-	if (mWindow.isOpen())
+	if (mRunning)
 	{
-		mWindow.close();
+		ENLIVE_PROFILE_FUNCTION();
+
+		onApplicationStopped(this);
+
+		AudioSystem::GetInstance().Stop();
+		AudioSystem::GetInstance().Clear();
+
+#ifdef ENLIVE_ENABLE_IMGUI
+		//ImGuiResourceBrowser::GetInstance().SaveResourceInfosToFile(PathManager::GetInstance().GetAssetsPath() + "resources.xml");
+#endif // ENLIVE_ENABLE_IMGUI
+
+#ifdef ENLIVE_ENABLE_IMGUI
+		ImGuiToolManager::GetInstance().Shutdown();
+#endif // ENLIVE_ENABLE_IMGUI
+
+		if (mWindow.isOpen())
+		{
+			mWindow.close();
+		}
+
+		mRunning = false;
+
+		//std::exit(EXIT_SUCCESS);
 	}
+}
 
-	mRunning = false;
-
-	std::exit(EXIT_SUCCESS);
+bool Application::IsRunning() const
+{
+	return mRunning;
 }
 
 void Application::PopState()
@@ -114,212 +121,180 @@ U32 Application::GetTotalFrames() const
 
 Time Application::GetTotalDuration() const
 {
-	return mTotalDuration.getElapsedTime();
+	return mTotalDuration.GetElapsedTime();
 }
 
 bool Application::LoadResources()
 {
-	assert(mInitialized);
+	enAssert(mInitialized);
 
 #ifdef ENLIVE_ENABLE_IMGUI
 	return ImGuiResourceBrowser::GetInstance().LoadResourceInfosFromFile(PathManager::GetInstance().GetAssetsPath() + "resources.xml");
 #else
 	ParserXml xml;
-	if (!xml.loadFromFile(filename))
+	if (!xml.LoadFromFile(PathManager::GetInstance().GetAssetsPath() + "resources.xml"))
 	{
-		LogError(en::LogChannel::Application, 9, "Can't open resources file at %s", filename.c_str());
+		enLogError(en::LogChannel::Application, "Can't open resources file at {}", filename.c_str());
 		return false;
 	}
 
-	if (xml.readNode("Resources"))
+	if (xml.ReadNode("Resources"))
 	{
 		U32 resourceCount = 0;
-		xml.getAttribute("resourceCount", resourceCount);
+		xml.GetAttribute("resourceCount", resourceCount);
 		if (resourceCount > 0)
 		{
-			if (xml.readNode("Resource"))
+			if (xml.ReadNode("Resource"))
 			{
 				do
 				{
 					std::string identifierStr;
-					xml.getAttribute("identifier", identifierStr);
+					xml.GetAttribute("identifier", identifierStr);
 					std::string filenameStr;
-					xml.getAttribute("filename", filenameStr);
+					xml.GetAttribute("filename", filenameStr);
 					I32 typeInt;
-					xml.getAttribute("type", typeInt);
+					xml.GetAttribute("type", typeInt);
 					ResourceID resourceID;
-					LoadResource(type, identifierStr, filenameStr, resourceID);
-				} while (xml.nextSibling("Resource"));
-				xml.closeNode();
+					LoadResource(typeInt, identifierStr, PathManager::GetInstance().GetAssetsPath() + filenameStr, resourceID);
+				} while (xml.NextSibling("Resource"));
+				xml.CloseNode();
 			}
 		}
-		xml.closeNode();
+		xml.CloseNode();
 	}
 	else
 	{
-		LogError(en::LogChannel::Application, 9, "Invalid resources file at %s", filename.c_str());
+		enLogError(en::LogChannel::Application, "Invalid resources file at {}", filename.c_str());
 		return false;
 	}
 	return true;
 #endif // ENLIVE_ENABLE_IMGUI
 }
 
-bool Application::LoadResource(I32 type, const std::string& identifier, const std::string& filename, ResourceID& resourceID)
+#ifdef ENLIVE_DEBUG
+bool Application::LoadResource(ResourceID resourceID, U32 type, const std::string& filename, const std::string& identifier)
+#else
+bool Application::LoadResource(ResourceID resourceID, U32 type, const std::string& filename)
+#endif // ENLIVE_DEBUG
 {
-#ifdef ENLIVE_ENABLE_IMGUI
-	assert(-1 == static_cast<I32>(ImGuiResourceBrowser::ResourceInfo::Type::Unknown));
-	assert(0 == static_cast<I32>(ImGuiResourceBrowser::ResourceInfo::Type::Font));
-	assert(1 == static_cast<I32>(ImGuiResourceBrowser::ResourceInfo::Type::Texture));
-	assert(2 == static_cast<I32>(ImGuiResourceBrowser::ResourceInfo::Type::Tileset));
-	assert(3 == static_cast<I32>(ImGuiResourceBrowser::ResourceInfo::Type::Map));
-	assert(4 == static_cast<I32>(ImGuiResourceBrowser::ResourceInfo::Type::Animation));
-	assert(5 == static_cast<I32>(ImGuiResourceBrowser::ResourceInfo::Type::AnimationStateMachine));
-	assert(6 == static_cast<I32>(ImGuiResourceBrowser::ResourceInfo::Type::Music));
-	assert(7 == static_cast<I32>(ImGuiResourceBrowser::ResourceInfo::Type::Sound));
-	assert(8 == static_cast<I32>(ImGuiResourceBrowser::ResourceInfo::Type::Count));
-#endif // ENLIVE_ENABLE_IMGUI
-
 	ResourceManager& resourceManager = ResourceManager::GetInstance();
-	std::string resourceFilename = en::PathManager::GetInstance().GetAssetsPath() + filename;
+
+	bool valid = false;
+
 	switch (type)
 	{
-	case -1: // ResourceInfo::Type::Unknown
+		case static_cast<U32>(ResourceType::Invalid):
+		{
+			enLogError(LogChannel::Application, "Can't create resource from an invalid type");
+			valid = false;
+			break;
+		}
+		case static_cast<U32>(ResourceType::Image):
+		{
+	#ifdef ENLIVE_DEBUG
+			valid = resourceManager.Create<Image>(identifier, ImageLoader::FromFile(filename)).IsValid();
+	#else
+			valid = resourceManager.Create<Image>(resourceID, ImageLoader::FromFile(filename)).IsValid();
+	#endif // ENLIVE_DEBUG
+			break;
+		}
+		case static_cast<U32>(ResourceType::Texture):
+		{
+#ifdef ENLIVE_DEBUG
+			valid = resourceManager.Create<Texture>(identifier, TextureLoader::FromFile(filename)).IsValid();
+#else
+			valid = resourceManager.Create<Texture>(resourceID, TextureLoader::FromFile(filename)).IsValid();
+#endif // ENLIVE_DEBUG
+			break;
+		}
+		case static_cast<U32>(ResourceType::Font):
+		{
+#ifdef ENLIVE_DEBUG
+			valid = resourceManager.Create<Font>(identifier, FontLoader::FromFile(filename)).IsValid();
+#else
+			valid = resourceManager.Create<Font>(resourceID, FontLoader::FromFile(filename)).IsValid();
+#endif // ENLIVE_DEBUG
+			break;
+		}
+		case static_cast<U32>(ResourceType::Music):
+		{
+#ifdef ENLIVE_DEBUG
+			valid = resourceManager.Create<MusicBuffer>(identifier, MusicBufferLoader::FromFile(filename)).IsValid();
+#else
+			valid = resourceManager.Create<MusicBuffer>(resourceID, MusicBufferLoader::FromFile(filename)).IsValid();
+#endif // ENLIVE_DEBUG
+			break;
+		}
+		case static_cast<U32>(ResourceType::Sound):
+		{
+#ifdef ENLIVE_DEBUG
+			valid = resourceManager.Create<SoundBuffer>(identifier, SoundBufferLoader::FromFile(filename)).IsValid();
+#else
+			valid = resourceManager.Create<SoundBuffer>(resourceID, SoundBufferLoader::FromFile(filename)).IsValid();
+#endif // ENLIVE_DEBUG
+			break;
+		}
+		case static_cast<U32>(ResourceType::Tileset):
+		{
+#ifdef ENLIVE_DEBUG
+			valid = resourceManager.Create<tmx::Tileset>(identifier, tmx::TilesetLoader::FromFile(filename)).IsValid();
+#else
+			valid = resourceManager.Create<tmx::Tileset>(resourceID, tmx::TilesetLoader::FromFile(filename)).IsValid();
+#endif // ENLIVE_DEBUG
+			break;
+		}
+		case static_cast<U32>(ResourceType::Map):
+		{
+#ifdef ENLIVE_DEBUG
+			valid = resourceManager.Create<tmx::Map>(identifier, tmx::MapLoader::FromFile(filename)).IsValid();
+#else
+			valid = resourceManager.Create<tmx::Map>(resourceID, tmx::MapLoader::FromFile(filename)).IsValid();
+#endif // ENLIVE_DEBUG
+			break;
+		}
+		case static_cast<U32>(ResourceType::Animation):
+		{
+#ifdef ENLIVE_DEBUG
+			valid = resourceManager.Create<Animation>(identifier, AnimationLoader::FromFile(filename)).IsValid();
+#else
+			valid = resourceManager.Create<Animation>(resourceID, AnimationLoader::FromFile(filename)).IsValid();
+#endif // ENLIVE_DEBUG
+			break;
+		}
+		case static_cast<U32>(ResourceType::AnimationStateMachine):
+		{
+#ifdef ENLIVE_DEBUG
+			valid = resourceManager.Create<AnimationStateMachine>(identifier, AnimationStateMachineLoader::FromFile(filename)).IsValid();
+#else
+			valid = resourceManager.Create<AnimationStateMachine>(resourceID, AnimationStateMachineLoader::FromFile(filename)).IsValid();
+#endif // ENLIVE_DEBUG
+			break;
+		}
+		default: 
+		{
+			enAssert(false); // Resource type loading is not implemented yet
+			break;
+		}
+	}
+
+	if (!valid)
 	{
-		resourceID = InvalidResourceID;
-		LogError(en::LogChannel::Global, 4, "Unknown resource type for resource : %s, %s", identifier.c_str(), resourceFilename.c_str());
-		return false;
+#ifdef ENLIVE_DEBUG
+		enLogWarning(LogChannel::Application, "Can't load resource : {}({}) of type {} from file {}", identifier, resourceID, resourceManager.GetResourceTypeName(type), filename);
+#else
+		enLogWarning(LogChannel::Application, "Can't load resource : {} of type {} from file {}", resourceID, resourceManager.GetResourceTypeName(type), filename);
+#endif // ENLIVE_DEBUG
 	}
-	case 0: // ResourceInfo::Type::Font
-	{
-		FontPtr fontPtr = resourceManager.Create<Font>(identifier.c_str(), FontLoader::FromFile(resourceFilename));
-		if (!fontPtr.IsValid())
-		{
-			resourceID = InvalidResourceID;
-			LogWarning(en::LogChannel::Global, 2, "Can't load resource : %s, %s", identifier.c_str(), resourceFilename.c_str());
-			return false;
-		}
-		else
-		{
-			resourceID = fontPtr.GetID();
-		}
-		break;
-	}
-	case 1: // ResourceInfo::Type::Texture
-	{
-		TexturePtr texturePtr = resourceManager.Create<Texture>(identifier.c_str(), TextureLoader::FromFile(resourceFilename));
-		if (!texturePtr.IsValid())
-		{
-			resourceID = InvalidResourceID;
-			LogWarning(en::LogChannel::Global, 2, "Can't load resource : %s, %s", identifier.c_str(), resourceFilename.c_str());
-			return false;
-		}
-		else
-		{
-			resourceID = texturePtr.GetID();
-		}
-		break;
-	}
-	case 2: // ResourceInfo::Type::Tileset
-	{
-		tmx::TilesetPtr tilesetPtr = resourceManager.Create<tmx::Tileset>(identifier.c_str(), tmx::TilesetLoader::FromFile(resourceFilename));
-		if (!tilesetPtr.IsValid())
-		{
-			resourceID = InvalidResourceID;
-			LogWarning(en::LogChannel::Global, 2, "Can't load resource : %s, %s", identifier.c_str(), resourceFilename.c_str());
-			return false;
-		}
-		else
-		{
-			resourceID = tilesetPtr.GetID();
-		}
-		break;
-	}
-	case 3: // ResourceInfo::Type::Map
-	{
-		tmx::MapPtr mapPtr = resourceManager.Create<tmx::Map>(identifier.c_str(), tmx::MapLoader::FromFile(resourceFilename));
-		if (!mapPtr.IsValid())
-		{
-			resourceID = InvalidResourceID;
-			LogWarning(en::LogChannel::Global, 2, "Can't load resource : %s, %s", identifier.c_str(), resourceFilename.c_str());
-			return false;
-		}
-		else
-		{
-			resourceID = mapPtr.GetID();
-		}
-		break;
-	}
-	case 4: // ResourceInfo::Type::Animation
-	{
-		AnimationPtr animPtr = resourceManager.Create<Animation>(identifier.c_str(), AnimationLoader::FromFile(resourceFilename));
-		if (!animPtr.IsValid())
-		{
-			resourceID = InvalidResourceID;
-			LogWarning(en::LogChannel::Global, 2, "Can't load resource : %s, %s", identifier.c_str(), resourceFilename.c_str());
-			return false;
-		}
-		else
-		{
-			resourceID = animPtr.GetID();
-		}
-		break;
-	}
-	case 5: // ResourceInfo::Type::AnimationStateMachine
-	{
-		AnimationStateMachinePtr animPtr = resourceManager.Create<AnimationStateMachine>(identifier.c_str(), AnimationStateMachineLoader::FromFile(resourceFilename));
-		if (!animPtr.IsValid())
-		{
-			resourceID = InvalidResourceID;
-			LogWarning(en::LogChannel::Global, 2, "Can't load resource : %s, %s", identifier.c_str(), resourceFilename.c_str());
-			return false;
-		}
-		else
-		{
-			resourceID = animPtr.GetID();
-		}
-		break;
-	}
-	case 6: // ResourceInfo::Type::Music
-	{
-		MusicID musicID = AudioSystem::GetInstance().PrepareMusic(identifier.c_str(), resourceFilename);
-		if (musicID == InvalidMusicID)
-		{
-			resourceID = InvalidResourceID;
-			LogWarning(en::LogChannel::Global, 2, "Can't load resource : %s, %s", identifier.c_str(), resourceFilename.c_str());
-			return false;
-		}
-		else
-		{
-			resourceID = musicID;
-		}
-		break;
-	}
-	case 7: // ResourceInfo::Type::Sound
-	{
-		SoundID soundID = AudioSystem::GetInstance().PrepareSound(identifier.c_str(), resourceFilename);
-		if (soundID == InvalidSoundID)
-		{
-			resourceID = InvalidResourceID;
-			LogWarning(en::LogChannel::Global, 2, "Can't load resource : %s, %s", identifier.c_str(), resourceFilename.c_str());
-			return false;
-		}
-		else
-		{
-			resourceID = soundID;
-		}
-		break;
-	}
-	default: assert(false); return false;
-	}
+
 	return true;
 }
 
 void Application::Run()
 {
-	const Time TimeUpdateFPS = seconds(0.5f);
-	const Time TimePerFrame = seconds(1.0f / 60.0f);
-	Time accumulator = Time::Zero;
-	Time fpsAccumulator = Time::Zero;
+	constexpr Time TimeUpdateFPS = Time::Seconds(0.5f);
+	constexpr Time TimePerFrame = Time::Seconds(1.0f / 60.0f);
+	Time accumulator;
+	Time fpsAccumulator;
 	U32 framesFps = 0;
 	Clock clock;
 
@@ -334,11 +309,11 @@ void Application::Run()
 			ENLIVE_PROFILE_SCOPE(MainFrame);
 
 			// Time
-			Time dt = clock.restart();
+			Time dt = clock.Restart();
 
 			// Usefull when using Breakpoints on Debugging
 #ifdef ENLIVE_DEBUG
-			if (dt > Time::Second)
+			if (dt > Time::Second())
 			{
 				dt = TimePerFrame;
 			}
@@ -348,6 +323,13 @@ void Application::Run()
 			fpsAccumulator += dt;
 
 			Events();
+			if (!mRunning)
+			{
+#ifdef ENLIVE_ENABLE_PROFILE
+				Profiler::GetInstance().EndFrame();
+#endif // ENLIVE_ENABLE_PROFILE
+				return;
+			}
 
 			// Fixed time 60 FPS
 			while (accumulator >= TimePerFrame)
@@ -373,12 +355,12 @@ void Application::Run()
 			framesFps++;
 			if (fpsAccumulator > TimeUpdateFPS)
 			{
-				mFps = static_cast<U32>(framesFps / TimeUpdateFPS.asSeconds());
-				fpsAccumulator = Time::Zero;
+				mFps = static_cast<U32>(framesFps / TimeUpdateFPS.AsSeconds());
+				fpsAccumulator = Time::Zero();
 				framesFps = 0;
 
 #ifdef ENLIVE_DEBUG
-				mWindow.setTitle("FPS : " + toString(mFps));
+				mWindow.setTitle("FPS : " + ToString(mFps));
 #endif // ENLIVE_DEBUG
 			}
 
@@ -402,7 +384,7 @@ void Application::Events()
 	ENLIVE_PROFILE_FUNCTION();
 
 	sf::Event event;
-	while (mWindow.pollEvent(event))
+	while (mWindow.pollEvent(event) && mRunning)
 	{
 		mActionSystem.AddEvent(event);
 
@@ -464,7 +446,8 @@ void Application::Render()
 	mStates.render(mWindow.getHandle());
 
 #ifdef ENLIVE_DEBUG
-	DebugDraw::render(mWindow.getHandle());
+	// TODO : How to respect player's view ?
+	//DebugDraw::GetInstance().render(mWindow.getHandle());
 #endif // ENLIVE_DEBUG
 
 #ifdef ENLIVE_ENABLE_IMGUI
@@ -488,14 +471,18 @@ void Application::RegisterTools()
     ImGuiAnimationEditor::GetInstance().Register();
 	ImGuiConsole::GetInstance().Register();
 	ImGuiDemoWindow::GetInstance().Register();
-
 	// Engine
-	ImGuiEntt::GetInstance().Register();
-
-	// Game
+	ImGuiEntityBrowser::GetInstance().Register();
+	ImGuiPhysic::GetInstance().Register();
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+	ImGuiMemoryDebugger::GetInstance().Register();
+#endif // ENLIVE_ENABLE_DEBUG_MEMORY
 #ifdef ENLIVE_ENABLE_PROFILE
 	ImGuiProfiler::GetInstance().Register();
 #endif // ENLIVE_ENABLE_PROFILE
+
+	// Game
+	// ...
 #endif // ENLIVE_ENABLE_IMGUI
 }
 

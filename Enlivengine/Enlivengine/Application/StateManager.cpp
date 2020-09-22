@@ -52,19 +52,19 @@ void State::render(sf::RenderTarget& target)
 
 void State::popState()
 {
-	assert(mManager != nullptr);
+	enAssert(mManager != nullptr);
 	mManager->popState();
 }
 
 void State::clearStates()
 {
-	assert(mManager != nullptr);
+	enAssert(mManager != nullptr);
 	mManager->clearStates();
 }
 
 Application& State::getApplication()
 {
-	assert(mManager != nullptr);
+	enAssert(mManager != nullptr);
 	return mManager->getApplication();
 }
 

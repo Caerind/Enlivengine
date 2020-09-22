@@ -9,7 +9,7 @@
 		#define ENLIVE_COMPILER_CPP11_ENABLED
 	#elif defined(__GNUC__) && defined(__GXX_EXPERIMENTAL_CXX0X__)
 		#define ENLIVE_COMPILER_CPP11_ENABLED
-	#elif defined(_MSC_VER) && _MSC_VER >= 1600 // Microsoft unilaterally enables its C++11 support; there is no way to disable it.
+	#elif defined(_MSC_VER) && (_MSC_VER >= 1600)
 		#define ENLIVE_COMPILER_CPP11_ENABLED
 	#endif
 

@@ -7,7 +7,7 @@
 #include <Enlivengine/Application/Window.hpp>
 #include <Enlivengine/System/Singleton.hpp>
 
-#include <IconFontCppHeaders/IconsFontAwesome5.h>
+#include <Enlivengine/Tools/ImGuiHelper.hpp>
 
 #include <vector>
 
@@ -61,7 +61,6 @@ class ImGuiTool
 		bool mRegistered;
 
 		friend class ImGuiToolManager;
-		virtual U32 GetHash() const;
 		bool ShouldResize() const;
 		void Resize();
 		bool ShouldFocus() const;

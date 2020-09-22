@@ -28,12 +28,12 @@ const Vector3f& AABB::getMinimum() const
 
 void AABB::setMinimum(const Vector3f& minimum)
 {
-	mMin.set(minimum);
+	mMin = minimum;
 }
 
 void AABB::setMinimum(F32 x, F32 y, F32 z)
 {
-	mMin.set(x, y, z);
+	mMin.Set(x, y, z);
 }
 
 const Vector3f& AABB::getMaximum() const
@@ -43,37 +43,36 @@ const Vector3f& AABB::getMaximum() const
 
 void AABB::setMaximum(const Vector3f& maximum)
 {
-	mMax.set(maximum);
+	mMax = maximum;
 }
 
 void AABB::setMaximum(F32 x, F32 y, F32 z)
 {
-	mMax.set(x, y, z);
+	mMax.Set(x, y, z);
 }
 
 void AABB::setBox(const Vector3f& minimum, const Vector3f& maximum)
 {
-	mMin.set(minimum);
-	mMax.set(maximum);
+	mMin = minimum;
+	mMax = maximum;
 }
 
 void AABB::setBox(F32 minX, F32 minY, F32 minZ, F32 maxX, F32 maxY, F32 maxZ)
 {
-	mMin.set(minX, minY, minZ);
-	mMax.set(maxX, maxY, maxZ);
+	mMin.Set(minX, minY, minZ);
+	mMax.Set(maxX, maxY, maxZ);
 }
 
 void AABB::setCenteredBox(const Vector3f& center, const Vector3f& halfSize)
 {
-	mMin.set(center - halfSize);
-	mMax.set(center + halfSize);
+	mMin = center - halfSize;
+	mMax = center + halfSize;
 }
 
 void AABB::setCenteredBox(F32 cX, F32 cY, F32 cZ, F32 hsX, F32 hsY, F32 hsZ)
 {
 	setCenteredBox(Vector3f(cX, cY, cZ), Vector3f(hsX, hsY, hsZ));
 }
-
 
 Vector3f AABB::getCenter() const
 {
@@ -169,7 +168,7 @@ F32 AABB::getDistanceSquared(const Vector3f& point) const
 		else if (z > mMax.z)
 			maxDist.z = z - mMax.z;
 
-		return maxDist.getSquaredLength();
+		return maxDist.GetSquaredLength();
 	}
 }
 
@@ -240,20 +239,20 @@ const AABB& AABB::getAABB() const
 
 void AABB::fromAABB(const AABB& aabb)
 {
-	mMin.set(aabb.mMin);
-	mMax.set(aabb.mMax);
+	mMin = aabb.mMin;
+	mMax = aabb.mMax;
 }
 
 void AABB::merge(const Vector3f& point)
 {
-	mMin.minimize(point);
-	mMax.maximize(point);
+	mMin.Minimize(point);
+	mMax.Maximize(point);
 }
 
 void AABB::merge(const AABB& box)
 {
-	mMin.minimize(box.mMin);
-	mMax.maximize(box.mMax);
+	mMin.Minimize(box.mMin);
+	mMax.Maximize(box.mMax);
 }
 
 void AABB::transform(const Matrix4f& m)
@@ -261,8 +260,8 @@ void AABB::transform(const Matrix4f& m)
 	const Vector3f oldMin(mMin);
 	const Vector3f oldMax(mMax);
 	Vector3f currentCorner;
-	mMin.set(0.0f);
-	mMax.set(0.0f);
+	mMin.Set(0.0f);
+	mMax.Set(0.0f);
 	// This order only changes one value to change the corner
 	// min min min
 	currentCorner = oldMin;

@@ -28,8 +28,8 @@ bool RectangleObject::Parse(ParserXml& parser)
 		return false;
 	}
 
-	parser.getAttribute("width", mSize.x);
-	parser.getAttribute("height", mSize.y);
+	parser.GetAttribute("width", mSize.x);
+	parser.GetAttribute("height", mSize.y);
 
 	return true;
 }

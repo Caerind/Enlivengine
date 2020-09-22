@@ -44,7 +44,7 @@ void ImGuiLogger::Display()
 	for (U32 i = 0; i < mMessages.size(); ++i)
 	{
 		ImVec4 col;
-		if (mMessages[i].type == LogType::Error)
+		if (mMessages[i].type == LogType::Error || mMessages[i].type == LogType::Fatal)
 		{
 			col = ImColor(1.0f, 0.4f, 0.4f, 1.0f);
 		}
@@ -64,21 +64,13 @@ void ImGuiLogger::Display()
 	ImGui::EndChild();
 }
 
-void ImGuiLogger::Write(LogType type, LogChannel channel, U32 importance, const std::string& message)
+void ImGuiLogger::Write(const LogMessage& message)
 {
-	LogMessage logMessage;
-	logMessage.type = type;
-	logMessage.channel = channel;
-	logMessage.verbosity = importance;
-	logMessage.message = std::move(std::string("[" + std::string(en::LogTypeToString(type)) + "] : " + message));
-
 	if (GetCurrentSize() + 1 > GetMaxSize())
 	{
 		mMessages.erase(mMessages.begin());
 	}
-
-	mMessages.push_back(std::move(logMessage));
-
+	mMessages.push_back(message);
 	AskForResize();
 }
 

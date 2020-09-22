@@ -26,7 +26,7 @@ bool AnimationController::SetAnimationStateMachine(AnimationStateMachinePtr anim
 	mClipIndex = U32_Max;
 	mClipFrameIndex = U32_Max;
 	mFrameIndex = U32_Max;
-	mTimeAccumulator = Time::Zero;
+	mTimeAccumulator = Time::Zero();
 	mParameters.clear();
 
 	if (!IsStateMachineValid())
@@ -121,7 +121,7 @@ void AnimationController::Recompute()
 
 bool AnimationController::HasParameter(const std::string& name) const
 {
-	return HasParameter(Hash::CRC32(name.c_str()));
+	return HasParameter(Hash::SlowHash(name.c_str()));
 }
 
 bool AnimationController::HasParameter(U32 hashedName) const
@@ -131,124 +131,124 @@ bool AnimationController::HasParameter(U32 hashedName) const
 
 void AnimationController::SetParameterBoolean(const std::string& name, bool value)
 {
-	SetParameterBoolean(Hash::CRC32(name.c_str()), value);
+	SetParameterBoolean(Hash::SlowHash(name.c_str()), value);
 }
 
 void AnimationController::SetParameterBoolean(U32 hashedName, bool value)
 {
 	const U32 parameterIndex = GetParameterIndexByName(hashedName);
-	assert(parameterIndex < GetParameterCount());
-	assert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Boolean);
+	enAssert(parameterIndex < GetParameterCount());
+	enAssert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Boolean);
 	mParameters[parameterIndex].SetBooleanValue(value);
 }
 
 void AnimationController::SetParameterFloat(const std::string& name, F32 value)
 {
-	SetParameterFloat(Hash::CRC32(name.c_str()), value);
+	SetParameterFloat(Hash::SlowHash(name.c_str()), value);
 }
 
 void AnimationController::SetParameterFloat(U32 hashedName, F32 value)
 {
 	const U32 parameterIndex = GetParameterIndexByName(hashedName);
-	assert(parameterIndex < GetParameterCount());
-	assert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Float);
+	enAssert(parameterIndex < GetParameterCount());
+	enAssert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Float);
 	mParameters[parameterIndex].SetFloatValue(value);
 }
 
 void AnimationController::SetParameterInteger(const std::string& name, I32 value)
 {
-	SetParameterInteger(Hash::CRC32(name.c_str()), value);
+	SetParameterInteger(Hash::SlowHash(name.c_str()), value);
 }
 
 void AnimationController::SetParameterInteger(U32 hashedName, I32 value)
 {
 	const U32 parameterIndex = GetParameterIndexByName(hashedName);
-	assert(parameterIndex < GetParameterCount());
-	assert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Integer);
+	enAssert(parameterIndex < GetParameterCount());
+	enAssert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Integer);
 	mParameters[parameterIndex].SetIntegerValue(value);
 }
 
 void AnimationController::SetParameterTrigger(const std::string& name)
 {
-	SetParameterTrigger(Hash::CRC32(name.c_str()));
+	SetParameterTrigger(Hash::SlowHash(name.c_str()));
 }
 
 void AnimationController::SetParameterTrigger(U32 hashedName)
 {
 	const U32 parameterIndex = GetParameterIndexByName(hashedName);
-	assert(parameterIndex < GetParameterCount());
-	assert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Trigger);
+	enAssert(parameterIndex < GetParameterCount());
+	enAssert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Trigger);
 	mParameters[parameterIndex].SetTriggerValue(true);
 }
 
 void AnimationController::ResetParameterTrigger(const std::string& name)
 {
-	ResetParameterTrigger(Hash::CRC32(name.c_str()));
+	ResetParameterTrigger(Hash::SlowHash(name.c_str()));
 }
 
 void AnimationController::ResetParameterTrigger(U32 hashedName)
 {
 	const U32 parameterIndex = GetParameterIndexByName(hashedName);
-	assert(parameterIndex < GetParameterCount());
-	assert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Trigger);
+	enAssert(parameterIndex < GetParameterCount());
+	enAssert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Trigger);
 	mParameters[parameterIndex].SetTriggerValue(false);
 }
 
 bool AnimationController::GetParameterBoolean(const std::string& name) const
 {
-	return GetParameterBoolean(Hash::CRC32(name.c_str()));
+	return GetParameterBoolean(Hash::SlowHash(name.c_str()));
 }
 
 bool AnimationController::GetParameterBoolean(U32 hashedName) const
 {
 	const U32 parameterIndex = GetParameterIndexByName(hashedName);
-	assert(parameterIndex < GetParameterCount());
-	assert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Boolean);
+	enAssert(parameterIndex < GetParameterCount());
+	enAssert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Boolean);
 	return mParameters[parameterIndex].GetBooleanValue();
 }
 
 F32 AnimationController::GetParameterFloat(const std::string& name) const
 {
-	return GetParameterFloat(Hash::CRC32(name.c_str()));
+	return GetParameterFloat(Hash::SlowHash(name.c_str()));
 }
 
 F32 AnimationController::GetParameterFloat(U32 hashedName) const
 {
 	const U32 parameterIndex = GetParameterIndexByName(hashedName);
-	assert(parameterIndex < GetParameterCount());
-	assert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Float);
+	enAssert(parameterIndex < GetParameterCount());
+	enAssert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Float);
 	return mParameters[parameterIndex].GetFloatValue();
 }
 
 I32 AnimationController::GetParameterInteger(const std::string& name) const
 {
-	return GetParameterInteger(Hash::CRC32(name.c_str()));
+	return GetParameterInteger(Hash::SlowHash(name.c_str()));
 }
 
 I32 AnimationController::GetParameterInteger(U32 hashedName) const
 {
 	const U32 parameterIndex = GetParameterIndexByName(hashedName);
-	assert(parameterIndex < GetParameterCount());
-	assert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Integer);
+	enAssert(parameterIndex < GetParameterCount());
+	enAssert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Integer);
 	return mParameters[parameterIndex].GetIntegerValue();
 }
 
 bool AnimationController::GetParameterTrigger(const std::string& name) const
 {
-	return GetParameterTrigger(Hash::CRC32(name.c_str()));
+	return GetParameterTrigger(Hash::SlowHash(name.c_str()));
 }
 
 bool AnimationController::GetParameterTrigger(U32 hashedName) const
 {
 	const U32 parameterIndex = GetParameterIndexByName(hashedName);
-	assert(parameterIndex < GetParameterCount());
-	assert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Trigger);
+	enAssert(parameterIndex < GetParameterCount());
+	enAssert(mParameters[parameterIndex].GetType() == AnimationStateMachine::Parameter::Type::Trigger);
 	return mParameters[parameterIndex].GetTriggerValue();
 }
 
 U32 AnimationController::GetParameterIndexByName(const std::string& name) const
 {
-	return GetParameterIndexByName(Hash::CRC32(name.c_str()));
+	return GetParameterIndexByName(Hash::SlowHash(name.c_str()));
 }
 
 U32 AnimationController::GetParameterIndexByName(U32 hashedName) const
@@ -271,7 +271,7 @@ U32 AnimationController::GetParameterCount() const
 
 const AnimationStateMachine::Parameter& AnimationController::GetParameter(U32 index) const
 {
-	assert(index < GetParameterCount());
+	enAssert(index < GetParameterCount());
 	return mParameters[index];
 }
 
@@ -297,7 +297,7 @@ void AnimationController::Update(const Time& dt)
 	const F32 speedScale = state.GetSpeedScale();
 	if (speedScale != 1.0f)
 	{
-		mTimeAccumulator += seconds(dt.asSeconds() * state.GetSpeedScale());
+		mTimeAccumulator += Time::Seconds(dt.AsSeconds() * state.GetSpeedScale());
 	}
 	else
 	{
@@ -328,10 +328,10 @@ void AnimationController::Update(const Time& dt)
 					mStateIndex = transition.GetToState();
 					mClipIndex = GetClipIndexFromState(stateMachine.GetState(mStateIndex));
 					const Animation::Clip& clip = animation.GetClip(mClipIndex);
-					assert(clip.GetFrameCount() > 0);
+					enAssert(clip.GetFrameCount() > 0);
 					mClipFrameIndex = 0;
 					mFrameIndex = clip.GetFrameIndex(mClipFrameIndex);
-					mTimeAccumulator = Time::Zero;
+					mTimeAccumulator = Time::Zero();
 				}
 			}
 		}
@@ -343,7 +343,7 @@ void AnimationController::Update(const Time& dt)
 		const Animation::Clip& clip = animation.GetClip(mClipIndex);
 		mClipFrameIndex = (mClipFrameIndex >= clip.GetFrameCount() - 1) ? 0 : mClipFrameIndex + 1;
 		mFrameIndex = clip.GetFrameIndex(mClipFrameIndex);
-		mTimeAccumulator = Time::Zero;
+		mTimeAccumulator = Time::Zero();
 	}
 
 	// Reset Triggers
@@ -359,7 +359,7 @@ void AnimationController::Update(const Time& dt)
 
 bool AnimationController::AreIndicesValid() const
 {
-	assert(IsStateMachineValid());
+	enAssert(IsStateMachineValid());
 
 	const AnimationStateMachine* stateMachine = mAnimationStateMachine.GetPtr();
 	if (stateMachine == nullptr)
@@ -442,7 +442,7 @@ U32 AnimationController::GetClipIndexFromState(const AnimationStateMachine::Stat
 					}
 					else
 					{
-						assert(false);
+						enAssert(false);
 					}
 					const F32 delta = mValue - pValue;
 					distanceSqr += (delta * delta);
@@ -463,9 +463,9 @@ U32 AnimationController::GetClipIndexFromState(const AnimationStateMachine::Stat
 
 bool AnimationController::CanUseTransition(const AnimationStateMachine::Transition& transition, bool lastFrameEnded)
 {
-	assert(mAnimationStateMachine.IsValid());
+	enAssert(mAnimationStateMachine.IsValid());
 	const AnimationStateMachine& stateMachine = mAnimationStateMachine.Get();
-	assert(!IsStateMachineDirty());
+	enAssert(!IsStateMachineDirty());
 
 	if (!lastFrameEnded && transition.GetExitOnlyAtEnd())
 	{
@@ -476,9 +476,9 @@ bool AnimationController::CanUseTransition(const AnimationStateMachine::Transiti
 	for (U32 i = 0; i < conditionCount; ++i)
 	{
 		const U32 conditionIndex = transition.GetCondition(i);
-		assert(conditionIndex < stateMachine.GetConditionCount());
+		enAssert(conditionIndex < stateMachine.GetConditionCount());
 		const AnimationStateMachine::Condition& condition = stateMachine.GetCondition(conditionIndex);
-		assert(condition.GetParameterIndex() < GetParameterCount());
+		enAssert(condition.GetParameterIndex() < GetParameterCount());
 		const AnimationStateMachine::Parameter& parameter = GetParameter(condition.GetParameterIndex());
 		if (!condition.Evaluate(parameter))
 		{

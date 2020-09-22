@@ -32,12 +32,12 @@ bool ScreenshotSystem::SaveTexture(const sf::Texture& texture) const
 	const std::string filename = PathManager::GetInstance().GetScreenshotPath() + GetScreenshotName() + GetScreenshotFormat();
 	if (texture.copyToImage().saveToFile(filename))
 	{
-		LogInfo(en::LogChannel::Graphics, 5, "Screenshot saved to : %s", filename.c_str());
+		enLogInfo(en::LogChannel::Graphics, "Screenshot saved to : {}", filename.c_str());
 		return true;
 	}
 	else
 	{
-		LogError(en::LogChannel::Graphics, 8, "Can't save screenshot to : %s", filename.c_str());
+		enLogError(en::LogChannel::Graphics, "Can't save screenshot to : {}", filename.c_str());
 		return false;
 	}
 }
@@ -47,8 +47,8 @@ std::string ScreenshotSystem::GetScreenshotName()
 	DateTime date;
 	I32 y, m, d;
 	I32 H, M, S;
-	date.getDate(y, m, d);
-	date.getTime(H, M, S);
+	date.GetDate(y, m, d);
+	date.GetTime(H, M, S);
 	std::ostringstream oss;
 	oss << y << "-" << m << "-" << d << "_" << H << "-" << M << "-" << S;
 	return oss.str();

@@ -31,6 +31,7 @@ public:
 	using Ptr = std::unique_ptr<ObjectBase>;
 
 	ObjectBase(ObjectGroup& objectGroup);
+	virtual ~ObjectBase() {}
 
 	virtual ObjectType GetObjectType() const = 0;
 

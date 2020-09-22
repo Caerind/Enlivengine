@@ -9,18 +9,19 @@
 
 #include <Enlivengine/System/Assert.hpp>
 
-#define EnDetailSignal(Keyword, SignalName, ...) using SignalName ## Type = ::en::Signal<__VA_ARGS__>; Keyword SignalName ## Type SignalName
+#define enDetailSignal(Keyword, SignalName, ...) using SignalName ## Type = ::en::Signal<__VA_ARGS__>; Keyword SignalName ## Type SignalName
 
-#define EnSignal(SignalName, ...) EnDetailSignal(mutable, SignalName, __VA_ARGS__)
-#define EnStaticSignal(SignalName, ...) EnDetailSignal(static, SignalName, __VA_ARGS__)
-#define EnStaticSignalImpl(Class, SignalName) Class :: SignalName ## Type Class :: SignalName
+#define enSignal(SignalName, ...) enDetailSignal(mutable, SignalName, __VA_ARGS__)
+#define enStaticSignal(SignalName, ...) enDetailSignal(static, SignalName, __VA_ARGS__)
+#define enStaticSignalImpl(Class, SignalName) Class :: SignalName ## Type Class :: SignalName
 
-#define EnSlot(Class, SignalName, SlotName) Class::SignalName ## Type::ConnectionGuard SlotName
+#define enSlotType(Class, SignalName) Class::SignalName ## Type::ConnectionGuard
+#define enSlot(Class, SignalName, SlotName) Class::SignalName ## Type::ConnectionGuard SlotName
 
 namespace en
 {
 
-template<typename... Args>
+template <typename... Args>
 class Signal
 {
 	public:
@@ -29,22 +30,22 @@ class Signal
 		class ConnectionGuard;
 
 		Signal();
-		Signal(const Signal&) = delete;
+		Signal(const Signal&);
 		Signal(Signal&& signal) noexcept;
 		~Signal() = default;
 
-		void clear();
+		void Clear();
 
-		Connection connect(const Callback& func);
-		Connection connect(Callback&& func);
-		template<typename O> Connection connect(O& object, void (O::*method)(Args...));
-		template<typename O> Connection connect(O* object, void (O::*method)(Args...));
-		template<typename O> Connection connect(const O& object, void (O::*method)(Args...) const);
-		template<typename O> Connection connect(const O* object, void (O::*method)(Args...) const);
+		Connection Connect(const Callback& func);
+		Connection Connect(Callback&& func);
+		template <typename O> Connection Connect(O& object, void (O::*method)(Args...));
+		template <typename O> Connection Connect(O* object, void (O::*method)(Args...));
+		template <typename O> Connection Connect(const O& object, void (O::*method)(Args...) const);
+		template <typename O> Connection Connect(const O* object, void (O::*method)(Args...) const);
 
 		void operator()(Args... args) const;
 
-		Signal& operator=(const Signal&) = delete;
+		Signal& operator=(const Signal&);
 		Signal& operator=(Signal&& signal) noexcept;
 
 	private:
@@ -56,7 +57,8 @@ class Signal
 
 		struct Slot
 		{
-			Slot(Signal* me) : signal(me)
+			Slot(Signal* me) 
+				: signal(me)
 			{
 			}
 
@@ -65,13 +67,13 @@ class Signal
 			SlotListIndex index;
 		};
 
-		void disconnect(const SlotPtr& slot);
+		void Disconnect(const SlotPtr& slot) noexcept;
 
 		SlotList mSlots;
 		mutable SlotListIndex mSlotIterator;
 };
 
-template<typename... Args>
+template <typename... Args>
 class Signal<Args...>::Connection
 {
 	using BaseClass = Signal<Args...>;
@@ -80,17 +82,17 @@ class Signal<Args...>::Connection
 	public:
 		Connection() = default;
 		Connection(const Connection& connection) = default;
-		Connection(Connection&& connection) = default;
+		Connection(Connection&& connection) noexcept;
 		~Connection() = default;
 
-		template<typename... ConnectArgs>
-		void connect(BaseClass& signal, ConnectArgs&&... args);
-		void disconnect();
+		template <typename... ConnectArgs>
+		void Connect(BaseClass& signal, ConnectArgs&&... args);
+		void Disconnect() noexcept;
 
-		bool isConnected() const;
+		bool IsConnected() const;
 
 		Connection& operator=(const Connection& connection) = default;
-		Connection& operator=(Connection&& connection) = default;
+		Connection& operator=(Connection&& connection) noexcept;
 
 	private:
 		Connection(const SlotPtr& slot);
@@ -98,7 +100,7 @@ class Signal<Args...>::Connection
 		std::weak_ptr<Slot> mPtr;
 };
 
-template<typename... Args>
+template <typename... Args>
 class Signal<Args...>::ConnectionGuard
 {
 	using BaseClass = Signal<Args...>;
@@ -109,55 +111,61 @@ class Signal<Args...>::ConnectionGuard
 		ConnectionGuard(const Connection& connection);
 		ConnectionGuard(const ConnectionGuard& connection) = delete;
 		ConnectionGuard(Connection&& connection);
-		ConnectionGuard(ConnectionGuard&& connection) = default;
+		ConnectionGuard(ConnectionGuard&& connection) noexcept = default;
 		~ConnectionGuard();
 
-		template<typename... ConnectArgs>
-		void connect(BaseClass& signal, ConnectArgs&&... args);
-		void disconnect();
+		template <typename... ConnectArgs>
+		void Connect(BaseClass& signal, ConnectArgs&&... args);
+		void Disconnect() noexcept;
 
-		Connection& getConnection();
+		Connection& GetConnection();
 
-		bool isConnected() const;
+		bool IsConnected() const;
 
 		ConnectionGuard& operator=(const Connection& connection);
 		ConnectionGuard& operator=(const ConnectionGuard& connection) = delete;
 		ConnectionGuard& operator=(Connection&& connection);
-		ConnectionGuard& operator=(ConnectionGuard&& connection);
+		ConnectionGuard& operator=(ConnectionGuard&& connection) noexcept;
 
 	private:
 		Connection mConnection;
 };
 
-template<typename... Args>
+template <typename... Args>
 Signal<Args...>::Signal()
 	: mSlotIterator(0)
 {
 }
 
-template<typename... Args>
+template <typename... Args>
+Signal<Args...>::Signal(const Signal&) 
+	: Signal()
+{
+}
+
+template <typename... Args>
 Signal<Args...>::Signal(Signal&& signal) noexcept
 {
 	operator=(std::move(signal));
 }
 
-template<typename... Args>
-void Signal<Args...>::clear()
+template <typename... Args>
+void Signal<Args...>::Clear()
 {
 	mSlots.clear();
 	mSlotIterator = 0;
 }
 
-template<typename... Args>
-typename Signal<Args...>::Connection Signal<Args...>::connect(const Callback& func)
+template <typename... Args>
+typename Signal<Args...>::Connection Signal<Args...>::Connect(const Callback& func)
 {
-	return connect(Callback(func));
+	return Connect(Callback(func));
 }
 
-template<typename... Args>
-typename Signal<Args...>::Connection Signal<Args...>::connect(Callback&& func)
+template <typename... Args>
+typename Signal<Args...>::Connection Signal<Args...>::Connect(Callback&& func)
 {
-	assert(func);
+	enAssert(func);
 
 	// Since we're incrementing the slot vector size, we need to replace our iterator at the end
 	// (Except when we are iterating on the signal)
@@ -175,47 +183,47 @@ typename Signal<Args...>::Connection Signal<Args...>::connect(Callback&& func)
 	return Connection(mSlots.back());
 }
 
-template<typename... Args>
-template<typename O>
-typename Signal<Args...>::Connection Signal<Args...>::connect(O& object, void (O::*method) (Args...))
+template <typename... Args>
+template <typename O>
+typename Signal<Args...>::Connection Signal<Args...>::Connect(O& object, void (O::*method) (Args...))
 {
-	return connect([&object, method](Args&&... args)
+	return Connect([&object, method](Args&&... args)
 	{
 		return (object.*method) (std::forward<Args>(args)...);
 	});
 }
 
-template<typename... Args>
-template<typename O>
-typename Signal<Args...>::Connection Signal<Args...>::connect(O* object, void (O::*method)(Args...))
+template <typename... Args>
+template <typename O>
+typename Signal<Args...>::Connection Signal<Args...>::Connect(O* object, void (O::*method)(Args...))
 {
-	return connect([object, method](Args&&... args)
+	return Connect([object, method](Args&&... args)
 	{
 		return (object->*method) (std::forward<Args>(args)...);
 	});
 }
 
-template<typename... Args>
-template<typename O>
-typename Signal<Args...>::Connection Signal<Args...>::connect(const O& object, void (O::*method) (Args...) const)
+template <typename... Args>
+template <typename O>
+typename Signal<Args...>::Connection Signal<Args...>::Connect(const O& object, void (O::*method) (Args...) const)
 {
-	return connect([&object, method](Args&&... args)
+	return Connect([&object, method](Args&&... args)
 	{
 		return (object.*method) (std::forward<Args>(args)...);
 	});
 }
 
-template<typename... Args>
-template<typename O>
-typename Signal<Args...>::Connection Signal<Args...>::connect(const O* object, void (O::*method)(Args...) const)
+template <typename... Args>
+template <typename O>
+typename Signal<Args...>::Connection Signal<Args...>::Connect(const O* object, void (O::*method)(Args...) const)
 {
-	return connect([object, method](Args&&... args)
+	return Connect([object, method](Args&&... args)
 	{
 		return (object->*method) (std::forward<Args>(args)...);
 	});
 }
 
-template<typename... Args>
+template <typename... Args>
 void Signal<Args...>::operator()(Args... args) const
 {
 	for (mSlotIterator = 0; mSlotIterator < mSlots.size(); ++mSlotIterator)
@@ -224,7 +232,13 @@ void Signal<Args...>::operator()(Args... args) const
 	}
 }
 
-template<typename... Args>
+template <typename... Args>
+Signal<Args...>& Signal<Args...>::operator=(const Signal&)
+{
+	return *this;
+}
+
+template <typename... Args>
 Signal<Args...>& Signal<Args...>::operator=(Signal&& signal) noexcept
 {
 	mSlots = std::move(signal.mSlots);
@@ -237,12 +251,12 @@ Signal<Args...>& Signal<Args...>::operator=(Signal&& signal) noexcept
 	return *this;
 }
 
-template<typename... Args>
-void Signal<Args...>::disconnect(const SlotPtr& slot)
+template <typename... Args>
+void Signal<Args...>::Disconnect(const SlotPtr& slot) noexcept
 {
-	assert(slot != nullptr);
-	assert(slot->index < mSlots.size());
-	assert(slot->signal == this);
+	enAssert(slot != nullptr);
+	enAssert(slot->index < mSlots.size());
+	enAssert(slot->signal == this);
 
 	// "Swap this slot with the last one and pop" idiom
 	// This will preserve slot indexes
@@ -274,80 +288,96 @@ void Signal<Args...>::disconnect(const SlotPtr& slot)
 	mSlots.pop_back();
 }
 
-template<typename... Args>
-Signal<Args...>::Connection::Connection(const SlotPtr& slot)
+template <typename... Args>
+Signal<Args...>::Connection::Connection(Connection&& connection) noexcept
+	: mPtr(std::move(connection.mPtr))
+{
+	connection.mPtr.reset(); //< Fuck you GCC 4.9
+}
+
+template <typename... Args>
+Signal<Args...>::Connection::Connection(const SlotPtr& slot) 
 	: mPtr(slot)
 {
 }
 
-template<typename... Args>
-template<typename... ConnectArgs>
-void Signal<Args...>::Connection::connect(BaseClass& signal, ConnectArgs&&... args)
+template <typename... Args>
+template <typename... ConnectArgs>
+void Signal<Args...>::Connection::Connect(BaseClass& signal, ConnectArgs&&... args)
 {
-	operator=(signal.connect(std::forward<ConnectArgs>(args)...));
+	operator=(signal.Connect(std::forward<ConnectArgs>(args)...));
 }
 
-template<typename... Args>
-void Signal<Args...>::Connection::disconnect()
+template <typename... Args>
+void Signal<Args...>::Connection::Disconnect() noexcept
 {
 	if (SlotPtr ptr = mPtr.lock())
-		ptr->signal->disconnect(ptr);
+		ptr->signal->Disconnect(ptr);
 }
 
-template<typename... Args>
-bool Signal<Args...>::Connection::isConnected() const
+template <typename... Args>
+bool Signal<Args...>::Connection::IsConnected() const
 {
 	return !mPtr.expired();
 }
 
-template<typename... Args>
+template <typename... Args>
+typename Signal<Args...>::Connection& Signal<Args...>::Connection::operator=(Connection&& connection) noexcept
+{
+	mPtr = std::move(connection.mPtr);
+	connection.mPtr.reset(); //< Fuck you GCC 4.9
+
+	return *this;
+}
+
+template <typename... Args>
 Signal<Args...>::ConnectionGuard::ConnectionGuard(const Connection& connection)
 	: mConnection(connection)
 {
 }
 
-template<typename... Args>
+template <typename... Args>
 Signal<Args...>::ConnectionGuard::ConnectionGuard(Connection&& connection)
 	: mConnection(std::move(connection))
 {
 }
 
-template<typename... Args>
+template <typename... Args>
 Signal<Args...>::ConnectionGuard::~ConnectionGuard()
 {
-	mConnection.disconnect();
+	mConnection.Disconnect();
 }
 
-template<typename... Args>
-template<typename... ConnectArgs>
-void Signal<Args...>::ConnectionGuard::connect(BaseClass& signal, ConnectArgs&&... args)
+template <typename... Args>
+template <typename... ConnectArgs>
+void Signal<Args...>::ConnectionGuard::Connect(BaseClass& signal, ConnectArgs&&... args)
 {
-	mConnection.disconnect();
-	mConnection.connect(signal, std::forward<ConnectArgs>(args)...);
+	mConnection.Disconnect();
+	mConnection.Connect(signal, std::forward<ConnectArgs>(args)...);
 }
 
-template<typename... Args>
-void Signal<Args...>::ConnectionGuard::disconnect()
+template <typename... Args>
+void Signal<Args...>::ConnectionGuard::Disconnect() noexcept
 {
-	mConnection.disconnect();
+	mConnection.Disconnect();
 }
 
-template<typename... Args>
-typename Signal<Args...>::Connection& Signal<Args...>::ConnectionGuard::getConnection()
+template <typename... Args>
+typename Signal<Args...>::Connection& Signal<Args...>::ConnectionGuard::GetConnection()
 {
 	return mConnection;
 }
 
-template<typename... Args>
-bool Signal<Args...>::ConnectionGuard::isConnected() const
+template <typename... Args>
+bool Signal<Args...>::ConnectionGuard::IsConnected() const
 {
-	return mConnection.isConnected();
+	return mConnection.IsConnected();
 }
 
-template<typename... Args>
+template <typename... Args>
 typename Signal<Args...>::ConnectionGuard& Signal<Args...>::ConnectionGuard::operator=(const Connection& connection)
 {
-	mConnection.disconnect();
+	mConnection.Disconnect();
 	mConnection = connection;
 
 	return *this;
@@ -356,17 +386,23 @@ typename Signal<Args...>::ConnectionGuard& Signal<Args...>::ConnectionGuard::ope
 template<typename... Args>
 typename Signal<Args...>::ConnectionGuard& Signal<Args...>::ConnectionGuard::operator=(Connection&& connection)
 {
-	mConnection.disconnect();
-	mConnection = std::move(connection);
+	if (&connection != this)
+	{
+		mConnection.Disconnect();
+		mConnection = std::move(connection);
+	}
 
 	return *this;
 }
 
-template<typename... Args>
-typename Signal<Args...>::ConnectionGuard& Signal<Args...>::ConnectionGuard::operator=(ConnectionGuard&& connection)
+template <typename... Args>
+typename Signal<Args...>::ConnectionGuard& Signal<Args...>::ConnectionGuard::operator=(ConnectionGuard&& connection) noexcept
 {
-	mConnection.disconnect();
-	mConnection = std::move(connection.mConnection);
+	if (&connection != this)
+	{
+		mConnection.Disconnect();
+		mConnection = std::move(connection.mConnection);
+	}
 
 	return *this;
 }

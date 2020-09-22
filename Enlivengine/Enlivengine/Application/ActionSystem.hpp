@@ -2,14 +2,17 @@
 
 #include <functional>
 #include <string>
+#include <vector>
 
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 #include <Enlivengine/System/Singleton.hpp>
 #include <Enlivengine/System/NonCopyable.hpp>
+#include <Enlivengine/System/Meta.hpp>
 
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Joystick.hpp>
 
 namespace en
 {
@@ -21,6 +24,9 @@ enum class ActionInputType : U32
     Event,
     Key,
     Mouse,
+	JoystickConnect,
+	JoystickButton,
+	JoystickAxis,
     And,
     Or,
     Not,
@@ -103,7 +109,7 @@ private:
 class ActionInputEvent : public ActionInput
 {
 public:
-	using FuncType = std::function<bool(const sf::Event & event)>;
+	using FuncType = std::function<bool(const sf::Event& event)>;
 
 	ActionInputEvent(const std::string& name, FuncType eventValidator);
 
@@ -117,20 +123,32 @@ private:
 class ActionInputKey : public ActionInput
 {
 public:
-	ActionInputKey(const std::string& name, sf::Keyboard::Key key, ActionType actionType = ActionType::Pressed);
+	enum class KeyCombination
+	{
+		None = 0,
+		Ctrl = 1 << 0,
+		Alt = 1 << 1,
+		Shift = 1 << 2,
+		System = 1 << 3
+	};
+
+	ActionInputKey(const std::string& name, sf::Keyboard::Key key, ActionType actionType = ActionType::Pressed, U32 keyCombination = static_cast<U32>(KeyCombination::None));
 
 	ActionInputType GetInputType() const override;
 	bool IsCurrentlyActive(ActionSystem* system) const override;
 
 	sf::Keyboard::Key GetKey() const;
 	ActionType GetType() const;
+	U32 GetKeyCombination() const;
 
 	void SetKey(sf::Keyboard::Key key);
 	void SetActionType(ActionType actionType);
+	void SetKeyCombination(U32 keyCombination);
 
 private:
 	sf::Keyboard::Key mKey;
 	ActionType mActionType;
+	U32 mKeyCombination;
 };
 
 class ActionInputMouse : public ActionInput
@@ -150,6 +168,66 @@ public:
 private:
 	sf::Mouse::Button mButton;
 	ActionType mActionType;
+};
+
+class ActionInputJoystickConnect : public ActionInput
+{
+public:
+	ActionInputJoystickConnect(const std::string& name, U32 joystickID, ActionType actionType = ActionType::Pressed);
+
+	ActionInputType GetInputType() const override;
+	bool IsCurrentlyActive(ActionSystem* system) const override;
+
+	U32 GetJoystickID() const;
+	ActionType GetType() const;
+
+	void SetJoystickID(U32 joystickID);
+	void SetActionType(ActionType actionType);
+
+private:
+	U32 mJoystickID;
+	ActionType mActionType;
+};
+
+class ActionInputJoystickButton : public ActionInput
+{
+public:
+	ActionInputJoystickButton(const std::string& name, U32 joystickID, U32 buttonID, ActionType actionType = ActionType::Pressed);
+
+	ActionInputType GetInputType() const override;
+	bool IsCurrentlyActive(ActionSystem* system) const override;
+
+	U32 GetJoystickID() const;
+	U32 GetButtonID() const;
+	ActionType GetType() const;
+
+	void SetJoystickID(U32 joystickID);
+	void SetButtonID(U32 buttonID);
+	void SetActionType(ActionType actionType);
+
+private:
+	U32 mJoystickID;
+	U32 mButtonID;
+	ActionType mActionType;
+};
+
+class ActionInputJoysticAxis : public ActionInput
+{
+public:
+	ActionInputJoysticAxis(const std::string& name, U32 joystickID, sf::Joystick::Axis axis);
+
+	ActionInputType GetInputType() const override;
+	bool IsCurrentlyActive(ActionSystem* system) const override;
+
+	U32 GetJoystickID() const;
+	sf::Joystick::Axis GetAxis() const;
+
+	void SetJoystickID(U32 joystickID);
+	void SetAxis(sf::Joystick::Axis axis);
+
+private:
+	U32 mJoystickID;
+	sf::Joystick::Axis mAxis;
 };
 
 class ActionInputLogical : public ActionInput
@@ -202,8 +280,11 @@ public:
     void AddInputVariable(const std::string& name, bool* variable);
 	void AddInputFunction(const std::string& name, ActionInputFunction::FuncType function);
 	void AddInputEvent(const std::string& name, ActionInputEvent::FuncType eventValidator);
-	void AddInputKey(const std::string& name, sf::Keyboard::Key key, ActionType actionType = ActionType::Pressed);
+	void AddInputKey(const std::string& name, sf::Keyboard::Key key, ActionType actionType = ActionType::Pressed, U32 keyCombination = static_cast<U32>(ActionInputKey::KeyCombination::None));
 	void AddInputMouse(const std::string& name, sf::Mouse::Button button, ActionType actionType = ActionType::Pressed);
+	void AddInputJoystickConnect(const std::string& name, U32 joystickID, ActionType actionType = ActionType::Pressed);
+	void AddInputJoystickButton(const std::string& name, U32 joystickID, U32 buttonID, ActionType actionType = ActionType::Pressed);
+	void AddInputJoystickAxis(const std::string& name, U32 joystickID, sf::Joystick::Axis axis);
 	void AddInputAnd(const std::string& name, U32 inputAID, U32 inputBID);
 	void AddInputOr(const std::string& name, U32 inputAID, U32 inputBID);
 	void AddInputNot(const std::string& name, U32 inputAID);

@@ -6,32 +6,19 @@ namespace en
 namespace priv
 {
 
-ResourceID StringToResourceID(const std::string& str)
-{
-	return Hash::CRC32(str.c_str());
-}
-
 BaseResource::BaseResource()
 	: mID(InvalidResourceID)
 	, mLoaded(false)
+#ifdef ENLIVE_DEBUG
 	, mIdentifier()
-	, mFilename()
+	, mLoadInfo()
+#endif // ENLIVE_DEBUG
 {
 }
 
-bool BaseResource::IsLoaded() const
+U32 BaseResource::GetStaticResourceType()
 {
-	return mLoaded;
-}
-
-bool BaseResource::IsFromFile() const
-{
-	return mFilename.size() > 0;
-}
-
-bool BaseResource::IsManaged() const
-{
-	return mID != InvalidResourceID;
+	return static_cast<U32>(ResourceType::Invalid);
 }
 
 ResourceID BaseResource::GetID() const
@@ -39,15 +26,59 @@ ResourceID BaseResource::GetID() const
 	return mID;
 }
 
+bool BaseResource::IsLoaded() const
+{
+	return mLoaded;
+}
+
+bool BaseResource::IsManaged() const
+{
+	return mID != InvalidResourceID;
+}
+
+void BaseResource::SetLoaded(bool loaded)
+{
+	mLoaded = loaded;
+}
+
+const ResourceLoadInfo& BaseResource::GetLoadInfo() const
+{
+	return mLoadInfo;
+}
+
+void BaseResource::SetLoadInfo(const ResourceLoadInfo& info)
+{
+	mLoadInfo = info;
+}
+
+bool BaseResource::IsFromFile() const
+{
+	return mLoadInfo.isFromFile;
+}
+
+const std::string& BaseResource::GetFilename() const
+{
+	enAssert(mLoadInfo.isFromFile);
+	return mLoadInfo.infoString;
+}
+
+#ifdef ENLIVE_DEBUG
 const std::string& BaseResource::GetIdentifier() const
 {
 	return mIdentifier;
 }
 
-const std::string& BaseResource::GetFilename() const
+void BaseResource::InitFromResourceManager(ResourceID id, const std::string& identifier)
 {
-	return mFilename;
+	mID = id;
+	mIdentifier = identifier;
 }
+#else
+void BaseResource::InitFromResourceManager(ResourceID id)
+{
+	mID = id;
+}
+#endif // ENLIVE_DEBUG
 
 } // namespace priv
 
@@ -55,24 +86,16 @@ ResourceManager::ResourceManager()
 {
 }
 
-bool ResourceManager::Has(const std::string& str) const
+bool ResourceManager::Has(ResourceID id, U32 resourceType) const
 {
-	return Has(priv::StringToResourceID(str));
+	const auto resourceIdType = CreateResourceIDTypeFromResourceIDAndType(id, resourceType);
+	return mResources.find(resourceIdType) != mResources.end();
 }
 
-bool ResourceManager::Has(ResourceID id) const
+void ResourceManager::Release(ResourceID id, U32 resourceType)
 {
-	return mResources.find(id) != mResources.end();
-}
-
-void ResourceManager::Release(const std::string& str)
-{
-	Release(priv::StringToResourceID(str));
-}
-
-void ResourceManager::Release(ResourceID id)
-{
-	const auto itr = mResources.find(id);
+	const auto resourceIdType = CreateResourceIDTypeFromResourceIDAndType(id, resourceType);
+	const auto itr = mResources.find(resourceIdType);
 	if (itr != mResources.end())
 	{
 		mResources.erase(itr);
@@ -84,9 +107,86 @@ void ResourceManager::ReleaseAll()
 	mResources.clear();
 }
 
-U32 ResourceManager::Count() const
+U32 ResourceManager::Count(U32 resourceType) const
 {
-	return static_cast<U32>(mResources.size());
+	if (resourceType == static_cast<U32>(ResourceType::Invalid))
+	{
+		return static_cast<U32>(mResources.size());
+	}
+	else
+	{
+		U32 count = 0;
+		for (auto itr = mResources.begin(); itr != mResources.end(); ++itr)
+		{
+			if (itr->second->GetResourceType() == resourceType)
+			{
+				count++;
+			}
+		}
+		return count;
+	}
+}
+
+#ifdef ENLIVE_DEBUG
+void ResourceManager::GetResourceInfos(Array<ResourceInfo>& resourceInfos)
+{
+	resourceInfos.Clear();
+	for (auto itr = mResources.begin(); itr != mResources.end(); ++itr)
+	{
+		if (priv::BaseResource* r = itr->second.get())
+		{
+			ResourceInfo ri;
+			ri.id = r->GetID();
+			ri.type = r->GetResourceType();
+			ri.identifier = r->GetIdentifier();
+			ri.loaded = r->IsLoaded();
+			ri.info = r->GetLoadInfo();
+			resourceInfos.Add(ri);
+		}
+		else
+		{
+			enLogError(LogChannel::Application, "Nullptr resource in ResourceManager");
+		}
+	}
+	resourceInfos.Sort([](const ResourceInfo& a, const ResourceInfo& b)
+	{
+		if (a.type != b.type)
+		{
+			return a.type < b.type;
+		}
+		else
+		{
+			return a.id < b.id;
+		}
+	});
+}
+
+std::string_view ResourceManager::GetResourceTypeName(U32 resourceType) const
+{
+	if (resourceType >= static_cast<U32>(ResourceType::Max))
+	{
+		const U32 index = resourceType - static_cast<U32>(ResourceType::Max);
+		enAssert(index < static_cast<U32>(mClientResourceTypeNames.size()));
+		return mClientResourceTypeNames[index];
+	}
+	else
+	{
+		return Meta::GetEnumName(static_cast<ResourceType>(resourceType));
+	}
+}
+#endif // ENLIVE_DEBUG
+
+ResourceID ResourceManager::StringToResourceID(const std::string& str)
+{
+	return Hash::SlowHash(str.c_str());
+}
+
+ResourceIDType ResourceManager::CreateResourceIDTypeFromResourceIDAndType(ResourceID id, U32 type)
+{
+	ResourceIDType resourceIdType;
+	resourceIdType.id = id;
+	resourceIdType.type = type;
+	return resourceIdType;
 }
 
 } // namespace en

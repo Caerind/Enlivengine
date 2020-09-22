@@ -5,6 +5,7 @@
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <imgui/imgui.h>
+#include <IconFontCppHeaders/IconsFontAwesome5.h>
 
 #include <Enlivengine/Graphics/SFMLResources.hpp>
 #include <Enlivengine/Math/Rect.hpp>

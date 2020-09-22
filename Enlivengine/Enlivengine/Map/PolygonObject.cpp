@@ -16,7 +16,7 @@ PolygonObject::PolygonObject(ObjectGroup& objectGroup)
 
 const Vector2f& PolygonObject::GetPoint(U32 pointIndex) const
 {
-	assert(pointIndex < GetPointCount());
+	enAssert(pointIndex < GetPointCount());
 	return mPoints[pointIndex];
 }
 
@@ -32,20 +32,20 @@ bool PolygonObject::Parse(ParserXml& parser)
 		return false;
 	}
 
-	assert(parser.hasChild("polygon"));
+	enAssert(parser.HasNode("polygon"));
 
-	parser.readNode("polygon");
+	parser.ReadNode("polygon");
 	{
 		std::string pointsStr;
-		parser.getAttribute("points", pointsStr);
+		parser.GetAttribute("points", pointsStr);
 
 		std::string token;
-		while (split(pointsStr, token, ' '))
+		while (Split(pointsStr, token, ' '))
 		{
-			mPoints.push_back(fromString<Vector2f>(token));
+			mPoints.push_back(FromString<Vector2f>(token));
 		}
 	}
-	parser.closeNode();
+	parser.CloseNode();
 
 	return true;
 }

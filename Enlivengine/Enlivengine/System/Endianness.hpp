@@ -2,8 +2,11 @@
 
 #include <utility> // std::swap
 
-#include <Enlivengine/System/PlatformDetection.hpp>
 #include <Enlivengine/System/PrimitiveTypes.hpp>
+
+// TODO : constexpr if/where possible
+// TODO : EndianSwap for 64 sized int types
+// TODO : EndianSwap for 64 sized floating point type
 
 namespace en
 {
@@ -15,7 +18,7 @@ enum class Endianness
 	BigEndian
 };
 
-inline constexpr Endianness GetPlatformEndianness()
+constexpr Endianness GetPlatformEndianness()
 {
 	#if defined(ENLIVE_PLATFORM_LITTLE_ENDIAN)
 		return Endianness::LittleEndian;
@@ -26,7 +29,8 @@ inline constexpr Endianness GetPlatformEndianness()
 	#endif
 }
 
-inline void swapBytes(void* buffer, U32 size) // TODO : constexpr
+// TODO : C++20 : std::swap will be constexpr
+inline void EndianSwapBytes(void* buffer, U32 size)
 {
 	if (buffer == nullptr || size == 0)
 		return;
@@ -39,31 +43,36 @@ inline void swapBytes(void* buffer, U32 size) // TODO : constexpr
 	}
 }
 
-inline constexpr U16 swapU16(U16 value)
+constexpr U16 EndianSwapU16(U16 value)
 {
 	return ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8);
 }
 
-inline constexpr I16 swapI16(I16 value)
+constexpr I16 EndianSwapI16(I16 value)
 {
 	return ((value & 0x00FF) << 8) | ((value & 0xFF00) >> 8);
 }
 
-inline constexpr U32 swapU32(U32 value)
+constexpr U32 EndianSwapU32(U32 value)
 {
 	return ((value & 0x000000FF) << 24) | ((value & 0x0000FF00) << 8) | ((value & 0x00FF0000) >> 8) | ((value & 0xFF000000)) >> 24;
 }
 
-inline constexpr I32 swapI32(I32 value)
+constexpr I32 EndianSwapI32(I32 value)
 {
 	return ((value & 0x000000FF) << 24) | ((value & 0x0000FF00) << 8) | ((value & 0x00FF0000) >> 8) | ((value & 0xFF000000)) >> 24;
 }
 
-inline F32 swapF32(F32 value) // TODO : constexpr
+// TODO : constexpr
+inline F32 EndianSwapF32(F32 value) 
 {
-	U32F32 u;
+	union 
+	{
+		U32 m_asU32;
+		F32 m_asF32;
+	} u;
 	u.m_asF32 = value;
-	u.m_asU32 = swapU32(u.m_asU32);
+	u.m_asU32 = EndianSwapU32(u.m_asU32);
 	return u.m_asF32;
 }
 

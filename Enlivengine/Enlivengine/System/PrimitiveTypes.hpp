@@ -1,10 +1,20 @@
 #pragma once
 
 #include <cstdint>
+#include <cfloat>
 #include <cstddef>
 
+#include <Enlivengine/Config.hpp>
 #include <Enlivengine/System/CompilerTraits.hpp>
-#include <Enlivengine/System/Config.hpp>
+#include <Enlivengine/System/PlatformTraits.hpp>
+
+// TODO : NumericLimits<T>
+// TODO : Bool type ?
+// TODO : 16 sized floating point type ?
+// TODO : 128 sized int types ?
+// TODO : Char types (char + wchar) (char != signed char != unsigned char)
+// TODO : Char constants : \b, \t, \n, ... : https://docs.microsoft.com/fr-fr/cpp/c-language/escape-sequences?view=vs-2019
+// TODO : More floating point constants : http://www.cplusplus.com/reference/cfloat/
 
 namespace en
 {
@@ -37,34 +47,20 @@ constexpr U32 U32_Min = 0;
 constexpr U32 U32_Max = UINT32_MAX;
 constexpr U64 U64_Min = 0;
 constexpr U64 U64_Max = UINT64_MAX;
-// TODO : Float min/max/epsilon
-// TODO : Double min/max/epsilon
+constexpr F32 F32_Epsilon = FLT_EPSILON;
+constexpr F32 F32_Max = FLT_MAX;
+constexpr F64 F64_Epsilon = DBL_EPSILON;
+constexpr F64 F64_Max = DBL_MAX;
 
 #if defined(ENLIVE_ENABLE_DOUBLE_PRECISION)
 	using Real = F64;
+	constexpr Real Real_Epsilon = F64_Epsilon;
+	constexpr Real Real_Max = F64_Max;
 #else
 	using Real = F32;
+	constexpr Real Real_Epsilon = F32_Epsilon;
+	constexpr Real Real_Max = F32_Max;
 #endif
-
-union U32F32
-{
-	U32 m_asU32;
-	F32 m_asF32;
-};
-
-inline U32 ConvertToU32Bytes(F32 value) // TODO : constexpr
-{
-	U32F32 u;
-	u.m_asF32 = value;
-	return u.m_asU32;
-}
-
-inline F32 ConvertToF32Bytes(U32 value) // TODO : constexpr
-{
-	U32F32 u;
-	u.m_asU32 = value;
-	return u.m_asF32;
-}
 
 static_assert(sizeof(I8) == 1);
 static_assert(sizeof(U8) == 1);

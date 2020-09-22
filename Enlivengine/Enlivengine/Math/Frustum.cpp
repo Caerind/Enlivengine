@@ -21,9 +21,9 @@ void Frustum::build(F32 fov, F32 ratio, F32 zNear, F32 zFar, const Vector3f& eye
 	F32 farH = zFar * tangent;
 	F32 farW = farH * ratio;
 
-	Vector3f f((target - eye).normalized());
-	Vector3f s(up.crossProduct(f).normalized());
-	Vector3f u(f.crossProduct(s));
+	Vector3f f((target - eye).Normalized());
+	Vector3f s(up.CrossProduct(f).Normalized());
+	Vector3f u(f.CrossProduct(s));
 
 	Vector3f nc = eye + f * zNear;
 	Vector3f fc = eye + f * zFar;

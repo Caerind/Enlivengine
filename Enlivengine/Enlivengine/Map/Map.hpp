@@ -3,8 +3,8 @@
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 
 #include <Enlivengine/Math/Vector2.hpp>
+#include <Enlivengine/Math/Color.hpp>
 #include <Enlivengine/Graphics/SFMLResources.hpp>
-#include <Enlivengine/Graphics/Color.hpp>
 
 #include <Enlivengine/Map/PropertyHolder.hpp>
 #include <Enlivengine/Map/Tileset.hpp>
@@ -47,6 +47,9 @@ public:
 		Odd = 0,
 		Even = 1
 	};
+
+	static U32 GetStaticResourceType() { return static_cast<U32>(ResourceType::Map); }
+	U32 GetResourceType() const override { return GetStaticResourceType(); }
 
 	Map();
 
@@ -125,7 +128,8 @@ public:
 		return ResourceLoader<Map>([&filename](Map& r)
 		{
 			const bool result = r.LoadFromFile(filename);
-			r.mFilename = (result) ? filename : "";
+			r.SetLoaded(result);
+			r.SetLoadInfo(ResourceLoadInfo(true, filename));
 			return result;
 		});
 	}

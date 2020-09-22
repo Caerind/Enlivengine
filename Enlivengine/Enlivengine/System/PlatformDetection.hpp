@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Enlivengine/System/Preprocessor.hpp>
+
 #if defined(_WIN32) || defined(__WIN32__) || defined(_WIN64)
 
     // Windows

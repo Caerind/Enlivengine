@@ -4,7 +4,7 @@ namespace en
 {
 
 View::View()
-	: mView(sf::FloatRect(0.0f, 0.0f, 0.0f, 0.0f))
+	: mView()
 	, mZoomFactor(1.0f)
 {
 }

@@ -86,7 +86,7 @@ bool intersects(const Sphere & a1, const AABB & a2)
 
 bool intersects(const Sphere & a1, const Sphere & a2)
 {
-	return (a1.getCenter() - a2.getCenter()).getSquaredLength() <= (a1.getRadius() + a2.getRadius()) * (a1.getRadius() + a2.getRadius());
+	return (a1.getCenter() - a2.getCenter()).GetSquaredLength() <= (a1.getRadius() + a2.getRadius()) * (a1.getRadius() + a2.getRadius());
 }
 
 bool intersects(const Sphere & a1, const Plane & a2)
@@ -125,8 +125,8 @@ bool intersects(const Plane & a1, const Plane & a2)
 	{
 		return true;
 	}
-	Vector3f n1 = a1.getNormal().normalized();
-	Vector3f n2 = a2.getNormal().normalized();
+	Vector3f n1 = a1.getNormal().Normalized();
+	Vector3f n2 = a2.getNormal().Normalized();
 	if (n1 == n2)
 	{
 		return false;
@@ -257,7 +257,11 @@ bool intersects(const Ray & a1, const AABB & a2, F32 * distance)
 		F32 tmin = (min - ori) / dir;
 		F32 tmax = (max - ori) / dir;
 		if (tmin > tmax)
-			std::swap(tmin, tmax);
+		{
+			F32 ttemp = tmin;
+			tmin = tmax;
+			tmax = ttemp;
+		}
 
 		if (tmax < tfirst)
 			return false;
@@ -278,7 +282,7 @@ bool intersects(const Ray & a1, const Sphere & a2, F32 * distance)
 	F32 radius = a2.getRadius();
 
 	// Check origin inside first
-	if (diff.getSquaredLength() <= radius * radius)
+	if (diff.GetSquaredLength() <= radius * radius)
 	{
 		if (distance != nullptr)
 		{
@@ -290,9 +294,9 @@ bool intersects(const Ray & a1, const Sphere & a2, F32 * distance)
 	// Build coeffs which can be used with std quadratic solver
 	// ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
 	const Vector3f& dir = a1.getDirection();
-	const F32 a = dir.getSquaredLength();
-	const F32 b = 2 * diff.dotProduct(dir);
-	const F32 c = diff.getSquaredLength() - (radius * radius);
+	const F32 a = dir.GetSquaredLength();
+	const F32 b = 2 * diff.DotProduct(dir);
+	const F32 c = diff.GetSquaredLength() - (radius * radius);
 	const F32 d = (b * b) - (4.f * a * c); // Calc determinant
 	if (d < 0.f)
 	{
@@ -319,7 +323,7 @@ bool intersects(const Ray & a1, const Sphere & a2, F32 * distance)
 
 bool intersects(const Ray & a1, const Plane & a2, F32 * distance)
 {
-	F32 denom = a2.getNormal().dotProduct(a1.getDirection());
+	F32 denom = a2.getNormal().DotProduct(a1.getDirection());
 	if (fabs(denom) < 1e-7f)
 	{
 		if (distance != nullptr)
@@ -330,7 +334,7 @@ bool intersects(const Ray & a1, const Plane & a2, F32 * distance)
 	}
 	else
 	{
-		F32 nom = a2.getNormal().dotProduct(a1.getOrigin()) + a2.getConstant();
+		F32 nom = a2.getNormal().DotProduct(a1.getOrigin()) + a2.getConstant();
 		F32 t = -(nom / denom);
 		if (distance != nullptr)
 		{
@@ -466,7 +470,7 @@ bool intersects(const Frustum & a1, const Frustum & a2)
 Plane::Side getPlaneSide(const Plane & plane, const AABB & box)
 {
 	F32 dist = plane.getDistance(box.getCenter());
-	F32 maxAbsDist = abs(plane.getNormal().dotProduct(box.getHalfSize()));
+	F32 maxAbsDist = abs(plane.getNormal().DotProduct(box.getHalfSize()));
 	if (dist < -maxAbsDist)
 		return Plane::Side::Negative;
 	if (dist > +maxAbsDist)
