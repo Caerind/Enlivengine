@@ -541,7 +541,7 @@ inline void Quaternion<T>::toEulerAngles(Vector3<T>& vector) const
 	const T cos2 = matrix[0] * matrix[0] + matrix[1] * matrix[1];
 	if (cos2 < T(0.000001))
 	{
-		vector.set(0, (matrix[2] < 0) ? Math::HALF_PI : -Math::HALF_PI, -Math::Atan2(matrix[4], matrix[3]));
+		vector.set(0, (matrix[2] < 0) ? Math::HalfPi : -Math::HalfPi, -Math::Atan2(matrix[4], matrix[3]));
 	}
 	else
 	{
@@ -556,7 +556,7 @@ inline Vector3<T> Quaternion<T>::toEulerAngles() const
 	const T cos2 = matrix[0] * matrix[0] + matrix[1] * matrix[1];
 	if (cos2 < T(0.000001))
 	{
-		return Vector3<T>(0, (matrix[2] < 0) ? Math::HALF_PI : -Math::HALF_PI, -Math::Atan2(matrix[4], matrix[3]));
+		return Vector3<T>(0, (matrix[2] < 0) ? Math::HalfPi : -Math::HalfPi, -Math::Atan2(matrix[4], matrix[3]));
 	}
 	else
 	{
