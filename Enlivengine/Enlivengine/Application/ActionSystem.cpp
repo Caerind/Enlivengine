@@ -9,7 +9,7 @@ namespace en
 
 ActionInput::ActionInput(const std::string& name)
     : mName(name)
-    , mID(Hash::SlowHash(name.c_str()))
+    , mID(Hash::SlowHash(name))
     , mActive(false) 
 {
 }
@@ -627,7 +627,7 @@ void ActionSystem::Update()
 bool ActionSystem::IsInputActive(const std::string& inputName) const
 {
 	enAssert(IsInputExisting(inputName));
-    return IsInputActive(Hash::SlowHash(inputName.c_str()));
+    return IsInputActive(Hash::SlowHash(inputName));
 }
 
 bool ActionSystem::IsInputActive(U32 inputID) const
@@ -649,7 +649,7 @@ bool ActionSystem::IsInputActive(U32 inputID) const
 
 bool ActionSystem::IsInputExisting(const std::string& inputName) const
 {
-    return IsInputExisting(Hash::SlowHash(inputName.c_str()));
+    return IsInputExisting(Hash::SlowHash(inputName));
 }
 
 bool ActionSystem::IsInputExisting(U32 inputID) const
@@ -733,7 +733,7 @@ const ActionInput* ActionSystem::GetInputByIndex(U32 index) const
 
 const ActionInput* ActionSystem::GetInputByName(const std::string& inputName) const
 {
-    return GetInputByID(Hash::SlowHash(inputName.c_str()));
+    return GetInputByID(Hash::SlowHash(inputName));
 }
 
 const ActionInput* ActionSystem::GetInputByID(U32 inputID) const
@@ -760,7 +760,7 @@ void ActionSystem::RemoveInputByIndex(U32 index)
 
 U32 ActionSystem::GetInputIndexFromName(const std::string& inputName) const
 {
-	return GetInputIndexFromID(Hash::SlowHash(inputName.c_str()));
+	return GetInputIndexFromID(Hash::SlowHash(inputName));
 }
 
 U32 ActionSystem::GetInputIndexFromID(U32 inputID) const

@@ -226,31 +226,6 @@ U32 Profiler::GetCurrentDepth() const
 	return static_cast<U32>(mIndexStack.size());
 }
 
-/*
-void ConsoleProfiler::DisplayFrame(const ProfilerFrame& frame)
-{
-	ENLIVE_PROFILE_FUNCTION();
-
-	// TODO : Move this elsewhere ?
-    #ifdef ENLIVE_COMPILER_MSVC
-        system("cls");
-	#else
-        printf("\e[1;1H\e[2J"); // Should work on ANSI
-	#endif
-
-	printf("Frame %u, duration : %I64dus\n", frame.frame, frame.GetDuration().asMicroseconds());
-	for (const auto& task : frame.tasks)
-	{
-		const U32 depth = task.depth;
-		for (U32 i = 0; i < depth; ++i)
-		{
-			printf("  ");
-		}
-		printf("-%s, duration : %I64dus, percent : %f\n", task.name, task.GetDuration().asMicroseconds(), frame.GetPercent(task.GetDuration()));
-	}
-}
-*/
-
 } // namespace en
 
 #endif // ENLIVE_ENABLE_PROFILE

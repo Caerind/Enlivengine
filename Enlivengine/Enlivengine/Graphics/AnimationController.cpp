@@ -121,7 +121,7 @@ void AnimationController::Recompute()
 
 bool AnimationController::HasParameter(const std::string& name) const
 {
-	return HasParameter(Hash::SlowHash(name.c_str()));
+	return HasParameter(Hash::SlowHash(name));
 }
 
 bool AnimationController::HasParameter(U32 hashedName) const
@@ -131,7 +131,7 @@ bool AnimationController::HasParameter(U32 hashedName) const
 
 void AnimationController::SetParameterBoolean(const std::string& name, bool value)
 {
-	SetParameterBoolean(Hash::SlowHash(name.c_str()), value);
+	SetParameterBoolean(Hash::SlowHash(name), value);
 }
 
 void AnimationController::SetParameterBoolean(U32 hashedName, bool value)
@@ -144,7 +144,7 @@ void AnimationController::SetParameterBoolean(U32 hashedName, bool value)
 
 void AnimationController::SetParameterFloat(const std::string& name, F32 value)
 {
-	SetParameterFloat(Hash::SlowHash(name.c_str()), value);
+	SetParameterFloat(Hash::SlowHash(name), value);
 }
 
 void AnimationController::SetParameterFloat(U32 hashedName, F32 value)
@@ -157,7 +157,7 @@ void AnimationController::SetParameterFloat(U32 hashedName, F32 value)
 
 void AnimationController::SetParameterInteger(const std::string& name, I32 value)
 {
-	SetParameterInteger(Hash::SlowHash(name.c_str()), value);
+	SetParameterInteger(Hash::SlowHash(name), value);
 }
 
 void AnimationController::SetParameterInteger(U32 hashedName, I32 value)
@@ -170,7 +170,7 @@ void AnimationController::SetParameterInteger(U32 hashedName, I32 value)
 
 void AnimationController::SetParameterTrigger(const std::string& name)
 {
-	SetParameterTrigger(Hash::SlowHash(name.c_str()));
+	SetParameterTrigger(Hash::SlowHash(name));
 }
 
 void AnimationController::SetParameterTrigger(U32 hashedName)
@@ -183,7 +183,7 @@ void AnimationController::SetParameterTrigger(U32 hashedName)
 
 void AnimationController::ResetParameterTrigger(const std::string& name)
 {
-	ResetParameterTrigger(Hash::SlowHash(name.c_str()));
+	ResetParameterTrigger(Hash::SlowHash(name));
 }
 
 void AnimationController::ResetParameterTrigger(U32 hashedName)
@@ -196,7 +196,7 @@ void AnimationController::ResetParameterTrigger(U32 hashedName)
 
 bool AnimationController::GetParameterBoolean(const std::string& name) const
 {
-	return GetParameterBoolean(Hash::SlowHash(name.c_str()));
+	return GetParameterBoolean(Hash::SlowHash(name));
 }
 
 bool AnimationController::GetParameterBoolean(U32 hashedName) const
@@ -209,7 +209,7 @@ bool AnimationController::GetParameterBoolean(U32 hashedName) const
 
 F32 AnimationController::GetParameterFloat(const std::string& name) const
 {
-	return GetParameterFloat(Hash::SlowHash(name.c_str()));
+	return GetParameterFloat(Hash::SlowHash(name));
 }
 
 F32 AnimationController::GetParameterFloat(U32 hashedName) const
@@ -222,7 +222,7 @@ F32 AnimationController::GetParameterFloat(U32 hashedName) const
 
 I32 AnimationController::GetParameterInteger(const std::string& name) const
 {
-	return GetParameterInteger(Hash::SlowHash(name.c_str()));
+	return GetParameterInteger(Hash::SlowHash(name));
 }
 
 I32 AnimationController::GetParameterInteger(U32 hashedName) const
@@ -235,7 +235,7 @@ I32 AnimationController::GetParameterInteger(U32 hashedName) const
 
 bool AnimationController::GetParameterTrigger(const std::string& name) const
 {
-	return GetParameterTrigger(Hash::SlowHash(name.c_str()));
+	return GetParameterTrigger(Hash::SlowHash(name));
 }
 
 bool AnimationController::GetParameterTrigger(U32 hashedName) const
@@ -248,7 +248,7 @@ bool AnimationController::GetParameterTrigger(U32 hashedName) const
 
 U32 AnimationController::GetParameterIndexByName(const std::string& name) const
 {
-	return GetParameterIndexByName(Hash::SlowHash(name.c_str()));
+	return GetParameterIndexByName(Hash::SlowHash(name));
 }
 
 U32 AnimationController::GetParameterIndexByName(U32 hashedName) const

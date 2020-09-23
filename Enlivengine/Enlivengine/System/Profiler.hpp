@@ -1,14 +1,14 @@
 #pragma once
 
-#include <Enlivengine/System/PrimitiveTypes.hpp>
+#include <Enlivengine/Config.hpp>
 
 #ifdef ENLIVE_ENABLE_PROFILE
 
-#include <Enlivengine/System/CompilerTraits.hpp>
+#include <Enlivengine/System/PrimitiveTypes.hpp>
 #include <Enlivengine/System/Singleton.hpp>
 #include <Enlivengine/System/Time.hpp>
 
-#include <vector>
+#include <vector> // Store profiling info when profiling
 
 namespace en
 {

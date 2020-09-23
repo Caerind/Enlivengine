@@ -5,7 +5,7 @@
 #ifdef ENLIVE_ENABLE_LOG
 
 #include <fstream>
-#include <vector>
+#include <vector> // Store log when logging
 #include <string>
 
 #include <fmt/format.h>

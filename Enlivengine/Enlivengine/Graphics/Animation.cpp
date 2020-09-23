@@ -15,7 +15,7 @@ Animation::Frame::Frame(const Rectu& rect, Time duration)
 
 Animation::Clip::Clip(const std::string& name, U32 from, U32 to, Direction direction)
 	: mName(name)
-	, mHashedName(Hash::SlowHash(name.c_str()))
+	, mHashedName(Hash::SlowHash(name))
 	, mFrom(from)
 	, mTo(to)
 	, mDirection(direction)

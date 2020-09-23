@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <vector> // Input/Output byte array
 
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 
@@ -19,7 +19,7 @@ public: // Base64
 	static bool Encode64String(const std::string& input, std::string& output);
 	static bool Decode64String(const std::string& input, std::string& output);
 
-public:
+public: // Zlib
 	enum class CompressionLevel
 	{
 		NoCompression,

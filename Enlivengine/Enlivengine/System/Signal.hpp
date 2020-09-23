@@ -5,7 +5,7 @@
 #include <functional>
 #include <memory>
 #include <utility>
-#include <vector>
+#include <vector> // Signal can have many slots
 
 #include <Enlivengine/System/Assert.hpp>
 

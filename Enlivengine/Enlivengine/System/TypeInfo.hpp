@@ -4,11 +4,12 @@
 #include <Enlivengine/System/TypeTraits.hpp>
 #include <Enlivengine/System/Hash.hpp>
 #include <Enlivengine/System/Macros.hpp>
-#include <Enlivengine/System/String.hpp> 
 
 // TODO : Define in some other place (along with math stuffs, color, date, ...)
-#include <array>
-#include <vector>
+#include <array> // TypeInfo for std::array<T>
+#include <vector> // TypeInfo for std::vector<T>
+#include <Enlivengine/System/String.hpp> 
+#include <Enlivengine/System/Time.hpp> 
 
 namespace en
 {
@@ -68,6 +69,7 @@ ENLIVE_DEFINE_TYPE_INFO(en::U64)
 ENLIVE_DEFINE_TYPE_INFO(en::F32)
 ENLIVE_DEFINE_TYPE_INFO(en::F64)
 ENLIVE_DEFINE_TYPE_INFO(std::string)
+ENLIVE_DEFINE_TYPE_INFO(en::Time)
 
 namespace en
 {

@@ -68,7 +68,7 @@ U32 DataFile::ReadCurrentType() const
 	}
 	else
 	{
-		return Hash::SlowHash(typeStr.c_str());
+		return Hash::SlowHash(typeStr);
 	}
 }
 

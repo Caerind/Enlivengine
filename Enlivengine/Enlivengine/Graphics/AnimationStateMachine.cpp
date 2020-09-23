@@ -7,7 +7,7 @@ namespace en
 
 AnimationStateMachine::State::State(const std::string& name, U32 clipIndex)
 	: mName(name)
-	, mHashedName(Hash::SlowHash(name.c_str()))
+	, mHashedName(Hash::SlowHash(name))
 	, mClipIndex(clipIndex)
 	, mSpeedScale(1.0f)
 	, mExitOnlyAtEnd(false)
@@ -18,7 +18,7 @@ AnimationStateMachine::State::State(const std::string& name, U32 clipIndex)
 
 void AnimationStateMachine::State::SetName(const std::string& name)
 {
-    const U32 hashedName = Hash::SlowHash(name.c_str());
+    const U32 hashedName = Hash::SlowHash(name);
     if (mHashedName != hashedName)
     {
         mName = name;
@@ -965,7 +965,7 @@ const AnimationStateMachine::State& AnimationStateMachine::GetState(U32 index) c
 
 U32 AnimationStateMachine::GetStateIndexByName(const std::string& name) const
 {
-	return GetStateIndexByName(Hash::SlowHash(name.c_str()));
+	return GetStateIndexByName(Hash::SlowHash(name));
 }
 
 U32 AnimationStateMachine::GetStateIndexByName(U32 hashedName) const
@@ -1132,7 +1132,7 @@ const AnimationStateMachine::Parameter& AnimationStateMachine::GetParameter(U32 
 
 U32 AnimationStateMachine::GetParameterIndexByName(const std::string& name) const
 {
-	return GetParameterIndexByName(Hash::SlowHash(name.c_str()));
+	return GetParameterIndexByName(Hash::SlowHash(name));
 }
 
 U32 AnimationStateMachine::GetParameterIndexByName(U32 hashedName) const

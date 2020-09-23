@@ -178,7 +178,7 @@ std::string_view ResourceManager::GetResourceTypeName(U32 resourceType) const
 
 ResourceID ResourceManager::StringToResourceID(const std::string& str)
 {
-	return Hash::SlowHash(str.c_str());
+	return Hash::SlowHash(str);
 }
 
 ResourceIDType ResourceManager::CreateResourceIDTypeFromResourceIDAndType(ResourceID id, U32 type)

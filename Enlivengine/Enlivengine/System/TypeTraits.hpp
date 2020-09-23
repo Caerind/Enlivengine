@@ -263,7 +263,6 @@ namespace Traits
 	// is_constant_evaluated : New C++20
 
 #undef ENLIVE_DEFINE_TYPE_TRAITS_VALUE
-#undef ENLIVE_DEFINE_TYPE_TRAITS_VALUE_2
 #undef ENLIVE_DEFINE_TYPE_TRAITS_ARGS
 #undef ENLIVE_DEFINE_TYPE_TRAITS_TYPE
 

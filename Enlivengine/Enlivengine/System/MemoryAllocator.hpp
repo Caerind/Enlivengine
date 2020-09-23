@@ -3,7 +3,7 @@
 #include <Enlivengine/Config.hpp>
 
 #ifdef ENLIVE_ENABLE_DEBUG_MEMORY
-#include <vector>
+#include <vector> // Store MemoryBlock infos when debugging memory
 #include <filesystem>
 #endif // ENLIVE_ENABLE_DEBUG_MEMORY
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <string> // std::string_view, std::string
 
 #include <Enlivengine/System/PrimitiveTypes.hpp>
 
@@ -15,7 +15,7 @@ public:
 	static constexpr U32 Combine32(U32 hash1, U32 hash2) { return hash1 ^ (hash2 + 0x9e3779b9 + (hash1 << 6) + (hash1 >> 2)); }
 	static constexpr U64 Combine64(U64 hash1, U64 hash2) { return hash1 ^ (hash2 + 0x9e3779b9 + (hash1 << 6) + (hash1 >> 2)); }
 
-	// Use this in constexpr context as Meow is not constexpr
+	// Use this in constexpr context as some faster hash can use SIMD which is not constexpr
 	static constexpr U32 SlowHash(const char* str) 
 	{ 
 		if (str != nullptr)
@@ -31,6 +31,10 @@ public:
 		{
 			return 0;
 		}
+	}
+	static constexpr U32 SlowHash(const std::string& str)
+	{
+		return SlowHash(str.c_str());
 	}
 	static constexpr U32 SlowHash(std::string_view str) 
 	{ 

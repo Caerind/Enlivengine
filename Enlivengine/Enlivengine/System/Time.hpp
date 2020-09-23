@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Enlivengine/System/PrimitiveTypes.hpp>
-#include <Enlivengine/System/TypeInfo.hpp>
 
 namespace en
 {
@@ -74,7 +73,7 @@ public:
 
 	static Time Now();
 	static constexpr Time Days(I32 amount) { return Time(amount * TicksPerDay); }
-	static constexpr Time Hours(I32 amount) { return Time(amount * TicksPerMinute); }
+	static constexpr Time Hours(I32 amount) { return Time(amount * TicksPerHour); }
 	static constexpr Time Minutes(I32 amount) { return Time(amount * TicksPerMinute); }
 	static constexpr Time Seconds(F32 amount) { return Time(static_cast<I64>(amount * TicksPerSecond)); }
 	static constexpr Time Milliseconds(I32 amount) { return Time(amount * TicksPerMillisecond); }
@@ -149,5 +148,3 @@ private:
 };
 
 } // namespace en
-
-ENLIVE_DEFINE_TYPE_INFO(en::Time)

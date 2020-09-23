@@ -32,7 +32,7 @@ bool PropertyHolder::Parse(ParserXml& parser)
 			{
 				continue;
 			}
-			const U32 hash = Hash::SlowHash(nameStr.c_str());
+			const U32 hash = Hash::SlowHash(nameStr);
 
 			std::string typeStr = "";
 			parser.GetAttribute("type", typeStr);
@@ -113,14 +113,14 @@ bool PropertyHolder::Parse(ParserXml& parser)
 
 bool PropertyHolder::HasProperty(const std::string& name) const
 {
-	const U32 hash = Hash::SlowHash(name.c_str());
+	const U32 hash = Hash::SlowHash(name);
 	return mTypeMap.find(hash) != mTypeMap.end();
 }
 
 PropertyHolder::PropertyType PropertyHolder::GetPropertyType(const std::string& name) const
 {
 	enAssert(HasProperty(name));
-	const U32 hash = Hash::SlowHash(name.c_str());
+	const U32 hash = Hash::SlowHash(name);
 	return mTypeMap.at(hash);
 }
 
@@ -128,7 +128,7 @@ bool PropertyHolder::GetBooleanProperty(const std::string& name) const
 {
 	enAssert(GetPropertyType(name) == PropertyType::Boolean);
 	enAssert(mBooleans != nullptr);
-	const U32 hash = Hash::SlowHash(name.c_str());
+	const U32 hash = Hash::SlowHash(name);
 	return mBooleans->at(hash);
 }
 
@@ -136,7 +136,7 @@ const Color& PropertyHolder::GetColorProperty(const std::string& name) const
 {
 	enAssert(GetPropertyType(name) == PropertyType::Color);
 	enAssert(mColors != nullptr);
-	const U32 hash = Hash::SlowHash(name.c_str());
+	const U32 hash = Hash::SlowHash(name);
 	return mColors->at(hash);
 }
 
@@ -144,7 +144,7 @@ F32 PropertyHolder::GetFloatProperty(const std::string& name) const
 {
 	enAssert(GetPropertyType(name) == PropertyType::Float);
 	enAssert(mFloats != nullptr);
-	const U32 hash = Hash::SlowHash(name.c_str());
+	const U32 hash = Hash::SlowHash(name);
 	return mFloats->at(hash);
 }
 
@@ -152,7 +152,7 @@ const std::string& PropertyHolder::GetFileProperty(const std::string& name) cons
 {
 	enAssert(GetPropertyType(name) == PropertyType::File);
 	enAssert(mFiles != nullptr);
-	const U32 hash = Hash::SlowHash(name.c_str());
+	const U32 hash = Hash::SlowHash(name);
 	return mFiles->at(hash);
 }
 
@@ -160,7 +160,7 @@ I32 PropertyHolder::GetIntProperty(const std::string& name) const
 {
 	enAssert(GetPropertyType(name) == PropertyType::Int);
 	enAssert(mInts != nullptr);
-	const U32 hash = Hash::SlowHash(name.c_str());
+	const U32 hash = Hash::SlowHash(name);
 	return mInts->at(hash);
 }
 
@@ -168,7 +168,7 @@ const std::string& PropertyHolder::GetStringProperty(const std::string& name) co
 {
 	enAssert(GetPropertyType(name) == PropertyType::String);
 	enAssert(mStrings != nullptr);
-	const U32 hash = Hash::SlowHash(name.c_str());
+	const U32 hash = Hash::SlowHash(name);
 	return mStrings->at(hash);
 }
 
