@@ -32,10 +32,13 @@ public:
 			return 0;
 		}
 	}
+	/*
+	// std::string::c_str() is not constexpr
 	static constexpr U32 SlowHash(const std::string& str)
 	{
 		return SlowHash(str.c_str());
 	}
+	*/
 	static constexpr U32 SlowHash(std::string_view str) 
 	{ 
 		const U32 length = static_cast<U32>(str.size());

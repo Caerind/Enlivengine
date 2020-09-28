@@ -247,3 +247,5 @@ ModelManifest.xml
 .fake/
 
 ./build
+EnlivengineDocs/html
+EnlivengineDocs/latex

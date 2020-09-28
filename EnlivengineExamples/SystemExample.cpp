@@ -22,6 +22,10 @@
 #include <Enlivengine/System/MetaEnum.hpp>
 #include <Enlivengine/System/Assert.hpp>
 
+#include <Enlivengine/Math/Utilities.hpp>
+
+#include <cmath>
+
 enum class SomeEnum
 {
 	A,
@@ -76,6 +80,7 @@ enum class LogChannelClient
 	Gameplay3
 };
 
+void MathFunctionsSpeedComparaisonWithStd();
 
 int main()
 {
@@ -107,13 +112,157 @@ int main()
 	std::cout << "TestColor" << std::endl;
 		
 	/*	
-	LogInfo(en::LogChannel::System, 9, "A: {}", en::TypeInfo<A>::GetName());
-	LogInfo(en::LogChannel::System, 9, "B<A>: {}", en::TypeInfo<B<A>>::GetName());
-	LogInfo(en::LogChannel::System, 9, "B<en::U32>: {}", en::TypeInfo<B<en::U32>>::GetName());
-	LogInfo(en::LogChannel::System, 9, "B<C>: {}", en::TypeInfo<B<C>>::GetName());
+	enLogInfo(en::LogChannel::System, "A: {}", en::TypeInfo<A>::GetName());
+	enLogInfo(en::LogChannel::System, "B<A>: {}", en::TypeInfo<B<A>>::GetName());
+	enLogInfo(en::LogChannel::System, "B<en::U32>: {}", en::TypeInfo<B<en::U32>>::GetName());
+	enLogInfo(en::LogChannel::System, "B<C>: {}", en::TypeInfo<B<C>>::GetName());
 	*/
 
 	MetaEnumTest();
 
+	MathFunctionsSpeedComparaisonWithStd();
+
 	return 0;
+}
+
+
+void MathFunctionsSpeedComparaisonWithStd()
+{
+	en::Time cosStd;
+	en::Time cosEn;
+	en::Time sinStd;
+	en::Time sinEn;
+	en::Time tanStd;
+	en::Time tanEn;
+	en::Time acosStd;
+	en::Time acosEn;
+	en::Time asinStd;
+	en::Time asinEn;
+	en::Time atanStd;
+	en::Time atanEn;
+	en::Time atan2Std;
+	en::Time atan2En;
+
+	en::Clock clock;
+	en::F32 sumStd = 0.0f;
+	en::F32 sumEn = 0.0f;
+
+	clock.Restart();
+	for (en::F32 x = 0.0f; x <= 3600.0f; x += 0.01f)
+	{
+		const en::F32 y = std::sin(x * en::Math::kDegToRad);
+		sumStd += y;
+	}
+	sinStd = clock.Restart();
+	for (en::F32 x = 0.0f; x <= 3600.0f; x += 0.01f)
+	{
+		const en::F32 y = en::Math::Sin(x);
+		sumEn += y;
+	}
+	sinEn = clock.Restart();
+
+	clock.Restart();
+	for (en::F32 x = 0.0f; x <= 3600.0f; x += 0.01f)
+	{
+		const en::F32 y = std::cos(x * en::Math::kDegToRad);
+		sumStd += y;
+	}
+	cosStd = clock.Restart();
+	for (en::F32 x = 0.0f; x <= 3600.0f; x += 0.01f)
+	{
+		const en::F32 y = en::Math::Cos(x);
+		sumEn += y;
+	}
+	cosEn = clock.Restart();
+
+	clock.Restart();
+	for (en::F32 x = 0.0f; x <= 3600.0f; x += 0.01f)
+	{
+		const en::F32 y = std::tan(x * en::Math::kDegToRad);
+		sumStd += y;
+	}
+	tanStd = clock.Restart();
+	for (en::F32 x = 0.0f; x <= 3600.0f; x += 0.01f)
+	{
+		const en::F32 y = en::Math::Tan(x);
+		sumEn += y;
+	}
+	tanEn = clock.Restart();
+
+	clock.Restart();
+	for (en::F32 x = -1.0f; x <= 1.0f; x += 0.000001f)
+	{
+		const en::F32 y = std::asin(x) * en::Math::kRadToDeg;
+		sumStd += y;
+	}
+	asinStd = clock.Restart();
+	for (en::F32 x = -1.0f; x <= 1.0f; x += 0.000001f)
+	{
+		const en::F32 y = en::Math::Asin(x);
+		sumEn += y;
+	}
+	asinEn = clock.Restart();
+
+	clock.Restart();
+	for (en::F32 x = -1.0f; x <= 1.0f; x += 0.000001f)
+	{
+		const en::F32 y = std::acos(x) * en::Math::kRadToDeg;
+		sumStd += y;
+	}
+	acosStd = clock.Restart();
+	for (en::F32 x = -1.0f; x <= 1.0f; x += 0.000001f)
+	{
+		const en::F32 y = en::Math::Acos(x);
+		sumEn += y;
+	}
+	acosEn = clock.Restart();
+
+	clock.Restart();
+	for (en::F32 x = -1.0f; x <= 1.0f; x += 0.000001f)
+	{
+		const en::F32 y = std::atan(x) * en::Math::kRadToDeg;
+		sumStd += y;
+	}
+	atanStd = clock.Restart();
+	for (en::F32 x = -1.0f; x <= 1.0f; x += 0.000001f)
+	{
+		const en::F32 y = en::Math::Atan(x);
+		sumEn += y;
+	}
+	atanEn = clock.Restart();
+
+	clock.Restart();
+	for (en::F32 x = -1000.0f; x <= 1000.0f; x += 1.0f)
+	{
+		for (en::F32 y = -1000.0f; y <= 1000.0f; y += 1.0f)
+		{
+			if (x != 0.0f && y != 0.0f)
+			{
+				const en::F32 z = std::atan2(y, x) * en::Math::kRadToDeg;
+				sumStd += y;
+			}
+		}
+	}
+	atan2Std = clock.Restart();
+	for (en::F32 x = -1000.0f; x <= 1000.0f; x += 1.0f)
+	{
+		for (en::F32 y = -1000.0f; y <= 1000.0f; y += 1.0f)
+		{
+			if (x != 0.0f && y != 0.0f)
+			{
+				const en::F32 z = en::Math::Atan2(x, y);
+				sumEn += y;
+			}
+		}
+	}
+	atan2En = clock.Restart();
+
+	enLogInfo(en::LogChannel::Math, "Sin : {} vs {} => {}", sinStd.AsSeconds(), sinEn.AsSeconds(), sinEn <= sinStd);
+	enLogInfo(en::LogChannel::Math, "Cos : {} vs {} => {}", cosStd.AsSeconds(), cosEn.AsSeconds(), cosEn <= cosStd);
+	enLogInfo(en::LogChannel::Math, "Tan : {} vs {} => {}", tanStd.AsSeconds(), tanEn.AsSeconds(), tanEn <= tanStd);
+	enLogInfo(en::LogChannel::Math, "Asin : {} vs {} => {}", asinStd.AsSeconds(), asinEn.AsSeconds(), asinEn <= asinStd);
+	enLogInfo(en::LogChannel::Math, "Acos : {} vs {} => {}", acosStd.AsSeconds(), acosEn.AsSeconds(), acosEn <= acosStd);
+	enLogInfo(en::LogChannel::Math, "Atan : {} vs {} => {}", atanStd.AsSeconds(), atanEn.AsSeconds(), atanEn <= atanStd);
+	enLogInfo(en::LogChannel::Math, "Atan2 : {} vs {} => {}", atan2Std.AsSeconds(), atan2En.AsSeconds(), atan2En <= atan2Std);
+	enLogInfo(en::LogChannel::Math, "Precision : {} vs {} => {}", sumStd, sumEn, en::Math::Equals(sumStd, sumEn));
 }

@@ -1,16 +1,12 @@
 #pragma once
 
-#include <Enlivengine/System/Assert.hpp>
+#include <Enlivengine/System/Assert.hpp> // TODO : Remove this from here
 #include <Enlivengine/System/PrimitiveTypes.hpp>
-#include <Enlivengine/System/Meta.hpp>
+#include <Enlivengine/System/Meta.hpp> // TODO : Remove this from here
 
-#include <cmath>
-#include <cstring> // memcpy
-#include <limits> // epsilon<T>
-#include <algorithm> // std::swap
-
+// TODO : More valid Sqrt
 // TODO : Real : Float/Double
-// TODO : More constexpr + fast functions
+// TODO : Faster functions (Tan, InvSqrt, ...)
 // TODO : See https://github.com/pmttavara/pt_math
 // TODO : See https://github.com/kthohr/gcem
 
@@ -29,103 +25,11 @@ public:
 	static constexpr F32 InvPi { 1.0f / Pi };
 	static constexpr F32 InvTwoPi { 1.0f / TwoPi };
 	static constexpr F32 kDegToRad { Pi / 180.0f };
-	static constexpr F32 kRadToDeg { 180.0f / Pi };
-
-	static constexpr F32 DegToRad(F32 value) { return value * kDegToRad; }
-	static constexpr F32 RadToDeg(F32 value) { return value * kRadToDeg; }
-
-	static constexpr F32 Cos(F32 value)
-	{
-		bool negative = false;
-		value = AngleMagnitude(value);
-		if (value > 270.0f)
-		{
-			value = 360.0f - value;
-		}
-		else if (value > 180.0f)
-		{
-			value -= 180.0f;
-			negative = true;
-		}
-		else if (value > 90.0f)
-		{
-			value = 180.0f - value;
-			negative = true;
-		}
-		value = DegToRad(value);
-		const F32 x2 = value * value;
-		const F32 x4 = x2 * x2;
-		const F32 x6 = x4 * x2;
-		const F32 x8 = x6 * x2;
-		const F32 x10 = x8 * x2;
-		value = (1.0f - 0.4999999963f * x2 + 0.0416666418f * x4 - 0.0013888397f * x6 + 0.0000247609f * x8 - 0.0000002605f * x10);
-		if (negative)
-		{
-			value *= -1.0f;
-		}
-		return value;
-	}
-	static constexpr F32 Sin(F32 value)
-	{
-		bool negative = false;
-		value = AngleMagnitude(value);
-		if (value > 270.0f)
-		{
-			value = 360.0f - value;
-			negative = true;
-		}
-		else if (value > 180.0f)
-		{
-			value -= 180.0f;
-			negative = true;
-		}
-		else if (value > 90.0f)
-		{
-			value = 180.0f - value;
-		}
-		value = DegToRad(value);
-		const F32 x2 = value * value;
-		const F32 x4 = x2 * x2;
-		const F32 x6 = x4 * x2;
-		const F32 x8 = x6 * x2;
-		const F32 x10 = x8 * x2;
-		value *= (1.0f - 0.1666666664f * x2 + 0.0083333315f * x4 - 0.0001984090f * x6 + 0.0000027526f * x8 - 0.0000000239f * x10);
-		if (negative)
-		{
-			value *= -1.0f;
-		}
-		return value;
-	}
-	static constexpr F32 Tan(F32 value)
-	{
-		// TODO : This can be replaced with a Taylor development
-		return Sin(value) / Cos(value);
-	}
-
-	static inline F32 Acos(F32 value) { return RadToDeg(std::acos(value)); }
-	static inline F32 Asin(F32 value) { return RadToDeg(std::asin(value)); }
-	static inline F32 Atan(F32 value) { return RadToDeg(std::atan(value)); }
-	static inline F32 Atan2(F32 x, F32 y) { return RadToDeg(std::atan2(y, x)); }
-
-	static constexpr F32 AngleMagnitude(F32 value) 
-	{ 
-		constexpr F32 magnitude = 360.0f;
-		while (value >= magnitude) 
-		{ 
-			value -= magnitude;
-		}; 
-		while (value < 0.0f) 
-		{ 
-			value += magnitude; 
-		}; 
-		return value; 
-	}
-	static constexpr F32 AngleBetween(F32 a, F32 b) { const F32 x = Abs(AngleMagnitude(a) - AngleMagnitude(b)); return (x < 180.0f) ? x : 360.0f - x; };
-	static constexpr F32 AngleOpposite(F32 value) { return AngleMagnitude(value - 180.0f); }
+	static constexpr F32 kRadToDeg{ 180.0f / Pi };
 
 	template <typename T>
 	static constexpr T Sqr(T value) { return value * value; }
-	static constexpr F32 Sqrt(F32 value) 
+	static constexpr F32 Sqrt(F32 value)
 	{
 		I32 i = *(I32*)&value;
 		i = (1 << 29) + (i >> 1) - (1 << 22);
@@ -134,27 +38,143 @@ public:
 		f = 0.25f * f + value / f;
 		return f;
 	}
-	static constexpr F32 InvSqrt(F32 value) 
+	static constexpr F32 InvSqrt(F32 value)
 	{
 		// TODO : This may be improved
 		return 1.0f / Sqrt(value);
 	}
 
-	static inline F32 Log(F32 value) { return std::log(value); }
-	static inline F32 Exp(F32 value) { return std::exp(value); }
-	static inline F32 Pow(F32 value, F32 exponent) { return std::pow(value, exponent); }
+	static constexpr F32 DegToRad(F32 value) { return value * kDegToRad; }
+	static constexpr F32 RadToDeg(F32 value) { return value * kRadToDeg; }
+
+	static constexpr F32 AngleMagnitude(F32 value)
+	{
+		constexpr F32 magnitude = 360.0f;
+		while (value >= magnitude)
+		{
+			value -= magnitude;
+		};
+		while (value < 0.0f)
+		{
+			value += magnitude;
+		};
+		return value;
+	}
+	static constexpr F32 AngleBetween(F32 a, F32 b) { const F32 x = Abs(AngleMagnitude(a) - AngleMagnitude(b)); return (x < 180.0f) ? x : 360.0f - x; };
+	static constexpr F32 AngleOpposite(F32 value) { return AngleMagnitude(value - 180.0f); }
+
+	static constexpr F32 Sin(F32 value)
+	{
+		F32 sign = 1.0f;
+		value = AngleMagnitude(value);
+		if (value > 270.0f)
+		{
+			value = 360.0f - value;
+			sign = -1.0f;
+		}
+		else if (value > 180.0f)
+		{
+			value -= 180.0f;
+			sign = -1.0f;
+		}
+		else if (value > 90.0f)
+		{
+			value = 180.0f - value;
+		}
+		value *= kDegToRad;
+		const F32 x2 = value * value;
+		const F32 x4 = x2 * x2;
+		const F32 x6 = x4 * x2;
+		const F32 x8 = x6 * x2;
+		const F32 x10 = x8 * x2;
+		value *= (1.0f - 0.1666666664f * x2 + 0.0083333315f * x4 - 0.0001984090f * x6 + 0.0000027526f * x8 - 0.0000000239f * x10);
+		return sign * value;
+	}
+	static constexpr F32 Cos(F32 value)
+	{
+		F32 sign = 1.0f;
+		value = AngleMagnitude(value);
+		if (value > 270.0f)
+		{
+			value = 360.0f - value;
+		}
+		else if (value > 180.0f)
+		{
+			value -= 180.0f;
+			sign = -1.0f;
+		}
+		else if (value > 90.0f)
+		{
+			value = 180.0f - value;
+			sign = -1.0f;
+		}
+		value *= kDegToRad;
+		const F32 x2 = value * value;
+		const F32 x4 = x2 * x2;
+		const F32 x6 = x4 * x2;
+		const F32 x8 = x6 * x2;
+		const F32 x10 = x8 * x2;
+		value = (1.0f - 0.4999999963f * x2 + 0.0416666418f * x4 - 0.0013888397f * x6 + 0.0000247609f * x8 - 0.0000002605f * x10);
+		return sign * value;
+	}
+	static constexpr F32 Tan(F32 value)
+	{
+		// TODO : This can be replaced with a Taylor development
+		return Sin(value) / Cos(value);
+	}
+
+	static constexpr F32 Asin(F32 value)
+	{
+		const F32 sign = (value >= 0.0f) ? 1.0f : -1.0f;
+		value = sign * value;
+		if (value > 1.0f)
+		{
+			return sign * 90.0f;
+		}
+		const F32 x2 = value * value;
+		const F32 x3 = x2 * value;
+		const F32 x4 = x3 * value;
+		const F32 x5 = x4 * value;
+		const F32 x6 = x5 * value;
+		const F32 x7 = x6 * value;
+		const F32 sqrRoot = Sqrt(1.0f - value);
+		const F32 firstPart = sqrRoot * (1.5707963050f - 0.2145988016f * value + 0.0889789874f * x2 - 0.0501743046f * x3 + 0.0308918810f * x4 - 0.01708812556f * x5 + 0.0066700901f * x6 - 0.0012624911f * x7);
+		return sign * (HalfPi - firstPart) * kRadToDeg;
+	}
+	static constexpr F32 Acos(F32 value) 
+	{ 
+		return 90.0f - Asin(value);
+	}
+	static constexpr F32 Atan(F32 value)
+	{
+		// TODO : Only valid between [-1,1]
+		const F32 x2 = value * value;
+		const F32 x4 = x2 * x2;
+		const F32 x6 = x4 * x2;
+		const F32 x8 = x6 * x2;
+		const F32 x10 = x8 * x2;
+		const F32 x12 = x10 * x2;
+		const F32 x14 = x12 * x2;
+		const F32 x16 = x14 * x2;
+		const F32 firstPart = 1.0f - 0.3333314528f * x2 + 0.1999355085f * x4 - 0.1420889944f * x6 + 0.1065626393f * x8 - 0.0752896400f * x10 + 0.0429096138f * x12 - 0.0161657367f * x14 + 0.0028662257f * x16;
+		return value * firstPart * kRadToDeg; 
+	}
+	static inline F32 Atan2(F32 x, F32 y) 
+	{
+		return std::atan2(y, x) * kRadToDeg;
+	}
 
 	template <typename T>
 	static constexpr T Ceil(T value)
 	{ 
 		const T valueWhole = T(static_cast<I32>(value));
-		return valueWhole + T((value > (T(0)) && (value > valueWhole)) ? 1 : 0);
+		return valueWhole + T((value > (T(0)) && (value > valueWhole)) ? T(1) : T(0));
 	}
 	template <typename T>
 	static constexpr T Floor(T value)
 	{
 		const T valueWhole = T(static_cast<I32>(value));
-		return valueWhole - T((value < (T(0)) && (value < valueWhole)) ? 1 : 0);
+		return valueWhole - T((value < (T(0)) && (value < valueWhole)) ? T(1) : T(0));
 	}
 	template <typename T>
 	static constexpr T Round(T value) { return Floor(value + T(0.5)); }
@@ -166,7 +186,9 @@ public:
 	template <typename T>
 	static constexpr T Clamp(T value, T valueMin, T valueMax) { return Max(Min(value, valueMax), valueMin); }
 	template <typename T>
-	static constexpr T Abs(T value) { return (value >= 0) ? value : -value; }
+	static constexpr T Abs(T value) { return (value >= T(0)) ? value : -value; }
+	template <typename T>
+	static constexpr T Sign(T value) { return (value >= T(0)) ? T(1) : T(-1); }
 
 	template <typename T>
 	static constexpr T Hermite(T value) { return value * value * (3 - 2 * value); }
