@@ -1,9 +1,6 @@
 #pragma once
 
-#include <Enlivengine/Math/Utilities.hpp>
 #include <Enlivengine/Math/Vector3.hpp>
-
-// TODO : constexpr Sqrt : SetLength, Normalize, Normalized
 
 namespace en
 {

@@ -18,6 +18,29 @@ DOCTEST_TEST_CASE("Utilities")
 	DOCTEST_CHECK(en::Math::InRange(50, 0, 100));
 	DOCTEST_CHECK(en::Math::Equals(50.0000f, 50.0001f, 0.001f));
 
+
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(1.0f), 1.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(4.0f), 2.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(9.0f), 3.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(16.0f), 4.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(25.0f), 5.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(36.0f), 6.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(49.0f), 7.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(64.0f), 8.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(81.0f), 9.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(100.0f), 10.0f));
+
+	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(1.0f), 1.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(4.0f), 1.0f / 2.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(9.0f), 1.0f / 3.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(16.0f), 1.0f / 4.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(25.0f), 1.0f / 5.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(36.0f), 1.0f / 6.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(49.0f), 1.0f / 7.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(64.0f), 1.0f / 8.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(81.0f), 1.0f / 9.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(100.0f), 1.0f / 10.0f));
+
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Cos(0.0f), 1.0f));
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Cos(15.0f), 0.9659f));
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Cos(22.5f), 0.9238f));
@@ -122,29 +145,6 @@ DOCTEST_TEST_CASE("Utilities")
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Asin(0.9f), 64.1580f));
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Asin(1.0f), 90.0f));
 
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-1.0f), -45.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.9f), -41.9872f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.8f), -38.6598f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.7f), -34.9920f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.6f), -30.9637f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.5f), -26.5650f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.4f), -21.8014f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.3f), -16.6992f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.2f), -11.3099f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.1f), -5.7105f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.0f), 0.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.0f), 0.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.1f), 5.7105f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.2f), 11.3099f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.3f), 16.6992f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.4f), 21.8014f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.5f), 26.5650f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.6f), 30.9637f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.7f), 34.9920f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.8f), 38.6598f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.9f), 41.9872f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(1.0f), 45.0f));
-
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Acos(-1.0f), 180.0f));
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Acos(-0.9f), 154.1580f));
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Acos(-0.8f), 143.1301f));
@@ -168,27 +168,49 @@ DOCTEST_TEST_CASE("Utilities")
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Acos(0.9f), 25.8419f));
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Acos(1.0f), 0.0f));
 
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(1.0f), 1.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(4.0f), 2.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(9.0f), 3.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(16.0f), 4.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(25.0f), 5.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(36.0f), 6.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(49.0f), 7.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(64.0f), 8.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(81.0f), 9.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::Sqrt(100.0f), 10.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-1000.0f), -89.9427f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-100.0f), -89.4270f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-10.0f), -84.2894f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-3.0f), -71.5650f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-2.0f), -63.4349f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-1.6f), -57.9946f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-1.3f), -52.4314f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-1.0f), -45.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.9f), -41.9872f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.8f), -38.6598f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.7f), -34.9920f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.6f), -30.9637f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.5f), -26.5650f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.4f), -21.8014f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.3f), -16.6992f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.2f), -11.3099f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.1f), -5.7105f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(-0.0f), 0.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.0f), 0.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.1f), 5.7105f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.2f), 11.3099f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.3f), 16.6992f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.4f), 21.8014f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.5f), 26.5650f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.6f), 30.9637f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.7f), 34.9920f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.8f), 38.6598f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(0.9f), 41.9872f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(1.0f), 45.0f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(1.3f), 52.4314f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(1.6f), 57.9946f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(2.0f), 63.4349f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(3.0f), 71.5650f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(10.0f), 84.2894f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(100.0f), 89.4270f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(1000.0f), 89.9427f));
 
-	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(1.0f), 1.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(4.0f), 1.0f / 2.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(9.0f), 1.0f / 3.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(16.0f), 1.0f / 4.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(25.0f), 1.0f / 5.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(36.0f), 1.0f / 6.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(49.0f), 1.0f / 7.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(64.0f), 1.0f / 8.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(81.0f), 1.0f / 9.0f));
-	DOCTEST_CHECK(en::Math::Equals(en::Math::InvSqrt(100.0f), 1.0f / 10.0f));
-
-	// TODO : Improve tests
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(20.000000f, 10.000000f), 26.5650f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(10.000000f, 20.000000f), 63.4349f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(-10.000000f, 20.000000f), 116.5650f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(-20.000000f, 10.000000f), 153.4349f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(-20.000000f, -10.000000f), -153.4349f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(-10.000000f, -20.000000f), -116.5650f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(10.000000f, -20.000000f), -63.4349f));
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(20.000000f, -10.000000f), -26.5650f));
 }

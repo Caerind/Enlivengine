@@ -2,8 +2,6 @@
 
 #include <Enlivengine/Math/Utilities.hpp>
 
-// TODO : constexpr Atan2 : GetPolarAngle
-
 namespace en
 {
 
@@ -86,7 +84,7 @@ public:
 	constexpr Vector2<T>& Normalize(T* oldLength = nullptr) { return SetLength(T(1), oldLength); }
 	constexpr Vector2<T> Normalized(T* oldLength = nullptr) const { return Vector2<T>(*this).Normalize(oldLength); }
 
-	inline T GetPolarAngle() const { Vector2<T> n = Normalized(); return Math::Atan2(n.x, n.y); }
+	constexpr  T GetPolarAngle() const { Vector2<T> n = Normalized(); return Math::Atan2(n.x, n.y); }
 	constexpr Vector2<T>& SetPolarAngle(const T& angle)
 	{
 		const T length = GetLength();

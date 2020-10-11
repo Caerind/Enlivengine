@@ -147,8 +147,159 @@ public:
 	}
 	static constexpr F32 Atan(F32 value)
 	{
-		// TODO : Only valid between [-1,1]
-		const F32 x2 = value * value;
+		F32 sign = (value >= 0.0f) ? 1.0f : -1.0f;
+		value = sign * value;
+		if (value <= 1.3333f)
+		{
+			if (value <= 1.0f)
+			{
+				const F32 x2 = value * value;
+				const F32 x4 = x2 * x2;
+				const F32 x6 = x4 * x2;
+				const F32 x8 = x6 * x2;
+				const F32 x10 = x8 * x2;
+				const F32 x12 = x10 * x2;
+				const F32 x14 = x12 * x2;
+				const F32 x16 = x14 * x2;
+				const F32 firstPart = 1.0f - 0.3333314528f * x2 + 0.1999355085f * x4 - 0.1420889944f * x6 + 0.1065626393f * x8 - 0.0752896400f * x10 + 0.0429096138f * x12 - 0.0161657367f * x14 + 0.0028662257f * x16;
+				return kRadToDeg * sign * value * firstPart;
+			}
+			else
+			{
+				// Ai3
+				const F32 p00 = 0.862170f;
+				const F32 p01 = 0.423529f;
+				const F32 p02 = -0.209273f;
+				const F32 p03 = 0.078082f;
+				const F32 p04 = -0.013556f;
+				const F32 p05 = -0.009125f;
+				const F32 p06 = 0.011342f;
+				const F32 p07 = -0.006847f;
+				const F32 p08 = 0.002318f;
+				const F32 p09 = 0.000219f;
+				const F32 p10 = -0.000981f;
+				const F32 p11 = 0.000810f;
+				const F32 p12 = -0.000374f;
+				const F32 y = value - 1.166667f;
+				return kRadToDeg * sign * (((((((((((((
+					+p12) * y
+					+ p11) * y
+					+ p10) * y
+					+ p09) * y
+					+ p08) * y
+					+ p07) * y
+					+ p06) * y
+					+ p05) * y
+					+ p04) * y
+					+ p03) * y
+					+ p02) * y
+					+ p01) * y
+					+ p00);
+			}
+		}
+		else // value > 1.333f
+		{
+			if (value > 2.0f)
+			{
+				// Tail
+				const F32 p03 = -0.333333f;
+				const F32 p05 = 0.200000f;
+				const F32 p07 = -0.142857f;
+				const F32 p09 = 0.111111f;
+				const F32 p11 = -0.090908f;
+				const F32 p13 = 0.076902f;
+				const F32 p15 = -0.066468f;
+				const F32 p17 = 0.057557f;
+				const F32 p19 = -0.047098f;
+				const F32 p21 = 0.031307f;
+				const F32 p000 = 1.570796f;
+				const F32 y = 1.0f / value;
+				const F32 y2 = y * y;
+				return kRadToDeg * sign * (-(((((((((((
+					+p21) * y2
+					+ p19) * y2
+					+ p17) * y2
+					+ p15) * y2
+					+ p13) * y2
+					+ p11) * y2
+					+ p09) * y2
+					+ p07) * y2
+					+ p05) * y2
+					+ p03) * y2 * y + y) + p000);
+			}
+			else
+			{
+				if (value <= 1.6666f)
+				{
+					// Ai4
+					const F32 p00 = 0.982794f;
+					const F32 p01 = 0.307692f;
+					const F32 p02 = -0.142012f;
+					const F32 p03 = 0.055834f;
+					const F32 p04 = -0.016806f;
+					const F32 p05 = 0.002103f;
+					const F32 p06 = 0.001830f;
+					const F32 p07 = -0.001910f;
+					const F32 p08 = 0.001120f;
+					const F32 p09 = -0.000462f;
+					const F32 p10 = 0.000104f;
+					const F32 p11 = 0.000031f;
+					const F32 y = value - 1.500000f;
+					return kRadToDeg * sign * ((((((((((((
+						+p11) * y
+						+ p10) * y
+						+ p09) * y
+						+ p08) * y
+						+ p07) * y
+						+ p06) * y
+						+ p05) * y
+						+ p04) * y
+						+ p03) * y
+						+ p02) * y
+						+ p01) * y
+						+ p00);
+				}
+				else
+				{
+					// Ai5
+					const F32 p00 = 1.071450f;
+					const F32 p01 = 0.229299f;
+					const F32 p02 = -0.096393f;
+					const F32 p03 = 0.036503f;
+					const F32 p04 = -0.011967f;
+					const F32 p05 = 0.003027f;
+					const F32 p06 = -0.000291f;
+					const F32 p07 = -0.000286f;
+					const F32 p08 = 0.000260f;
+					const F32 p09 = -0.000145f;
+					const F32 p10 = 0.000061f;
+					const F32 y = value - 1.833333f;
+					return kRadToDeg * sign * (((((((((((
+						+p10) * y
+						+ p09) * y
+						+ p08) * y
+						+ p07) * y
+						+ p06) * y
+						+ p05) * y
+						+ p04) * y
+						+ p03) * y
+						+ p02) * y
+						+ p01) * y
+						+ p00);
+				}
+			}
+		}
+	}
+	static constexpr F32 Atan2(F32 x, F32 y) 
+	{
+		const F32 ax = (x >= 0.0f) ? x : -x;
+		const F32 signY = (y >= 0.0f) ? 1.0f : -1.0f;
+		const F32 ay = signY * y;
+		const bool invert = ay > ax;
+		const F32 z = invert ? ax / ay : ay / ax;
+
+		// Atan(z);
+		const F32 x2 = z * z;
 		const F32 x4 = x2 * x2;
 		const F32 x6 = x4 * x2;
 		const F32 x8 = x6 * x2;
@@ -157,11 +308,11 @@ public:
 		const F32 x14 = x12 * x2;
 		const F32 x16 = x14 * x2;
 		const F32 firstPart = 1.0f - 0.3333314528f * x2 + 0.1999355085f * x4 - 0.1420889944f * x6 + 0.1065626393f * x8 - 0.0752896400f * x10 + 0.0429096138f * x12 - 0.0161657367f * x14 + 0.0028662257f * x16;
-		return value * firstPart * kRadToDeg; 
-	}
-	static inline F32 Atan2(F32 x, F32 y) 
-	{
-		return std::atan2(y, x) * kRadToDeg;
+		
+		F32 th = kRadToDeg * z * firstPart;
+		if (invert) th = 90.0f - th;
+		if (x < 0.0f) th = 180.0f - th;
+		return signY * th;
 	}
 
 	template <typename T>

@@ -9,3 +9,8 @@ add_executable(EngineExample EngineExample.cpp)
 target_link_libraries(EngineExample PRIVATE Enlivengine)
 set_target_properties(EngineExample PROPERTIES FOLDER "Enlivengine/EnlivengineExamples")
 
+source_group("" FILES MathExample.cpp)
+add_executable(MathExample MathExample.cpp)
+target_link_libraries(MathExample PRIVATE Enlivengine)
+set_target_properties(MathExample PROPERTIES FOLDER "Enlivengine/EnlivengineExamples")
+

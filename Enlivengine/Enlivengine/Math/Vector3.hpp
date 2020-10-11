@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Math/Utilities.hpp>
 #include <Enlivengine/Math/Vector2.hpp>
 
 namespace en
