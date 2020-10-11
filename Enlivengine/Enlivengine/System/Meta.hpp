@@ -48,8 +48,8 @@ public:
 		, mMemberPtr(ptr)
 		, mNonConstRefGetter(nullptr)
 		, mConstRefGetter(nullptr)
-		, mCopyGetter(nullptr)
 		, mConstRefSetter(nullptr)
+		, mCopyGetter(nullptr)
 		, mCopySetter(nullptr)
 	{
 	}
@@ -60,8 +60,8 @@ public:
 		, mMemberPtr(nullptr)
 		, mNonConstRefGetter(getter)
 		, mConstRefGetter(nullptr)
-		, mCopyGetter(nullptr)
 		, mConstRefSetter(nullptr)
+		, mCopyGetter(nullptr)
 		, mCopySetter(nullptr)
 	{
 	}
@@ -72,8 +72,8 @@ public:
 		, mMemberPtr(nullptr)
 		, mNonConstRefGetter(nullptr)
 		, mConstRefGetter(getter)
-		, mCopyGetter(nullptr)
 		, mConstRefSetter(setter)
+		, mCopyGetter(nullptr)
 		, mCopySetter(nullptr)
 	{
 	}
@@ -84,8 +84,8 @@ public:
 		, mMemberPtr(nullptr)
 		, mNonConstRefGetter(nullptr)
 		, mConstRefGetter(nullptr)
-		, mCopyGetter(getter)
 		, mConstRefSetter(setter)
+		, mCopyGetter(getter)
 		, mCopySetter(nullptr)
 	{
 	}
@@ -96,8 +96,8 @@ public:
 		, mMemberPtr(nullptr)
 		, mNonConstRefGetter(nullptr)
 		, mConstRefGetter(nullptr)
-		, mCopyGetter(getter)
 		, mConstRefSetter(nullptr)
+		, mCopyGetter(getter)
 		, mCopySetter(setter)
 	{
 	}
