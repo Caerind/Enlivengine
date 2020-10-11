@@ -14,6 +14,8 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - gcc-9
+            - g++-9
             - cmake
             - libxrandr-dev
             - libudev-dev
@@ -21,9 +23,8 @@ matrix:
             - libflac-dev
             - libvorbis-dev
             - libgl1-mesa-dev
-            - g++-9
     script:
-        - export CXX=g++-9
+        - export CXX="g++-9" CC="gcc-9"
         - mkdir build && cd build
         - cmake ..
         - make
@@ -55,6 +56,7 @@ matrix:
     addons:
         apt:
           packages:
+            - clang
             - cmake
             - libxrandr-dev
             - libudev-dev
