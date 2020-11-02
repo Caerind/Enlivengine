@@ -1,20 +1,17 @@
 #include <Enlivengine/Tools/ImGuiMemoryDebugger.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_DEBUG_MEMORY)
 
-#include <imgui/imgui.h>
+#include <dear-imgui/imgui.h>
 
-#include <Enlivengine/System/MemoryAllocator.hpp>
+#include <Enlivengine/Utils/MemoryAllocator.hpp>
 
 namespace en
 {
 
 ImGuiMemoryDebugger::ImGuiMemoryDebugger()
 	: ImGuiTool()
-{
-}
-
-ImGuiMemoryDebugger::~ImGuiMemoryDebugger()
 {
 }
 
@@ -25,7 +22,7 @@ ImGuiToolTab ImGuiMemoryDebugger::GetTab() const
 
 const char* ImGuiMemoryDebugger::GetName() const
 {
-	return ICON_FA_MEMORY " MemoryDebugger";
+	return /*ICON_FA_MEMORY*/ " MemoryDebugger"; // TODO : Restore FontAwesome
 }
 
 void ImGuiMemoryDebugger::Display()
@@ -60,3 +57,4 @@ void ImGuiMemoryDebugger::Display()
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI && ENLIVE_ENABLE_DEBUG_MEMORY
+#endif // ENLIVE_MODULE_TOOLS

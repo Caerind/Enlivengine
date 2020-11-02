@@ -1,9 +1,14 @@
 #pragma once
 
-#include <Enlivengine/System/Assert.hpp>
-#include <Enlivengine/System/PrimitiveTypes.hpp>
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_GRAPHICS
+
+#include <unordered_map>
+
+#include <Enlivengine/Platform/PrimitiveTypes.hpp>
+#include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Math/Color.hpp>
-#include <map>
 
 namespace en
 {
@@ -59,7 +64,9 @@ public:
 	}
 
 private:
-	std::map<F32, Color> mColors;
+	std::unordered_map<F32, Color> mColors;
 };
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_GRAPHICS

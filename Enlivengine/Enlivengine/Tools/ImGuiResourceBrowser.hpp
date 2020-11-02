@@ -1,11 +1,13 @@
 #pragma once
 
-#include <Enlivengine/System/PrimitiveTypes.hpp>
+#include <Enlivengine/Config.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
+#ifdef ENLIVE_MODULE_RESOURCES
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <Enlivengine/Application/ImGuiToolManager.hpp>
-#include <Enlivengine/Application/ResourceManager.hpp>
+#include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Resources/ResourceManager.hpp>
 
 namespace en
 {
@@ -47,3 +49,5 @@ private:
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_MODULE_RESOURCES
+#endif // ENLIVE_MODULE_TOOLS

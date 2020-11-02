@@ -1,8 +1,8 @@
-#include "PhysicSystem.hpp"
+#include <Enlivengine/Core/PhysicSystem.hpp>
 
-#include <SFML/Graphics.hpp>
+#ifdef ENLIVE_MODULE_CORE
 
-#include <Enlivengine/System/Profiler.hpp>
+#include <Enlivengine/Utils/Profiler.hpp>
 
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
@@ -15,23 +15,22 @@ namespace en
 PhysicSystem::PhysicSystem(World& world)
 	: System(world)
 	, mPhysicWorld(nullptr)
-	, mPixelsPerMeter(32.0f)
 	, mVelocityIterations(8)
 	, mPositionIterations(3)
 	, mPlaying(true)
-#ifdef ENLIVE_DEBUG
-	, mDebugRenderTarget(nullptr)
+#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+	, mDebugDraw()
 	, mDebugRenderFlags(static_cast<U32>(b2Draw::e_shapeBit))
 	, mDebugRender(false)
-#endif // ENLIVE_DEBUG
+#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 {
 	mPhysicWorld = new b2World(b2Vec2(0.0f, 0.0f));
 	enAssert(mPhysicWorld != nullptr);
 
-#ifdef ENLIVE_DEBUG
+#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
 	mPhysicWorld->SetDebugDraw(this);
 	SetFlags(mDebugRenderFlags);
-#endif // ENLIVE_DEBUG
+#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 
 	mPhysicWorld->SetContactListener(this);
 }
@@ -52,7 +51,7 @@ bool PhysicSystem::Initialize(const Entity& entity, PhysicComponent& component)
 	if (entity.Has<TransformComponent>())
 	{
 		const Transform& transform = entity.Get<TransformComponent>().transform;
-		bodyDef.position.Set(transform.GetPosition2D().x / mPixelsPerMeter, transform.GetPosition2D().y / mPixelsPerMeter);
+		bodyDef.position.Set(transform.GetPosition2D().x, transform.GetPosition2D().y);
 		bodyDef.angle = Math::DegToRad(transform.GetRotation2D());
 	}
 	else
@@ -136,16 +135,6 @@ Vector2f PhysicSystem::GetGravity() const
 	return Vector2f(gravity.x, gravity.y);
 }
 
-void PhysicSystem::SetPixelsPerMeter(F32 value)
-{
-	mPixelsPerMeter = value;
-}
-
-F32 PhysicSystem::GetPixelsPerMeter() const
-{
-	return mPixelsPerMeter;
-}
-
 void PhysicSystem::SetVelocityIterations(U32 value)
 {
 	mVelocityIterations = value;
@@ -216,15 +205,14 @@ void PhysicSystem::EndContact(b2Contact* contact)
 	}
 }
 
-#ifdef ENLIVE_DEBUG
-void PhysicSystem::Render(sf::RenderTarget& target)
+#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+void PhysicSystem::Render()
 {
 	ENLIVE_PROFILE_FUNCTION();
 	if (mDebugRender)
 	{
-		mDebugRenderTarget = &target;
 		mPhysicWorld->DrawDebugData();
-		mDebugRenderTarget = nullptr;
+		mDebugDraw.Render(240); // TODO : Unhardcode this
 	}
 }
 
@@ -251,43 +239,41 @@ U32 PhysicSystem::GetDebugRenderFlags() const
 
 void PhysicSystem::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-	sf::ConvexShape polygon(vertexCount);
-	for (int i = 0; i < vertexCount; i++)
-	{
-		polygon.setPoint(i, sf::Vector2f(vertices[i].x, vertices[i].y) * mPixelsPerMeter);
-	}
-	polygon.setFillColor(sf::Color::Transparent);
-	polygon.setOutlineColor(sf::Color(static_cast<sf::Uint8>(color.r * 255), static_cast<sf::Uint8>(color.g * 255), static_cast<sf::Uint8>(color.b * 255)));
-	polygon.setOutlineThickness(-1.0f);
+	ENLIVE_UNUSED(vertices);
+	ENLIVE_UNUSED(vertexCount);
+	ENLIVE_UNUSED(color);
 
-	if (mDebugRenderTarget != nullptr)
+	Color c;
+	c.FromBox2DColor(color);
+	for (int32 i = 0; i < vertexCount; ++i)
 	{
-		mDebugRenderTarget->draw(polygon);
+		const Vector3f pos1(vertices[i].x, vertices[i].y, 0.0f);
+		Vector3f pos2;
+		if (i <= vertexCount - 1)
+		{
+			pos2.Set(vertices[i+1].x, vertices[i+1].y, 0.0f);
+		}
+		else
+		{
+			pos2.Set(vertices[0].x, vertices[0].y, 0.0f);
+		}
+		mDebugDraw.DrawLine(pos1, pos2, c);
 	}
 }
 
 void PhysicSystem::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-	sf::ConvexShape polygon(vertexCount);
-	for (int i = 0; i < vertexCount; i++)
-	{
-		polygon.setPoint(i, sf::Vector2f(vertices[i].x, vertices[i].y) * mPixelsPerMeter);
-	}
-	sf::Color c = sf::Color(static_cast<sf::Uint8>(color.r * 255), static_cast<sf::Uint8>(color.g * 255), static_cast<sf::Uint8>(color.b * 255));
-	c.a = 60;
-	polygon.setFillColor(c);
-	c.a = 255;
-	polygon.setOutlineColor(c);
-	polygon.setOutlineThickness(-1.0f);
-
-	if (mDebugRenderTarget != nullptr)
-	{
-		mDebugRenderTarget->draw(polygon);
-	}
+	// TODO : Fill draw
+	DrawPolygon(vertices, vertexCount, color);
 }
 
 void PhysicSystem::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
+	ENLIVE_UNUSED(center);
+	ENLIVE_UNUSED(radius);
+	ENLIVE_UNUSED(color);
+	// TODO : Debug draw circle
+	/*
 	sf::CircleShape circle(radius * mPixelsPerMeter);
 	circle.setOrigin(radius * mPixelsPerMeter, radius * mPixelsPerMeter);
 	circle.setPosition(sf::Vector2f(center.x, center.y) * mPixelsPerMeter);
@@ -299,66 +285,44 @@ void PhysicSystem::DrawCircle(const b2Vec2& center, float32 radius, const b2Colo
 	{
 		mDebugRenderTarget->draw(circle);
 	}
+	*/
 }
 
 void PhysicSystem::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
 	ENLIVE_UNUSED(axis);
 
-	sf::CircleShape circle(radius * mPixelsPerMeter);
-	circle.setOrigin(radius * mPixelsPerMeter, radius * mPixelsPerMeter);
-	circle.setPosition(sf::Vector2f(center.x, center.y) * mPixelsPerMeter);
-	sf::Color c = sf::Color(static_cast<sf::Uint8>(color.r * 255), static_cast<sf::Uint8>(color.g * 255), static_cast<sf::Uint8>(color.b * 255));
-	c.a = 60;
-	circle.setFillColor(c);
-	c.a = 255;
-	circle.setOutlineColor(c);
-	circle.setOutlineThickness(-1.0f);
-
-	if (mDebugRenderTarget != nullptr)
-	{
-		mDebugRenderTarget->draw(circle);
-	}
+	// TODO : Fill draw
+	DrawCircle(center, radius, color);
 }
 
 void PhysicSystem::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
-	const sf::Color c = sf::Color(static_cast<sf::Uint8>(color.r * 255), static_cast<sf::Uint8>(color.g * 255), static_cast<sf::Uint8>(color.b * 255));
-	sf::Vertex line[] =
-	{
-		sf::Vertex(sf::Vector2f(p1.x, p1.y) * mPixelsPerMeter, c),
-		sf::Vertex(sf::Vector2f(p2.x, p2.y) * mPixelsPerMeter, c)
-	};
-
-	if (mDebugRenderTarget != nullptr)
-	{
-		mDebugRenderTarget->draw(line, 2, sf::Lines);
-	}
+	const Vector3f pos1(p1.x, p1.y, 0.0f);
+	const Vector3f pos2(p2.x, p2.y, 0.0f);
+	Color c;
+	c.FromBox2DColor(color);
+	mDebugDraw.DrawLine(pos1, pos2, c);
 }
 
 void PhysicSystem::DrawTransform(const b2Transform& xf)
 {
 	constexpr F32 lineLength = 0.4f;
-	DrawSegment(xf.p, xf.p + lineLength * xf.q.GetXAxis(), b2Color(1.f, 0.f, 0.f));
-	DrawSegment(xf.p, xf.p + lineLength * xf.q.GetYAxis(), b2Color(0.f, 1.f, 0.f));
+	DrawSegment(xf.p, xf.p + lineLength * xf.q.GetXAxis(), Colors::Red.ToBox2DColor());
+	DrawSegment(xf.p, xf.p + lineLength * xf.q.GetYAxis(), Colors::Green.ToBox2DColor());
 }
 
 void PhysicSystem::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
 {
 	ENLIVE_UNUSED(size);
 
-	static constexpr en::F32 radius = 5.0f;
-
-	sf::CircleShape circle(radius);
-	circle.setOrigin(radius, radius);
-	circle.setPosition(p.x * mPixelsPerMeter, p.y * mPixelsPerMeter);
-	circle.setFillColor(sf::Color(static_cast<sf::Uint8>(color.r * 255), static_cast<sf::Uint8>(color.g * 255), static_cast<sf::Uint8>(color.b * 255)));
-
-	if (mDebugRenderTarget != nullptr)
-	{
-		mDebugRenderTarget->draw(circle);
-	}
+	const Vector3f pos(p.x, p.y, 0.0f);
+	Color c;
+	c.FromBox2DColor(color);
+	mDebugDraw.DrawPoint(pos, c);
 }
-#endif // ENLIVE_DEBUG
+#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_CORE

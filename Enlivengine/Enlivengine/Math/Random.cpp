@@ -1,50 +1,54 @@
 #include <Enlivengine/Math/Random.hpp>
 
-#include <Enlivengine/System/Time.hpp>
+#ifdef ENLIVE_MODULE_MATH
+
+#include <Enlivengine/Platform/Time.hpp>
 
 namespace en
 {
 
 RandomEngine::RandomEngine()
 {
-	setSeed(static_cast<U32>(Time::Now().AsMilliseconds()));
+	SetSeed(static_cast<U32>(Time::Now().AsMilliseconds()));
 }
 
 RandomEngine::RandomEngine(U32 seed)
 {
-	setSeed(seed);
+	SetSeed(seed);
 }
 
-bool RandomEngine::getBool()
+bool RandomEngine::GetBool()
 {
-	return false;
+	return Get(0, 1) == 1;  
 }
 
-void RandomEngine::setSeed(U32 seed)
+void RandomEngine::SetSeed(U32 seed)
 {
 	mSeed = seed;
 	mGenerator.seed(seed);
 }
 
-U32 RandomEngine::getSeed() const
+U32 RandomEngine::GetSeed() const
 {
 	return mSeed;
 }
 
-std::mt19937& RandomEngine::getGenerator()
+std::mt19937& RandomEngine::GetGenerator()
 {
 	return mGenerator;
 }
 
-RandomEngine& Random::priv::getRandomEngine()
+RandomEngine& Random::priv::GetDefaultRandomEngine()
 {
 	static RandomEngine randomEngine;
 	return randomEngine;
 }
 
-bool Random::getBool()
+bool Random::GetBool()
 {
-	return priv::getRandomEngine().getBool();
+	return priv::GetDefaultRandomEngine().GetBool();
 }
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_MATH

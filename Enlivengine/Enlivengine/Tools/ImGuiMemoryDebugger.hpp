@@ -1,10 +1,11 @@
 #pragma once
 
-#include <Enlivengine/System/PrimitiveTypes.hpp>
+#include <Enlivengine/Config.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_DEBUG_MEMORY) 
 
-#include <Enlivengine/Application/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiToolManager.hpp>
 
 namespace en
 {
@@ -12,7 +13,6 @@ namespace en
 class ImGuiMemoryDebugger : public ImGuiTool
 {
 	ENLIVE_SINGLETON(ImGuiMemoryDebugger);
-	~ImGuiMemoryDebugger();
 
 public:
 	virtual ImGuiToolTab GetTab() const;
@@ -24,3 +24,4 @@ public:
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI && ENLIVE_ENABLE_DEBUG_MEMORY
+#endif // ENLIVE_MODULE_TOOLS

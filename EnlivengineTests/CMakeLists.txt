@@ -15,7 +15,7 @@ set(TESTS_MATH
     ${TESTS_MATH_PATH}/Matrix3_Tests.cpp
     ${TESTS_MATH_PATH}/Matrix4_Tests.cpp
     ${TESTS_MATH_PATH}/Random_Tests.cpp
-    ${TESTS_MATH_PATH}/Utilities_Tests.cpp
+    ${TESTS_MATH_PATH}/Math_Tests.cpp
     ${TESTS_MATH_PATH}/Vector2_Tests.cpp
     ${TESTS_MATH_PATH}/Vector3_Tests.cpp
     ${TESTS_MATH_PATH}/Vector4_Tests.cpp

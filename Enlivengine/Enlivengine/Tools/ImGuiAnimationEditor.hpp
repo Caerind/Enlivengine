@@ -1,17 +1,20 @@
 #pragma once
 
-#include <Enlivengine/System/PrimitiveTypes.hpp>
+#include <Enlivengine/Config.hpp>
 
-#if defined(ENLIVE_ENABLE_IMGUI)
+#ifdef ENLIVE_MODULE_TOOLS
+#ifdef ENLIVE_MODULE_ANIMATION
+#ifdef ENLIVE_ENABLE_IMGUI
 
-#include <Enlivengine/Application/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiToolManager.hpp>
 
-#include <Enlivengine/Graphics/Animation.hpp>
-#include <Enlivengine/Graphics/AnimationController.hpp>
-#include <Enlivengine/Graphics/AnimationStateMachine.hpp>
+#include <Enlivengine/Animation/Animation.hpp>
+#include <Enlivengine/Animation/AnimationController.hpp>
+#include <Enlivengine/Animation/AnimationStateMachine.hpp>
 
-#include <imgui-node-editor/imgui_node_editor.h>
-#include <imgui/imgui_internal.h>
+// TODO : TOOLS UPDATE
+//#include <imgui-node-editor/imgui_node_editor.h>
+#include <dear-imgui/imgui_internal.h>
 
 namespace en
 {
@@ -40,8 +43,11 @@ private:
 	void LeftPanel(AnimationStateMachine& stateMachine);
     void StateMachine(AnimationStateMachine& stateMachine);
 	void Selection(AnimationStateMachine& stateMachine);
+	/*
+	// TODO : TOOLS UPDATE
 	void SelectedNode(AnimationStateMachine& stateMachine, ax::NodeEditor::NodeId node);
 	void SelectedLink(AnimationStateMachine& stateMachine, ax::NodeEditor::LinkId link);
+	*/
 	void NewState(AnimationStateMachine& stateMachine);
 	void NewTransition(AnimationStateMachine& stateMachine);
 	void NewParameter(AnimationStateMachine& stateMachine);
@@ -63,7 +69,8 @@ private:
 	
 private:
 	AnimationStateMachinePtr mStateMachine;
-    ax::NodeEditor::EditorContext* mEditorContext;
+    // TODO : TOOLS UPDATE
+	//ax::NodeEditor::EditorContext* mEditorContext;
 
 	// Left Panel elements
 	static constexpr U32 kBufferSize{ 256 };
@@ -78,3 +85,5 @@ private:
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_MODULE_ANIMATION
+#endif // ENLIVE_MODULE_TOOLS

@@ -1,11 +1,12 @@
 #pragma once
 
-#include <Enlivengine/System/PrimitiveTypes.hpp>
+#include <Enlivengine/Config.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_LOG)
 
-#include <Enlivengine/Application/ImGuiToolManager.hpp>
-#include <Enlivengine/System/Log.hpp>
+#include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Utils/Log.hpp>
 
 namespace en
 {
@@ -36,3 +37,4 @@ private:
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI && ENLIVE_ENABLE_LOG
+#endif // ENLIVE_MODULE_TOOLS

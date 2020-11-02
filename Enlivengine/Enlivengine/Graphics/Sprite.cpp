@@ -1,24 +1,83 @@
-#include <Enlivengine/Graphics/Sprite.hpp>
+#include "Sprite.hpp"
+
+#ifdef ENLIVE_MODULE_GRAPHICS
+
+#include <Enlivengine/Utils/Assert.hpp>
 
 namespace en
 {
 
+bgfx::VertexLayout Sprite::Vertex::kLayout;
+
+const U16 Sprite::kIndices[6] = { 0, 2, 1, 0, 3, 2 };
+Shader Sprite::kShader;
+bgfx::UniformHandle Sprite::kUniformTexture = BGFX_INVALID_HANDLE;
+bgfx::IndexBufferHandle Sprite::kIndexBuffer = BGFX_INVALID_HANDLE;
+
 Sprite::Sprite()
-	: mTexture()
+	: mVertices()
 	, mTextureRect()
+	, mBuffer(BGFX_INVALID_HANDLE)
+	, mTexture()
 {
+}
+
+Sprite::Sprite(Sprite&& other)
+	: mVertices()
+	, mTextureRect(other.mTextureRect)
+	, mBuffer(other.mBuffer)
+	, mTexture(other.mTexture)
+{
+	for (U32 i = 0; i < 4; ++i)
+	{
+		mVertices[i] = other.mVertices[i];
+	}
+
+	other.mTextureRect = Recti();
+	other.mTexture.Release();
+	other.mBuffer = BGFX_INVALID_HANDLE;
+
+	UpdateBuffer();
+}
+
+Sprite::~Sprite()
+{
+	if (bgfx::isValid(mBuffer))
+	{
+		bgfx::destroy(mBuffer);
+	}
+}
+
+Sprite& Sprite::operator=(Sprite&& other)
+{
+	if (&other != this)
+	{
+		for (U32 i = 0; i < 4; ++i)
+		{
+			mVertices[i] = other.mVertices[i];
+		}
+		mTextureRect = other.mTextureRect;
+		mBuffer = other.mBuffer;
+		mTexture = other.mTexture;
+
+		other.mTextureRect = Recti();
+		other.mTexture.Release();
+		other.mBuffer = BGFX_INVALID_HANDLE;
+
+		UpdateBuffer();
+	}
+	return *this;
 }
 
 void Sprite::SetTexture(TexturePtr texture)
 {
-	if (texture.IsValid())
+	if (mTexture != texture)
 	{
-		if (!mTexture.IsValid() && (mTextureRect == Recti()))
-		{
-			Texture& textureRef = texture.Get();
-			SetTextureRect(Recti(0, 0, textureRef.getSize().x, textureRef.getSize().y));
-		}
 		mTexture = texture;
+		if (Texture* texturePtr = texture.GetPtr())
+		{
+			SetTextureRect(Recti(0, 0, texturePtr->GetWidth(), texturePtr->GetHeight()));
+		}
 	}
 }
 
@@ -32,8 +91,7 @@ void Sprite::SetTextureRect(const Recti& textureRect)
 	if (mTextureRect != textureRect)
 	{
 		mTextureRect = textureRect;
-		UpdatePositions();
-		UpdateTexCoords();
+		UpdateVertices();
 	}
 }
 
@@ -44,47 +102,122 @@ const Recti& Sprite::GetTextureRect() const
 
 Rectf Sprite::GetLocalBounds() const
 {
-	const F32 x = static_cast<F32>(Math::Abs(mTextureRect.width()));
-	const F32 y = static_cast<F32>(Math::Abs(mTextureRect.height()));
-	return Rectf(0.0f, 0.0f, x, y);
+	return Rectf(0.0f, 0.0f, 1.0f, -1.0f);
 }
 
 Rectf Sprite::GetGlobalBounds() const
 {
-	// TODO : Sprite::GetGlobalBounds()
-	enAssert(false);
+	// TODO : Transform
 	return GetLocalBounds();
 }
 
-void Sprite::Render(sf::RenderTarget& target, sf::RenderStates states) const
+void Sprite::Render(const bgfx::ViewId& viewId) const
 {
-	if (mTexture.IsValid())
+	if (bgfx::isValid(mBuffer) && mTexture.IsValid())
 	{
-		states.texture = mTexture.GetPtr();
-		states.transform *= toSF(GetMatrix());
-		target.draw(mVertices, 4, sf::PrimitiveType::TriangleStrip, states);
+		Texture& texture = mTexture.Get();
+		if (texture.IsValid() && kShader.IsValid())
+		{
+			// Common to all sprites
+			bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_BLEND_ALPHA_TO_COVERAGE);
+			bgfx::setIndexBuffer(kIndexBuffer);
+
+			// Specific to this sprite
+			bgfx::setVertexBuffer(0, mBuffer);
+			bgfx::setTexture(0, kUniformTexture, texture.GetHandle());
+			kShader.Submit(viewId);
+		}
 	}
 }
 
-void Sprite::UpdatePositions()
+void Sprite::UpdateVertices()
 {
-	const Rectf bounds = GetLocalBounds();
-	mVertices[0].position = sf::Vector2f(0.0f, 0.0f);
-	mVertices[1].position = sf::Vector2f(0.0f, bounds.height());
-	mVertices[2].position = sf::Vector2f(bounds.width(), 0.0f);
-	mVertices[3].position = sf::Vector2f(bounds.width(), bounds.height());
+	const Rectf localBounds = GetLocalBounds();
+	for (U32 i = 0; i < 4; ++i)
+	{
+		mVertices[i].pos = localBounds.GetCorner(i);
+	}
+
+	if (Texture* texturePtr = mTexture.GetPtr())
+	{
+		if (texturePtr->IsValid())
+		{
+			// TODO : Find how to handle texture errors here
+			enAssert(texturePtr->GetWidth() > 0);
+			enAssert(texturePtr->GetHeight() > 0);
+			const F32 oneOverTexWidth = 1.0f / static_cast<F32>(texturePtr->GetWidth());
+			const F32 oneOverTexHeight = 1.0f / static_cast<F32>(texturePtr->GetHeight());
+			const F32 left = static_cast<F32>(mTextureRect.Left()) * oneOverTexWidth;
+			const F32 right = static_cast<F32>(mTextureRect.Right()) * oneOverTexWidth;
+			const F32 top = static_cast<F32>(mTextureRect.Top()) * oneOverTexHeight;
+			const F32 bottom = static_cast<F32>(mTextureRect.Bottom()) * oneOverTexHeight;
+
+			mVertices[0].texCoords.Set(left, top);
+			mVertices[1].texCoords.Set(right, top);
+			mVertices[2].texCoords.Set(right, bottom);
+			mVertices[3].texCoords.Set(left, bottom);
+		}
+	}
+
+	UpdateBuffer();
 }
 
-void Sprite::UpdateTexCoords()
+void Sprite::UpdateBuffer()
 {
-	const F32 left = static_cast<F32>(mTextureRect.left());
-	const F32 right = left + mTextureRect.width();
-	const F32 top = static_cast<F32>(mTextureRect.top());
-	const F32 bottom = top + mTextureRect.height();
-	mVertices[0].texCoords = sf::Vector2f(left, top);
-	mVertices[1].texCoords = sf::Vector2f(left, bottom);
-	mVertices[2].texCoords = sf::Vector2f(right, top);
-	mVertices[3].texCoords = sf::Vector2f(right, bottom);
+	// TODO : Use dynamic vertex buffer instead ?
+	// TODO : => Give the choise to the user using template boolean parameter
+	if (bgfx::isValid(mBuffer))
+	{
+		bgfx::destroy(mBuffer);
+	}
+	mBuffer = bgfx::createVertexBuffer(bgfx::makeRef(mVertices, sizeof(mVertices)), Vertex::kLayout);
+}
+
+bool Sprite::InitializeSprites()
+{
+	Vertex::kLayout
+		.begin()
+		.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+		.add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
+		.end();
+
+	if (!kShader.Initialize("sprite.vs.bin", "sprite.fs.bin"))
+	{
+		enLogWarning(LogChannel::Graphics, "Can't initialize Sprites shader");
+		return false;
+	}
+
+	kUniformTexture = bgfx::createUniform("s_uniformTexture", bgfx::UniformType::Sampler);
+	if (!bgfx::isValid(kUniformTexture))
+	{
+		enLogWarning(LogChannel::Graphics, "Can't initialize Sprites uniform texture sampler");
+		return false;
+	}
+
+	kIndexBuffer = bgfx::createIndexBuffer(bgfx::makeRef(Sprite::kIndices, sizeof(Sprite::kIndices)));
+	if (!bgfx::isValid(kIndexBuffer))
+	{
+		enLogWarning(LogChannel::Graphics, "Can't initialize Sprites index buffer");
+		return false;
+	}
+
+	return true;
+}
+
+bool Sprite::ReleaseSprites()
+{
+	if (bgfx::isValid(kIndexBuffer))
+	{
+		bgfx::destroy(kIndexBuffer);
+	}
+	if (bgfx::isValid(kUniformTexture))
+	{
+		bgfx::destroy(kUniformTexture);
+	}
+	kShader.Destroy();
+	return true;
 }
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_GRAPHICS

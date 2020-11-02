@@ -1,14 +1,22 @@
 #include <Enlivengine/Tools/ImGuiPhysic.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <imgui/imgui.h>
+#include <dear-imgui/imgui.h>
+
+/*
+
+// TODO : TOOLS UPDATE
 
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/Universe.hpp>
 
 #include <Enlivengine/Core/EntitySpecialization.hpp>
 #include <Enlivengine/Core/EntityManagerSpecialization.hpp>
+#include <Enlivengine/Core/ObjectEditor.hpp>
+
+*/
 
 namespace en
 {
@@ -29,11 +37,15 @@ ImGuiToolTab ImGuiPhysic::GetTab() const
 
 const char* ImGuiPhysic::GetName() const
 {
-	return ICON_FA_METEOR " Physic";
+	return /*ICON_FA_METEOR*/ " Physic"; // TODO : Restore FontAwesome
 }
 
 void ImGuiPhysic::Display()
 {
+	/*
+	
+	// TODO : TOOLS UPDATE
+
 	if (World* world = Universe::GetInstance().GetCurrentWorld())
 	{
 		if (world->HasPhysicSystem())
@@ -107,8 +119,11 @@ void ImGuiPhysic::Display()
 	{
 		ImGui::Text("No CurrentWorld for Physic");
 	}
+
+	*/
 }
 
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_MODULE_TOOLS

@@ -1,14 +1,14 @@
 #include <Enlivengine/Tools/ImGuiEntityBrowser.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
-
-#include <imgui/imgui.h>
+#ifdef ENLIVE_MODULE_META
+#ifdef ENLIVE_MODULE_CORE
 
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/Universe.hpp>
 
-#include <Enlivengine/Core/EntitySpecialization.hpp>
-#include <Enlivengine/Core/EntityManagerSpecialization.hpp>
+#include <Enlivengine/Meta/MetaSpecialization.hpp>
 
 namespace en
 {
@@ -29,7 +29,7 @@ ImGuiToolTab ImGuiEntityBrowser::GetTab() const
 
 const char* ImGuiEntityBrowser::GetName() const
 {
-	return ICON_FA_USER_COG " EntityBrowser";
+	return /*ICON_FA_USER_COG*/ " EntityBrowser"; // TODO : FONT AWESOME
 }
 
 void ImGuiEntityBrowser::Display()
@@ -116,9 +116,9 @@ void ImGuiEntityBrowser::Display()
 				{
 					entityName = unknownEntityName;
 				}
-				if (ImGui::Begin(entityName, &selected))
+				if (ImGui::Begin(entityName, &selected) && HasCustomEditor<en::Entity>::value)
 				{
-					CustomObjectEditor<en::Entity>::ImGuiEditor(entity, nullptr);
+					HasCustomEditor<en::Entity>::ImGuiEditor(entity, nullptr);
 					ImGui::End();
 				}
 				else
@@ -169,6 +169,14 @@ bool ImGuiEntityBrowser::IsSelected(const Entity& entity) const
 	return false;
 }
 
+const std::vector<entt::entity>& ImGuiEntityBrowser::GetSelectedEntities() const
+{
+	return mSelectedEntities;
+}
+
 } // namespace en
 
+#endif // ENLIVE_MODULE_CORE
+#endif // ENLIVE_MODULE_META
 #endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_MODULE_TOOLS

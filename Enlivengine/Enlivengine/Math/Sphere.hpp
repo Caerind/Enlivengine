@@ -1,56 +1,60 @@
 #pragma once
 
-#include <Enlivengine/Math/Matrix4.hpp>
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_MATH
+
+#include <Enlivengine/Math/Vector3.hpp>
 
 namespace en 
 {
 
-class AABB;
-class Plane;
-class Ray;
-
 class Sphere
 {
-	public:
-		Sphere();
-		Sphere(const Vector3f& center, F32 radius = 1.f);
-		Sphere(F32 radius, const Vector3f& center = Vector3f::Zero());
-		
-		const Vector3f& getCenter() const;
-		void setCenter(const Vector3f& center);
+public:
+	constexpr Sphere() : mCenter(), mRadius(1.0f) {}
+	constexpr Sphere(const Vector3f& center, F32 radius = 1.0f) : mCenter(center), mRadius(radius) {}
 
-		F32 getRadius() const;
-		void setRadius(F32 radius);
+	constexpr const Vector3f& GetCenter() const { return mCenter; }
+	constexpr void SetCenter(const Vector3f& center) { mCenter = center; }
 
-		bool operator==(const Sphere& p) const;
-		bool operator!=(const Sphere& p) const;
+	constexpr F32 GetRadius() const { return mRadius; }
+	constexpr void SetRadius(F32 radius) { mRadius = radius; }
 
-		F32 getDistance(const Vector3f& point) const;
+	constexpr bool operator==(const Sphere& other) const { return mRadius == other.mRadius && mCenter == other.mCenter; }
+	constexpr bool operator!=(const Sphere& other) const { return !operator==(other); }
 
-		bool contains(const Vector3f& point) const;
-		bool contains(const AABB& box) const;
-		bool contains(const Sphere& sphere) const;
-		// TODO : contains OBB
-		// TODO : contains Frustum
+	inline F32 GetDistance(const Vector3f& point) const
+	{
+		return (mCenter - point).GetLength() - mRadius;
+	}
 
-		bool intersects(const AABB& box) const;
-		bool intersects(const Sphere& sphere) const;
-		bool intersects(const Plane& plane) const;
-		bool intersects(const Ray& ray) const;
-		// TODO : intersects OBB
-		// TODO : intersects Frustum
+	constexpr bool Contains(const Vector3f& point) const
+	{
+		return (mCenter - point).GetSquaredLength() <= mRadius * mRadius;
+	}
 
-		AABB getAABB() const;
-		void fromAABB(const AABB& aabb);
+	constexpr bool Contains(const Sphere& sphere) const
+	{
+		if (mRadius < sphere.mRadius || !sphere.Contains(mCenter))
+		{
+			return false;
+		}
+		const Vector3f d = mCenter - sphere.mCenter;
+		return (sphere.mRadius - d.GetLength() - mRadius > 0.0f);
+	}
 
-		void merge(const Vector3f& point);
-		// TODO : merge ?
+	constexpr bool Intersects(const Sphere& sphere) const
+	{
+		const F32 rr = (mRadius + sphere.mRadius);
+		return (mCenter - sphere.mCenter).GetSquaredLength() <= rr * rr;
+	}
 
-		void transform(const Matrix4f& m);
-		
-	private:
-		Vector3f mCenter;
-		F32 mRadius;
+private:
+	Vector3f mCenter;
+	F32 mRadius;
 };
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_MATH

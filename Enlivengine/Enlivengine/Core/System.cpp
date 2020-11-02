@@ -1,6 +1,6 @@
-#include "System.hpp"
+#include <Enlivengine/Core/System.hpp>
 
-#include <SFML/Graphics/RenderTarget.hpp>
+#ifdef ENLIVE_MODULE_CORE
 
 #include <Enlivengine/Core/World.hpp>
 
@@ -21,9 +21,10 @@ void System::Update(Time dt)
 	ENLIVE_UNUSED(dt);
 }
 
-void System::Render(sf::RenderTarget& target)
+void System::Render()
 {
-	ENLIVE_UNUSED(target);
 }
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_CORE

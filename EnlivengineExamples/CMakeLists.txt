@@ -14,3 +14,8 @@ add_executable(MathExample MathExample.cpp)
 target_link_libraries(MathExample PRIVATE Enlivengine)
 set_target_properties(MathExample PROPERTIES FOLDER "Enlivengine/EnlivengineExamples")
 
+source_group("" FILES 3DSceneExample.cpp)
+add_executable(3DSceneExample 3DSceneExample.cpp)
+target_link_libraries(3DSceneExample PRIVATE Enlivengine)
+set_target_properties(3DSceneExample PROPERTIES FOLDER "Enlivengine/EnlivengineExamples")
+

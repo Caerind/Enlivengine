@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Enlivengine/System/PrimitiveTypes.hpp>
+#include <Enlivengine/Config.hpp>
 
-#if defined(ENLIVE_ENABLE_IMGUI)
+#ifdef ENLIVE_MODULE_TOOLS
+#ifdef ENLIVE_ENABLE_IMGUI
 
-#include <Enlivengine/Application/ImGuiToolManager.hpp>
-
-#include <Enlivengine/Application/ActionSystem.hpp>
+#include <Enlivengine/Tools/ImGuiToolManager.hpp>
 
 namespace en
 {
@@ -14,17 +13,15 @@ namespace en
 class ImGuiInputEditor : public ImGuiTool
 {
 	ENLIVE_SINGLETON(ImGuiInputEditor);
-	~ImGuiInputEditor();
 
 public:
 	virtual ImGuiToolTab GetTab() const;
 	virtual const char* GetName() const;
 
     virtual void Display();
-	
-private:
 };
 
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_MODULE_TOOLS

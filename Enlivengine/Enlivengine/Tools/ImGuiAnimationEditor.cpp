@@ -1,9 +1,13 @@
 #include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
 
-#if defined(ENLIVE_ENABLE_IMGUI)
+#ifdef ENLIVE_MODULE_TOOLS
+#ifdef ENLIVE_MODULE_ANIMATION
+#ifdef ENLIVE_ENABLE_IMGUI
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
+#include <dear-imgui/imgui.h>
+#include <dear-imgui/imgui_internal.h>
+
+#include <Enlivengine/Math/Color.hpp>
 
 #include <Enlivengine/Tools/ImGuiHelper.hpp>
 
@@ -13,7 +17,8 @@ namespace en
 ImGuiAnimationEditor::ImGuiAnimationEditor()
 	: ImGuiTool()
 	, mStateMachine()
-	, mEditorContext(nullptr)
+	// TODO : TOOLS UPDATE
+	//, mEditorContext(nullptr)
     , mDisplayPreviews(true)
 {
 }
@@ -26,10 +31,13 @@ ImGuiAnimationEditor::~ImGuiAnimationEditor()
 	// ResourceManager to be valid and we can't be sure about it.
 
 	mStateMachine = AnimationStateMachinePtr();
+	/*
+	// TODO : TOOLS UPDATE
 	if (mEditorContext != nullptr)
 	{
 		ax::NodeEditor::DestroyEditor(mEditorContext);
 	}
+	*/
 }
 
 ImGuiToolTab ImGuiAnimationEditor::GetTab() const
@@ -39,7 +47,7 @@ ImGuiToolTab ImGuiAnimationEditor::GetTab() const
 
 const char* ImGuiAnimationEditor::GetName() const
 {
-	return ICON_FA_RUNNING " AnimationEditor";
+	return /*ICON_FA_RUNNING*/ " AnimationEditor"; // TODO : Restore FontAwesome
 }
 
 void ImGuiAnimationEditor::Display()
@@ -47,7 +55,8 @@ void ImGuiAnimationEditor::Display()
 	if (IsInitialized() && mStateMachine.IsValid())
 	{
 		AnimationStateMachine& stateMachine = mStateMachine.Get();
-		ax::NodeEditor::SetCurrentEditor(mEditorContext);
+		// TODO : TOOLS UPDATE
+		//ax::NodeEditor::SetCurrentEditor(mEditorContext);
 
 		ImGui::Columns(2, "animEditorColumns");
 
@@ -59,7 +68,8 @@ void ImGuiAnimationEditor::Display()
 
 		ImGui::Columns(1);
 
-		ax::NodeEditor::SetCurrentEditor(nullptr);
+		// TODO : TOOLS UPDATE
+		//ax::NodeEditor::SetCurrentEditor(nullptr);
 	}
 	else
 	{
@@ -89,9 +99,12 @@ bool ImGuiAnimationEditor::Initialize(AnimationStateMachinePtr stateMachinePtr)
 
 		mStateMachine = stateMachinePtr;
 
+		/*
+		// TODO : TOOLS UDPATE
 		ax::NodeEditor::Config config;
 		config.SettingsFile = "AnimationEditor.json";
 		mEditorContext = ax::NodeEditor::CreateEditor(&config);
+		*/
 
 		mVisible = true;
 		AskForFocus();
@@ -109,7 +122,8 @@ void ImGuiAnimationEditor::Uninitialize()
 		// TODO : Save ?
 
 		mStateMachine = AnimationStateMachinePtr();
-		ax::NodeEditor::DestroyEditor(mEditorContext);
+		// TODO : TOOLS UPDATE
+		//ax::NodeEditor::DestroyEditor(mEditorContext);
 
 		mVisible = false;
 	}
@@ -117,7 +131,7 @@ void ImGuiAnimationEditor::Uninitialize()
 
 bool ImGuiAnimationEditor::IsInitialized() const
 {
-	return mStateMachine.IsValid() && mEditorContext != nullptr;
+	return mStateMachine.IsValid() /*&& mEditorContext != nullptr*/; // TODO : TOOLS UPDATE
 }
 
 int ImGuiAnimationEditor::GetStateID(const AnimationStateMachine::State& state, const AnimationStateMachine& stateMachine)
@@ -206,6 +220,9 @@ void ImGuiAnimationEditor::StateMachine(AnimationStateMachine& stateMachine)
 
 void ImGuiAnimationEditor::Selection(AnimationStateMachine& stateMachine)
 {
+	ENLIVE_UNUSED(stateMachine);
+	/*
+	// TODO : TOOLS UPDATE
 	const U32 selected = static_cast<U32>(ax::NodeEditor::GetSelectedObjectCount());
 	std::vector<ax::NodeEditor::NodeId> selectedNodes;
 	std::vector<ax::NodeEditor::LinkId> selectedLinks;
@@ -225,8 +242,11 @@ void ImGuiAnimationEditor::Selection(AnimationStateMachine& stateMachine)
 	{
 		ImGui::CollapsingHeader("Empty selection", ImGuiTreeNodeFlags_Leaf);
 	}
+	*/
 }
 
+/*
+// TODO : TOOLS UPDATE
 void ImGuiAnimationEditor::SelectedNode(AnimationStateMachine& stateMachine, ax::NodeEditor::NodeId node)
 {
 	ImGui::CollapsingHeader("Selected State", ImGuiTreeNodeFlags_Leaf);
@@ -408,7 +428,10 @@ void ImGuiAnimationEditor::SelectedNode(AnimationStateMachine& stateMachine, ax:
 
 	ImGui::Unindent();
 }
+*/
 
+/*
+// TODO : TOOLS UPDATE
 void ImGuiAnimationEditor::SelectedLink(AnimationStateMachine& stateMachine, ax::NodeEditor::LinkId link)
 {
 	ImGui::CollapsingHeader("Selected Transition", ImGuiTreeNodeFlags_Leaf);
@@ -600,6 +623,7 @@ void ImGuiAnimationEditor::SelectedLink(AnimationStateMachine& stateMachine, ax:
 
 	ImGui::Unindent();
 }
+*/
 
 void ImGuiAnimationEditor::NewState(AnimationStateMachine& stateMachine)
 {
@@ -634,11 +658,12 @@ void ImGuiAnimationEditor::NewState(AnimationStateMachine& stateMachine)
 			{
 				static Time accumulator;
 				static U32 clipFrameIndex = 0;
-                ImGui::PreviewAnimationClip(animation, 100.0f, static_cast<U32>(stateClipIndex), clipFrameIndex, accumulator, 1.0f);
+                // TODO : TOOLS UPDATE
+				//ImGui::PreviewAnimationClip(animation, 100.0f, static_cast<U32>(stateClipIndex), clipFrameIndex, accumulator, 1.0f);
 			}
 			else
 			{
-				ImGui::TextColored(Color::Orange.toImGuiColor(), "Invalid clip");
+				ImGui::TextColored(Colors::Orange.ToImGuiColor(), "Invalid clip");
 				validNewState = false;
 			}
 		}
@@ -841,10 +866,10 @@ void ImGuiAnimationEditor::ParametersList(AnimationStateMachine& stateMachine)
             ImVec4 color;
             switch (parameter.GetType())
             {
-            case AnimationStateMachine::Parameter::Type::Boolean: color = Color::Lime.toImGuiColor(); break;
-            case AnimationStateMachine::Parameter::Type::Float: color = Color::Salmon.toImGuiColor(); break;
-            case AnimationStateMachine::Parameter::Type::Integer: color = Color::Cyan.toImGuiColor(); break;
-            case AnimationStateMachine::Parameter::Type::Trigger: color = Color::Yellow.toImGuiColor(); break;
+            case AnimationStateMachine::Parameter::Type::Boolean: color = Colors::Lime.ToImGuiColor(); break;
+            case AnimationStateMachine::Parameter::Type::Float: color = Colors::Salmon.ToImGuiColor(); break;
+            case AnimationStateMachine::Parameter::Type::Integer: color = Colors::Cyan.ToImGuiColor(); break;
+            case AnimationStateMachine::Parameter::Type::Trigger: color = Colors::Yellow.ToImGuiColor(); break;
             default: break;
             }
             ImGui::TextColored(color, "%s", parameter.GetName().c_str());
@@ -888,7 +913,7 @@ void ImGuiAnimationEditor::ParametersList(AnimationStateMachine& stateMachine)
             }
 
             ImGui::SameLine();
-            ImGui::Text(ICON_FA_BAN);
+            //ImGui::Text(ICON_FA_BAN); // TODO : Restore FontAwesome
             if (ImGui::IsItemClicked())
             {
                 stateMachine.RemoveParameter(parameterIndex);
@@ -978,6 +1003,7 @@ void ImGuiAnimationEditor::Debug(AnimationStateMachine& stateMachine)
 
 void ImGuiAnimationEditor::Preview(AnimationStateMachine& stateMachine)
 {
+	ENLIVE_UNUSED(stateMachine); // TODO : TOOLS UPDATE temp
 	if (ImGui::CollapsingHeader("Preview"))
 	{
 		ImGui::Indent();
@@ -997,10 +1023,10 @@ void ImGuiAnimationEditor::Preview(AnimationStateMachine& stateMachine)
 				ImVec4 color;
 				switch (parameter.GetType())
 				{
-				case AnimationStateMachine::Parameter::Type::Boolean: color = Color::Lime.toImGuiColor(); break;
-				case AnimationStateMachine::Parameter::Type::Float: color = Color::Salmon.toImGuiColor(); break;
-				case AnimationStateMachine::Parameter::Type::Integer: color = Color::Cyan.toImGuiColor(); break;
-				case AnimationStateMachine::Parameter::Type::Trigger: color = Color::Yellow.toImGuiColor(); break;
+				case AnimationStateMachine::Parameter::Type::Boolean: color = Colors::Lime.ToImGuiColor(); break;
+				case AnimationStateMachine::Parameter::Type::Float: color = Colors::Salmon.ToImGuiColor(); break;
+				case AnimationStateMachine::Parameter::Type::Integer: color = Colors::Cyan.ToImGuiColor(); break;
+				case AnimationStateMachine::Parameter::Type::Trigger: color = Colors::Yellow.ToImGuiColor(); break;
 				default: break;
 				}
 				ImGui::TextColored(color, "%s", parameter.GetName().c_str());
@@ -1055,6 +1081,8 @@ void ImGuiAnimationEditor::Preview(AnimationStateMachine& stateMachine)
 		mAnimationController.Update(Time::Seconds(ImGui::GetIO().DeltaTime));
 
 		// Render
+		/*
+		// TODO : TOOLS UPDATE
 		if (mAnimationController.IsStateMachineValid() && mAnimationController.AreIndicesValid())
 		{
 			const Animation& animation = stateMachine.GetAnimation().Get();
@@ -1064,6 +1092,7 @@ void ImGuiAnimationEditor::Preview(AnimationStateMachine& stateMachine)
 
 			ImGui::PreviewTexture(texture, textureRect, 100.0f, true);
 		}
+		*/
 
 		ImGui::Unindent();
 	}
@@ -1071,6 +1100,10 @@ void ImGuiAnimationEditor::Preview(AnimationStateMachine& stateMachine)
 
 void ImGuiAnimationEditor::NodeEditor(AnimationStateMachine& stateMachine)
 {
+	ENLIVE_UNUSED(stateMachine);
+	/*
+	// TODO : TOOLS UPDATE
+
 	static constexpr float paddingX = 12.0f;
 	static constexpr float paddingY = 6.0f;
 	static constexpr float rounding = 4.0f;
@@ -1217,7 +1250,7 @@ void ImGuiAnimationEditor::NodeEditor(AnimationStateMachine& stateMachine)
 			ax::NodeEditor::Link(GetTransitionID(transition, stateMachine),
 				GetTransitionInputID(transition, stateMachine),
 				GetTransitionOutputID(transition, stateMachine),
-				Color::Lime.toImGuiColor(),
+				Colors::Lime.ToImGuiColor(),
 				2.0f
 			);
 		}
@@ -1243,7 +1276,9 @@ void ImGuiAnimationEditor::NodeEditor(AnimationStateMachine& stateMachine)
     ax::NodeEditor::EndCreate();
 	*/
 
+	/*
 	ax::NodeEditor::End();
+	*/
 }
 
 void ImGuiAnimationEditor::GetStatePinPositions(const AnimationStateMachine& stateMachine, const U32 stateIndex, const std::vector<ImRect>& stateRects, std::vector<PinInfo>& inputPins, std::vector<PinInfo>& outputPins)
@@ -1280,7 +1315,7 @@ void ImGuiAnimationEditor::GetStatePinPositions(const AnimationStateMachine& sta
 			const ImVec2 centerThis = stateRects[stateIndex].GetCenter();
 			const ImVec2 centerOther = stateRects[otherStateIndex].GetCenter();
 			const ImVec2 delta = ImVec2(centerOther.x - centerThis.x, centerOther.y - centerThis.y);
-			const F32 deltaLength = Math::Sqrt(delta.x * delta.x + delta.y * delta.y);
+			const F32 deltaLength = Math::FastSqrt(delta.x * delta.x + delta.y * delta.y);
 			if (deltaLength)
 			{
 				const ImVec2 deltaNormalized = ImVec2(delta.x / deltaLength, delta.y / deltaLength);
@@ -1397,3 +1432,5 @@ void ImGuiAnimationEditor::AnimationStateMachineList()
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_MODULE_ANIMATION
+#endif // ENLIVE_MODULE_TOOLS

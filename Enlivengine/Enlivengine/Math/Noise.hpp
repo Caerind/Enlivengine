@@ -1,8 +1,12 @@
 #pragma once
 
-#include <Enlivengine/System/PrimitiveTypes.hpp>
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_MATH
 
 #include <FastNoise/FastNoise.h>
+
+#include <Enlivengine/Platform/PrimitiveTypes.hpp>
 
 namespace en
 {
@@ -10,9 +14,32 @@ namespace en
 class Noise
 {
 public:
-	enum class NoiseType { Value = 0, ValueFractal, Perlin, PerlinFractal, Simplex, SimplexFractal, WhiteNoise, Cubic, CubicFractal };
-	enum class Interpolation { Linear = 0, Hermite, Quintic };
-	enum class FractalType { FBM = 0, Billow, RigidMulti };
+	enum class NoiseType 
+	{ 
+		Value = 0, 
+		ValueFractal, 
+		Perlin, 
+		PerlinFractal, 
+		Simplex, 
+		SimplexFractal, 
+		WhiteNoise, 
+		Cubic, 
+		CubicFractal 
+	};
+
+	enum class Interpolation 
+	{ 
+		Linear = 0, 
+		Hermite, 
+		Quintic 
+	};
+
+	enum class FractalType 
+	{ 
+		FBM = 0, 
+		Billow, 
+		RigidMulti
+	};
 
 	Noise(I32 seed = 1337);
 
@@ -48,3 +75,5 @@ private:
 };
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_MATH

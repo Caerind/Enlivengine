@@ -1,9 +1,14 @@
 #pragma once
 
-#include <Enlivengine/Math/Utilities.hpp>
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_MATH
+
+#include <Enlivengine/Math/Math.hpp>
 
 // TODO : constexpr
 
+/*
 namespace en
 {
 
@@ -774,4 +779,6 @@ typedef Quaternionf quat; // GLSL-like
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Quaternion)
+*/
+
+#endif // ENLIVE_MODULE_MATH

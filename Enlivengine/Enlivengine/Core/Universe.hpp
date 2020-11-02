@@ -1,5 +1,10 @@
 #pragma once
 
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_CORE
+
+#include <Enlivengine/Utils/Singleton.hpp>
 #include <Enlivengine/Core/World.hpp>
 
 namespace en
@@ -20,3 +25,5 @@ private:
 };
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_CORE

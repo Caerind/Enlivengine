@@ -1,13 +1,9 @@
 #include <Enlivengine/Tools/ImGuiHelper.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <imgui/imgui_internal.h>
-#include <imgui-sfml/imgui-SFML.h>
-
-#include <Enlivengine/Graphics/SFMLWrapper.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Sprite.hpp>
+#include <dear-imgui/imgui_internal.h>
 
 namespace ImGui
 {
@@ -22,6 +18,8 @@ void DisabledButton(const char* text)
 	ImGui::PopStyleVar();
 }
 
+/*
+// TODO : TOOLS UPDATE
 void PreviewTexture(const en::Texture& texture, en::F32 maxSize, bool canGrow)
 {
 	sf::Sprite previewSprite;
@@ -46,14 +44,17 @@ void PreviewTexture(const en::Texture& texture, en::F32 maxSize, bool canGrow)
 	previewSprite.setScale(scale, scale);
 	ImGui::Image(previewSprite);
 }
+*/
 
+/*
+// TODO : TOOLS UPDATE
 void PreviewTexture(const en::Texture& texture, const en::Rectu& textureRect, en::F32 maxSize, bool canGrow)
 {
 	sf::Sprite previewSprite;
 	previewSprite.setTexture(texture);
 
 	previewSprite.setTextureRect(en::toSF(textureRect));
-	const en::Vector2f spriteSize = static_cast<en::Vector2f>(textureRect.getSize());
+	const en::Vector2f spriteSize = static_cast<en::Vector2f>(textureRect.GetSize());
 
 	en::F32 scale = 1.0f;
 	if (spriteSize.x > maxSize || (canGrow && spriteSize.x < maxSize))
@@ -71,7 +72,9 @@ void PreviewTexture(const en::Texture& texture, const en::Rectu& textureRect, en
 	ImGui::Image(previewSprite);
 }
 
-void PreviewAnimationClip(const en::Animation& animation, en::F32 maxSize, const en::U32& clipIndex, en::U32& clipFrameIndex, en::Time& accumulator, en::F32 speedScale /*= 1.0f*/)
+/*
+// TODO : TOOLS UPDATE
+void PreviewAnimationClip(const en::Animation& animation, en::F32 maxSize, const en::U32& clipIndex, en::U32& clipFrameIndex, en::Time& accumulator, en::F32 speedScale /*= 1.0f*//*)
 {
     en::U32 clipIndexCopy = clipIndex;
     PreviewAnimation(animation, maxSize, clipIndexCopy, clipFrameIndex, accumulator, speedScale);
@@ -91,13 +94,17 @@ void PreviewAnimationClip(const en::Animation& animation, en::F32 maxSize, const
 		ImGui::EndTooltip();
 	}
 	*/
+	/*
 }
+*/
 
-void PreviewAnimation(const en::Animation& animation, en::F32 maxSize, en::U32& clipIndex, en::U32& clipFrameIndex, en::Time& accumulator, en::F32 speedScale /*= 1.0f*/)
+/*
+// TODO : TOOLS UPDATE
+void PreviewAnimation(const en::Animation& animation, en::F32 maxSize, en::U32& clipIndex, en::U32& clipFrameIndex, en::Time& accumulator, en::F32 speedScale /*= 1.0f*//*)
 {
 	if (!animation.GetTexture().IsValid())
 	{
-		ImGui::TextColored(en::Color::Orange.toImGuiColor(), "Invalid texture");
+		ImGui::TextColored(en::Colors::Orange.ToImGuiColor(), "Invalid texture");
 	}
 
 	bool animationValid = (animation.GetClipCount() > 0 && animation.GetFrameCount() > 0);
@@ -144,11 +151,13 @@ void PreviewAnimation(const en::Animation& animation, en::F32 maxSize, en::U32& 
 	}
 	if (!animationValid)
 	{
-		ImGui::TextColored(en::Color::Orange.toImGuiColor(), "Invalid animation");
+		ImGui::TextColored(en::Colors::Orange.ToImGuiColor(), "Invalid animation");
 		ImGui::PreviewTexture(texture, maxSize);
 	}
 }
+*/
 
 } // namespace ImGui
 
 #endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_MODULE_TOOLS

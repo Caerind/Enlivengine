@@ -1,15 +1,16 @@
 #pragma once
 
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_CORE
+
 #include <entt/entt.hpp>
 
-#include <Enlivengine/System/Meta.hpp>
+#include <Enlivengine/Meta/Meta.hpp>
+#include <Enlivengine/Meta/ObjectEditor.hpp>
+#include <Enlivengine/Meta/DataFile.hpp>
 
 #include <Enlivengine/Core/Entity.hpp>
-
-#ifdef ENLIVE_ENABLE_IMGUI
-#include <Enlivengine/Core/ObjectEditor.hpp>
-#endif // ENLIVE_ENABLE_IMGUI
-#include <Enlivengine/Core/DataFile.hpp>
 
 namespace en
 {
@@ -43,9 +44,18 @@ public:
 #ifdef ENLIVE_ENABLE_IMGUI
 		mComponents[hash].editor = [](Entity& entity)
 		{
-			T& component = entity.Get<T>();
-			return ObjectEditor::ImGuiEditor(component, TypeInfo<T>::GetName());
+			if constexpr (Traits::IsEmpty<T>::value)
+			{
+				ImGui::Text(TypeInfo<T>::GetName());
+				return false;
+			}
+			else
+			{
+				T& component = entity.Get<T>();
+				return ObjectEditor::ImGuiEditor(component, TypeInfo<T>::GetName());
+			}
 		};
+#endif // ENLIVE_ENABLE_IMGUI
 		mComponents[hash].add = [](Entity& entity)
 		{
 			entity.Add<T>();
@@ -54,24 +64,37 @@ public:
 		{
 			entity.Remove<T>();
 		};
-#endif // ENLIVE_ENABLE_IMGUI
 		mComponents[hash].serialize = [](DataFile& dataFile, const Entity& entity)
 		{
-			return dataFile.Serialize(entity.Get<T>(), TypeInfo<T>::GetName());
+			if constexpr (Traits::IsEmpty<T>::value)
+			{
+				return true;
+			}
+			else
+			{
+				return dataFile.Serialize(entity.Get<T>(), TypeInfo<T>::GetName());
+			}
 		};
 		mComponents[hash].deserialize = [](DataFile& dataFile, Entity& entity)
 		{
-			T& component = entity.Add<T>();
-			return dataFile.Deserialize(component, TypeInfo<T>::GetName());
+			if constexpr (Traits::IsEmpty<T>::value)
+			{
+				return true;
+			}
+			else
+			{
+				T& component = entity.Add<T>();
+				return dataFile.Deserialize(component, TypeInfo<T>::GetName());
+			}
 		};
 		return true;
 	}
 
 #ifdef ENLIVE_ENABLE_IMGUI
 	using EditorCallback = std::function<bool(Entity&)>;
+#endif // ENLIVE_ENABLE_IMGUI
 	using AddCallback = std::function<void(Entity&)>;
 	using RemoveCallback = std::function<void(Entity&)>;
-#endif // ENLIVE_ENABLE_IMGUI
 	using SerializeCallback = std::function<bool(DataFile&, const Entity&)>;
 	using DeserializeCallback = std::function<bool(DataFile&, Entity&)>;
 
@@ -81,9 +104,9 @@ public:
 		ComponentTypeID enttID;
 #ifdef ENLIVE_ENABLE_IMGUI
 		EditorCallback editor;
+#endif // ENLIVE_ENABLE_IMGUI
 		AddCallback add;
 		RemoveCallback remove;
-#endif // ENLIVE_ENABLE_IMGUI
 		SerializeCallback serialize;
 		DeserializeCallback deserialize;
 	};
@@ -98,3 +121,5 @@ private:
 };
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_CORE

@@ -1,29 +1,26 @@
 #include <Enlivengine/Tools/ImGuiResourceBrowser.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
+#ifdef ENLIVE_MODULE_RESOURCES
 #ifdef ENLIVE_ENABLE_IMGUI
-
-#include <imgui/imgui.h>
-#include <imgui-sfml/imgui-SFML.h>
-#include <ImGuiFileDialog/ImGuiFileDialog.h>
 
 #include <filesystem>
 
-#include <Enlivengine/Application/PathManager.hpp>
-#include <Enlivengine/Application/Application.hpp>
-#include <Enlivengine/System/ParserXml.hpp>
+#include <dear-imgui/imgui.h>
+//#include <ImGuiFileDialog/ImGuiFileDialog.h> // TODO : TOOLS UPDATE
+
+#include <Enlivengine/Utils/ParserXml.hpp>
 #include <Enlivengine/Math/Color.hpp>
+#include <Enlivengine/Resources/ResourceManager.hpp>
 
 #include <Enlivengine/Tools/ImGuiHelper.hpp>
 #include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
 
-#include <Enlivengine/Application/AudioSystem.hpp>
-#include <Enlivengine/Graphics/SFMLResources.hpp>
-#include <Enlivengine/Map/Tileset.hpp>
-#include <Enlivengine/Map/Map.hpp>
-#include <Enlivengine/Graphics/Animation.hpp>
-#include <Enlivengine/Graphics/AnimationStateMachine.hpp>
-
-#include <SFML/Graphics/RenderTexture.hpp>
+#include <Enlivengine/Audio/AudioManager.hpp>
+#include <Enlivengine/Tiled/Tileset.hpp>
+#include <Enlivengine/Tiled/Map.hpp>
+#include <Enlivengine/Animation/Animation.hpp>
+#include <Enlivengine/Animation/AnimationStateMachine.hpp>
 
 namespace en
 {
@@ -31,29 +28,35 @@ namespace en
 ImGuiResourceBrowser::ImGuiResourceBrowser()
 	: ImGuiTool()
 {
-	ImGuiFileDialog::Instance()->SetFilterColor(".png", Color::Cyan.withAlpha(200).toImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".jpg", Color::Cyan.withAlpha(200).toImGuiColor());
+	/*
+	
+	// TODO : TOOLS UPDATE
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".ttf", Color::Orange.withAlpha(200).toImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".png", Colors::Cyan.WithAlpha(200).ToImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".jpg", Colors::Cyan.WithAlpha(200).ToImGuiColor());
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".tmx", Color::Lime.withAlpha(200).toImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".tsx", Color::Peach.withAlpha(200).toImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".ttf", Colors::Orange.WithAlpha(200).ToImGuiColor());
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".ogg", Color::BabyPink.withAlpha(200).toImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".tmx", Colors::Lime.WithAlpha(200).ToImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".tsx", Colors::Peach.WithAlpha(200).ToImGuiColor());
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".wav", Color::HotPink.withAlpha(200).toImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".ogg", Colors::BabyPink.WithAlpha(200).ToImGuiColor());
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".astm", Color::DarkYellow.withAlpha(200).toImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".wav", Colors::HotPink.WithAlpha(200).ToImGuiColor());
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".cpp", Color::Yellow.withAlpha(200).toImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".h", Color::Yellow.withAlpha(200).toImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".hpp", Color::Yellow.withAlpha(200).toImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".inl", Color::Yellow.withAlpha(200).toImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".astm", Colors::DarkYellow.WithAlpha(200).ToImGuiColor());
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".json", Color::LightGreen.withAlpha(200).toImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".xml", Color::LightBlue.withAlpha(200).toImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".txt", Color::Magenta.withAlpha(200).toImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".md", Color::Mint.withAlpha(200).toImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".cpp", Colors::Yellow.WithAlpha(200).ToImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".h", Colors::Yellow.WithAlpha(200).ToImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".hpp", Colors::Yellow.WithAlpha(200).ToImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".inl", Colors::Yellow.WithAlpha(200).ToImGuiColor());
+
+	ImGuiFileDialog::Instance()->SetFilterColor(".json", Colors::LightGreen.WithAlpha(200).ToImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".xml", Colors::LightBlue.WithAlpha(200).ToImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".txt", Colors::Magenta.WithAlpha(200).ToImGuiColor());
+	ImGuiFileDialog::Instance()->SetFilterColor(".md", Colors::Mint.WithAlpha(200).ToImGuiColor());
+
+	*/
 }
 
 ImGuiToolTab ImGuiResourceBrowser::GetTab() const
@@ -63,11 +66,15 @@ ImGuiToolTab ImGuiResourceBrowser::GetTab() const
 
 const char* ImGuiResourceBrowser::GetName() const
 {
-	return ICON_FA_COMPASS " ResourceBrowser";
+	return /*ICON_FA_COMPASS*/ " ResourceBrowser"; // TODO : Restore FontAwesome
 }
 
 void ImGuiResourceBrowser::Display()
 {
+	/*
+
+	// TODO : TOOLS UPDATE
+
 	static const std::string key = "ResourceBrowserFileDialogKey";
 	static const char* dialogTitle = "ResourceBrowser: Choose File";
 
@@ -190,11 +197,14 @@ void ImGuiResourceBrowser::Display()
 						// TODO : Reload ?
 					}
 					*/
+					
+					/*
 					ImGui::SameLine();
 				}
 
 				//ImVec4 color = ResourceInfo::ResourceInfoTypeToColor(resourceInfo.type).toImGuiColor();
 				//ImGui::TextColored(color, "%s", resourceInfo.identifier.c_str());
+
 				ImGui::Text("%s", resourceInfo.identifier.c_str());
 
 				if (ImGui::IsItemHovered())
@@ -229,7 +239,7 @@ void ImGuiResourceBrowser::Display()
 					{
 						if (resourceInfo.type == static_cast<U32>(ResourceType::Sound))
 						{
-							AudioSystem::GetInstance().ReleaseSound(resourceInfo.id);
+							AudioManager::GetInstance().ReleaseSound(resourceInfo.id);
 						}
 						else
 						{
@@ -260,10 +270,17 @@ void ImGuiResourceBrowser::Display()
 
 		ImGui::EndChild();
 	}
+
+	*/
 }
 
 bool ImGuiResourceBrowser::LoadResourceInfosFromFile(const std::string& filename)
 {
+	ENLIVE_UNUSED(filename);
+	/*
+
+	// TODO : TOOLS UPDATE
+
 	ParserXml xml;
 	if (!xml.LoadFromFile(filename))
 	{
@@ -319,11 +336,18 @@ bool ImGuiResourceBrowser::LoadResourceInfosFromFile(const std::string& filename
 
 	AskForResize();
 
+	*/
+
 	return true;
 }
 
 bool ImGuiResourceBrowser::SaveResourceInfosToFile(const std::string& filename)
 {
+	ENLIVE_UNUSED(filename);
+	/*
+
+	// TODO : TOOLS UPDATE
+
 	const std::string assetsPath = PathManager::GetInstance().GetAssetsPath();
 
 	ParserXml xml;
@@ -360,11 +384,18 @@ bool ImGuiResourceBrowser::SaveResourceInfosToFile(const std::string& filename)
 		return false;
 	}
 
+	*/
+
 	return true;
 }
 
 U32 ImGuiResourceBrowser::GetResourceTypeFromFilename(const std::string& filename)
 {
+	ENLIVE_UNUSED(filename);
+	/*
+
+	// TODO : TOOLS UPDATE
+
 	std::string ext = std::filesystem::path(filename).extension().string();
 	if (ext == ".ttf")
 	{
@@ -402,6 +433,8 @@ U32 ImGuiResourceBrowser::GetResourceTypeFromFilename(const std::string& filenam
 	{
 		return static_cast<U32>(ResourceType::AnimationStateMachine);
 	}
+	*/
+
 	return static_cast<U32>(ResourceType::Invalid);
 }
 
@@ -409,12 +442,20 @@ void ImGuiResourceBrowser::FontPreview(ResourceInfo& resourceInfo)
 {
 	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Font));
 
-	// TODO
+	/*
+
+	// TODO : TOOLS UPDATE
+
+	*/
 }
 
 void ImGuiResourceBrowser::ImagePreview(ResourceInfo& resourceInfo)
 {
 	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Image));
+
+	/*
+
+	// TODO : TOOLS UPDATE
 
 	ImGui::Text(ICON_FA_SEARCH);
 	if (ImGui::IsItemHovered())
@@ -427,11 +468,17 @@ void ImGuiResourceBrowser::ImagePreview(ResourceInfo& resourceInfo)
 		ImGui::EndTooltip();
 	}
 	ImGui::SameLine();
+
+	*/
 }
 
 void ImGuiResourceBrowser::TexturePreview(ResourceInfo& resourceInfo)
 {
 	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Texture));
+
+	/*
+
+	// TODO : TOOLS UPDATE
 
 	ImGui::Text(ICON_FA_SEARCH);
 	if (ImGui::IsItemHovered())
@@ -444,11 +491,17 @@ void ImGuiResourceBrowser::TexturePreview(ResourceInfo& resourceInfo)
 		ImGui::EndTooltip();
 	}
 	ImGui::SameLine();
+
+	*/
 }
 
 void ImGuiResourceBrowser::TilesetPreview(ResourceInfo& resourceInfo)
 {
 	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Tileset));
+
+	/*
+
+	// TODO : TOOLS UPDATE
 
 	ImGui::Text(ICON_FA_SEARCH);
 	if (ImGui::IsItemHovered())
@@ -466,11 +519,17 @@ void ImGuiResourceBrowser::TilesetPreview(ResourceInfo& resourceInfo)
 
 	}
 	ImGui::SameLine();
+
+	*/
 }
 
 void ImGuiResourceBrowser::MapPreview(ResourceInfo& resourceInfo)
 {
 	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Map));
+
+	/*
+
+	// TODO : TOOLS UPDATE
 
 	ImGui::Text(ICON_FA_SEARCH);
 	if (ImGui::IsItemHovered())
@@ -508,11 +567,17 @@ void ImGuiResourceBrowser::MapPreview(ResourceInfo& resourceInfo)
 		}
 	}
 	ImGui::SameLine();
+
+	*/
 }
 
 void ImGuiResourceBrowser::AnimationPreview(ResourceInfo& resourceInfo)
 {
 	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Animation));
+
+	/*
+
+	// TODO : TOOLS UPDATE
 
 	ImGui::Text(ICON_FA_SEARCH);
 	if (ImGui::IsItemHovered())
@@ -541,11 +606,17 @@ void ImGuiResourceBrowser::AnimationPreview(ResourceInfo& resourceInfo)
 		}
 	}
 	ImGui::SameLine();
+
+	*/
 }
 
 void ImGuiResourceBrowser::AnimationStateMachinePreview(ResourceInfo& resourceInfo)
 {
 	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::AnimationStateMachine));
+
+	/*
+
+	// TODO : TOOLS UPDATE
 
 	AnimationStateMachinePtr ptr = ResourceManager::GetInstance().Get<AnimationStateMachine>(resourceInfo.id);
 	if (ptr.IsValid())
@@ -582,47 +653,63 @@ void ImGuiResourceBrowser::AnimationStateMachinePreview(ResourceInfo& resourceIn
 		}
 		ImGui::SameLine();
 	}
+
+	*/
 }
 
 void ImGuiResourceBrowser::MusicPreview(ResourceInfo& resourceInfo)
 {
 	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Music));
 
+	/*
+
+	// TODO : TOOLS UPDATE
+
 	static MusicPtr music;
 	if (music.IsValid() && music.GetMusicID() == resourceInfo.id)
 	{
-		ImGui::Text(ICON_FA_STOP_CIRCLE);
+		//ImGui::Text(ICON_FA_STOP_CIRCLE); // TODO : Restore FontAwesome
 		if (ImGui::IsItemClicked())
 		{
 			music.Stop();
-			AudioSystem::GetInstance().PlayMusics();
+			AudioManager::GetInstance().PlayMusics();
 		}
 		ImGui::SameLine();
 	}
 	else
 	{
-		ImGui::Text(ICON_FA_PLAY_CIRCLE);
+		ImGui::Text(ICON_FA_PLAY_CIRCLE); // TODO : Restore FontAwesome
 		if (ImGui::IsItemClicked())
 		{
-			AudioSystem::GetInstance().PauseMusics();
-			music = AudioSystem::GetInstance().PlayMusic(resourceInfo.id, false);
+			AudioManager::GetInstance().PauseMusics();
+			music = AudioManager::GetInstance().PlayMusic(resourceInfo.id, false);
 		}
 		ImGui::SameLine();
 	}
+
+	*/
 }
 
 void ImGuiResourceBrowser::SoundPreview(ResourceInfo& resourceInfo)
 {
 	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Sound));
 
-	ImGui::Text(ICON_FA_PLAY_CIRCLE);
+	/*
+
+	// TODO : TOOLS UPDATE
+
+	ImGui::Text(ICON_FA_PLAY_CIRCLE); // TODO : Restore FontAwesome
 	if (ImGui::IsItemClicked())
 	{
-		AudioSystem::GetInstance().PlaySound(resourceInfo.id);
+		AudioManager::GetInstance().PlaySound(resourceInfo.id);
 	}
 	ImGui::SameLine();
+
+	*/
 }
 
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_MODULE_RESOURCES
+#endif // ENLIVE_MODULE_TOOLS

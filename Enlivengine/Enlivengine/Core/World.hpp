@@ -1,7 +1,12 @@
 #pragma once
 
-#include <Enlivengine/System/Array.hpp>
-#include <Enlivengine/Graphics/View.hpp>
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_CORE
+
+#include <Enlivengine/Platform/Time.hpp>
+#include <Enlivengine/Utils/Array.hpp>
+#include <Enlivengine/Graphics/Camera.hpp>
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/System.hpp>
 #include <Enlivengine/Core/PhysicSystem.hpp>
@@ -25,12 +30,12 @@ public:
 	PhysicSystem* GetPhysicSystem();
 	const PhysicSystem* GetPhysicSystem() const;
 
-	View& GetGameView();
-	const View& GetGameView() const;
+	Camera& GetMainCamera();
+	const Camera& GetMainCamera() const;
 
 #ifdef ENLIVE_DEBUG
-	View& GetFreeCamView();
-	const View& GetFreeCamView() const;
+	Camera& GetFreeCamera();
+	const Camera& GetFreeCamera() const;
 #endif // ENLIVE_DEBUG
 
 	void Play();
@@ -38,7 +43,7 @@ public:
 	bool IsPlaying() const;
 	
 	void Update(Time dt);
-	void Render(sf::RenderTarget& target);
+	void Render();
 
 private:
 	EntityManager mEntityManager;
@@ -46,24 +51,24 @@ private:
 	std::vector<System*> mSystems;
 	PhysicSystem* mPhysicSystem;
 
-	View mGameView;
+	Camera mMainCamera;
 
 #ifdef ENLIVE_DEBUG
-	View mFreeCamView;
+	Camera mFreeCamera;
 #endif // ENLIVE_DEBUG
 
 	bool mPlaying;
 };
 
 template <typename T, typename ... Args>
-T* en::World::CreateSystem(Args&& ... args)
+T* World::CreateSystem(Args&& ... args)
 {
-	static_assert(en::Traits::IsBaseOf<en::System, T>::value);
+	static_assert(Traits::IsBaseOf<System, T>::value);
 
 	T* system = new T(*this, std::forward<Args>(args)...);
 	mSystems.push_back(system);
 
-	if constexpr (en::Traits::IsBaseOf<en::PhysicSystem, T>::value)
+	if constexpr (Traits::IsBaseOf<PhysicSystem, T>::value)
 	{
 		if (mPhysicSystem != nullptr)
 		{
@@ -77,6 +82,4 @@ T* en::World::CreateSystem(Args&& ... args)
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::World)
-	ENLIVE_META_CLASS_MEMBER("EntityManager", &en::World::GetEntityManager)
-ENLIVE_META_CLASS_END()
+#endif // ENLIVE_MODULE_CORE

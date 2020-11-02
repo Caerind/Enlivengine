@@ -1,11 +1,10 @@
 #pragma once
 
-#include <Enlivengine/System/Time.hpp>
+#include <Enlivengine/Config.hpp>
 
-namespace sf
-{
-	class RenderTarget;
-}
+#ifdef ENLIVE_MODULE_CORE
+
+#include <Enlivengine/Platform/Time.hpp>
 
 namespace en
 {
@@ -19,10 +18,12 @@ class System
         virtual ~System();
 		
         virtual void Update(Time dt);
-		virtual void Render(sf::RenderTarget& target);
+		virtual void Render();
 		
 	protected:
 		World& mWorld;
 };
         
 } // namespace en
+
+#endif // ENLIVE_MODULE_CORE

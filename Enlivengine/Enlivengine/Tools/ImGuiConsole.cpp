@@ -1,9 +1,10 @@
 #include <Enlivengine/Tools/ImGuiConsole.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <imgui/imgui.h>
-#include <Enlivengine/System/String.hpp>
+#include <dear-imgui/imgui.h>
+#include <Enlivengine/Utils/String.hpp>
 
 namespace en
 {
@@ -27,7 +28,7 @@ ImGuiToolTab ImGuiConsole::GetTab() const
 
 const char* ImGuiConsole::GetName() const
 {
-	return ICON_FA_TERMINAL " Console";
+	return /*ICON_FA_TERMINAL*/ " Console"; // TODO : Restore FontAwesome
 }
 
 void ImGuiConsole::Display()
@@ -54,7 +55,7 @@ void ImGuiConsole::Display()
 #endif // ENLIVE_COMPILER_MSVC
 	}
 	// Keep auto focus on the input box
-	if (ImGui::IsItemHovered() || (ImGui::IsAnyWindowFocused() && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0)))
+	if (ImGui::IsItemHovered() || (ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0)))
 	{
 		ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
 	}
@@ -115,3 +116,4 @@ U32 ImGuiConsole::GetCurrentSize() const
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_MODULE_TOOLS

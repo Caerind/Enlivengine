@@ -17,12 +17,6 @@ matrix:
             - gcc-9
             - g++-9
             - cmake
-            - libxrandr-dev
-            - libudev-dev
-            - libopenal-dev
-            - libflac-dev
-            - libvorbis-dev
-            - libgl1-mesa-dev
     script:
         - export CXX="g++-9" CC="gcc-9"
         - mkdir build && cd build
@@ -38,13 +32,8 @@ matrix:
 #          sources:
 #            - ubuntu-toolchain-r-test
 #          packages:
+#            - clang
 #            - cmake
-#            - libxrandr-dev
-#            - libudev-dev
-#            - libopenal-dev
-#            - libflac-dev
-#            - libvorbis-dev
-#            - libgl1-mesa-dev
 #    script:
 #        - mkdir build && cd build
 #        - cmake ..
@@ -58,12 +47,6 @@ matrix:
           packages:
             - clang
             - cmake
-            - libxrandr-dev
-            - libudev-dev
-            - libopenal-dev
-            - libflac-dev
-            - libvorbis-dev
-            - libgl1-mesa-dev
     script:
         - mkdir build && cd build
         - cmake ..
@@ -75,12 +58,6 @@ matrix:
 #        apt:
 #          packages:
 #            - cmake
-#            - libxrandr-dev
-#            - libudev-dev
-#            - libopenal-dev
-#            - libflac-dev
-#            - libvorbis-dev
-#            - libgl1-mesa-dev
 #    script:
 #        - mkdir build && cd build
 #        - cmake ..

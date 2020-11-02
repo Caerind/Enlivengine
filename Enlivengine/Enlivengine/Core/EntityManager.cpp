@@ -1,5 +1,7 @@
 #include <Enlivengine/Core/EntityManager.hpp>
 
+#ifdef ENLIVE_MODULE_CORE
+
 #include <Enlivengine/Core/World.hpp>
 
 namespace en
@@ -51,3 +53,5 @@ const entt::registry& EntityManager::GetRegistry() const
 }
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_CORE

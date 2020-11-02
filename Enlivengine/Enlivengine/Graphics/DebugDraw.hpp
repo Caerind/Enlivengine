@@ -1,56 +1,65 @@
 #pragma once
 
-#include <Enlivengine/System/PrimitiveTypes.hpp>
 #include <Enlivengine/Config.hpp>
 
-#ifdef ENLIVE_DEBUG
+#ifdef ENLIVE_MODULE_GRAPHICS
 
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
+#include <bgfx/bgfx.h>
 
 #include <Enlivengine/Math/Color.hpp>
-#include <Enlivengine/Math/Rect.hpp>
+#include <Enlivengine/Math/Vector3.hpp>
+#include <Enlivengine/Math/Frustum.hpp>
+#include <Enlivengine/Math/Matrix4.hpp>
+#include <Enlivengine/Graphics/Shader.hpp>
 
 namespace en
 {
 
 class DebugDraw
 {
-	private:
-		DebugDraw();
+public:
+	DebugDraw();
+	~DebugDraw();
 
-	public:
-		static DebugDraw& GetInstance() { static DebugDraw instance; return instance; }
+	void DrawLine(const Vector3f& p1, const Vector3f& p2, const Color& color = Colors::Magenta);
+	void DrawBox(const Vector3f& min, const Vector3f& max, const Color& color = Colors::Magenta);
+	void DrawCross(const Vector3f& position);
+	void DrawTransform(const Matrix4f& transform);
+	void DrawFrustum(const Frustum& frustum, const Color& color = Colors::Magenta);
+	void DrawPoint(const Vector3f& point, const Color& color = Colors::Magenta);
+	void DrawXZGrid(F32 begin, F32 end, F32 y, F32 interval, const Color& color = Colors::Magenta);
 
-		void drawPoint(F32 x, F32 y, const Color& color = Color::Red, F32 r = 2.0f);
-		void drawPoint(const Vector2f& point, const Color& color = Color::Red, F32 r = 2.0f);
-		void drawRect(F32 x, F32 y, F32 w, F32 h, const Color& c1 = Color::Red, const Color& c2 = Color::Transparent);
-		void drawRect(const Rectf& rect, const Color& c1 = Color::Red, const Color& c2 = Color::Transparent);
-		void drawCircle(F32 x, F32 y, const Color& color = Color::Red, F32 r = 10.f); // TODO : Improve
-		void drawLine(F32 x1, F32 y1, F32 x2, F32 y2, const Color& color = Color::Red, F32 thickness = 2.0f); // TODO : Improve
+	void Render(const bgfx::ViewId& viewId);
 
-		U32 getCurrentRectangleCount();
-		U32 getCurrentCircleCount();
-		void render(sf::RenderTarget& target);
+private:
+	void AddVertex(const Vector3f& pos, const Color& color);
 
-		void reset();
+private:
+	struct Vertex
+	{
+		Vector3f pos;
+		Color color;
 
-		void setMaxSize(U32 maxSize);
-		U32 getMaxSize();
+		static bgfx::VertexLayout kLayout;
+	};
 
-		void setVisible(bool visible);
-		bool isVisible();
-		
-	private:
-		bool mVisible;
-		U32 mMaxSize;
-		U32 mCurrentCircleIndex;
-		U32 mCurrentRectangleIndex;
-		std::vector<sf::CircleShape> mCircles;
-		std::vector<sf::RectangleShape> mRectangles;
+	static constexpr U32 kMaxVertices = 1000;
+
+	Vertex mVertices[kMaxVertices];
+	U32 mVertexCount;
+	bgfx::VertexBufferHandle mBuffer;
+
+private:
+
+	static Shader kShader;
+
+public:
+	// TODO : Make these private
+	//friend class BgfxWrapper;
+	static bool InitializeDebugDraws();
+	static bool ReleaseDebugDraws();
 };
 
 } // namespace en
 
-#endif // ENLIVE_DEBUG
+#endif // ENLIVE_MODULE_GRAPHICS

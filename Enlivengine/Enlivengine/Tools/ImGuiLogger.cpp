@@ -1,9 +1,11 @@
 #include <Enlivengine/Tools/ImGuiLogger.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_LOG)
 
-#include <imgui/imgui.h>
-#include <Enlivengine/System/String.hpp>
+#include <dear-imgui/imgui.h>
+
+#include <Enlivengine/Utils/String.hpp>
 
 namespace en
 {
@@ -28,7 +30,7 @@ ImGuiToolTab ImGuiLogger::GetTab() const
 
 const char* ImGuiLogger::GetName() const
 {
-	return ICON_FA_LIST_UL " Logger";
+	return /*ICON_FA_LIST_UL*/ " Logger"; // TODO : Restore FontAwesome
 }
 
 void ImGuiLogger::Display()
@@ -92,3 +94,4 @@ U32 ImGuiLogger::GetCurrentSize() const
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI && ENLIVE_ENABLE_LOG
+#endif // ENLIVE_MODULE_TOOLS

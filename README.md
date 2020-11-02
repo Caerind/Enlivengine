@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/Cmdu76/Enlivengine.svg?branch=master)](https://travis-ci.com/Cmdu76/Enlivengine)
 
-My new 2D engine using C++17 
+My new engine using C++17, SDL & Bgfx
 
 Used in :
   -  [LudumDare45 : The Story Of Nothing](https://github.com/Cmdu76/LudumDare45)

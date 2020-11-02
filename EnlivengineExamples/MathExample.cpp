@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <Enlivengine/Math/Utilities.hpp>
+#include <Enlivengine/Math/Math.hpp>
 
 #include <Enlivengine/System/Log.hpp>
 #include <Enlivengine/Application/Application.hpp>

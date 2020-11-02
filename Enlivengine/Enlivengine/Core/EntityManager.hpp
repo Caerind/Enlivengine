@@ -1,9 +1,13 @@
 #pragma once
 
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_CORE
+
 #include <entt/entt.hpp>
 
 #include <Enlivengine/Core/Entity.hpp>
-#include <Enlivengine/Core/CustomTraits.hpp>
+#include <Enlivengine/Core/ComponentTraits.hpp>
 
 namespace en
 {
@@ -54,5 +58,4 @@ private:
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::EntityManager)
-ENLIVE_META_CLASS_END()
+#endif // ENLIVE_MODULE_CORE

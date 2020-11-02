@@ -1,13 +1,18 @@
 #pragma once
 
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_CORE
+
 #include <entt/entt.hpp>
 
-#include <Enlivengine/System/Meta.hpp>
+#include <Enlivengine/Utils/Assert.hpp>
+#include <Enlivengine/Meta/Meta.hpp>
 
 #include <Enlivengine/Math/Vector2.hpp>
 #include <Enlivengine/Math/Vector3.hpp>
 
-#include <Enlivengine/Core/CustomTraits.hpp>
+#include <Enlivengine/Core/ComponentTraits.hpp>
 
 namespace en
 {
@@ -25,6 +30,7 @@ public:
 	Entity(EntityManager& manager, entt::entity entity);
 	Entity(World& world, entt::entity entity);
 
+	operator bool() const;
 	bool IsValid() const;
 	U32 GetID() const;
 	void Destroy();
@@ -34,10 +40,10 @@ public:
 	Vector3f GetPosition() const;
 
 	template <typename T> 
-	T& Add();
+	decltype(auto) Add();
 
 	template <typename T, typename ...Args> 
-	T& Add(Args&&  ...args);
+	decltype(auto) Add(Args&&  ...args);
 
 	template <typename ...Components> 
 	bool Has() const;
@@ -72,31 +78,45 @@ private:
 };
 
 template <typename T> 
-T& Entity::Add()
+decltype(auto) Entity::Add()
 {
 	//enAssert(ComponentManager::IsRegistered<T>());
 	enAssert(IsValid());
 
-	T& component = GetRegistry().emplace<T>(mEntity);
-	if constexpr (CustomComponentInitialization<T>::value)
+	if constexpr (Traits::IsEmpty<T>::value)
 	{
-		CustomComponentInitialization<T>::Initialize(*this, component);
+		GetRegistry().emplace<T>(mEntity);
 	}
-	return component;
+	else
+	{
+		T& component = GetRegistry().emplace<T>(mEntity);
+		if constexpr (ComponentHasCustomInitialization<T>::value)
+		{
+			ComponentHasCustomInitialization<T>::Initialize(*this, component);
+		}
+		return component;
+	}
 }
 
 template <typename T, typename ...Args>
-T& Entity::Add(Args&& ...args)
+decltype(auto) Entity::Add(Args&& ...args)
 {
 	//enAssert(ComponentManager::IsRegistered<T>());
 	enAssert(IsValid());
-	
-	T& component = GetRegistry().emplace<T>(mEntity, std::forward<Args>(args)...); 
-	if constexpr (CustomComponentInitialization<T>::value)
+
+	if constexpr (Traits::IsEmpty<T>::value)
 	{
-		CustomComponentInitialization<T>::Initialize(*this, component);
+		GetRegistry().emplace<T>(mEntity);
 	}
-	return component;
+	else
+	{
+		T& component = GetRegistry().emplace<T>(mEntity, std::forward<Args>(args)...);
+		if constexpr (ComponentHasCustomInitialization<T>::value)
+		{
+			ComponentHasCustomInitialization<T>::Initialize(*this, component);
+		}
+		return component;
+	}
 }
 
 template <typename ...Components> 
@@ -139,5 +159,4 @@ const T& Entity::Get() const
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::Entity)
-ENLIVE_META_CLASS_END()
+#endif // ENLIVE_MODULE_CORE

@@ -1,11 +1,18 @@
 #pragma once
 
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_CORE
+
 #include <Box2D/Box2D.h>
 
+#include <Enlivengine/Utils/Signal.hpp>
 #include <Enlivengine/Math/Vector2.hpp>
 #include <Enlivengine/Core/System.hpp>
 
-#include <Enlivengine/System/Signal.hpp>
+#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+#include <Enlivengine/Graphics/DebugDraw.hpp>
+#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 
 namespace en
 {
@@ -33,9 +40,6 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
         void SetGravity(const Vector2f& gravity);
         Vector2f GetGravity() const;
         
-        void SetPixelsPerMeter(F32 value);
-        F32 GetPixelsPerMeter() const;
-        
         void SetVelocityIterations(U32 value);
         U32 GetVelocityIterations() const;
         void SetPositionIterations(U32 value);
@@ -52,8 +56,8 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 		template <typename F>
 		bool AddEndContactSlot(EndContactSlotType& slot, const PhysicComponent& component, F&& fct);
 
-#ifdef ENLIVE_DEBUG
-		void Render(sf::RenderTarget& target) override;
+#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+		void Render() override;
 
 		void SetDebugRendering(bool value);
 		bool IsDebugRendering() const;
@@ -68,11 +72,10 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 		void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color);
 		void DrawTransform(const b2Transform& xf);
 		void DrawPoint(const b2Vec2& p, float32 size, const b2Color& color);
-#endif // ENLIVE_DEBUG
+#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 
     protected:
 		b2World* mPhysicWorld;
-        F32 mPixelsPerMeter;
         U32 mVelocityIterations;
 		U32 mPositionIterations;
 		bool mPlaying;
@@ -84,11 +87,11 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 		};
 		std::unordered_map<b2Body*, ContactSignals> mContactSignals;
 
-#ifdef ENLIVE_DEBUG
-		sf::RenderTarget* mDebugRenderTarget;
+#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+		DebugDraw mDebugDraw;
 		U32 mDebugRenderFlags;
         bool mDebugRender;
-#endif // ENLIVE_DEBUG
+#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 };
 
 template <typename F>
@@ -130,3 +133,5 @@ bool PhysicSystem::AddEndContactSlot(EndContactSlotType& slot, const PhysicCompo
 }
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_CORE

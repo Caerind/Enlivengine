@@ -1,71 +1,74 @@
 #pragma once
 
-#include <Enlivengine/Math/Matrix4.hpp>
+#include <Enlivengine/Config.hpp>
+
+#ifdef ENLIVE_MODULE_MATH
+
+#include <Enlivengine/Math/Vector3.hpp>
 
 namespace en
 {
 
-class AABB;
-class Sphere;
-class Ray;
-
 class Plane
 {
-	public:
-		Plane();
-		Plane(const Vector3f& normal, F32 constant);
-		Plane(const Vector3f& normal, const Vector3f& point);
-		Plane(F32 a, F32 b, F32 c, F32 d);
-		Plane(const Vector3f& point1, const Vector3f& point2, const Vector3f& point3);
+public:
+	constexpr Plane() : mNormal(), mConstant() {}
+	constexpr Plane(const Vector3f& normal, F32 constant) : mNormal(normal), mConstant(constant) {}
+	constexpr Plane(const Vector3f& normal, const Vector3f& point) : mNormal(normal), mConstant(-normal.DotProduct(point)) {}
+	constexpr Plane(F32 a, F32 b, F32 c, F32 d) : mNormal(a, b, c), mConstant(d) {}
+	inline Plane(const Vector3f& point1, const Vector3f& point2, const Vector3f& point3) : mNormal(), mConstant() { Set(point1, point2, point3); }
 
-		void set(const Vector3f& normal, F32 constant);
-		void set(const Vector3f& normal, const Vector3f& point);
-		void set(F32 a, F32 b, F32 c, F32 d);
-		void set(const Vector3f& point1, const Vector3f& point2, const Vector3f& point3);
+	constexpr void Set(const Vector3f& normal, F32 constant) { mNormal = normal; mConstant = constant; }
+	constexpr void Set(const Vector3f& normal, const Vector3f& point) { mNormal = normal; mConstant = -normal.DotProduct(point); }
+	constexpr void Set(F32 a, F32 b, F32 c, F32 d) { mNormal.Set(a, b, c); mConstant = d; }
+	inline void Set(const Vector3f& point1, const Vector3f& point2, const Vector3f& point3)
+	{
+		const Vector3f edge1 = point2 - point1;
+		const Vector3f edge2 = point3 - point1;
+		mNormal = edge1.CrossProduct(edge2).Normalized();
+		mConstant = -mNormal.DotProduct(point1);
+	}
 
-		const Vector3f& getNormal() const;
-		void setNormal(const Vector3f& normal);
+	constexpr const Vector3f& GetNormal() const { return mNormal; }
+	constexpr void SetNormal(const Vector3f& normal) { mNormal = normal; }
 
-		F32 getConstant() const;
-		void setConstant(F32 constant);
+	constexpr F32 GetConstant() const { return mConstant; }
+	constexpr void SetConstant(F32 constant) { mConstant = constant; }
 
-		F32 normalize();
-		Plane normalized() const;
-
-		enum Side : U8
+	enum class Side
+	{
+		Positive,
+		Negative,
+		Both
+	};
+	constexpr Side GetSide(const Vector3f& point) const
+	{
+		const F32 distance = GetDistance(point);
+		if (distance > 0.0f)
 		{
-			None,
-			Positive,
-			Negative,
-			Both
-		};
-		Side getSide(const Vector3f& point) const;
-		Side getSide(const AABB& box) const;
-		Side getSide(const Sphere& sphere) const;
-		Side getSide(const Ray& ray) const;
+			return Side::Positive;
+		}
+		else if (distance < 0.0f)
+		{
+			return Side::Negative;
+		}
+		else
+		{
+			return Side::Both;
+		}
+	}
 
-		Vector3f getClosestPoint(const Vector3f& point);
+	constexpr F32 GetDistance(const Vector3f& point) const { return mNormal.DotProduct(point) + mConstant; }
+	constexpr Vector3f GetClosestPoint(const Vector3f& point) { return point - mNormal * GetDistance(point); }
 
-		bool operator==(const Plane& p) const;
-		bool operator!=(const Plane& p) const;
+	constexpr bool operator==(const Plane& other) const { return mConstant == other.mConstant && mNormal == other.mNormal; }
+	constexpr bool operator!=(const Plane& other) const { return !operator==(other); }
 
-		F32 getDistance(const Vector3f& point) const;
-
-		bool contains(const Vector3f& point) const;
-		bool contains(const Ray& ray) const;
-
-		bool intersects(const AABB& box) const;
-		bool intersects(const Sphere& sphere) const;
-		bool intersects(const Plane& plane) const;
-		bool intersects(const Ray& ray) const;
-		// TODO : intersects OBB
-		// TODO : intersects Frustum
-
-		// TODO : transform ?
-
-	private:
-		Vector3f mNormal;
-		F32 mConstant;
+private:
+	Vector3f mNormal;
+	F32 mConstant;
 };
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_MATH

@@ -1,5 +1,7 @@
 #include <Enlivengine/Core/Entity.hpp>
 
+#ifdef ENLIVE_MODULE_CORE
+
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/World.hpp>
@@ -23,7 +25,11 @@ Entity::Entity(World& world, entt::entity entity)
 	: mManager(&world.GetEntityManager())
 	, mEntity(entity)
 {
+}
 
+Entity::operator bool() const
+{
+	return IsValid();
 }
 
 bool Entity::IsValid() const
@@ -125,3 +131,5 @@ const entt::registry& Entity::GetRegistry() const
 }
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_CORE

@@ -1,24 +1,26 @@
 #pragma once
 
-#include <SFML/Graphics/Vertex.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
+#include <Enlivengine/Config.hpp>
 
-#include <Enlivengine/System/Meta.hpp>
+#ifdef ENLIVE_MODULE_GRAPHICS
+
+#include <bgfx/bgfx.h>
+
 #include <Enlivengine/Math/Rect.hpp>
-#include <Enlivengine/Graphics/SFMLResources.hpp>
-#include <Enlivengine/Graphics/SFMLWrapper.hpp>
-#include <Enlivengine/Core/Transform.hpp>
-
-// TODO : Color ?
+#include <Enlivengine/Graphics/Shader.hpp>
+#include <Enlivengine/Graphics/Texture.hpp>
 
 namespace en
 {
 
-class Sprite : public Transform
+class Sprite
 {
 public:
 	Sprite();
+	Sprite(Sprite&& other);
+	~Sprite();
+
+	Sprite& operator=(Sprite&& other);
 
 	void SetTexture(TexturePtr texture);
 	TexturePtr GetTexture() const;
@@ -29,24 +31,40 @@ public:
 	Rectf GetLocalBounds() const;
 	Rectf GetGlobalBounds() const;
 
-	void Render(sf::RenderTarget& target, sf::RenderStates states) const;
+	void Render(const bgfx::ViewId& viewId) const;
 
 private:
-	void UpdatePositions();
-	void UpdateTexCoords();
+	void UpdateVertices();
+	void UpdateBuffer();
 
 private:
-	sf::Vertex mVertices[4];
-	TexturePtr mTexture;
+	struct Vertex
+	{
+		Vector2f pos;
+		F32 unusedZ{ 0.0f };
+		Vector2f texCoords;
+
+		static bgfx::VertexLayout kLayout;
+	}; 
+
+	Vertex mVertices[4];
 	Recti mTextureRect;
+	bgfx::VertexBufferHandle mBuffer;
+	TexturePtr mTexture;
+
+private:
+	static const U16 kIndices[6];
+	static Shader kShader;
+	static bgfx::UniformHandle kUniformTexture;
+	static bgfx::IndexBufferHandle kIndexBuffer;
+
+public:
+	// TODO : Make these private
+	//friend class BgfxWrapper;
+	static bool InitializeSprites();
+	static bool ReleaseSprites();
 };
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::Sprite)
-	ENLIVE_META_CLASS_MEMBER("Position", &en::Sprite::GetPosition, &en::Sprite::SetPosition),
-	ENLIVE_META_CLASS_MEMBER("Rotation", &en::Sprite::GetRotation2D, &en::Sprite::SetRotation2D),
-	ENLIVE_META_CLASS_MEMBER("Scale", &en::Sprite::GetScale, &en::Sprite::SetScale),
-	ENLIVE_META_CLASS_MEMBER("Texture", &en::Sprite::GetTexture, &en::Sprite::SetTexture),
-	ENLIVE_META_CLASS_MEMBER("TextureRect", &en::Sprite::GetTextureRect, &en::Sprite::SetTextureRect)
-ENLIVE_META_CLASS_END()
+#endif // ENLIVE_MODULE_GRAPHICS

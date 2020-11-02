@@ -1,5 +1,7 @@
 #include <Enlivengine/Core/World.hpp>
 
+#ifdef ENLIVE_MODULE_CORE
+
 namespace en
 {
 
@@ -7,9 +9,9 @@ World::World()
 	: mEntityManager(*this)
 	, mSystems()
 	, mPhysicSystem(nullptr)
-	, mGameView()
+	, mMainCamera()
 #ifdef ENLIVE_DEBUG
-	, mFreeCamView()
+	, mFreeCamera()
 #endif // ENLIVE_DEBUG
 	, mPlaying(false)
 {
@@ -48,25 +50,25 @@ const PhysicSystem* World::GetPhysicSystem() const
 	return mPhysicSystem;
 }
 
-View& World::GetGameView()
+Camera& World::GetMainCamera()
 {
-	return mGameView;
+	return mMainCamera;
 }
 
-const View& World::GetGameView() const
+const Camera& World::GetMainCamera() const
 {
-	return mGameView;
+	return mMainCamera;
 }
 
 #ifdef ENLIVE_DEBUG
-View& World::GetFreeCamView()
+Camera& World::GetFreeCamera()
 {
-	return mFreeCamView;
+	return mFreeCamera;
 }
 
-const View& World::GetFreeCamView() const
+const Camera& World::GetFreeCamera() const
 {
-	return mFreeCamView;
+	return mFreeCamera;
 }
 #endif // ENLIVE_DEBUG
 
@@ -93,12 +95,14 @@ void World::Update(Time dt)
 	}
 }
 
-void World::Render(sf::RenderTarget& target)
+void World::Render()
 {
 	for (System* system : mSystems)
 	{
-		system->Render(target);
+		system->Render();
 	}
 }
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_CORE

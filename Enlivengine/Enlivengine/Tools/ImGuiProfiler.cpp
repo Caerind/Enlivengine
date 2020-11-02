@@ -1,9 +1,12 @@
 #include <Enlivengine/Tools/ImGuiProfiler.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_PROFILE)
 
-#include <imgui/imgui.h>
-#include <Enlivengine/System/Hash.hpp>
+#include <dear-imgui/imgui.h>
+
+#include <Enlivengine/Utils/Hash.hpp>
+#include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Math/Color.hpp>
 
 namespace en
@@ -23,7 +26,7 @@ ImGuiToolTab ImGuiProfiler::GetTab() const
 
 const char* ImGuiProfiler::GetName() const
 {
-	return ICON_FA_CLOCK " Profiler";
+	return /*ICON_FA_CLOCK*/ " Profiler"; // TODO : Restore FontAwesome
 }
 
 void ImGuiProfiler::Display()
@@ -194,7 +197,7 @@ void ImGuiProfiler::DisplayFrame(const ProfilerFrame& frame) const
 				{
 					const U32 taskNameHash = Hash::SlowHash(task.name);
 					const Color color(taskNameHash);
-					const ImVec4 imColor = color.toImGuiColor();
+					const ImVec4 imColor = color.ToImGuiColor();
 
 					ImGui::PushStyleColor(ImGuiCol_Button, imColor);
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, imColor);
@@ -218,3 +221,4 @@ void ImGuiProfiler::DisplayFrame(const ProfilerFrame& frame) const
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI && ENLIVE_ENABLE_PROFILE
+#endif // ENLIVE_MODULE_TOOLS

@@ -1,8 +1,9 @@
 #include <Enlivengine/Tools/ImGuiDemoWindow.hpp>
 
+#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <imgui/imgui.h>
+#include <dear-imgui/imgui.h>
 
 namespace en
 {
@@ -20,7 +21,7 @@ ImGuiToolTab ImGuiDemoWindow::GetTab() const
 
 const char* ImGuiDemoWindow::GetName() const
 {
-	return ICON_FA_INFO_CIRCLE " ImGui Demo";
+	return /*ICON_FA_INFO_CIRCLE*/ " ImGui Demo"; // TODO : Restore FontAwesome
 }
 
 void ImGuiDemoWindow::Display()
@@ -41,3 +42,4 @@ ImGuiDemoWindow::ImGuiDemoWindow()
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_MODULE_TOOLS

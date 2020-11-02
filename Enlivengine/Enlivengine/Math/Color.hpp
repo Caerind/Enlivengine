@@ -1,131 +1,169 @@
 #pragma once
 
-#include <string>
+#include <Enlivengine/Config.hpp>
 
-#include <Enlivengine/System/PrimitiveTypes.hpp>
-#include <Enlivengine/System/Meta.hpp>
+#ifdef ENLIVE_MODULE_MATH
+
+#include <Enlivengine/Math/Math.hpp>
 
 #ifdef ENLIVE_ENABLE_IMGUI
-#include <imgui/imgui.h>
+#include <dear-imgui/imgui.h>
 #endif // ENLIVE_ENABLE_IMGUI
+
+#ifdef ENLIVE_MODULE_CORE
+#include <Box2D/Box2D.h>
+#endif // ENLIVE_MODULE_CORE
 
 namespace en
 {
 
 class Color
 {
-	public:
-		Color();
-		Color(U8 red, U8 green, U8 blue, U8 alpha = 255);
-		Color(U8 lightness);
-		Color(U32 color);
-		Color(const std::string& color);
+public:
+	constexpr Color() : r(255), g(255), b(255), a(255) {}
+	constexpr Color(U8 red, U8 green, U8 blue, U8 alpha = 255) : r(red), g(green), b(blue), a(alpha) {}
+	constexpr Color(U8 grey, U8 alpha = 255) : r(grey), g(grey), b(grey), a(alpha) {}
+	constexpr Color(U32 rgba) : Color() { FromRGBA(rgba); }
 
-		U8& operator[](U8 index);
-		const U8& operator[](U8 index) const;
+	constexpr U8& operator[](U8 index)
+	{
+		switch (index)
+		{
+		case 0: return r;
+		case 1: return g;
+		case 2: return b;
+		}
+		return a;
+	}
+	constexpr const U8& operator[](U8 index) const
+	{
+		switch (index)
+		{
+		case 0: return r;
+		case 1: return g;
+		case 2: return b;
+		}
+		return a;
+	}
 
-		bool isOpaque() const;
+	constexpr bool HasAlpha() const { return a != 255; }
+	constexpr Color WithAlpha(U8 alpha) const { return Color(r, g, b, alpha); }
 
-		Color withAlpha(U8 alpha) const;
-
-		std::string toString() const;
-		Color& fromString(const std::string& color);
-
-		U32 toInteger() const;
-		Color& fromInteger(U32 color);
+	constexpr U32 ToRGBA() const { return (r << 24) | (g << 16) | (b << 8) | a; }
+	constexpr Color& FromRGBA(U32 color)
+	{
+		r = static_cast<U8>((color & 0xff000000) >> 24);
+		g = static_cast<U8>((color & 0x00ff0000) >> 16);
+		b = static_cast<U8>((color & 0x0000ff00) >> 8);
+		a = static_cast<U8>((color & 0x000000ff));
+		return *this;
+	}
 
 #ifdef ENLIVE_ENABLE_IMGUI
-		ImVec4 toImGuiColor() const;
-		Color& fromImGuiColor(const ImVec4& color);
+	inline ImVec4 ToImGuiColor() const { const F32 factor = 1.0f / 255.0f; return ImVec4(factor * r, factor * g, factor * b, factor * a); }
+	inline Color& FromImGuiColor(const ImVec4& color)
+	{
+		const F32 factor = 255.0f;
+		r = static_cast<U8>(factor * color.x);
+		g = static_cast<U8>(factor * color.y);
+		b = static_cast<U8>(factor * color.z);
+		a = static_cast<U8>(factor * color.w);
+		return *this;
+	}
 #endif // ENLIVE_ENABLE_IMGUI
 
-		U8 r;
-		U8 g;
-		U8 b;
-		U8 a;
+#ifdef ENLIVE_MODULE_CORE
+	inline b2Color ToBox2DColor() const { const F32 factor = 1.0f / 255.0f; return b2Color(factor * r, factor * g, factor * b, factor * a); }
+	inline Color& FromBox2DColor(const b2Color& color)
+	{
+		const F32 factor = 255.0f;
+		r = static_cast<U8>(factor * color.r);
+		g = static_cast<U8>(factor * color.g);
+		b = static_cast<U8>(factor * color.b);
+		a = static_cast<U8>(factor * color.a);
+		return *this;
+	}
+#endif // ENLIVE_MODULE_CORE
 
-		// Basic color
-		static const Color Black;
-		static const Color White;
-		static const Color Red;
-		static const Color Green;
-		static const Color Blue;
-		static const Color Yellow;
-		static const Color Magenta;
-		static const Color Cyan;
-		static const Color Transparent;
+	constexpr bool operator==(const Color& other) const { return r == other.r && g == other.g && b == other.b && a == other.a; }
+	constexpr bool operator!=(const Color& other) const { return !operator==(other); }
 
-		// Standard
-		static const Color Brown;
-		static const Color Orange;
-		static const Color Pink;
-		static const Color BabyPink;
-		static const Color HotPink;
-		static const Color Salmon;
-		static const Color Violet;
-		static const Color Purple;
-		static const Color Peach;
-		static const Color Lime;
-		static const Color Mint;
-		static const Color Gray;
-
-		// Lights
-		static const Color LightBlack;
-		static const Color LightBlue;
-		static const Color LightRed;
-		static const Color LightMagenta;
-		static const Color LightGreen;
-		static const Color LightCyan;
-		static const Color LightYellow;
-		static const Color LightBrown;
-		static const Color LightOrange;
-		static const Color LightPink;
-		static const Color LightBabyPink;
-		static const Color LightHotPink;
-		static const Color LightSalmon;
-		static const Color LightViolet;
-		static const Color LightPurple;
-		static const Color LightPeach;
-		static const Color LightLime;
-		static const Color LightMint;
-		static const Color LightGray;
-
-		// Darks
-		static const Color DarkBlue;
-		static const Color DarkRed;
-		static const Color DarkMagenta;
-		static const Color DarkGreen;
-		static const Color DarkCyan;
-		static const Color DarkYellow;
-		static const Color DarkWhite;
-		static const Color DarkBrown;
-		static const Color DarkOrange;
-		static const Color DarkPink;
-		static const Color DarkBabyPink;
-		static const Color DarkHotPink;
-		static const Color DarkSalmon;
-		static const Color DarkViolet;
-		static const Color DarkPurple;
-		static const Color DarkPeach;
-		static const Color DarkLime;
-		static const Color DarkMint;
-		static const Color DarkGray;
+	U8 r;
+	U8 g;
+	U8 b;
+	U8 a;
 };
 
-bool operator==(const Color& left, const Color& right);
-bool operator!=(const Color& left, const Color& right);
-Color operator+(const Color& left, const Color& right);
-Color operator-(const Color& left, const Color& right);
-Color operator*(const Color& left, const Color& right);
-Color& operator+=(Color& left, const Color& right);
-Color& operator-=(Color& left, const Color& right);
-Color& operator*=(Color& left, const Color& right);
+namespace Colors
+{
+	// Basic colors
+	static constexpr Color Black{ 0, 0, 0 };
+	static constexpr Color White{ 255, 255, 255 };
+	static constexpr Color Red{ 255, 0, 0 };
+	static constexpr Color Green{ 0, 255, 0 };
+	static constexpr Color Blue{ 0, 0, 255 };
+	static constexpr Color Yellow{ 255, 255, 0 };
+	static constexpr Color Magenta{ 255, 0, 255 };
+	static constexpr Color Cyan{ 0, 255, 255 };
+	static constexpr Color Transparent{ 255, 255, 255, 0 };
+
+	// Standard colors
+	static constexpr Color Brown{ 128, 80, 32 };
+	static constexpr Color Orange{ 255, 128, 0 };
+	static constexpr Color Pink{ 255, 128, 192 };
+	static constexpr Color BabyPink{ 255, 192, 224 };
+	static constexpr Color HotPink{ 255, 0, 192 };
+	static constexpr Color Salmon{ 255, 128, 128 };
+	static constexpr Color Violet{ 128, 0, 255 };
+	static constexpr Color Purple{ 64, 0, 128 };
+	static constexpr Color Peach{ 255, 128, 96 };
+	static constexpr Color Lime{ 128, 255, 0 };
+	static constexpr Color Mint{ 64, 255, 192 };
+	static constexpr Color Gray{ 128, 128, 128 };
+
+	// Light colors
+	static constexpr Color LightBlack{ 64, 64, 64 };
+	static constexpr Color LightBlue{ 128, 128, 255 };
+	static constexpr Color LightRed{ 255, 128, 128 };
+	static constexpr Color LightMagenta{ 255, 128, 255 };
+	static constexpr Color LightGreen{ 128, 255, 128 };
+	static constexpr Color LightCyan{ 128, 255, 255 };
+	static constexpr Color LightYellow{ 255, 255, 128 };
+	static constexpr Color LightBrown{ 192, 128, 64 };
+	static constexpr Color LightOrange{ 255, 160, 64 };
+	static constexpr Color LightPink{ 255, 160, 224 };
+	static constexpr Color LightBabyPink{ 255, 208, 232 };
+	static constexpr Color LightHotPink{ 255, 96, 224 };
+	static constexpr Color LightSalmon{ 255, 160, 160 };
+	static constexpr Color LightViolet{ 160, 96, 255 };
+	static constexpr Color LightPurple{ 128, 64, 192 };
+	static constexpr Color LightPeach{ 255, 160, 128 };
+	static constexpr Color LightLime{ 192, 255, 128 };
+	static constexpr Color LightMint{ 128, 255, 224 };
+	static constexpr Color LightGray{ 192, 192, 192 };
+
+	// Dark colors
+	static constexpr Color DarkBlue{ 0, 0, 128 };
+	static constexpr Color DarkRed{ 128, 0, 0 };
+	static constexpr Color DarkMagenta{ 128, 0, 128 };
+	static constexpr Color DarkGreen{ 0, 128, 0 };
+	static constexpr Color DarkCyan{ 0, 128, 128 };
+	static constexpr Color DarkYellow{ 128, 128, 0 };
+	static constexpr Color DarkWhite{ 128, 128, 128 };
+	static constexpr Color DarkBrown{ 64, 32, 0 };
+	static constexpr Color DarkOrange{ 128, 64, 0 };
+	static constexpr Color DarkPink{ 128, 64, 96 };
+	static constexpr Color DarkBabyPink{ 160, 96, 128 };
+	static constexpr Color DarkHotPink{ 128, 0, 96 };
+	static constexpr Color DarkSalmon{ 128, 64, 64 };
+	static constexpr Color DarkViolet{ 64, 0, 128 };
+	static constexpr Color DarkPurple{ 32, 0, 64 };
+	static constexpr Color DarkPeach{ 128, 64, 48 };
+	static constexpr Color DarkLime{ 64, 128, 0 };
+	static constexpr Color DarkMint{ 32, 128, 96 };
+	static constexpr Color DarkGray{ 64, 64, 64 };
+} // namespace Colors
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::Color)
-	ENLIVE_META_CLASS_MEMBER("r", &en::Color::r),
-	ENLIVE_META_CLASS_MEMBER("g", &en::Color::g),
-	ENLIVE_META_CLASS_MEMBER("b", &en::Color::b),
-	ENLIVE_META_CLASS_MEMBER("a", &en::Color::a)
-ENLIVE_META_CLASS_END()
+#endif // ENLIVE_MODULE_MATH

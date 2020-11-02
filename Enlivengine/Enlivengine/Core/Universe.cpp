@@ -1,5 +1,7 @@
 #include <Enlivengine/Core/Universe.hpp>
 
+#ifdef ENLIVE_MODULE_CORE
+
 namespace en
 {
 
@@ -28,3 +30,5 @@ const World* Universe::GetCurrentWorld() const
 }
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_CORE

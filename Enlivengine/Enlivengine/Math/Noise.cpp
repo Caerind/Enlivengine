@@ -1,9 +1,11 @@
 #include <Enlivengine/Math/Noise.hpp>
 
-#include <Enlivengine/Math/Random.hpp>
-#include <Enlivengine/Math/Utilities.hpp>
+#ifdef ENLIVE_MODULE_MATH
 
-#include <Enlivengine/System/Assert.hpp>
+#include <Enlivengine/Math/Random.hpp>
+#include <Enlivengine/Math/Math.hpp>
+
+#include <Enlivengine/Utils/Assert.hpp>
 
 namespace en
 {
@@ -158,3 +160,5 @@ F32 Noise::Get(F32 x, F32 y, F32 z) const
 }
 
 } // namespace en
+
+#endif // ENLIVE_MODULE_MATH
