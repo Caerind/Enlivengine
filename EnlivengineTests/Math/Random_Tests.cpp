@@ -19,10 +19,10 @@ DOCTEST_TEST_CASE("Random")
 
 	for (en::I32 i = 0; i < times; i++)
 	{
-		en::I32 n1 = random1.get(min, max);
-		en::I32 n2 = random2.get(min, max);
-		en::I32 n3 = random3.get(min, max);
-		en::I32 n4 = en::Random::get<en::I32>(min, max);
+		en::I32 n1 = random1.Get(min, max);
+		en::I32 n2 = random2.Get(min, max);
+		en::I32 n3 = random3.Get(min, max);
+		en::I32 n4 = en::Random::Get<en::I32>(min, max);
 
 		DOCTEST_CHECK(n1 == n3);
 		DOCTEST_CHECK(n1 != n2);

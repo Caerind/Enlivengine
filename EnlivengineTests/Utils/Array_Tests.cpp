@@ -1,4 +1,4 @@
-#include <Enlivengine/System/Array.hpp>
+#include <Enlivengine/Utils/Array.hpp>
 
 #include <doctest/doctest.h>
 

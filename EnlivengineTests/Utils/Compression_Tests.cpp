@@ -1,4 +1,4 @@
-#include <Enlivengine/System/Compression.hpp>
+#include <Enlivengine/Utils/Compression.hpp>
 
 #include <doctest/doctest.h>
 

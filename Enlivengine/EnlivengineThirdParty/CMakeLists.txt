@@ -14,6 +14,10 @@ source_group("Box2D" FILES ${SRC_BOX2D})
 file(GLOB_RECURSE SRC_DEBUGBREAK "debug_break/*")
 source_group("debug_break" FILES ${SRC_DEBUGBREAK})
 
+# doctest
+file(GLOB_RECURSE SRC_DOCTEST "doctest/*")
+source_group("doctest" FILES ${SRC_DOCTEST})
+
 # Dyma
 file(GLOB_RECURSE SRC_DYMA "Dyma/*")
 source_group("Dyma" FILES ${SRC_DYMA})
@@ -49,6 +53,7 @@ source_group("pugixml" FILES ${SRC_PUGIXML})
 add_library(EnlivengineThirdParty STATIC
 	${SRC_BOX2D}
 	${SRC_DEBUGBREAK}
+	${SRC_DOCTEST}
 	${SRC_DYMA}
 	${SRC_ENTT}
 	${SRC_FASTNOISE}

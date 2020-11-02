@@ -249,3 +249,4 @@ ModelManifest.xml
 ./build
 EnlivengineDocs/html
 EnlivengineDocs/latex
+Enlivengine/EnlivengineThirdParty/bgfx/bgfx/examples/runtime/shaders

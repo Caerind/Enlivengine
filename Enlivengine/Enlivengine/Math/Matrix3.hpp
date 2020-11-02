@@ -165,15 +165,6 @@ public:
 	constexpr Matrix3<T>& operator*=(const T & s) { data[0] *= s; data[1] *= s; data[2] *= s; data[3] *= s; data[4] *= s; data[5] *= s; data[6] *= s; data[7] *= s; data[8] *= s; return *this; }
 	constexpr Matrix3<T>& operator/=(const T & s) { const T inv = T(1) / s; data[0] *= inv; data[1] *= inv; data[2] *= inv; data[3] *= inv; data[4] *= inv; data[5] *= inv; data[6] *= inv; data[7] *= inv; data[8] *= inv; return *this; }
 
-	constexpr Vector3<T> TransformDirection(const Vector3<T> & direction) const
-	{
-		Vector3<T> out;
-		out.x = GetColumn(0).DotProduct(direction);
-		out.y = GetColumn(1).DotProduct(direction);
-		out.z = GetColumn(2).DotProduct(direction);
-		return out;
-	}
-
 	constexpr bool operator==(const Matrix3<T> & m) const
 	{
 		return Math::Equals(data[0], m.data[0])
@@ -204,7 +195,7 @@ public:
 	{
 		const T det11 = data[4] * data[8] - data[5] * data[7];
 		const T det12 = data[3] * data[8] - data[5] * data[6];
-		const T det13 = data[4] * data[7] - data[4] * data[6];
+		const T det13 = data[3] * data[7] - data[4] * data[6];
 		return data[0] * det11 - data[1] * det12 + data[2] * det13;
 	}
 
@@ -291,6 +282,15 @@ public:
 		return *this;
 	}
 	constexpr Matrix3<T> Transposed() const { return Matrix3<T>(data[0], data[3], data[6], data[1], data[4], data[7], data[2], data[5], data[8]); }
+
+	constexpr Vector3<T> TransformDirection(const Vector3<T>& direction) const
+	{
+		Vector3<T> out;
+		out.x = GetColumn(0).DotProduct(direction);
+		out.y = GetColumn(1).DotProduct(direction);
+		out.z = GetColumn(2).DotProduct(direction);
+		return out;
+	}
 
 	static constexpr Matrix3<T> RotationX(const T & angle) { return RotationX(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }
 	static constexpr Matrix3<T> RotationY(const T & angle) { return RotationY(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }
