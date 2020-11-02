@@ -164,7 +164,7 @@ bool LogManager::InitializeClientChannels()
 		mClientChannelNames.reserve(enumValues.size());
 		for (const auto& enumValue : enumValues)
 		{
-			mClientChannelNames.push_back(Enum::GetName(enumValue));
+			mClientChannelNames.push_back(Enum::GetValueName(enumValue));
 		}
 		return true;
 	}

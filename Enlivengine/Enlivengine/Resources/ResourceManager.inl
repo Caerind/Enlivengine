@@ -256,7 +256,7 @@ bool ResourceManager::InitializeClientResourceTypes()
 		mClientResourceTypeNames.reserve(enumValues.size());
 		for (const auto& enumValue : enumValues)
 		{
-			mClientResourceTypeNames.push_back(Enum::GetName(enumValue));
+			mClientResourceTypeNames.push_back(Enum::GetValueName(enumValue));
 		}
 		return true;
 	}
