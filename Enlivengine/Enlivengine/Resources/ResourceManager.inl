@@ -249,14 +249,14 @@ U32 ResourceManager::Count() const
 template <typename EnumClient>
 bool ResourceManager::InitializeClientResourceTypes()
 {
-	const auto enumValues = Meta::GetEnumValues<EnumClient>();
+	const auto enumValues = Enum::GetValues<EnumClient>();
 	mClientResourceTypeNames.clear();
 	if (static_cast<U32>(enumValues[0]) == static_cast<U32>(ResourceType::Max))
 	{
 		mClientResourceTypeNames.reserve(enumValues.size());
 		for (const auto& enumValue : enumValues)
 		{
-			mClientResourceTypeNames.push_back(Meta::GetEnumName(enumValue));
+			mClientResourceTypeNames.push_back(Enum::GetName(enumValue));
 		}
 		return true;
 	}

@@ -1,26 +1,26 @@
 #include <iostream>
 
-#include <SFML/Graphics.hpp>
-
 #include <Box2D/Box2D.h>
 
-#include <Enlivengine/System/Preprocessor.hpp>
-#include <Enlivengine/System/PlatformDetection.hpp>
-#include <Enlivengine/System/CompilerDetection.hpp>
-#include <Enlivengine/System/CompilerTraits.hpp>
-#include <Enlivengine/System/ByteUnits.hpp>
-#include <Enlivengine/System/PrimitiveTypes.hpp>
-#include <Enlivengine/System/Endianness.hpp>
-#include <Enlivengine/System/Debugger.hpp>
-#include <Enlivengine/System/Log.hpp>
-#include <Enlivengine/System/Time.hpp>
-#include <Enlivengine/System/Hash.hpp>
-#include <Enlivengine/System/String.hpp>
-#include <Enlivengine/System/TypeInfo.hpp>
-#include <Enlivengine/System/CallOnExit.hpp>
-#include <Enlivengine/System/Meta.hpp>
-#include <Enlivengine/System/MetaEnum.hpp>
-#include <Enlivengine/System/Assert.hpp>
+#include <Enlivengine/Platform/Preprocessor.hpp>
+#include <Enlivengine/Platform/PlatformDetection.hpp>
+#include <Enlivengine/Platform/CompilerDetection.hpp>
+#include <Enlivengine/Platform/CompilerTraits.hpp>
+#include <Enlivengine/Platform/PrimitiveTypes.hpp>
+#include <Enlivengine/Platform/Endianness.hpp>
+#include <Enlivengine/Platform/Debugger.hpp>
+#include <Enlivengine/Platform/Time.hpp>
+
+#include <Enlivengine/Utils/ByteUnits.hpp>
+#include <Enlivengine/Utils/Log.hpp>
+#include <Enlivengine/Utils/Hash.hpp>
+#include <Enlivengine/Utils/String.hpp>
+#include <Enlivengine/Utils/CallOnExit.hpp>
+#include <Enlivengine/Utils/Enums.hpp>
+#include <Enlivengine/Utils/Assert.hpp>
+
+#include <Enlivengine/Meta/TypeInfo.hpp>
+#include <Enlivengine/Meta/Meta.hpp>
 
 enum class SomeEnum
 {
@@ -43,26 +43,26 @@ void MetaEnumTest()
 	std::cout << std::endl;
 
 	// SomeEnum
-	std::cout << en::Meta::GetEnumTypeName<SomeEnum>() << std::endl;
-	std::cout << en::Meta::GetEnumName(SomeEnum::A) << std::endl;
-	for (const auto& element : en::Meta::GetEnumNames<SomeEnum>())
+	std::cout << en::Enum::GetTypeName<SomeEnum>() << std::endl;
+	std::cout << en::Enum::GetValueName(SomeEnum::A) << std::endl;
+	for (const auto& element : en::Enum::GetValueNames<SomeEnum>())
 	{
 		std::cout << element << std::endl;
 	}
-	std::cout << en::Meta::GetEnumName(en::Meta::EnumCast<SomeEnum>(1)) << std::endl;
-	std::cout << en::Meta::GetEnumCount<SomeEnum>() << std::endl;
+	std::cout << en::Enum::GetValueName(en::Enum::Cast<SomeEnum>(1)) << std::endl;
+	std::cout << en::Enum::GetCount<SomeEnum>() << std::endl;
 
 	std::cout << std::endl;
 
 	// FlagEnum
-	std::cout << en::Meta::GetEnumTypeName<FlagEnum>() << std::endl;
-	std::cout << en::Meta::GetEnumName(FlagEnum::A) << std::endl;
-	for (const auto& element : en::Meta::GetEnumNames<FlagEnum>())
+	std::cout << en::Enum::GetTypeName<FlagEnum>() << std::endl;
+	std::cout << en::Enum::GetValueName(FlagEnum::A) << std::endl;
+	for (const auto& element : en::Enum::GetValueNames<FlagEnum>())
 	{
 		std::cout << element << std::endl;
 	}
-	std::cout << en::Meta::GetEnumName(en::Meta::EnumCast<FlagEnum>(1)) << std::endl;
-	std::cout << en::Meta::GetEnumCount<FlagEnum>() << std::endl;
+	std::cout << en::Enum::GetValueName(en::Enum::Cast<FlagEnum>(1)) << std::endl;
+	std::cout << en::Enum::GetCount<FlagEnum>() << std::endl;
 
 	std::cout << std::endl;
 	std::cout << "-- -- --" << std::endl;

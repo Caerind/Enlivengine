@@ -157,14 +157,14 @@ void LogManager::Write(LogType type, U32 channelID, Args&& ...args)
 template <typename EnumClient>
 bool LogManager::InitializeClientChannels()
 {
-	const auto enumValues = Meta::GetEnumValues<EnumClient>();
+	const auto enumValues = Enum::GetValues<EnumClient>();
 	mClientChannelNames.clear();
 	if (static_cast<U32>(enumValues[0]) == static_cast<U32>(LogChannel::Max))
 	{
 		mClientChannelNames.reserve(enumValues.size());
 		for (const auto& enumValue : enumValues)
 		{
-			mClientChannelNames.push_back(Meta::GetEnumName(enumValue));
+			mClientChannelNames.push_back(Enum::GetName(enumValue));
 		}
 		return true;
 	}

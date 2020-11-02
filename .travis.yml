@@ -16,6 +16,7 @@ matrix:
           packages:
             - gcc-9
             - g++-9
+            - libgl1-mesa-dev
             - cmake
     script:
         - export CXX="g++-9" CC="gcc-9"
@@ -34,6 +35,7 @@ matrix:
 #          packages:
 #            - clang
 #            - cmake
+#            - libgl1-mesa-dev
 #    script:
 #        - mkdir build && cd build
 #        - cmake ..
@@ -47,6 +49,7 @@ matrix:
           packages:
             - clang
             - cmake
+            - libgl1-mesa-dev
     script:
         - mkdir build && cd build
         - cmake ..
