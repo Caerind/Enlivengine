@@ -466,22 +466,11 @@ public:
 	}
 	*/
 
-	constexpr Vector3<T> GetTranslation() const { return GetTranslation3(); }
-	constexpr Vector2<T> GetTranslation2() const { return Vector2<T>(data[12], data[13]); }
-	constexpr Vector3<T> GetTranslation3() const { return Vector3<T>(data[12], data[13], data[14]); }
-	constexpr Vector4<T> GetTranslation4() const { return Vector4<T>(data[12], data[13], data[14], T(1)); }
-	constexpr Matrix4<T>& SetTranslation(const T& tx, const T& ty) { data[12] = tx; data[13] = ty; return *this; }
+	constexpr Vector3<T> GetTranslation() const { return Vector3<T>(data[12], data[13], data[14]); }
 	constexpr Matrix4<T>& SetTranslation(const T& tx, const T& ty, const T& tz) { data[12] = tx; data[13] = ty; data[14] = tz; return *this; }
-	constexpr Matrix4<T>& SetTranslation(const T& tx, const T& ty, const T& tz, const T& tw) { data[12] = tx; data[13] = ty; data[14] = tz; data[15] = tw; return *this; }
-	constexpr Matrix4<T>& SetTranslation(const Vector2<T>& translation) { data[12] = translation.x; data[13] = translation.y; data[14] = T(0); data[15] = T(1); return *this; } // TODO : z = 0 or unchanged ? 
 	constexpr Matrix4<T>& SetTranslation(const Vector3<T>& translation) { data[12] = translation.x; data[13] = translation.y; data[14] = translation.z; data[15] = T(1); return *this; }
-	constexpr Matrix4<T>& SetTranslation(const Vector4<T>& translation) { data[12] = translation.x; data[13] = translation.y; data[14] = translation.z; data[15] = translation.w; return *this; }
-	constexpr Matrix4<T>& ApplyTranslation(const T& tx, const T& ty) { data[12] += tx; data[13] += ty; return *this; }
 	constexpr Matrix4<T>& ApplyTranslation(const T& tx, const T& ty, const T& tz) { data[12] += tx; data[13] += ty; data[14] += tz; return *this; }
-	constexpr Matrix4<T>& ApplyTranslation(const T& tx, const T& ty, const T& tz, const T& tw) { data[12] += tx; data[13] += ty; data[14] += tz; data[15] += tw; return *this; }
-	constexpr Matrix4<T>& ApplyTranslation(const Vector2<T>& translation) { data[12] += translation.x; data[13] += translation.y; return *this; }
 	constexpr Matrix4<T>& ApplyTranslation(const Vector3<T>& translation) { data[12] += translation.x; data[13] += translation.y; data[14] += translation.z; return *this; }
-	constexpr Matrix4<T>& ApplyTranslation(const Vector4<T>& translation) { data[12] += translation.x; data[13] += translation.y; data[14] += translation.z; data[15] += translation.w; return *this; }
 
 	inline bool IsScaled() const { return GetScale() != Vector3<T>::Unit(); }
 	inline bool HasUniformScale() const { const Vector3<T> scale = GetScale(); return scale.x == scale.y && scale.x == scale.z; }

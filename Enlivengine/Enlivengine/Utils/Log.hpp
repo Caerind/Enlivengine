@@ -61,7 +61,7 @@ struct LogMessage
 {
 	LogMessage();
 
-	std::string message; // TODO : Might this be transformed to string_view ?
+	std::string message;
 	U32 channel; 
 	LogType type;
 

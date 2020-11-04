@@ -60,18 +60,6 @@ const char* Entity::GetName() const
 	}
 }
 
-Vector2f Entity::GetPosition2D() const
-{
-	if (!IsValid() || !Has<TransformComponent>())
-	{
-		return Vector2f();
-	}
-	else
-	{
-		return Get<TransformComponent>().transform.GetPosition2D();
-	}
-}
-
 Vector3f Entity::GetPosition() const
 {
 	if (!IsValid() || !Has<TransformComponent>())

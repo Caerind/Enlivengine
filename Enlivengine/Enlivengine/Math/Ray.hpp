@@ -5,26 +5,43 @@
 #ifdef ENLIVE_MODULE_MATH
 
 #include <Enlivengine/Math/Vector3.hpp>
+#include <Enlivengine/Math/Matrix4.hpp>
 
 namespace en
 {
 
+class AABB;
+class Frustum;
+class Plane;
+class Ray;
+class Sphere;
+
 class Ray
 {
 public:
-	constexpr Ray() : mOrigin(), mDirection(Vector3f::UnitX()) {}
-	constexpr Ray(const Vector3f& origin, const Vector3f& direction) : mOrigin(origin), mDirection(direction) {}
+	Ray();
+	Ray(const Vector3f& origin, const Vector3f& direction);
 
-	constexpr const Vector3f& GetOrigin() const { return mOrigin; }
-	constexpr void SetOrigin(const Vector3f& origin) { mOrigin = origin; }
+	const Vector3f& GetOrigin() const;
+	void SetOrigin(const Vector3f& origin);
 
-	constexpr const Vector3f& GetDirection() const { return mDirection; }
-	constexpr void SetDirection(const Vector3f& direction) { mDirection = direction; }
+	const Vector3f& GetDirection() const;
+	void SetDirection(const Vector3f& direction);
 
-	constexpr Vector3f GetPoint(F32 t) const { return mOrigin + mDirection * t; }
+	Vector3f GetPoint(F32 t) const;
 
-	constexpr bool operator==(const Ray& other) const { return mOrigin == other.mOrigin && mDirection == other.mDirection; }
-	constexpr bool operator!=(const Ray& other) const { return !operator==(other); }
+	bool operator==(const Ray& other) const;
+	bool operator!=(const Ray& other) const;
+
+	bool Contains(const Vector3f& point) const;
+
+	bool Intersects(const AABB& aabb, F32* distance = nullptr) const;
+	bool Intersects(const Frustum& frustum, F32* distance = nullptr) const;
+	bool Intersects(const Plane& plane, F32* distance = nullptr) const;
+	bool Intersects(const Ray& ray, F32* distance = nullptr, F32* distanceOther = nullptr) const;
+	bool Intersects(const Sphere& sphere, F32* distance = nullptr) const;
+
+	Ray Transform(const Matrix4f& transform) const;
 
 private:
 	Vector3f mOrigin;

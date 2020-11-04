@@ -8,8 +8,6 @@
 #include <Enlivengine/Math/Vector3.hpp>
 #include <Enlivengine/Math/Matrix4.hpp>
 
-// TODO : 3D
-
 namespace en
 {
 
@@ -19,49 +17,29 @@ public:
 	Transform();
 
 	// Position
-	Vector2f GetPosition2D() const;
-	const Vector3f& GetPosition() const;
-	void SetPosition(const Vector2f& position);
+	Vector3f GetPosition() const;
 	void SetPosition(const Vector3f& position);
-	void SetPosition(F32 x, F32 y);
-	void SetPosition(F32 x, F32 y, F32 z);
-	void Move(const Vector2f& movement);
 	void Move(const Vector3f& movement);
-	void Move(F32 x, F32 y, F32 z = 0.0f);
 
 	// Rotation
-	F32 GetRotation2D() const;
-	void SetRotation2D(F32 rotation);
-	void Rotate2D(F32 rotation);
+	Matrix3f GetRotation() const;
+	void SetRotation(const Matrix3f& rotation);
+	void Rotate(const Matrix3f& rotation);
 
 	// Scale
-	bool HasUniformScale() const;
-	F32 GetUniformScale() const;
-	Vector2f GetScale2D() const;
-	const Vector3f& GetScale() const;
-	void SetScale(F32 uniformScale);
-	void SetScale(const Vector2f& scale);
+	Vector3f GetScale() const;
 	void SetScale(const Vector3f& scale);
-	void SetScale(F32 x, F32 y);
-	void SetScale(F32 x, F32 y, F32 z);
-	void Scale(F32 uniformScaleFactor);
-	void Scale(const Vector2f& scaleFactor);
-	void Scale(const Vector3f& scaleFactor);
-	void Scale(F32 x, F32 y, F32 z = 1.0f);
+	void SetUniformScale(F32 uniformScale);
+	void Scale(const Vector3f& scale);
+	void Scale(F32 uniformScale);
 
 	// Matrix
 	Matrix4f& GetMatrix();
 	const Matrix4f& GetMatrix() const;
 
 private:
-	mutable Matrix4f mMatrix;
-	Vector3f mPosition;
-	Vector3f mScale;
-	F32 mRotation2D;
-	mutable bool mDirty;
+	Matrix4f mMatrix;
 };
-
-static_assert(sizeof(Transform) <= 128);
 
 } // namespace en
 

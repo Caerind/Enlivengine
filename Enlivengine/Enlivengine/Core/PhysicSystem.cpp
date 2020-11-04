@@ -51,8 +51,9 @@ bool PhysicSystem::Initialize(const Entity& entity, PhysicComponent& component)
 	if (entity.Has<TransformComponent>())
 	{
 		const Transform& transform = entity.Get<TransformComponent>().transform;
-		bodyDef.position.Set(transform.GetPosition2D().x, transform.GetPosition2D().y);
-		bodyDef.angle = Math::DegToRad(transform.GetRotation2D());
+		bodyDef.position.Set(transform.GetPosition().x, transform.GetPosition().y);
+		// TODO : Fix this
+		//bodyDef.angle = Math::DegToRad(transform.GetRotation2D());
 	}
 	else
 	{

@@ -425,7 +425,7 @@ ENLIVE_META_CLASS_END()
 //////////////////////////////////////////////////////////////////
 ENLIVE_META_CLASS_BEGIN(en::Transform)
 	ENLIVE_META_CLASS_MEMBER("position", &en::Transform::GetPosition, &en::Transform::SetPosition),
-	ENLIVE_META_CLASS_MEMBER("rotation", &en::Transform::GetRotation2D, &en::Transform::SetRotation2D),
+	ENLIVE_META_CLASS_MEMBER("rotation", &en::Transform::GetRotation, &en::Transform::SetRotation),
 	ENLIVE_META_CLASS_MEMBER("scale", &en::Transform::GetScale, &en::Transform::SetScale)
 ENLIVE_META_CLASS_END()
 

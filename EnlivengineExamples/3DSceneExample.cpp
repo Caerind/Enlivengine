@@ -134,13 +134,13 @@ int main(int argc, char** argv)
 			{
 				Entity a1 = world.GetEntityManager().CreateEntity();
 				a1.Add<NameComponent>().name = "A1";
-				a1.Add<TransformComponent>().transform.SetPosition(0.0f, 1.0f, 0.0f);
+				a1.Add<TransformComponent>().transform.SetPosition(Vector3f(0.0f, 1.0f, 0.0f));
 				a1.Add<RenderableComponent>();
 				a1.Add<SpriteComponent>().sprite.SetTexture(textureA);
 
 				Entity a2 = world.GetEntityManager().CreateEntity();
 				a2.Add<NameComponent>().name = "A2";
-				a2.Add<TransformComponent>().transform.SetPosition(1.0f, 2.0f, 0.0f);
+				a2.Add<TransformComponent>().transform.SetPosition(Vector3f(1.0f, 2.0f, 0.0f));
 				a2.Add<RenderableComponent>();
 				a2.Add<SpriteComponent>().sprite.SetTexture(textureA);
 			}

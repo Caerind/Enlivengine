@@ -4,46 +4,39 @@
 
 #ifdef ENLIVE_MODULE_MATH
 
-#include <Enlivengine/Math/Math.hpp>
+#include <Enlivengine/Math/Vector3.hpp>
+#include <Enlivengine/Math/Vector4.hpp>
 
-// TODO : constexpr
-
-/*
 namespace en
 {
-
-template <typename T> class Matrix3;
-template <typename T> class Matrix4;
-template <typename T> class Vector3;
-template <typename T> class Vector4;
 
 template <typename T>
 class Quaternion
 {
 public:
-	inline Quaternion();
-	inline Quaternion(const Quaternion<T>& q);
+	constexpr Quaternion() : v(), s(T(0)) {}
+	constexpr Quaternion(const Quaternion<T>& q) : v(q.v), s(q.s) {}
 	template <typename U>
-	explicit inline Quaternion(const Quaternion<U>& q);
-	explicit inline Quaternion(const T* a);
-	explicit inline Quaternion(const Vector4<T>& v);
-	inline Quaternion(const T& x, const T& y, const T& z, const T& w);
-	inline Quaternion(const Vector3<T>& v, const T& s);
-	inline Quaternion(const Vector3<T>& eulerAngles);
-	inline Quaternion(const T& angle, const Vector3<T>& axis);
-	inline Quaternion(const Matrix3<T>& matrix);
-	~Quaternion() = default;
+	constexpr Quaternion(const Quaternion<U>& q) : v(q.v), s(static_cast<T>(q.s)) {}
+	constexpr Quaternion(const T* a) : v(a), s(a[3]) {}
+	constexpr Quaternion(const Vector4<T>& v) : v(v.x, v.y, v.z), q(v.w) {}
+	constexpr Quaternion(const T& x, const T& y, const T& z, const T& w) : v(x, y, z, w), s(w) {}
+	constexpr Quaternion(const Vector3<T>& v, const T& s) : v(v), s(s) {}
+	constexpr Quaternion(const Vector3<T>& eulerAngles) { Set(eulerAngles); }
+	constexpr Quaternion(const T& angle, const Vector3<T>& axis) { Set(angle, axis); }
+	constexpr Quaternion(const Matrix3<T>& matrix) { Set(matrix); }
 
-	inline Quaternion<T>& set(const Quaternion<T>& q);
+	constexpr Quaternion<T>& Set(const Quaternion<T>& q) { v = q.v; s = q.s; return *this; }
 	template <typename U>
-	inline Quaternion<T>& set(const Quaternion<U>& q);
-	inline Quaternion<T>& set(const T* a);
-	inline Quaternion<T>& set(const Vector4<T>& v);
-	inline Quaternion<T>& set(const T& x, const T& y, const T& z, const T& w);
-	inline Quaternion<T>& set(const Vector3<T>& v, const T& s);
-	inline Quaternion<T>& set(const Vector3<T>& eulerAngles);
-	inline Quaternion<T>& set(const T& angle, const Vector3<T>& axis);
-	inline Quaternion<T>& set(const Matrix3<T>& matrix);
+	constexpr Quaternion<T>& Set(const Quaternion<U>& q) { v.Set(q.v); s = static_cast<T>(q.s); return *this; }
+	constexpr Quaternion<T>& Set(const T* a) { v.Set(a); q = a[3]; return *this; }
+	constexpr Quaternion<T>& Set(const Vector4<T>& v) {
+		this->v = v;
+	constexpr Quaternion<T>& Set(const T& x, const T& y, const T& z, const T& w);
+	constexpr Quaternion<T>& Set(const Vector3<T>& v, const T& s);
+	constexpr Quaternion<T>& Set(const Vector3<T>& eulerAngles);
+	constexpr Quaternion<T>& Set(const T& angle, const Vector3<T>& axis);
+	constexpr Quaternion<T>& Set(const Matrix3<T>& matrix);
 
 	inline T& operator()(U32 i);
 	inline const T& operator()(U32 i) const;
@@ -106,121 +99,6 @@ inline Quaternion<T> operator*(const T& s, const Quaternion<T>& quaternion);
 
 } // namespace en
 
-#include <Enlivengine/Math/Matrix3.hpp>
-#include <Enlivengine/Math/Matrix4.hpp>
-#include <Enlivengine/Math/Vector3.hpp>
-#include <Enlivengine/Math/Vector4.hpp>
-
-namespace en
-{
-
-template<typename T>
-inline Quaternion<T>::Quaternion()
-	: v()
-	, s(T(0))
-{
-}
-
-template<typename T>
-inline Quaternion<T>::Quaternion(const Quaternion<T>& q)
-	: v(q.v)
-	, s(q.s)
-{
-}
-
-template<typename T>
-inline Quaternion<T>::Quaternion(const T* a)
-	: v(a)
-	, s(a[3])
-{
-}
-
-template<typename T>
-inline Quaternion<T>::Quaternion(const Vector4<T>& v)
-	: v(v.x, v.y, v.z)
-	, s(v.w)
-{
-}
-
-template<typename T>
-inline Quaternion<T>::Quaternion(const T& x, const T& y, const T& z, const T& w)
-	: v(x, y, z)
-	, s(w)
-{
-}
-
-template<typename T>
-inline Quaternion<T>::Quaternion(const Vector3<T>& v, const T& s)
-	: v(v)
-	, s(s)
-{
-}
-
-template<typename T>
-inline Quaternion<T>::Quaternion(const Vector3<T>& eulerAngles)
-{
-	Vector3<T> halfAngles(T(0.5) * eulerAngles);
-	const T sx = Math::Sin(halfAngles.x);
-	const T cx = Math::Cos(halfAngles.x);
-	const T sy = Math::Sin(halfAngles.y);
-	const T cy = Math::Cos(halfAngles.y);
-	const T sz = Math::Sin(halfAngles.z);
-	const T cz = Math::Cos(halfAngles.z);
-	v.x = sx * cy * cz - cx * sy * sz;
-	v.y = cx * sy * cz + sx * cy * sz;
-	v.z = cx * cy * sz - sx * sy * cz;
-	s = cx * cy * cz + sx * sy * sz;
-}
-
-template<typename T>
-inline Quaternion<T>::Quaternion(const T& angle, const Vector3<T>& axis)
-{
-	const T halfAngle = angle * T(0.5);
-	v.set(axis.normalized() * Math::Sin(halfAngle));
-	s = Math::Cos(halfAngle);
-}
-
-template<typename T>
-inline Quaternion<T>::Quaternion(const Matrix3<T>& matrix)
-{
-	const T trace = matrix.getTrace();
-	if (trace > 0)
-	{
-		const T t = Math::Sqrt(trace + 1) * 2;
-		const T overT = T(1) / t;
-		v.x = (matrix[5] - matrix[7]) * overT;
-		v.y = (matrix[6] - matrix[2]) * overT;
-		v.z = (matrix[1] - matrix[3]) * overT;
-		s = t * T(0.25);
-	}
-	else if (matrix[0] > matrix[4] && matrix[0] > matrix[8])
-	{
-		const T t = Math::Sqrt(matrix[0] - matrix[4] - matrix[8] + 1) * 2;
-		const T overT = 1 / t;
-		v.x = t * T(0.25);
-		v.y = (matrix[3] + matrix[1]) * overT;
-		v.z = (matrix[6] + matrix[2]) * overT;
-		s = (matrix[5] - matrix[7]) * overT;
-	}
-	else if (matrix[4] > matrix[8])
-	{
-		const T t = Math::Sqrt(matrix[4] - matrix[0] - matrix[8] + 1) * 2;
-		const T overT = 1 / t;
-		v.x = (matrix[3] + matrix[1]) * overT;
-		v.y = t * T(0.25);
-		v.z = (matrix[5] + matrix[7]) * overT;
-		s = (matrix[6] - matrix[2]) * overT;
-	}
-	else
-	{
-		const T t = Math::Sqrt(matrix[8] - matrix[0] - matrix[4] + 1) * 2;
-		const T overT = 1 / t;
-		v.x = (matrix[6] + matrix[2]) * overT;
-		v.y = (matrix[5] + matrix[7]) * overT;
-		v.z = t * T(0.25);
-		s = (matrix[1] - matrix[3]) * overT;
-	}
-}
 
 template<typename T>
 inline Quaternion<T>& Quaternion<T>::set(const Quaternion<T>& q)

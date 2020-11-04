@@ -5,50 +5,47 @@
 #ifdef ENLIVE_MODULE_MATH
 
 #include <Enlivengine/Math/Vector3.hpp>
+#include <Enlivengine/Math/Matrix4.hpp>
 
 namespace en 
 {
 
+class AABB;
+class Frustum;
+class Plane;
+class Ray;
+class Sphere;
+
 class Sphere
 {
 public:
-	constexpr Sphere() : mCenter(), mRadius(1.0f) {}
-	constexpr Sphere(const Vector3f& center, F32 radius = 1.0f) : mCenter(center), mRadius(radius) {}
+	Sphere();
+	Sphere(const Vector3f& center, F32 radius = 1.0f);
 
-	constexpr const Vector3f& GetCenter() const { return mCenter; }
-	constexpr void SetCenter(const Vector3f& center) { mCenter = center; }
+	const Vector3f& GetCenter() const;
+	void SetCenter(const Vector3f& center);
 
-	constexpr F32 GetRadius() const { return mRadius; }
-	constexpr void SetRadius(F32 radius) { mRadius = radius; }
+	F32 GetRadius() const;
+	void SetRadius(F32 radius);
 
-	constexpr bool operator==(const Sphere& other) const { return mRadius == other.mRadius && mCenter == other.mCenter; }
-	constexpr bool operator!=(const Sphere& other) const { return !operator==(other); }
+	bool operator==(const Sphere& other) const;
+	bool operator!=(const Sphere& other) const;
 
-	inline F32 GetDistance(const Vector3f& point) const
-	{
-		return (mCenter - point).GetLength() - mRadius;
-	}
+	F32 GetDistance(const Vector3f& point) const;
 
-	constexpr bool Contains(const Vector3f& point) const
-	{
-		return (mCenter - point).GetSquaredLength() <= mRadius * mRadius;
-	}
+	bool Contains(const Vector3f& point) const;
 
-	constexpr bool Contains(const Sphere& sphere) const
-	{
-		if (mRadius < sphere.mRadius || !sphere.Contains(mCenter))
-		{
-			return false;
-		}
-		const Vector3f d = mCenter - sphere.mCenter;
-		return (sphere.mRadius - d.GetLength() - mRadius > 0.0f);
-	}
+	bool Contains(const AABB& aabb) const;
+	bool Contains(const Frustum& frustum) const;
+	bool Contains(const Sphere& sphere) const;
 
-	constexpr bool Intersects(const Sphere& sphere) const
-	{
-		const F32 rr = (mRadius + sphere.mRadius);
-		return (mCenter - sphere.mCenter).GetSquaredLength() <= rr * rr;
-	}
+	bool Intersects(const AABB& aabb) const;
+	bool Intersects(const Frustum& frustum) const;
+	bool Intersects(const Plane& plane) const;
+	bool Intersects(const Ray& ray) const;
+	bool Intersects(const Sphere& sphere) const;
+
+	Sphere Transform(const Matrix4f& transform) const;
 
 private:
 	Vector3f mCenter;
