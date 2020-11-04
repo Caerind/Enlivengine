@@ -126,10 +126,7 @@ bool Controller::IsValid(U32 controllerId)
 {
 	if (Joystick* joystick = GetJoystickFromControllerID(controllerId))
 	{
-		if (SDL_Joystick* joy = joystick->joystick)
-		{
-			return true;
-		}
+		return joystick->joystick != nullptr;
 	}
 	return false;
 }
@@ -200,7 +197,6 @@ bool Controller::HasAxisMoved(U32 controllerId, U32 axisIndex)
 	{
 		if (axisIndex < static_cast<U32>(joystick->axes.size()))
 		{
-			const I16 threshold = static_cast<I16>(GetInstance().mThreshold);
 			return joystick->axes[axisIndex].moved;
 		}
 	}

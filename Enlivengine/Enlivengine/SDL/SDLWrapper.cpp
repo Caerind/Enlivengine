@@ -1,6 +1,6 @@
 #include <Enlivengine/SDL/SDLWrapper.hpp>
 
-#ifdef ENLIVE_MODULE_WINDOW
+#ifdef ENLIVE_MODULE_SDL
 
 #include <Enlivengine/Utils/Assert.hpp>
 
@@ -92,4 +92,4 @@ SDLWrapper::~SDLWrapper()
 
 } // namespace en
 
-#endif // ENLIVE_MODULE_WINDOW
+#endif // ENLIVE_MODULE_SDL

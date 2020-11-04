@@ -2,7 +2,7 @@
 
 #include <Enlivengine/Config.hpp>
 
-#ifdef ENLIVE_MODULE_WINDOW
+#ifdef ENLIVE_MODULE_SDL
 
 #include <SDL.h>
 
@@ -38,4 +38,4 @@ private:
 
 } // namespace en
 
-#endif // ENLIVE_MODULE_WINDOW
+#endif // ENLIVE_MODULE_SDL
