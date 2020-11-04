@@ -167,19 +167,7 @@ int main(int argc, char** argv)
 			//camera.InitializeOrthographic(-10.0f, 10.0f, 10.0f, -10.0f, 0.01f, 100.0f);
 			camera.InitializeView(Vector3f(0.0f, 1.0f, 5.0f), Vector3f(0.0f, 0.0f, -1.0f));
 
-			// TODO : Fix me
 			Frustum frustum = camera.CreateFrustum();
-			std::vector<Vector3f> pointsToTest;
-			pointsToTest.push_back(Vector3f::Zero());
-			pointsToTest.push_back(Vector3f::UnitX());
-			pointsToTest.push_back(Vector3f::UnitY());
-			pointsToTest.push_back(Vector3f::UnitZ());
-			pointsToTest.push_back(Vector3f(10, 0, 0));
-			pointsToTest.push_back(Vector3f(-10, 0, 0));
-			pointsToTest.push_back(Vector3f(0, 10, 0));
-			pointsToTest.push_back(Vector3f(0, -10, 0));
-			pointsToTest.push_back(Vector3f(0, 0, 10));
-			pointsToTest.push_back(Vector3f(0, 0, -10));
 
 			DebugDraw debugDraw;
 
@@ -315,14 +303,9 @@ int main(int argc, char** argv)
 
 				debugDraw.DrawCross(Vector3f(-1.0f));
 				debugDraw.DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
+				debugDraw.DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
 				debugDraw.DrawFrustum(frustum, Colors::DarkBlue);
-				for (const auto& point : pointsToTest)
-				{
-					debugDraw.DrawPoint(point, (frustum.Contains(point)) ? Colors::Green : Colors::Red);
-				}
-				debugDraw.DrawXZGrid(-10, 10, 0, 1, Colors::White);
-
-
+				debugDraw.DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
 
 				// Render
 				{

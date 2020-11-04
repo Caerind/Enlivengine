@@ -21,6 +21,7 @@ class Sphere
 public:
 	Sphere();
 	Sphere(const Vector3f& center, F32 radius = 1.0f);
+	Sphere(F32 radius, const Vector3f& center = Vector3f::Zero());
 
 	const Vector3f& GetCenter() const;
 	void SetCenter(const Vector3f& center);
@@ -32,9 +33,9 @@ public:
 	bool operator!=(const Sphere& other) const;
 
 	F32 GetDistance(const Vector3f& point) const;
+	F32 GetVolume() const;
 
 	bool Contains(const Vector3f& point) const;
-
 	bool Contains(const AABB& aabb) const;
 	bool Contains(const Frustum& frustum) const;
 	bool Contains(const Sphere& sphere) const;
@@ -44,6 +45,8 @@ public:
 	bool Intersects(const Plane& plane) const;
 	bool Intersects(const Ray& ray) const;
 	bool Intersects(const Sphere& sphere) const;
+
+	void Merge(const Vector3f& point);
 
 	Sphere Transform(const Matrix4f& transform) const;
 

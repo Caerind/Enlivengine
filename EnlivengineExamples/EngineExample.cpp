@@ -1,3 +1,4 @@
+/*
 #include <Enlivengine/System/Log.hpp>
 #include <Enlivengine/Application/Application.hpp>
 #include <Enlivengine/Application/Window.hpp>
@@ -519,8 +520,11 @@ private:
 // Main
 //////////////////////////////////
 
+*/
+
 int main(int argc, char** argv)
 {
+	/*
 	en::ClassManager::Register<en::NameComponent>();
 	en::ClassManager::Register<en::TransformComponent>();
 	en::ClassManager::Register<en::SpriteComponent>();
@@ -558,6 +562,7 @@ int main(int argc, char** argv)
 	actionSystem.AddInputKey("jump", sf::Keyboard::Space, en::ActionType::Pressed);
 
 	app.Start<MyState>();
+	*/
 
 	return 0;
 }

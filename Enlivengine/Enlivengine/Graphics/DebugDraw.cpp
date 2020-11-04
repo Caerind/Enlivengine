@@ -52,6 +52,44 @@ void DebugDraw::DrawBox(const Vector3f& min, const Vector3f& max, const Color& c
 	DrawLine({ min.x, min.y, max.z }, { min.x, max.y, max.z }, color);
 }
 
+void DebugDraw::DrawSphere(const Vector3f& center, F32 radius, const Color& color /*= Colors::Magenta*/)
+{
+	// http://www.songho.ca/opengl/gl_sphere.html
+	// This code use UnitZ as UpVector, so it has been changed a bit
+
+	const U32 sectorCount = 8;
+	const U32 stackCount = 8;
+
+	const F32 sectorStep = 360.0f / sectorCount;
+	const F32 stackStep = 180.0f / stackCount;
+
+	for (U32 i = 0; i < stackCount; ++i)
+	{
+		const F32 stackAngle = 90.0f - i * stackStep;
+		const F32 stackAngleNext = 90.0f - (i + 1) * stackStep;
+		const F32 t = radius * Math::Cos(stackAngle);
+		const F32 z = radius * Math::Sin(stackAngle);
+		const F32 tNext = radius * Math::Cos(stackAngleNext);
+		const F32 zNext = radius * Math::Sin(stackAngleNext);
+
+		for (U32 j = 0; j < sectorCount; ++j)
+		{
+			const F32 sectorAngle = j * sectorStep;
+			const F32 sectorAngleNext = (j + 1) * sectorStep;
+
+			const F32 x = t * Math::Cos(sectorAngle);
+			const F32 y = t * Math::Sin(sectorAngle);
+			const F32 xNext = t * Math::Cos(sectorAngleNext);
+			const F32 yNext = t * Math::Sin(sectorAngleNext);
+			const F32 xNext2 = tNext * Math::Cos(sectorAngle);
+			const F32 yNext2 = tNext * Math::Sin(sectorAngle);
+
+			DrawLine(center + Vector3f(x, z, y), center + Vector3f(xNext, z, yNext), color);
+			DrawLine(center + Vector3f(x, z, y), center + Vector3f(xNext2, zNext, yNext2), color);
+		}
+	}
+}
+
 void DebugDraw::DrawCross(const Vector3f& position)
 {
 	DrawLine(position, position + Vector3f::UnitX(), Colors::Red);
@@ -65,6 +103,40 @@ void DebugDraw::DrawTransform(const Matrix4f& transform)
 	DrawLine(center, transform.TransformPoint(Vector3f::UnitX()), Colors::Red);
 	DrawLine(center, transform.TransformPoint(Vector3f::UnitY()), Colors::Green);
 	DrawLine(center, transform.TransformPoint(Vector3f::UnitZ()), Colors::Blue);
+}
+
+void DebugDraw::DrawPoint(const Vector3f& point, const Color& color /*= Colors::Magenta*/)
+{
+	const Vector3f offset(0.01f);
+	DrawBox(point - offset, point + offset, color);
+}
+
+void DebugDraw::DrawGrid(const Vector3f& point, const Vector3f& up, F32 begin, F32 end, F32 interval, const Color& color /*= Colors::Magenta*/)
+{
+	Vector3f right = up.CrossProduct(ENLIVE_DEFAULT_UP);
+	if (right.GetSquaredLength() < 0.05f)
+	{
+		right = up.CrossProduct(ENLIVE_DEFAULT_RIGHT);
+	}
+	const Vector3f forward = up.CrossProduct(right);
+
+	const Vector3f beginRight = begin * right + point;
+	const Vector3f endRight = end * right + point;
+	const Vector3f beginForward = begin * forward + point;
+	const Vector3f endForward = end * forward + point;
+
+	for (F32 d = begin; d <= end; d += interval)
+	{
+		const Vector3f dRight = right * d;
+		const Vector3f dForward = forward * d;
+		DrawLine(dRight + beginForward, dRight + endForward, color);
+		DrawLine(dForward + beginRight, dForward + endRight, color);
+	}
+}
+
+void DebugDraw::DrawAABB(const AABB& aabb, const Color& color /*= Colors::Magenta*/)
+{
+	DrawBox(aabb.GetMin(), aabb.GetMax(), color);
 }
 
 void DebugDraw::DrawFrustum(const Frustum& frustum, const Color& color /*= Colors::Magenta*/)
@@ -88,19 +160,22 @@ void DebugDraw::DrawFrustum(const Frustum& frustum, const Color& color /*= Color
 	DrawLine(frustum.GetCorner(Frustum::Corners::FTR), frustum.GetCorner(Frustum::Corners::NTR), color);
 }
 
-void DebugDraw::DrawPoint(const Vector3f& point, const Color& color /*= Colors::Magenta*/)
+void DebugDraw::DrawPlane(const Plane& plane, const Color& color /*= Colors::Magenta*/)
 {
-	const Vector3f offset(0.01f);
-	DrawBox(point - offset, point + offset, color);
+	const Vector3f point = plane.GetAnyPoint();
+	const Vector3f up = plane.GetNormal();
+	DrawGrid(point, plane.GetNormal(), -5.0f, 50.0f, 1.0f, color);
+	DrawLine(point, point + up, color);
 }
 
-void DebugDraw::DrawXZGrid(F32 begin, F32 end, F32 y, F32 interval, const Color& color /*= Colors::Magenta*/)
+void DebugDraw::DrawRay(const Ray& ray, const Color& color /*= Colors::Magenta*/)
 {
-	for (F32 d = begin; d <= end; d += interval)
-	{
-		DrawLine(Vector3f(d, y, begin), Vector3f(d, y, end), color);
-		DrawLine(Vector3f(begin, y, d), Vector3f(end, y, d), color);
-	}
+	DrawLine(ray.GetOrigin(), ray.GetPoint(200.0f), color);
+}
+
+void DebugDraw::DrawSphere(const Sphere& sphere, const Color& color /*= Colors::Magenta*/)
+{
+	DrawSphere(sphere.GetCenter(), sphere.GetRadius(), color);
 }
 
 void DebugDraw::Render(const bgfx::ViewId& viewId)

@@ -14,7 +14,7 @@ Transform::Transform()
 
 Vector3f Transform::GetPosition() const
 {
-	return mMatrix.GetTranslation3();
+	return mMatrix.GetTranslation();
 }
 
 void Transform::SetPosition(const Vector3f& position)

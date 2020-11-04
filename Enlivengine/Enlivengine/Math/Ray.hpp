@@ -28,10 +28,10 @@ public:
 	const Vector3f& GetDirection() const;
 	void SetDirection(const Vector3f& direction);
 
-	Vector3f GetPoint(F32 t) const;
-
 	bool operator==(const Ray& other) const;
 	bool operator!=(const Ray& other) const;
+
+	Vector3f GetPoint(F32 t) const;
 
 	bool Contains(const Vector3f& point) const;
 

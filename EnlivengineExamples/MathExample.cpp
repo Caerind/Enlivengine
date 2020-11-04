@@ -1,9 +1,9 @@
 
 #include <cmath>
 
-#include <SFML/Graphics.hpp>
-
 #include <Enlivengine/Math/Math.hpp>
+
+/*
 
 #include <Enlivengine/System/Log.hpp>
 #include <Enlivengine/Application/Application.hpp>
@@ -14,14 +14,18 @@ void MathFunctionsSpeedComparaisonWithStd();
 void MathDeltaWithStd();
 void MathTrigoComparaisonGraph();
 
+*/
+
 int main()
 {
-	MathFunctionsSpeedComparaisonWithStd();
-	MathDeltaWithStd();
+	//MathFunctionsSpeedComparaisonWithStd();
+	//MathDeltaWithStd();
 	//MathTrigoComparaisonGraph();
 
 	return 0;
 }
+
+/*
 
 en::Time cosStd;
 en::Time cosEn;
@@ -426,3 +430,5 @@ void MathTrigoComparaisonGraph()
 	app.Start<TrigoComparaisonGraph>();
 
 }
+
+*/

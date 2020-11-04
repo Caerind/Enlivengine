@@ -44,11 +44,6 @@ void Ray::SetDirection(const Vector3f& direction)
 	mDirection = direction;
 }
 
-Vector3f Ray::GetPoint(F32 t) const
-{
-	return mOrigin + t * mDirection;
-}
-
 bool Ray::operator==(const Ray& other) const
 {
 	return mOrigin == other.mOrigin && mDirection == other.mDirection;
@@ -57,6 +52,11 @@ bool Ray::operator==(const Ray& other) const
 bool Ray::operator!=(const Ray& other) const
 {
 	return !operator==(other);
+}
+
+Vector3f Ray::GetPoint(F32 t) const
+{
+	return mOrigin + t * mDirection;
 }
 
 bool Ray::Contains(const Vector3f& point) const
@@ -83,8 +83,23 @@ bool Ray::Intersects(const AABB& aabb, F32* distance /*= nullptr*/) const
 }
 
 bool Ray::Intersects(const Frustum& frustum, F32* distance /*= nullptr*/) const
-{
-	return false; // TODO
+{ 
+	bool result = false;
+	F32 distanceMin = 99999.9f;
+	for (U32 i = 0; i < 6; ++i)
+	{
+		F32 distanceTmp;
+		if (Intersects(frustum.GetPlane(i), &distanceTmp))
+		{
+			result = true;
+			distanceMin = Math::Min(distanceMin, distanceTmp);
+		}
+	}
+	if (distance != nullptr)
+	{
+		*distance = (result) ? distanceMin : 0.0f;
+	}
+	return result;
 }
 
 bool Ray::Intersects(const Plane& plane, F32* distance /*= nullptr*/) const

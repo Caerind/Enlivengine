@@ -91,7 +91,7 @@ DOCTEST_TEST_CASE("Matrix4")
 	// Affine
 	DOCTEST_CHECK(!layout.IsAffine());
 	DOCTEST_CHECK(en::Matrix4f::Identity().IsAffine());
-	DOCTEST_CHECK(en::Matrix4f::Identity().SetRotation(en::Matrix3f::RotationX(26.0f)).SetTranslation(en::Vector2f(1.0f)).SetScale(2.5f).IsAffine());
+	DOCTEST_CHECK(en::Matrix4f::Identity().SetRotation(en::Matrix3f::RotationX(26.0f)).SetTranslation(en::Vector3f(1.0f)).SetScale(2.5f).IsAffine());
 
 	// Trace
 	DOCTEST_CHECK(en::Matrix4f::Identity().GetTrace() == 4);
@@ -149,8 +149,8 @@ DOCTEST_TEST_CASE("Matrix4")
 	// Translation alone
 	DOCTEST_CHECK(en::Matrix4f::Translation(1.0f, 2.0f, 3.0f) == en::Matrix4f::Identity().ApplyTranslation(1.0f, 2.0f, 3.0f));
 	DOCTEST_CHECK(en::Matrix4f::Translation(en::Vector3f(1.0f, 2.0f, 3.0f)) == en::Matrix4f::Identity().ApplyTranslation(en::Vector3f(1.0f, 2.0f, 3.0f)));
-	DOCTEST_CHECK(en::Matrix4f::Translation(1.0f, 2.0f, 3.0f).GetTranslation3() == en::Vector3f(1.0f, 2.0f, 3.0f));
-	DOCTEST_CHECK(en::Matrix4f::Translation(en::Vector3f(1.0f, 2.0f, 3.0f)).GetTranslation3() == en::Vector3f(1.0f, 2.0f, 3.0f));
+	DOCTEST_CHECK(en::Matrix4f::Translation(1.0f, 2.0f, 3.0f).GetTranslation() == en::Vector3f(1.0f, 2.0f, 3.0f));
+	DOCTEST_CHECK(en::Matrix4f::Translation(en::Vector3f(1.0f, 2.0f, 3.0f)).GetTranslation() == en::Vector3f(1.0f, 2.0f, 3.0f));
 	DOCTEST_CHECK(en::Matrix4f::Translation(1.0f, 2.0f, 3.0f) == en::Matrix4f::Identity().SetTranslation(1.0f, 2.0f, 3.0f));
 	DOCTEST_CHECK(en::Matrix4f::Translation(en::Vector3f(1.0f, 2.0f, 3.0f)) == en::Matrix4f::Identity().SetTranslation(en::Vector3f(1.0f, 2.0f, 3.0f)));
 

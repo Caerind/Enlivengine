@@ -22,6 +22,12 @@ Sphere::Sphere(const Vector3f& center, F32 radius /*= 1.0f*/)
 {
 }
 
+Sphere::Sphere(F32 radius, const Vector3f& center /*= Vector3f::Zero()*/)
+	: mCenter(center)
+	, mRadius(radius)
+{
+}
+
 const Vector3f& Sphere::GetCenter() const
 {
 	return mCenter;
@@ -55,6 +61,12 @@ bool Sphere::operator!=(const Sphere& other) const
 F32 Sphere::GetDistance(const Vector3f& point) const
 {
 	return (mCenter - point).GetLength() - mRadius;
+}
+
+F32 Sphere::GetVolume() const
+{
+	static constexpr F32 pi4over3 = (4.0f / 3.0f) * Math::Pi;
+	return pi4over3 * mRadius;
 }
 
 bool Sphere::Contains(const Vector3f& point) const
@@ -125,6 +137,15 @@ bool Sphere::Intersects(const Sphere& sphere) const
 {
 	const F32 rr = (mRadius + sphere.mRadius);
 	return (mCenter - sphere.mCenter).GetSquaredLength() <= rr * rr;
+}
+
+void Sphere::Merge(const Vector3f& point)
+{
+	const F32 d = GetDistance(point);
+	if (d > 0.0f)
+	{
+		mRadius += d;
+	}
 }
 
 Sphere Sphere::Transform(const Matrix4f& transform) const

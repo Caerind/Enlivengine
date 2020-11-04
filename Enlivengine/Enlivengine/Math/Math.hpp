@@ -5,6 +5,7 @@
 #ifdef ENLIVE_MODULE_MATH
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
+#include <Enlivengine/Utils/Assert.hpp>
 
 // TODO : Constexpr Sqrt => InvSqrt, Asin, Acos
 // TODO : Real : Float/Double

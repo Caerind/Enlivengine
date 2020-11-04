@@ -17,7 +17,7 @@
 #include <Enlivengine/Math/Matrix3.hpp>
 #include <Enlivengine/Math/Matrix4.hpp>
 #include <Enlivengine/Math/Plane.hpp>
-//#include <Enlivengine/Math/Quaternion.hpp> // TODO : Update Quaternion class
+#include <Enlivengine/Math/Quaternion.hpp>
 #include <Enlivengine/Math/Ray.hpp>
 #include <Enlivengine/Math/Rect.hpp>
 #include <Enlivengine/Math/Sphere.hpp>
@@ -261,8 +261,6 @@ ENLIVE_META_CLASS_END()
 //////////////////////////////////////////////////////////////////
 // en::Quaternion
 //////////////////////////////////////////////////////////////////
-// TODO : Update Quaternion class
-/*
 ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Quaternion)
 
 template <typename T>
@@ -314,18 +312,17 @@ struct HasCustomEditor<en::Quaternion<T>>
 	static constexpr bool value = true;
 	static bool ImGuiEditor(en::Quaternion<T>& object, const char* name)
 	{
-		en::Vector4<T> quat;
-		quat = object.toVector4();
-		if (CustomObjectEditor<en::Vector4<T>>::ImGuiEditor(quat, name))
+		en::Vector4<T> v4(object.v, object.s);
+		if (HasCustomEditor<en::Vector4<T>>::ImGuiEditor(v4, name))
 		{
-			object.fromVector4(quat);
+			object.v.Set(v4.x, v4.y, v4.z);
+			object.s = v4.w;
 			return true;
 		}
 		return false;
 	}
 };
 #endif // ENLIVE_ENABLE_IMGUI
-*/
 
 //////////////////////////////////////////////////////////////////
 // en::Ray
@@ -394,13 +391,13 @@ struct HasCustomEditor<en::Rect<T>>
 		{
 			ImGui::Indent();
 			en::Vector2<T> min = object.GetMin();
-			if (HasCustomEditor<en::Vector2<T>>::ImGuiEditor(min, "Min"))
+			if (HasCustomEditor<en::Vector2<T>>::ImGuiEditor(min, "min"))
 			{
 				object.SetMin(min);
 				modified = true;
 			}
 			en::Vector2<T> size = object.GetSize();
-			if (HasCustomEditor<en::Vector2<T>>::ImGuiEditor(size, "Size"))
+			if (HasCustomEditor<en::Vector2<T>>::ImGuiEditor(size, "size"))
 			{
 				object.SetSize(size);
 				modified = true;
