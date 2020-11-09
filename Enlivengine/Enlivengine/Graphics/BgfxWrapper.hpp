@@ -6,6 +6,7 @@
 
 #include <bgfx/bgfx.h>
 
+#include <Enlivengine/Utils/Signal.hpp>
 #include <Enlivengine/Window/Window.hpp>
 
 namespace en
@@ -28,6 +29,9 @@ private:
 
     BgfxWrapper();
     ~BgfxWrapper();
+
+    enSlotType(Window, OnResized) mResizeRenderer;
+    void Reset(U32 width, U32 height);
 
 	bool mInitialized;
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG

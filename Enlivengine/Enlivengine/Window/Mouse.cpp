@@ -115,7 +115,7 @@ Window* Mouse::GetCurrentWindow()
 	SDL_Window* window = SDL_GetMouseFocus();
 	if (window != nullptr)
 	{
-		return Window::GetWindowFromSDL(window);
+		return Window::GetWindowFromSDLWindow(window);
 	}
 	else
 	{

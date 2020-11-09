@@ -23,9 +23,9 @@ Window::~Window()
     UnregisterWindow(this);
 }
 
-bool Window::Create(const char* name, I32 width, I32 height, U32 flags /*= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE*/)
+bool Window::Create(const char* name, U32 width, U32 height, U32 flags /*= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE*/)
 {
-    mWindow = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+    mWindow = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, static_cast<I32>(width), static_cast<I32>(height), flags);
     ResetShouldClose();
     return mWindow != nullptr;
 }
@@ -47,6 +47,7 @@ bool Window::IsValid() const
 void Window::Close()
 {
     mShouldClose = true;
+    OnShouldClose(this);
 }
 
 void Window::ResetShouldClose()
@@ -105,21 +106,21 @@ bool Window::IsMaximized() const
     return (mWindow != nullptr) ? (SDL_GetWindowFlags(mWindow) & SDL_WINDOW_MAXIMIZED) > 0 : false;
 }
 
-void Window::SetSize(I32 width, I32 height)
+void Window::SetSize(U32 width, U32 height)
 {
     if (mWindow != nullptr)
     {
-        SDL_SetWindowSize(mWindow, width, height);
+		SDL_SetWindowSize(mWindow, static_cast<I32>(width), static_cast<I32>(height));
     }
 }
 
-I32 Window::GetWidth() const
+U32 Window::GetWidth() const
 {
     if (mWindow != nullptr)
     {
         I32 width, dummy;
         SDL_GetWindowSize(mWindow, &width, &dummy);
-        return width;
+        return static_cast<U32>(width);
     }
     else
     {
@@ -127,13 +128,13 @@ I32 Window::GetWidth() const
     }
 }
 
-I32 Window::GetHeight() const
+U32 Window::GetHeight() const
 {
     if (mWindow != nullptr)
     {
         I32 dummy, height;
         SDL_GetWindowSize(mWindow, &dummy, &height);
-        return height;
+        return static_cast<U32>(height);
     }
     else
     {
@@ -141,11 +142,14 @@ I32 Window::GetHeight() const
     }
 }
 
-void Window::GetSize(I32& width, I32& height)
+void Window::GetSize(U32& width, U32& height) const
 {
     if (mWindow != nullptr)
     {
-        SDL_GetWindowSize(mWindow, &width, &height);
+        I32 w, h;
+        SDL_GetWindowSize(mWindow, &w, &h);
+        width = static_cast<U32>(w);
+        height = static_cast<U32>(h);
     }
     else
     {
@@ -167,6 +171,11 @@ const char* Window::GetTitle() const
     return (mWindow != nullptr) ? SDL_GetWindowTitle(mWindow) : "";
 }
 
+U32 Window::GetID() const
+{
+    return (mWindow != nullptr) ? SDL_GetWindowID(mWindow) : 0;
+}
+
 U32 Window::GetFlags() const
 {
     return (mWindow != nullptr) ? SDL_GetWindowFlags(mWindow) : 0;
@@ -174,6 +183,16 @@ U32 Window::GetFlags() const
 
 void Window::RegisterWindow(Window* window)
 {
+    static bool initialized = false;
+    if (!initialized)
+    {
+        for (U32 i = 0; i < kMaxWindows; ++i)
+        {
+            sWindows[i] = nullptr;
+        }
+        initialized = true;
+    }
+
 	if (sWindowCount < kMaxWindows)
 	{
 		sWindows[sWindowCount] = window;
@@ -205,7 +224,7 @@ void Window::UnregisterWindow(Window* window)
     enAssert(false);
 }
 
-Window* Window::GetWindowFromSDL(SDL_Window* sdlWindow)
+Window* Window::GetWindowFromSDLWindow(SDL_Window* sdlWindow)
 {
     if (sdlWindow == nullptr)
     {
@@ -224,6 +243,27 @@ Window* Window::GetWindowFromSDL(SDL_Window* sdlWindow)
         enAssert(false);
         return nullptr;
     }
+}
+
+Window* Window::GetWindowFromSDLWindowID(U32 sdlWindowID)
+{
+	if (sdlWindowID == 0)
+	{
+		return nullptr;
+	}
+	else
+	{
+		for (U32 i = 0; i < sWindowCount; ++i)
+		{
+			if (sWindows[i] != nullptr && sWindows[i]->GetID() == sdlWindowID)
+			{
+				return sWindows[i];
+			}
+		}
+		// SDL_Window created outside the Window class from the engine
+		enAssert(false);
+		return nullptr;
+	}
 }
 
 } // namespace en

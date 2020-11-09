@@ -103,9 +103,6 @@ public:
 	static void RemoveAxis(const char* name);
 	static void RemoveAxis(U32 hash);
 
-	static bool ShouldClose();
-	static void ResetShouldClose();
-
 private:
 	static U32 HashFct(const char* name);
 
@@ -122,7 +119,6 @@ private:
 
 	std::vector<EventButton> mButtons;
 	std::vector<EventAxis> mAxes;
-	bool mShouldClose;
 };
 
 } // namespace en

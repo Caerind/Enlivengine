@@ -341,16 +341,6 @@ void EventSystem::RemoveAxis(U32 hash)
 	}
 }
 
-bool EventSystem::ShouldClose()
-{
-	return GetInstance().mShouldClose;
-}
-
-void EventSystem::ResetShouldClose()
-{
-	GetInstance().mShouldClose = false;
-}
-
 U32 EventSystem::HashFct(const char* name)
 {
 	if (name != nullptr)
@@ -376,7 +366,6 @@ EventSystem& EventSystem::GetInstance()
 
 EventSystem::EventSystem()
 	: mButtons()
-	, mShouldClose(false)
 {
 }
 
@@ -409,18 +398,33 @@ void EventSystem::HandleEvent(const SDL_Event& event)
 	}
 	case SDL_QUIT:
 	{
-		mShouldClose = true;
+		for (U32 i = 0; i < Window::sWindowCount; ++i)
+		{
+			if (Window* window = Window::sWindows[i])
+			{
+				window->Close();
+			}
+		}
 		break;
 	}
 	case SDL_WINDOWEVENT:
 	{
-		switch (event.window.event)
+		if (Window* window = Window::GetWindowFromSDLWindowID(event.window.windowID))
 		{
-		case SDL_WINDOWEVENT_CLOSE:
-		{
-			mShouldClose = true;
-			break;
-		}
+			switch (event.window.event)
+			{
+			case SDL_WINDOWEVENT_CLOSE:
+			{
+				window->Close();
+				break;
+			}
+			case SDL_WINDOWEVENT_RESIZED:
+			case SDL_WINDOWEVENT_SIZE_CHANGED:
+			{
+				window->OnResized(window, static_cast<U32>(event.window.data1), static_cast<U32>(event.window.data2));
+				break;
+			}
+			}
 		}
 		break;
 	}

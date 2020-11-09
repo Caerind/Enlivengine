@@ -166,6 +166,11 @@ int main(int argc, char** argv)
 			camera.InitializePerspective(80.0f, F32(window.GetWidth()) / F32(window.GetHeight()), 0.1f, 100.0f);
 			//camera.InitializeOrthographic(-10.0f, 10.0f, 10.0f, -10.0f, 0.01f, 100.0f);
 			camera.InitializeView(Vector3f(0.0f, 1.0f, 5.0f), Vector3f(0.0f, 0.0f, -1.0f));
+			enSlotType(Window, OnResized) cameraWindowResize;
+			cameraWindowResize.Connect(window.OnResized, [&camera](const Window*, U32 width, U32 height)
+				{
+					camera.InitializePerspective(80.0f, F32(width) / F32(height), 0.1f, 100.0f);
+				});
 
 			Frustum frustum = camera.CreateFrustum();
 
@@ -191,13 +196,9 @@ int main(int argc, char** argv)
 			while (!window.ShouldClose())
 			{
 				EventSystem::Update();
-				if (EventSystem::ShouldClose())
-				{
-					window.Close();
-				}
 
 #ifdef ENLIVE_ENABLE_IMGUI
-				ImGuiWrapper::BeginFrame(250);
+				ImGuiWrapper::BeginFrame(250, window.GetWidth(), window.GetHeight());
 
 				ImGuiToolManager::GetInstance().Update();
 

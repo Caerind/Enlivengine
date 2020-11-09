@@ -201,19 +201,15 @@ bool ImGuiWrapper::Release()
     return true;
 }
 
-void ImGuiWrapper::BeginFrame(bgfx::ViewId viewId)
+void ImGuiWrapper::BeginFrame(bgfx::ViewId viewId, U32 windowWidth, U32 windowHeight)
 {
-	// TODO : Forward inputs
-	const float windowWidth = 800;
-	const float windowHeight = 600;
-
 	ImGuiWrapper& imgui = GetInstance();
 	enAssert(imgui.mInitialized);
     
 	imgui.mViewId = viewId;
 
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(windowWidth, windowHeight);
+	io.DisplaySize = ImVec2(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 
 	const I64 now = bx::getHPCounter();
 	const I64 frameTime = now - imgui.mLast;

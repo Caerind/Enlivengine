@@ -333,8 +333,8 @@ Keyboard& Keyboard::GetInstance()
 Keyboard::Keyboard()
 	: mKeyStates()
 	, mModifiers(0)
-	, mInputCharacters()
 	, mInputCharacterCount()
+	, mInputCharacters()
 {
 }
 
