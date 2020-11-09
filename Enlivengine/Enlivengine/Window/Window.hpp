@@ -44,8 +44,15 @@ public:
     void SetTitle(const char* title);
     const char* GetTitle() const;
 
+    bool IsGrabbing() const;
+    void SetGrab(bool grab);
+    void Grab();
+    void Ungrab();
+
     U32 GetID() const;
     U32 GetFlags() const;
+
+    static Window* GetGrabbingWindow();
 
 private:
     friend class BgfxWrapper;

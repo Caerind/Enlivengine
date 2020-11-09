@@ -123,13 +123,9 @@ int main(int argc, char** argv)
 				enAssert(false);
 			}
 
-			
-
-
 			World world;
 			world.CreateSystem<RenderSystem>();
 			Universe::GetInstance().SetCurrentWorld(&world);
-
 
 			{
 				Entity a1 = world.GetEntityManager().CreateEntity();
@@ -236,9 +232,16 @@ int main(int argc, char** argv)
 
 				spriteBTransform *= Matrix4f::RotationY(180.0f * dt.AsSeconds());
 
+				if (Keyboard::IsPressed(Keyboard::Key::Escape))
+				{
+					window.Close();
+				}
+
 				// Camera movement
 				if (Keyboard::IsAltHold())
 				{
+					Mouse::SetRelativeMode(true);
+
 					Vector3f direction = camera.GetDirection();
 					Vector3f mvtUnit = direction;
 					mvtUnit.y = 0.0f;
@@ -292,6 +295,10 @@ int main(int argc, char** argv)
 					{
 						camera.SetDirection(direction);
 					}
+				}
+				else
+				{
+					Mouse::SetRelativeMode(false);
 				}
 
 				// Toggle debug stats

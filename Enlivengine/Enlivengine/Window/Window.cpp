@@ -171,6 +171,35 @@ const char* Window::GetTitle() const
     return (mWindow != nullptr) ? SDL_GetWindowTitle(mWindow) : "";
 }
 
+bool Window::IsGrabbing() const
+{
+    return (mWindow != nullptr) ? SDL_GetWindowGrab(mWindow) == SDL_TRUE : false;
+}
+
+void Window::SetGrab(bool grab)
+{
+    if (mWindow != nullptr)
+	{
+        SDL_SetWindowGrab(mWindow, grab ? SDL_TRUE : SDL_FALSE);
+    }
+}
+
+void Window::Grab()
+{
+    if (mWindow)
+	{
+		SDL_SetWindowGrab(mWindow, SDL_TRUE);
+    }
+}
+
+void Window::Ungrab()
+{
+	if (mWindow)
+	{
+		SDL_SetWindowGrab(mWindow, SDL_FALSE);
+	}
+}
+
 U32 Window::GetID() const
 {
     return (mWindow != nullptr) ? SDL_GetWindowID(mWindow) : 0;
@@ -179,6 +208,11 @@ U32 Window::GetID() const
 U32 Window::GetFlags() const
 {
     return (mWindow != nullptr) ? SDL_GetWindowFlags(mWindow) : 0;
+}
+
+Window* Window::GetGrabbingWindow()
+{
+    return GetWindowFromSDLWindow(SDL_GetGrabbedWindow());
 }
 
 void Window::RegisterWindow(Window* window)

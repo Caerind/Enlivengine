@@ -48,6 +48,16 @@ public:
 	static bool IsPressed(Button button);
 	static bool IsReleased(Button button);
 
+	static bool IsRelativeMode();
+	static void SetRelativeMode(bool relativeMode);
+	static void EnableRelativeMode();
+	static void DisableRelativeMode();
+
+	static bool IsCursorVisible();
+	static void SetCursorVisible(bool visible);
+	static void ShowCursor();
+	static void HideCursor();
+
 private:
 	static Mouse& GetInstance();
 

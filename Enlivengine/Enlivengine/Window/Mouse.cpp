@@ -15,13 +15,24 @@ void Mouse::Refresh()
 
 	int pX, pY;
 	mouse.mPreviousButtonMask = mouse.mButtonMask;
-	mouse.mButtonMask = SDL_GetMouseState(&pX, &pY);
-	const I32 x = static_cast<I32>(pX);
-	const I32 y = static_cast<I32>(pY);
-	mouse.mMouseMovement.x = x - mouse.mPosition.x;
-	mouse.mMouseMovement.y = y - mouse.mPosition.y;
-	mouse.mPosition.x = x;
-	mouse.mPosition.y = y;
+	if (IsRelativeMode())
+	{
+		mouse.mButtonMask = SDL_GetRelativeMouseState(&pX, &pY);
+		const I32 x = static_cast<I32>(pX);
+		const I32 y = static_cast<I32>(pY);
+		mouse.mMouseMovement.x = x;
+		mouse.mMouseMovement.y = y;
+	}
+	else
+	{
+		mouse.mButtonMask = SDL_GetMouseState(&pX, &pY);
+		const I32 x = static_cast<I32>(pX);
+		const I32 y = static_cast<I32>(pY);
+		mouse.mMouseMovement.x = x - mouse.mPosition.x;
+		mouse.mMouseMovement.y = y - mouse.mPosition.y;
+		mouse.mPosition.x = x;
+		mouse.mPosition.y = y;
+	}
 	mouse.mWheel = 0;
 	mouse.mHorizontalWheel = 0;
 }
@@ -166,6 +177,46 @@ bool Mouse::IsReleased(Button button)
 	default: enAssert(false); break;
 	}
 	return false;
+}
+
+bool Mouse::IsRelativeMode()
+{
+	return SDL_GetRelativeMouseMode() == SDL_TRUE;
+}
+
+void Mouse::SetRelativeMode(bool relativeMode)
+{
+	SDL_SetRelativeMouseMode(relativeMode ? SDL_TRUE : SDL_FALSE);
+}
+
+void Mouse::EnableRelativeMode()
+{
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+}
+
+void Mouse::DisableRelativeMode()
+{
+	SDL_SetRelativeMouseMode(SDL_FALSE);
+}
+
+bool Mouse::IsCursorVisible()
+{
+	return SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE;
+}
+
+void Mouse::SetCursorVisible(bool visible)
+{
+	SDL_ShowCursor(visible ? SDL_ENABLE : SDL_DISABLE);
+}
+
+void Mouse::ShowCursor()
+{
+	SDL_ShowCursor(SDL_ENABLE);
+}
+
+void Mouse::HideCursor()
+{
+	SDL_ShowCursor(SDL_DISABLE);
 }
 
 Mouse& Mouse::GetInstance()
