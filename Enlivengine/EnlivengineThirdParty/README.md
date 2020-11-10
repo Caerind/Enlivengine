@@ -17,5 +17,9 @@
 # Graphics
 - https://github.com/bkaradzic/bgfx  
 
+# Core
+- https://github.com/skypjack/entt  
+- https://github.com/caranatar/tracerz  
+
 # Tests
 - https://github.com/onqtam/doctest  

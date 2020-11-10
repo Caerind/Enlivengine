@@ -50,6 +50,10 @@ source_group("miniz" FILES ${SRC_MINIZ})
 file(GLOB_RECURSE SRC_PUGIXML "pugixml/*")
 source_group("pugixml" FILES ${SRC_PUGIXML})
 
+# tracerz
+file(GLOB_RECURSE SRC_TRACERZ "tracerz/*")
+source_group("tracerz" FILES ${SRC_TRACERZ})
+
 add_library(EnlivengineThirdParty STATIC
 	${SRC_BOX2D}
 	${SRC_DEBUGBREAK}
@@ -62,6 +66,7 @@ add_library(EnlivengineThirdParty STATIC
 	${SRC_MAGICENUM}
 	${SRC_MINIZ}
 	${SRC_PUGIXML}
+	${SRC_TRACERZ}
 )
 target_include_directories(EnlivengineThirdParty PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(EnlivengineThirdParty PUBLIC SDL2-static SDL2main bgfx dear-imgui)
