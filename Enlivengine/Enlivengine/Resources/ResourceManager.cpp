@@ -12,10 +12,10 @@ namespace priv
 
 BaseResource::BaseResource()
 	: mID(InvalidResourceID)
+	, mLoadInfo()
 	, mLoaded(false)
 #ifdef ENLIVE_DEBUG
 	, mIdentifier()
-	, mLoadInfo()
 #endif // ENLIVE_DEBUG
 {
 }
