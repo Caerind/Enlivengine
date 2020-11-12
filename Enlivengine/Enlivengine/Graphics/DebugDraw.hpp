@@ -43,7 +43,8 @@ public:
 	void DrawRay(const Ray& ray, const Color& color = Colors::Magenta);
 	void DrawSphere(const Sphere& sphere, const Color& color = Colors::Magenta);
 
-	void Render(const bgfx::ViewId& viewId);
+	void Render();
+	void Clear();
 
 private:
 	void AddVertex(const Vector3f& pos, const Color& color);

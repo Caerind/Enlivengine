@@ -28,22 +28,11 @@
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/ComponentManager.hpp>
 #include <Enlivengine/Core/TraceryGenerator.hpp>
+#include <Enlivengine/Core/CameraComponent.hpp>
 
 #include <Enlivengine/Meta/MetaSpecialization.hpp>
 
 using namespace en;
-
-template <std::size_t N>
-inline std::vector<std::string> arrayStringViewToVectorString(const std::array<std::string_view, N>& arr)
-{
-	std::vector<std::string> vec;
-	vec.reserve(arr.size());
-	for (const auto& value : arr)
-	{
-		vec.push_back(std::string(value));
-	}
-	return vec;
-}
 
 class RenderSystem : public System
 {
@@ -52,7 +41,6 @@ public:
 
 	void Render() override
 	{
-		const bgfx::ViewId renderViewId = 0;
 		auto& entityManager = mWorld.GetEntityManager();
 		auto view = entityManager.View<RenderableComponent>();
 		for (auto entt : view)
@@ -60,19 +48,41 @@ public:
 			Entity entity(entityManager, entt);
 			if (entity)
 			{
+				bool render = false;
 				if (entity.Has<TransformComponent>())
 				{
-					bgfx::setTransform(entity.Get<TransformComponent>().transform.GetMatrix().GetData());
-					mWorld.GetDebugDraw().DrawTransform(entity.Get<TransformComponent>().transform.GetMatrix());
+					TransformComponent& comp = entity.Get<TransformComponent>();
+					bgfx::setTransform(comp.transform.GetMatrix().GetData());
+					if (BgfxWrapper::GetCurrentView() == mToolView)
+					{
+						mWorld.GetDebugDraw().DrawTransform(comp.transform.GetMatrix());
+					}
 				}
 				if (entity.Has<SpriteComponent>())
 				{
-					entity.Get<SpriteComponent>().sprite.Render(renderViewId);
+					entity.Get<SpriteComponent>().sprite.Render();
+					render = true;
+				}
+				if (!render)
+				{
+					bgfx::setTransform(Matrix4f::Identity().GetData());
 				}
 			}
 		}
-		mWorld.GetDebugDraw().Render(renderViewId);
+		if (BgfxWrapper::GetCurrentView() == mToolView)
+		{
+			mWorld.GetDebugDraw().Render();
+			mWorld.GetDebugDraw().Clear();
+		}
 	}
+
+	void SetToolView(bgfx::ViewId viewId)
+	{
+		mToolView = viewId;
+	}
+
+private:
+	bgfx::ViewId mToolView;
 };
 
 void FPSCamera(Camera& camera, F32 dtSeconds, F32 forwardMvt, F32 leftMvt, F32 deltaYaw, F32 deltaPitch)
@@ -97,7 +107,7 @@ void FPSCamera(Camera& camera, F32 dtSeconds, F32 forwardMvt, F32 leftMvt, F32 d
 	{
 		if (!Math::Equals(deltaYaw, 0.0f))
 		{
-			camera.Rotate(Quaternionf(100.0f * dtSeconds * deltaYaw, ENLIVE_DEFAULT_UP));
+			camera.Rotate(Matrix3f::RotationY(100.0f * dtSeconds * deltaYaw));
 		}
 		if (!Math::Equals(deltaPitch, 0.0f))
 		{
@@ -171,86 +181,46 @@ int main(int argc, char** argv)
 				enAssert(false);
 			}
 
-			enum class PetColors
-			{
-				Orange,
-				Blue,
-				White,
-				Black,
-				Grey,
-				Purple,
-				Indigo,
-				Turquoise
-			};
-			TraceryGenerator tracery;
-			tracery.AddEnglishModifiers();
-			tracery.AddModifier("lowercase", [](const std::string& str)
-				{
-					std::string ret;
-					ret.resize(str.size());
-					for (std::size_t i = 0; i < str.size(); ++i)
-					{
-						ret[i] = tolower(str[i]);
-					}
-					return ret;
-				});
-			tracery.AddModifier("uppercase", [](const std::string& str)
-				{
-					std::string ret;
-					ret.resize(str.size());
-					for (std::size_t i = 0; i < str.size(); ++i)
-					{
-						ret[i] = toupper(str[i]);
-					}
-					return ret;
-				});
-			tracery.AddGrammar("sentence", { "The #color.lowercase# #animal# is called #name.uppercase# and has a \"#texture#\" texture" });
-			tracery.AddGrammar("color", arrayStringViewToVectorString(Enum::GetValueNames<PetColors>()));
-			tracery.AddGrammar("animal", { "unicorn","raven","sparrow","scorpion","coyote","eagle","owl","lizard","zebra","duck","kitten" });
-			tracery.AddGrammar("name", { "Arjun","Yuuma","Darcy","Mia","Chiaki","Izzi","Azra","Lina" });
-			tracery.AddGrammar("texture", { textureAFilename, textureBFilename });
-			std::string traceryString = tracery.Generate("#sentence#");
-
 			World world;
-			world.CreateSystem<RenderSystem>();
+			RenderSystem* renderSystem = world.CreateSystem<RenderSystem>();
+#ifdef ENLIVE_DEBUG
+			renderSystem->SetToolView(world.GetFreeCamera().GetViewID());
+#endif // ENLIVE_DEBUG
 			Universe::GetInstance().SetCurrentWorld(&world);
 
 			Entity playerEntity = world.GetEntityManager().CreateEntity();
-			playerEntity.Add<NameComponent>().name = "Player";
-			playerEntity.Add<TransformComponent>().transform.SetPosition(Vector3f(0.0f, 0.0f, 2.0f));
-			Camera& playerCam = playerEntity.Add<CameraComponent>().camera;
-			playerCam.InitializePerspective(80.0f, F32(window.GetWidth()) / F32(window.GetHeight()), 0.1f, 100.0f);
-			playerCam.InitializeView({ 0.0f, 0.8f, 0.0f }, Quaternionf(0.0f, ENLIVE_DEFAULT_FORWARD));
-
-			bool useFreeCamera = false;
-			world.GetFreeCamera().InitializePerspective(80.0f, F32(window.GetWidth()) / F32(window.GetHeight()), 0.1f, 100.0f);
-			world.GetFreeCamera().InitializeView({ 0.0f, 0.8f, 0.0f }, Quaternionf(0.0f, ENLIVE_DEFAULT_FORWARD));
-			enSlotType(Window, OnResized) cameraWindowResize;
-			cameraWindowResize.Connect(window.OnResized, [&world, &playerCam](const Window*, U32 width, U32 height)
-				{
-					world.GetFreeCamera().InitializePerspective(80.0f, F32(width) / F32(height), 0.1f, 100.0f);
-					playerCam.InitializePerspective(80.0f, F32(width) / F32(height), 0.1f, 100.0f);
-				});
-
-			Transform* b1Transform = nullptr; // You should not keep things that way, but it is a simple example
-
 			{
-				Entity a1 = world.GetEntityManager().CreateEntity();
+				playerEntity.Add<NameComponent>().name = "Player";
+				Transform& playerTransform = playerEntity.Add<TransformComponent>().transform;
+				playerTransform.SetPosition(Vector3f(0.0f, 0.0f, 2.0f));
+				playerTransform.SetRotation(Matrix3f::RotationY(0.0f));
+				CameraComponent& playerCam = playerEntity.Add<CameraComponent>();
+				playerCam.InitializeOrthographic(-5.0f, -4.0f, 5.0f, 4.0f, 0.1f, 100.0f);
+				//playerCam.InitializePerspective(80.0f, F32(window.GetWidth()) / F32(window.GetHeight()), 0.1f, 100.0f);
+				playerCam.InitializeView(Vector3f(0.0f, 0.8f, 0.0f), Matrix3f::Identity());
+				playerCam.SetViewport(Rectf(0.7f, 0.7f, 0.2f, 0.2f));
+				playerCam.SetClearColor(Colors::LightBlue);
+				playerEntity.Add<RenderableComponent>();
+			}
+
+			Entity a1 = world.GetEntityManager().CreateEntity();
+			{
 				a1.Add<NameComponent>().name = "A1";
 				a1.Add<TransformComponent>().transform.SetPosition(Vector3f(0.0f, 1.0f, 0.0f));
 				a1.Add<RenderableComponent>();
 				a1.Add<SpriteComponent>().sprite.SetTexture(textureA);
-
-				Entity a2 = world.GetEntityManager().CreateEntity();
+			}
+			Entity a2 = world.GetEntityManager().CreateEntity();
+			{
 				a2.Add<NameComponent>().name = "A2";
 				a2.Add<TransformComponent>().transform.SetPosition(Vector3f(1.0f, 2.0f, 0.0f));
 				a2.Add<RenderableComponent>();
 				a2.Add<SpriteComponent>().sprite.SetTexture(textureA);
-
-				Entity b1 = world.GetEntityManager().CreateEntity();
+			}
+			Entity b1 = world.GetEntityManager().CreateEntity();
+			{
 				b1.Add<NameComponent>().name = "B1";
-				b1Transform = &b1.Add<TransformComponent>().transform;
-				b1Transform->SetPosition(Vector3f(2.0f, 2.0f, 0.0f));
+				b1.Add<TransformComponent>().transform.SetPosition(Vector3f(2.0f, 2.0f, 0.0f));
 				b1.Add<RenderableComponent>();
 				b1.Add<SpriteComponent>().sprite.SetTexture(textureB);
 			}
@@ -268,9 +238,20 @@ int main(int argc, char** argv)
 			tilemap.SetTile({ 1,2 }, 3);
 			Matrix4f tilemapTransform = Matrix4f::RotationX(90.0f);
 
-			const bgfx::ViewId mainViewId = 0;
-			const bgfx::ViewId imguiViewId = 250;
+			bool useFreeCamera = true;
+			world.GetFreeCamera().InitializePerspective(80.0f, F32(window.GetWidth()) / F32(window.GetHeight()), 0.1f, 100.0f);
+			world.GetFreeCamera().InitializeView(Vector3f(0.0f, 0.8f, 0.0f), Matrix3f::Identity());
+			world.GetFreeCamera().SetViewport(Rectf(0.0f, 0.0f, 1.0f, 1.0f));
+			enSlotType(Window, OnResized) cameraWindowResize;
+			cameraWindowResize.Connect(window.OnResized, [&world, &playerEntity](const Window*, U32 width, U32 height)
+				{
+					world.GetFreeCamera().InitializePerspective(80.0f, F32(width) / F32(height), 0.1f, 100.0f);
+					playerEntity.Get<CameraComponent>().InitializeOrthographic(-5.0f, -4.0f, 5.0f, 4.0f, 0.1f, 100.0f);
+					//playerEntity.Get<CameraComponent>().InitializePerspective(80.0f, F32(width) / F32(height), 0.1f, 100.0f);
+				});
 
+			const bgfx::ViewId imguiViewId = 250;
+			
 			// Create button event using generic way 
 			EventSystem::AddButton("moveForward", EventSystem::EventButton::Type::KeyboardKey, static_cast<U32>(Keyboard::Key::W), static_cast<U32>(Keyboard::Modifier::None), EventSystem::EventButton::ActionType::Hold);
 			// Create button event using specific helpers
@@ -282,6 +263,11 @@ int main(int argc, char** argv)
 			EventSystem::AddJoystickButton("jactionP2", 1, 0, EventSystem::EventButton::ActionType::Pressed);
 			// Keep the hash for faster lookups (and no error in the strings)
 			const U32 toggleGraphStats = EventSystem::AddKeyButton("toggleGraphStats", Keyboard::Key::F3, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Control));
+
+			ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
+			const U32 gizmoTranslate = EventSystem::AddKeyButton("gizmoTranslate", Keyboard::Key::T, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Alt));
+			const U32 gizmoRotate = EventSystem::AddKeyButton("gizmoRotate", Keyboard::Key::R, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Alt));
+			const U32 gizmoScale = EventSystem::AddKeyButton("gizmoScale", Keyboard::Key::S, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Alt));
 
 			Clock clock;
 
@@ -295,6 +281,9 @@ int main(int argc, char** argv)
 				ImGuiToolManager::GetInstance().Update();
 
 #ifdef ENLIVE_DEBUG
+				if (EventSystem::IsButtonActive(gizmoTranslate)) gizmoOperation = ImGuizmo::TRANSLATE;
+				if (EventSystem::IsButtonActive(gizmoRotate)) gizmoOperation = ImGuizmo::ROTATE;
+				if (EventSystem::IsButtonActive(gizmoScale)) gizmoOperation = ImGuizmo::SCALE;
 				ImGuiIO& io = ImGui::GetIO();
 				ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 				const auto& selectedEntities = world.GetSelectedEntities();
@@ -304,10 +293,10 @@ int main(int argc, char** argv)
 					if (entity && entity.Has<TransformComponent>())
 					{
 						ImGuizmo::Manipulate(
-							useFreeCamera ? world.GetFreeCamera().GetViewMatrix().GetData() : playerCam.GetViewMatrix().GetData(),
-							useFreeCamera ? world.GetFreeCamera().GetProjectionMatrix().GetData() : playerCam.GetProjectionMatrix().GetData(),
-							ImGuizmo::TRANSLATE,
-							ImGuizmo::WORLD,
+							useFreeCamera ? world.GetFreeCamera().GetViewMatrix().GetData() : playerEntity.Get<CameraComponent>().GetViewMatrix().GetData(),
+							useFreeCamera ? world.GetFreeCamera().GetProjectionMatrix().GetData() : playerEntity.Get<CameraComponent>().GetProjectionMatrix().GetData(),
+							gizmoOperation,
+							ImGuizmo::LOCAL,
 							entity.Get<TransformComponent>().transform.GetMatrix().GetData()
 						);
 					}
@@ -328,9 +317,9 @@ int main(int argc, char** argv)
 					}
 				}
 
-				if (b1Transform != nullptr)
+				if (b1.IsValid() && b1.Has<TransformComponent>())
 				{
-					b1Transform->GetMatrix().ApplyRotation(Matrix3f::RotationY(180.0f * dt.AsSeconds()));
+					b1.Get<TransformComponent>().transform.GetMatrix().ApplyRotation(Matrix3f::RotationY(180.0f * dt.AsSeconds()));
 				}
 
 				if (Keyboard::IsPressed(Keyboard::Key::Escape))
@@ -340,6 +329,16 @@ int main(int argc, char** argv)
 				if (Keyboard::IsPressed(Keyboard::Key::Space))
 				{
 					useFreeCamera = !useFreeCamera;
+					if (useFreeCamera)
+					{
+						playerEntity.Get<CameraComponent>().SetViewport(Rectf(0.7f, 0.7f, 0.2f, 0.2f));
+						world.GetFreeCamera().SetViewport(Rectf(0.0f, 0.0f, 1.0f, 1.0f));
+					}
+					else
+					{
+						world.GetFreeCamera().SetViewport(Rectf(0.7f, 0.7f, 0.2f, 0.2f));
+						playerEntity.Get<CameraComponent>().SetViewport(Rectf(0.0f, 0.0f, 1.0f, 1.0f));
+					}
 				}
 
 				// Camera movement
@@ -353,7 +352,7 @@ int main(int argc, char** argv)
 					if (Keyboard::IsHold(Keyboard::Key::S)) forward -= 1.0f;
 					if (Keyboard::IsHold(Keyboard::Key::A)) left += 1.0f;
 					if (Keyboard::IsHold(Keyboard::Key::D)) left -= 1.0f;
-					const F32 deltaYaw = -Mouse::GetMouseMovement().x * 0.25f;
+					const F32 deltaYaw = Mouse::GetMouseMovement().x * 0.25f;
 					const F32 deltaPitch = Mouse::GetMouseMovement().y * 0.15f;
 					FPSCamera(world.GetFreeCamera(), dt.AsSeconds(), forward, left, deltaYaw, deltaPitch);
 				}
@@ -363,7 +362,43 @@ int main(int argc, char** argv)
 				}
 
 				// Move player using controller
-				FPSCamera(playerCam, dt.AsSeconds(), -Controller::GetAxis(0, 1), -Controller::GetAxis(0, 0), -Controller::GetAxis(0, 3), Controller::GetAxis(0, 4));
+				{
+					const F32 forwardMvt = -Controller::GetAxis(0, 1);
+					const F32 leftMvt = -Controller::GetAxis(0, 0);
+					const F32 deltaYaw = Controller::GetAxis(0, 3);
+					const F32 deltaPitch = Controller::GetAxis(0, 4);
+					const F32 dtSeconds = dt.AsSeconds();
+					
+					Transform& playerTransform = playerEntity.Get<TransformComponent>().transform;
+
+					Vector3f direction = playerTransform.GetRotation().GetForward();
+
+					// Movement
+					if (forwardMvt != 0.0f || leftMvt != 0.0f)
+					{
+						Vector3f mvtUnit = direction;
+						mvtUnit.y = 0.0f;
+						mvtUnit.Normalize();
+
+						Vector3f movement;
+						movement += 3.0f * forwardMvt * mvtUnit * dtSeconds;
+						movement -= 3.0f * leftMvt * mvtUnit.CrossProduct(ENLIVE_DEFAULT_UP) * dtSeconds;
+						playerTransform.Move(movement);
+					}
+
+					// Rotation
+					if (deltaYaw != 0.0f || deltaPitch != 0.0f)
+					{
+						if (!Math::Equals(deltaYaw, 0.0f))
+						{
+							playerTransform.SetRotation(playerTransform.GetRotation() * Matrix3f::RotationY(100.0f * dtSeconds * deltaYaw));
+						}
+						if (!Math::Equals(deltaPitch, 0.0f))
+						{
+							//playerTransform.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
+						}
+					}
+				}
 
 				// Toggle debug stats
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
@@ -378,8 +413,8 @@ int main(int argc, char** argv)
 				world.GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
 				if (useFreeCamera)
 				{
-					world.GetDebugDraw().DrawFrustum(playerCam.CreateFrustum(), Colors::Blue);
-					world.GetDebugDraw().DrawTransform(Matrix4f::Transform(playerCam.GetPosition(), playerCam.GetRotation()));
+					world.GetDebugDraw().DrawFrustum(playerEntity.Get<CameraComponent>().CreateFrustum(), Colors::Blue);
+					world.GetDebugDraw().DrawTransform(playerEntity.Get<TransformComponent>().transform.GetMatrix());
 				}
 				else
 				{
@@ -390,36 +425,61 @@ int main(int argc, char** argv)
 
 				// Render
 				{
-					bgfx::touch(mainViewId);
 
-					// Display mouse pos
-					bgfx::dbgTextClear();
-					/*
-					const Vector2i dbgMousePos = Mouse::GetPositionCurrentWindow();
-					const Vector2i dbgMouseDeltaPos = Mouse::GetMouseMovement();
-					const I32 dbgMouseWheel = Mouse::GetWheel();
-					bgfx::dbgTextPrintf(0, 0, 0x0f, "Mouse: (%d, %d) (%d, %d) (%d)", dbgMousePos.x, dbgMousePos.y, dbgMouseDeltaPos.x, dbgMouseDeltaPos.y, dbgMouseWheel);
-					*/
-
-					bgfx::dbgTextPrintf(0, 3, 0x0f, "%s", traceryString.c_str());
-
+					// Render the other camera on the preview
 					if (useFreeCamera)
 					{
-						const Vector3f position = world.GetFreeCamera().GetPosition();
-						bgfx::dbgTextPrintf(0, 2, 0x0f, "Position: (%f, %f, %f)", position.x, position.y, position.z);
-						world.GetFreeCamera().Apply(mainViewId);
+						playerEntity.Get<CameraComponent>().Apply();
+						bgfx::setTransform(tilemapTransform.GetData());
+						tilemap.Render(playerEntity.Get<CameraComponent>().GetViewID());
 					}
 					else
 					{
-						const Vector3f position = playerCam.GetPosition();
-						bgfx::dbgTextPrintf(0, 2, 0x0f, "Position: (%f, %f, %f)", position.x, position.y, position.z);
-						playerCam.Apply(mainViewId);
+						world.GetFreeCamera().Apply();
+						bgfx::setTransform(tilemapTransform.GetData());
+						tilemap.Render(world.GetFreeCamera().GetViewID());
 					}
-
 					world.Render();
 
-					bgfx::setTransform(tilemapTransform.GetData());
-					tilemap.Render(mainViewId);
+
+					// Main view
+					// Debug texts
+					{
+						bgfx::dbgTextClear();
+						/*
+						const Vector2i dbgMousePos = Mouse::GetPositionCurrentWindow();
+						const Vector2i dbgMouseDeltaPos = Mouse::GetMouseMovement();
+						const I32 dbgMouseWheel = Mouse::GetWheel();
+						bgfx::dbgTextPrintf(0, 0, 0x0f, "Mouse: (%d, %d) (%d, %d) (%d)", dbgMousePos.x, dbgMousePos.y, dbgMouseDeltaPos.x, dbgMouseDeltaPos.y, dbgMouseWheel);
+						*/
+						if (useFreeCamera)
+						{
+							const Vector3f position = world.GetFreeCamera().GetPosition();
+							bgfx::dbgTextPrintf(0, 2, 0x0f, "Camera: (%f, %f, %f)", position.x, position.y, position.z);
+						}
+						else
+						{
+							const Vector3f position = playerEntity.Get<TransformComponent>().transform.GetPosition() + playerEntity.Get<CameraComponent>().GetPosition();
+							bgfx::dbgTextPrintf(0, 2, 0x0f, "Camera: (%f, %f, %f)", position.x, position.y, position.z);
+						}
+						{
+							const Vector3f position = playerEntity.Get<TransformComponent>().transform.GetPosition();
+							bgfx::dbgTextPrintf(0, 3, 0x0f, "Position: (%f, %f, %f)", position.x, position.y, position.z);
+						}
+					}
+					if (useFreeCamera)
+					{
+						world.GetFreeCamera().Apply();
+						bgfx::setTransform(tilemapTransform.GetData());
+						tilemap.Render(world.GetFreeCamera().GetViewID());
+					}
+					else
+					{
+						playerEntity.Get<CameraComponent>().Apply();
+						bgfx::setTransform(tilemapTransform.GetData());
+						tilemap.Render(playerEntity.Get<CameraComponent>().GetViewID());
+					}
+					world.Render();
 
 					bgfx::frame();
 				}

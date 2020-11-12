@@ -8,7 +8,7 @@ namespace en
 {
 
 Transform::Transform()
-	: mMatrix()
+	: mMatrix(Matrix4f::Identity())
 {
 }
 

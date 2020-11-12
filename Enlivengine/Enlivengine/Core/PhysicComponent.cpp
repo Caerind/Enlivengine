@@ -2,9 +2,8 @@
 
 #ifdef ENLIVE_MODULE_CORE
 
-#include "World.hpp"
-#include "Entity.hpp"
-
+#include <Enlivengine/Core/World.hpp>
+#include <Enlivengine/Core/Entity.hpp>
 namespace en
 {
 

@@ -213,7 +213,7 @@ void PhysicSystem::Render()
 	if (mDebugRender)
 	{
 		mPhysicWorld->DrawDebugData();
-		mDebugDraw.Render(240); // TODO : Unhardcode this
+		mDebugDraw.Render();
 	}
 }
 

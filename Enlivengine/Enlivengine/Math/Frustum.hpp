@@ -24,8 +24,10 @@ public:
 
 	Frustum();
 	Frustum(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane, const Vector3f& eye, const Vector3f& target, const Vector3f& up = ENLIVE_DEFAULT_UP, Math::Handedness handedness = ENLIVE_DEFAULT_HANDEDNESS);
+	Frustum(F32 left, F32 top, F32 right, F32 bottom, F32 nearPlane, F32 farPlane, const Vector3f& eye, const Vector3f& target, const Vector3f& up = ENLIVE_DEFAULT_UP, Math::Handedness handedness = ENLIVE_DEFAULT_HANDEDNESS);
 
 	void Build(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane, const Vector3f& eye, const Vector3f& target, const Vector3f& up = ENLIVE_DEFAULT_UP, Math::Handedness handedness = ENLIVE_DEFAULT_HANDEDNESS);
+	void Build(F32 left, F32 top, F32 right, F32 bottom, F32 nearPlane, F32 farPlane, const Vector3f& eye, const Vector3f& target, const Vector3f& up = ENLIVE_DEFAULT_UP, Math::Handedness handedness = ENLIVE_DEFAULT_HANDEDNESS);
 
 	bool Contains(const Vector3f& point) const;
 	bool Contains(const AABB& aabb) const;
@@ -45,6 +47,9 @@ public:
 	const Vector3f& GetCorner(Corners corner) const;
 
 	Frustum Transform(const Matrix4f& transform) const;
+
+private:
+	void BuildPlanesFromCorners(Math::Handedness handedness);
 
 private:
 	Plane mPlanes[6];

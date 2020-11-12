@@ -20,6 +20,7 @@
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/PhysicComponent.hpp>
+#include <Enlivengine/Core/CameraComponent.hpp>
 
 //////////////////////////////////////////////////////////////////
 // en::NameComponent
@@ -59,7 +60,6 @@ ENLIVE_META_CLASS_END()
 // en::CameraComponent
 //////////////////////////////////////////////////////////////////
 ENLIVE_META_CLASS_BEGIN(en::CameraComponent)
-	ENLIVE_META_CLASS_MEMBER("camera", &en::CameraComponent::camera)
 ENLIVE_META_CLASS_END()
 
 #ifdef ENLIVE_ENABLE_IMGUI
@@ -73,10 +73,10 @@ struct HasCustomEditor<en::CameraComponent>
 #ifdef ENLIVE_DEBUG
 		if (en::World* world = en::Universe::GetInstance().GetCurrentWorld())
 		{
-			world->GetDebugDraw().DrawFrustum(object.camera.CreateFrustum());
+			world->GetDebugDraw().DrawFrustum(object.CreateFrustum());
 		}
 #endif // ENLIVE_DEBUG
-		if (en::ObjectEditor::ImGuiEditor(object.camera, name))
+		if (en::ObjectEditor::ImGuiEditor(object.mCamera, name))
 		{
 			modified = true;
 		}

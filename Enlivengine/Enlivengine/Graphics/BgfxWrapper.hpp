@@ -8,6 +8,7 @@
 
 #include <Enlivengine/Utils/Signal.hpp>
 #include <Enlivengine/Window/Window.hpp>
+#include <Enlivengine/Math/Vector2.hpp>
 
 namespace en
 {
@@ -24,6 +25,11 @@ public:
     static bool IsDisplayingStats();
 #endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
 
+    static void SetCurrentView(bgfx::ViewId view);
+    static bgfx::ViewId GetCurrentView();
+
+    static Vector2u GetFramebufferSize(bgfx::FrameBufferHandle framebuffer);
+
 private: 
     static BgfxWrapper& GetInstance();
 
@@ -37,6 +43,9 @@ private:
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
 	bool mDisplayStats;
 #endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
+
+    Vector2u mBackBufferSize;
+    bgfx::ViewId mCurrentView;
 };
 
 } // namespace en

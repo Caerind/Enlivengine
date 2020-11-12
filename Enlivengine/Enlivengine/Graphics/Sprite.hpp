@@ -31,7 +31,7 @@ public:
 	Rectf GetLocalBounds() const;
 	Rectf GetGlobalBounds() const;
 
-	void Render(const bgfx::ViewId& viewId) const;
+	void Render() const;
 
 private:
 	void UpdateVertices();

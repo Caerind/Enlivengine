@@ -22,6 +22,11 @@ Frustum::Frustum(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane, const Vector3
 	Build(fov, aspect, nearPlane, farPlane, eye, target, up, handedness);
 }
 
+Frustum::Frustum(F32 left, F32 top, F32 right, F32 bottom, F32 nearPlane, F32 farPlane, const Vector3f& eye, const Vector3f& target, const Vector3f& up /*= ENLIVE_DEFAULT_UP*/, Math::Handedness handedness /*= ENLIVE_DEFAULT_HANDEDNESS*/)
+{
+	Build(left, top, right, bottom, nearPlane, farPlane, eye, target, up, handedness);
+}
+
 void Frustum::Build(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane, const Vector3f& eye, const Vector3f& target, const Vector3f& up /*= ENLIVE_DEFAULT_UP*/, Math::Handedness handedness /*= ENLIVE_DEFAULT_HANDEDNESS*/)
 {
 	const F32 tangent = Math::Tan(fov * 0.5f);
@@ -33,7 +38,6 @@ void Frustum::Build(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane, const Vect
 	const Vector3f f((target - eye).Normalized());
 	const Vector3f s(handedness == Math::Handedness::Right ? Vector3f::CrossProduct(f, up).Normalized() : Vector3f::CrossProduct(up, f).Normalized());
 	const Vector3f u(handedness == Math::Handedness::Right ? Vector3f::CrossProduct(s, f) : Vector3f::CrossProduct(f, s));
-
 	const Vector3f nc(eye + f * nearPlane);
 	const Vector3f fc(eye + f * farPlane);
 
@@ -46,24 +50,27 @@ void Frustum::Build(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane, const Vect
 	mCorners[static_cast<U32>(Corners::NBR)] = nc - u * nearH + s * nearW;
 	mCorners[static_cast<U32>(Corners::NBL)] = nc - u * nearH - s * nearW;
 
-	if (handedness == Math::Handedness::Left)
-	{
-		mPlanes[static_cast<U32>(Planes::Near)].Set(mCorners[static_cast<U32>(Corners::NTL)], mCorners[static_cast<U32>(Corners::NTR)], mCorners[static_cast<U32>(Corners::NBR)]);
-		mPlanes[static_cast<U32>(Planes::Far)].Set(mCorners[static_cast<U32>(Corners::FTR)], mCorners[static_cast<U32>(Corners::FTL)], mCorners[static_cast<U32>(Corners::FBL)]);
-		mPlanes[static_cast<U32>(Planes::Top)].Set(mCorners[static_cast<U32>(Corners::NTL)], mCorners[static_cast<U32>(Corners::FTL)], mCorners[static_cast<U32>(Corners::FTR)]);
-		mPlanes[static_cast<U32>(Planes::Bottom)].Set(mCorners[static_cast<U32>(Corners::FBR)], mCorners[static_cast<U32>(Corners::NBL)], mCorners[static_cast<U32>(Corners::NBR)]);
-		mPlanes[static_cast<U32>(Planes::Right)].Set(mCorners[static_cast<U32>(Corners::FBR)], mCorners[static_cast<U32>(Corners::NTR)], mCorners[static_cast<U32>(Corners::NBR)]);
-		mPlanes[static_cast<U32>(Planes::Left)].Set(mCorners[static_cast<U32>(Corners::NBL)], mCorners[static_cast<U32>(Corners::FTL)], mCorners[static_cast<U32>(Corners::FBL)]);
-	}
-	else
-	{
-		mPlanes[static_cast<U32>(Planes::Near)].Set(mCorners[static_cast<U32>(Corners::NTL)], mCorners[static_cast<U32>(Corners::NBR)], mCorners[static_cast<U32>(Corners::NTR)]);
-		mPlanes[static_cast<U32>(Planes::Far)].Set(mCorners[static_cast<U32>(Corners::FTR)], mCorners[static_cast<U32>(Corners::FBL)], mCorners[static_cast<U32>(Corners::FTL)]);
-		mPlanes[static_cast<U32>(Planes::Top)].Set(mCorners[static_cast<U32>(Corners::NTL)], mCorners[static_cast<U32>(Corners::FTR)], mCorners[static_cast<U32>(Corners::FTL)]);
-		mPlanes[static_cast<U32>(Planes::Bottom)].Set(mCorners[static_cast<U32>(Corners::FBR)], mCorners[static_cast<U32>(Corners::NBR)], mCorners[static_cast<U32>(Corners::NBL)]);
-		mPlanes[static_cast<U32>(Planes::Right)].Set(mCorners[static_cast<U32>(Corners::FBR)], mCorners[static_cast<U32>(Corners::NTR)], mCorners[static_cast<U32>(Corners::NBR)]);
-		mPlanes[static_cast<U32>(Planes::Left)].Set(mCorners[static_cast<U32>(Corners::NBL)], mCorners[static_cast<U32>(Corners::FTL)], mCorners[static_cast<U32>(Corners::FBL)]);
-	}
+	BuildPlanesFromCorners(handedness);
+}
+
+void Frustum::Build(F32 left, F32 top, F32 right, F32 bottom, F32 nearPlane, F32 farPlane, const Vector3f& eye, const Vector3f& target, const Vector3f& up /*= ENLIVE_DEFAULT_UP*/, Math::Handedness handedness /*= ENLIVE_DEFAULT_HANDEDNESS*/)
+{
+	const Vector3f f((target - eye).Normalized());
+	const Vector3f s(handedness == Math::Handedness::Right ? Vector3f::CrossProduct(f, up).Normalized() : Vector3f::CrossProduct(up, f).Normalized());
+	const Vector3f u(handedness == Math::Handedness::Right ? Vector3f::CrossProduct(s, f) : Vector3f::CrossProduct(f, s));
+	const Vector3f nc(eye + f * nearPlane);
+	const Vector3f fc(eye + f * farPlane);
+
+	mCorners[static_cast<U32>(Corners::FTL)] = fc + u * top + s * left;
+	mCorners[static_cast<U32>(Corners::FTR)] = fc + u * top + s * right;
+	mCorners[static_cast<U32>(Corners::FBR)] = fc + u * bottom + s * right;
+	mCorners[static_cast<U32>(Corners::FBL)] = fc + u * bottom + s * left;
+	mCorners[static_cast<U32>(Corners::NTL)] = nc + u * top + s * left;
+	mCorners[static_cast<U32>(Corners::NTR)] = nc + u * top + s * right;
+	mCorners[static_cast<U32>(Corners::NBR)] = nc + u * bottom + s * right;
+	mCorners[static_cast<U32>(Corners::NBL)] = nc + u * bottom + s * left;
+
+	BuildPlanesFromCorners(handedness);
 }
 
 bool Frustum::Contains(const Vector3f& point) const
@@ -194,13 +201,36 @@ Frustum Frustum::Transform(const Matrix4f& transform) const
 	Frustum out;
 	for (U32 i = 0; i < 6; ++i)
 	{
-		out.mPlanes[i] = mPlanes[i].Transform(transform);
+		// TODO
+		//out.mPlanes[i] = mPlanes[i].Transform(transform);
 	}
 	for (U32 i = 0; i < 8; ++i)
 	{
 		out.mCorners[i] = transform.TransformPoint(mCorners[i]);
 	}
 	return out;
+}
+
+void Frustum::BuildPlanesFromCorners(Math::Handedness handedness)
+{
+	if (handedness == Math::Handedness::Left)
+	{
+		mPlanes[static_cast<U32>(Planes::Near)].Set(mCorners[static_cast<U32>(Corners::NTL)], mCorners[static_cast<U32>(Corners::NTR)], mCorners[static_cast<U32>(Corners::NBR)]);
+		mPlanes[static_cast<U32>(Planes::Far)].Set(mCorners[static_cast<U32>(Corners::FTR)], mCorners[static_cast<U32>(Corners::FTL)], mCorners[static_cast<U32>(Corners::FBL)]);
+		mPlanes[static_cast<U32>(Planes::Top)].Set(mCorners[static_cast<U32>(Corners::NTL)], mCorners[static_cast<U32>(Corners::FTL)], mCorners[static_cast<U32>(Corners::FTR)]);
+		mPlanes[static_cast<U32>(Planes::Bottom)].Set(mCorners[static_cast<U32>(Corners::FBR)], mCorners[static_cast<U32>(Corners::NBL)], mCorners[static_cast<U32>(Corners::NBR)]);
+		mPlanes[static_cast<U32>(Planes::Right)].Set(mCorners[static_cast<U32>(Corners::FBR)], mCorners[static_cast<U32>(Corners::NTR)], mCorners[static_cast<U32>(Corners::NBR)]);
+		mPlanes[static_cast<U32>(Planes::Left)].Set(mCorners[static_cast<U32>(Corners::NBL)], mCorners[static_cast<U32>(Corners::FTL)], mCorners[static_cast<U32>(Corners::FBL)]);
+	}
+	else
+	{
+		mPlanes[static_cast<U32>(Planes::Near)].Set(mCorners[static_cast<U32>(Corners::NTL)], mCorners[static_cast<U32>(Corners::NBR)], mCorners[static_cast<U32>(Corners::NTR)]);
+		mPlanes[static_cast<U32>(Planes::Far)].Set(mCorners[static_cast<U32>(Corners::FTR)], mCorners[static_cast<U32>(Corners::FBL)], mCorners[static_cast<U32>(Corners::FTL)]);
+		mPlanes[static_cast<U32>(Planes::Top)].Set(mCorners[static_cast<U32>(Corners::NTL)], mCorners[static_cast<U32>(Corners::FTR)], mCorners[static_cast<U32>(Corners::FTL)]);
+		mPlanes[static_cast<U32>(Planes::Bottom)].Set(mCorners[static_cast<U32>(Corners::FBR)], mCorners[static_cast<U32>(Corners::NBR)], mCorners[static_cast<U32>(Corners::NBL)]);
+		mPlanes[static_cast<U32>(Planes::Right)].Set(mCorners[static_cast<U32>(Corners::FBR)], mCorners[static_cast<U32>(Corners::NTR)], mCorners[static_cast<U32>(Corners::NBR)]);
+		mPlanes[static_cast<U32>(Planes::Left)].Set(mCorners[static_cast<U32>(Corners::NBL)], mCorners[static_cast<U32>(Corners::FTL)], mCorners[static_cast<U32>(Corners::FBL)]);
+	}
 }
 
 } // namespace en

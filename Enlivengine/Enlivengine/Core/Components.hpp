@@ -48,13 +48,6 @@ struct SpriteComponent
 	Sprite sprite;
 };
 
-struct CameraComponent
-{
-	CameraComponent() : camera() {}
-
-	Camera camera;
-};
-
 } // namespace en
 
 #endif // ENLIVE_MODULE_CORE

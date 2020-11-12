@@ -44,7 +44,8 @@ void TileLayer::SetTile(const Vector2u& tileCoords, U32 tileID)
 	enAssert(tileCoords.y < mSize.y);
 	const U32 tileIndex = tileCoords.y * mSize.x + tileCoords.x;
 	enAssert(tileIndex < static_cast<U32>(mTiles.size()));
-	const U32 vertexIndex = tileIndex * 4;
+	// TODO : TILED UPDATE
+	//const U32 vertexIndex = tileIndex * 4;
 
 	const U32 previousTileID = mTiles[tileIndex];
 	const U32 previousTilesetIndex = mMap.GetTilesetIndexFromGID(previousTileID);

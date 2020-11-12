@@ -4,6 +4,8 @@
 
 #include <Enlivengine/Utils/Assert.hpp>
 
+#include <Enlivengine/Graphics/BgfxWrapper.hpp>
+
 namespace en
 {
 
@@ -111,7 +113,7 @@ Rectf Sprite::GetGlobalBounds() const
 	return GetLocalBounds();
 }
 
-void Sprite::Render(const bgfx::ViewId& viewId) const
+void Sprite::Render() const
 {
 	if (bgfx::isValid(mBuffer) && mTexture.IsValid())
 	{
@@ -125,7 +127,7 @@ void Sprite::Render(const bgfx::ViewId& viewId) const
 			// Specific to this sprite
 			bgfx::setVertexBuffer(0, mBuffer);
 			bgfx::setTexture(0, kUniformTexture, texture.GetHandle());
-			kShader.Submit(viewId);
+			kShader.Submit(BgfxWrapper::GetCurrentView());
 		}
 	}
 }

@@ -78,8 +78,47 @@ struct HasCustomEditor<en::Camera>
 			}
 			else
 			{
-				ImGui::Text("TODO");
+				en::F32 left = object.GetLeft();
+				if (en::ObjectEditor::ImGuiEditor(left, "Left"))
+				{
+					object.SetLeft(left);
+					modified = true;
+				}
+				en::F32 right = object.GetRight();
+				if (en::ObjectEditor::ImGuiEditor(right, "Right"))
+				{
+					object.SetRight(right);
+					modified = true;
+				}
+				en::F32 top = object.GetTop();
+				if (en::ObjectEditor::ImGuiEditor(top, "Top"))
+				{
+					object.SetTop(top);
+					modified = true;
+				}
+				en::F32 bottom = object.GetBottom();
+				if (en::ObjectEditor::ImGuiEditor(bottom, "Bottom"))
+				{
+					object.SetBottom(bottom);
+					modified = true;
+				}
 			}
+
+			en::Color clearColor = object.GetClearColor();
+			if (en::ObjectEditor::ImGuiEditor(clearColor, "ClearColor"))
+			{
+				object.SetClearColor(clearColor);
+				modified = true;
+			}
+
+			en::Rectf viewport = object.GetViewport();
+			if (en::ObjectEditor::ImGuiEditor(viewport, "Viewport"))
+			{
+				object.SetViewport(viewport);
+				modified = true;
+			}
+
+			// TODO : Framebuffer
 
 			ImGui::Unindent();
 		}

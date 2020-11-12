@@ -147,15 +147,13 @@ bool BgfxWrapper::Init(Window& window)
         return false;
     }
 
+    bgfx.mBackBufferSize.x = window.GetWidth();
+    bgfx.mBackBufferSize.y = window.GetHeight();
+    bgfx.mCurrentView = BGFX_INVALID_HANDLE;
+
 #ifdef ENLIVE_DEBUG
     bgfx::setDebug(BGFX_DEBUG_TEXT);
 #endif // ENLIVE_DEBUG
-
-	constexpr bgfx::ViewId kClearView = 0;
-	constexpr U32 kClearColor = 0x443355FF;
-
-    bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, kClearColor, 1.0f, 0);
-    bgfx::setViewRect(kClearView, 0, 0, static_cast<uint16_t>(window.GetWidth()), static_cast<uint16_t>(window.GetHeight()));
 
     bgfx.mResizeRenderer.Connect(window.OnResized, [](const Window*, U32 width, U32 height) { GetInstance().Reset(static_cast<U32>(width), static_cast<U32>(height)); });
 
@@ -196,6 +194,24 @@ bool BgfxWrapper::IsDisplayingStats()
 {
     return GetInstance().mDisplayStats;
 }
+
+void BgfxWrapper::SetCurrentView(bgfx::ViewId view)
+{
+    GetInstance().mCurrentView = view;
+}
+
+bgfx::ViewId BgfxWrapper::GetCurrentView()
+{
+    return GetInstance().mCurrentView;
+}
+
+Vector2u BgfxWrapper::GetFramebufferSize(bgfx::FrameBufferHandle framebuffer)
+{
+    // TODO : Framebuffers
+    ENLIVE_UNUSED(framebuffer);
+    return GetInstance().mBackBufferSize;
+}
+
 #endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
 
 BgfxWrapper& BgfxWrapper::GetInstance()
@@ -218,12 +234,9 @@ BgfxWrapper::~BgfxWrapper()
 
 void BgfxWrapper::Reset(U32 width, U32 height)
 {
-	constexpr bgfx::ViewId kClearView = 0;
-	constexpr U32 kClearColor = 0x443355FF;
-
-	bgfx::reset(width, height);
-	bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, kClearColor, 1.0f, 0);
-	bgfx::setViewRect(kClearView, 0, 0, static_cast<uint16_t>(width), static_cast<uint16_t>(height));
+    BgfxWrapper& bgfx = GetInstance();
+    bgfx.mBackBufferSize.x = width;
+    bgfx.mBackBufferSize.y = height;
 }
 
 } // namespace en

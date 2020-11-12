@@ -4,6 +4,8 @@
 
 #include <Enlivengine/Utils/Assert.hpp>
 
+#include <Enlivengine/Graphics/BgfxWrapper.hpp>
+
 namespace en
 {
 
@@ -178,7 +180,7 @@ void DebugDraw::DrawSphere(const Sphere& sphere, const Color& color /*= Colors::
 	DrawSphere(sphere.GetCenter(), sphere.GetRadius(), color);
 }
 
-void DebugDraw::Render(const bgfx::ViewId& viewId)
+void DebugDraw::Render()
 {
 	if (mVertexCount > 0 && kShader.IsValid())
 	{
@@ -191,10 +193,13 @@ void DebugDraw::Render(const bgfx::ViewId& viewId)
 
 		bgfx::setState(BGFX_STATE_PT_LINES | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_BLEND_ALPHA_TO_COVERAGE);
 		bgfx::setVertexBuffer(0, mBuffer);
-		kShader.Submit(viewId);
-
-		mVertexCount = 0;
+		kShader.Submit(BgfxWrapper::GetCurrentView());
 	}
+}
+
+void DebugDraw::Clear()
+{
+	mVertexCount = 0;
 }
 
 void DebugDraw::AddVertex(const Vector3f& pos, const Color& color)

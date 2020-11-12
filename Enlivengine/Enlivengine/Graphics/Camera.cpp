@@ -4,42 +4,70 @@
 
 #include <Enlivengine/Utils/Assert.hpp>
 
+#include <Enlivengine/Graphics/BgfxWrapper.hpp>
+
 namespace en
 {
+
+bgfx::ViewId Camera::sViewIdCounter = 0;
 
 Camera::Camera()
 	: mViewMatrix()
 	, mProjectionMatrix()
 	, mRotation()
+	, mViewport(Rectf(0.0f, 0.0f, 1.0f, 1.0f))
 	, mPosition()
+	, mClearColor(U32(0x443355FF))
+	, mFramebuffer(BGFX_INVALID_HANDLE)
+	, mViewId(sViewIdCounter++)
 	, mProjectionMode(ProjectionMode::Perspective)
 	, mProjectionDirty(true)
 	, mViewDirty(true)
 {
 }
 
-void Camera::Apply(bgfx::ViewId viewId) const
+Camera::Camera(Camera&& other) noexcept
 {
+	// TODO
+	ENLIVE_UNUSED(other);
+}
+
+Camera& Camera::operator=(Camera&& other) noexcept
+{
+	// TODO
+	ENLIVE_UNUSED(other);
+	return *this;
+}
+
+void Camera::Apply() const
+{
+	BgfxWrapper::SetCurrentView(mViewId);
+	bgfx::setViewClear(mViewId, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, mClearColor.ToRGBA(), 1.0f, 0);
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		bgfx::setViewTransform(viewId, GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
+		bgfx::setViewTransform(mViewId, GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
 	}
 	else
 	{
-		bgfx::setViewTransform(viewId, GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
+		bgfx::setViewTransform(mViewId, GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
 	}
+	const Vector2u framebufferSize = BgfxWrapper::GetFramebufferSize(mFramebuffer);
+	const Vector2f vpMin = mViewport.GetMin();
+	const Vector2f vpSize = mViewport.GetSize();
+ 	bgfx::setViewRect(mViewId, static_cast<U16>(vpMin.x * framebufferSize.x), static_cast<U16>(vpMin.y * framebufferSize.y), static_cast<U16>(vpSize.x * framebufferSize.x), static_cast<U16>(vpSize.y * framebufferSize.y));
+	bgfx::setViewFrameBuffer(mViewId, mFramebuffer);
+	bgfx::touch(mViewId);
 }
 
 Frustum Camera::CreateFrustum() const
 {
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		return Frustum(perspective.fov, perspective.aspect, perspective.nearPlane, perspective.farPlane, mPosition, mPosition + mRotation.Rotate(ENLIVE_DEFAULT_FORWARD), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+		return Frustum(perspective.fov, perspective.aspect, perspective.nearPlane, perspective.farPlane, mPosition, mPosition + mRotation.TransformDirection(ENLIVE_DEFAULT_FORWARD), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	}
 	else
 	{
-		enAssert(false); // TODO
-		return Frustum();
+		return Frustum(orthographic.left, orthographic.top, orthographic.right, orthographic.bottom, orthographic.nearPlane, orthographic.farPlane, mPosition, mPosition + mRotation.TransformDirection(ENLIVE_DEFAULT_FORWARD), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	}
 }
 
@@ -213,7 +241,7 @@ const Matrix4f& Camera::GetProjectionMatrix() const
 	return mProjectionMatrix;
 }
 
-void Camera::InitializeView(const Vector3f& position, const Quaternionf& rotation)
+void Camera::InitializeView(const Vector3f& position, const Matrix3f& rotation)
 {
 	mPosition = position;
 	mRotation = rotation;
@@ -237,18 +265,18 @@ void Camera::Move(const Vector3f& movement)
 	mViewDirty = true;
 }
 
-void Camera::SetRotation(const Quaternionf& rotation)
+void Camera::SetRotation(const Matrix3f& rotation)
 {
 	mRotation = rotation;
 	mViewDirty = true;
 }
 
-const Quaternionf& Camera::GetRotation() const
+const Matrix3f& Camera::GetRotation() const
 {
 	return mRotation;
 }
 
-void Camera::Rotate(const Quaternionf& rotation)
+void Camera::Rotate(const Matrix3f& rotation)
 {
 	mRotation *= rotation;
 	mViewDirty = true;
@@ -263,9 +291,44 @@ const Matrix4f& Camera::GetViewMatrix() const
 	return mViewMatrix;
 }
 
+void Camera::SetClearColor(const Color& clearColor)
+{
+	mClearColor = clearColor;
+}
+
+const Color& Camera::GetClearColor() const
+{
+	return mClearColor;
+}
+
+void Camera::SetViewport(const Rectf& viewport)
+{
+	mViewport = viewport;
+}
+
+const en::Rectf& Camera::GetViewport() const
+{
+	return mViewport;
+}
+
+void Camera::SetFramebuffer(bgfx::FrameBufferHandle framebuffer)
+{
+	mFramebuffer = framebuffer;
+}
+
+bgfx::FrameBufferHandle Camera::GetFramebuffer() const
+{
+	return mFramebuffer;
+}
+
+bgfx::ViewId Camera::GetViewID() const
+{
+	return mViewId;
+}
+
 void Camera::UpdateProjectionMatrix() const
 {
-	const bool homogenousDepth = true;// bgfx::getCaps()->homogeneousDepth;
+	const bool homogenousDepth = bgfx::getCaps()->homogeneousDepth;
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
 		mProjectionMatrix = Matrix4f::Perspective(perspective.fov, perspective.aspect, perspective.nearPlane, perspective.farPlane, homogenousDepth, ENLIVE_DEFAULT_HANDEDNESS);

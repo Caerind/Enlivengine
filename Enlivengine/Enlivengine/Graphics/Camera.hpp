@@ -9,6 +9,8 @@
 #include <Enlivengine/Math/Vector3.hpp>
 #include <Enlivengine/Math/Matrix4.hpp>
 #include <Enlivengine/Math/Frustum.hpp>
+#include <Enlivengine/Math/Color.hpp>
+#include <Enlivengine/Math/Rect.hpp>
 
 namespace en
 {
@@ -17,8 +19,13 @@ class Camera
 {
 public:
 	Camera();
+	Camera(Camera&& other) noexcept;
+	Camera(const Camera& other) = delete;
 
-	void Apply(bgfx::ViewId viewId) const;
+	Camera& operator=(Camera&& other) noexcept;
+	Camera& operator=(const Camera& other) = delete;
+
+	void Apply() const;
 
 	Frustum CreateFrustum() const;
 
@@ -63,17 +70,30 @@ public:
 
     // View
 
-	void InitializeView(const Vector3f& position, const Quaternionf& rotation);
+	void InitializeView(const Vector3f& position, const Matrix3f& rotation);
 
 	void SetPosition(const Vector3f& position);
 	const Vector3f& GetPosition() const;
 	void Move(const Vector3f& movement);
 
-	void SetRotation(const Quaternionf& rotation);
-	const Quaternionf& GetRotation() const;
-	void Rotate(const Quaternionf& rotation);
+	void SetRotation(const Matrix3f& rotation);
+	const Matrix3f& GetRotation() const;
+	void Rotate(const Matrix3f& rotation);
 
     const Matrix4f& GetViewMatrix() const;
+
+	// View Options
+
+	void SetClearColor(const Color& clearColor);
+	const Color& GetClearColor() const;
+
+	void SetViewport(const Rectf& viewport);
+	const Rectf& GetViewport() const;
+
+	void SetFramebuffer(bgfx::FrameBufferHandle framebuffer);
+	bgfx::FrameBufferHandle GetFramebuffer() const;
+
+	bgfx::ViewId GetViewID() const;
 
 private:
 	void UpdateProjectionMatrix() const;
@@ -100,16 +120,22 @@ private:
 
 	mutable Matrix4f mViewMatrix;
     mutable Matrix4f mProjectionMatrix;
-	Quaternionf mRotation;
+	Matrix3f mRotation;
+	Rectf mViewport;
 	Vector3f mPosition;
 	union
 	{
 		PerspectiveData perspective;
 		OrthographicData orthographic;
 	};
+	Color mClearColor;
+	bgfx::FrameBufferHandle mFramebuffer;
+	bgfx::ViewId mViewId;
 	ProjectionMode mProjectionMode;
 	mutable bool mProjectionDirty;
 	mutable bool mViewDirty;
+
+	static bgfx::ViewId sViewIdCounter;
 };
 
 } // namespace en
