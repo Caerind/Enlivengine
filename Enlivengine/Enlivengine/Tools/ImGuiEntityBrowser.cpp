@@ -7,6 +7,8 @@
 
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/World.hpp>
+#include <Enlivengine/Core/Entity.hpp>
 
 #include <Enlivengine/Meta/MetaSpecialization.hpp>
 
@@ -54,7 +56,7 @@ void ImGuiEntityBrowser::Display()
 				{
 					newEntity.Add<NameComponent>(entityNameInput);
 
-					mSelectedEntities.push_back(newEntity.GetEntity());
+					world->SelectEntity(newEntity);
 				}
 #ifdef ENLIVE_COMPILER_MSVC
 				strcpy_s(entityNameInput, "");
@@ -64,15 +66,15 @@ void ImGuiEntityBrowser::Display()
 			}
 		}
 
-		entityManager.Each([this, &entityManager](auto entityEntt)
+		entityManager.Each([this, &world](auto entityEntt)
 		{
-			en::Entity entity(entityManager, entityEntt);
+			Entity entity(world->GetEntityManager(), entityEntt);
 			if (entity.IsValid())
 			{
 				ImGui::PushID(entity.GetID());
 				if (ImGui::Button("x"))
 				{
-					entityManager.DestroyEntity(entity);
+					world->GetEntityManager().DestroyEntity(entity);
 				}
 				else
 				{
@@ -84,30 +86,18 @@ void ImGuiEntityBrowser::Display()
 					}
 					if (ImGui::Button(entityName))
 					{
-						const auto& selectEnt = entity.GetEntity();
-						bool alreadySelected = false;
-						for (const auto& ent : mSelectedEntities)
-						{
-							if (ent == selectEnt)
-							{
-								alreadySelected = true;
-								break;
-							}
-						}
-						if (!alreadySelected)
-						{
-							mSelectedEntities.push_back(selectEnt);
-						}
+						world->SelectEntity(entity);
 					}
 				}
 				ImGui::PopID();
 			}
 		});
 
-		en::U32 selectedEntities = static_cast<U32>(mSelectedEntities.size());
-		for (en::U32 i = 0; i < selectedEntities; )
+		const auto& selectedEntities = world->GetSelectedEntities();
+		U32 selectedEntitiesCount = static_cast<U32>(selectedEntities.size());
+		for (U32 i = 0; i < selectedEntitiesCount; )
 		{
-			Entity entity(world->GetEntityManager(), mSelectedEntities[i]);
+			Entity entity(world->GetEntityManager(), selectedEntities[i]);
 			bool selected = true;
 			if (entity.IsValid())
 			{
@@ -134,44 +124,25 @@ void ImGuiEntityBrowser::Display()
 
 			if (!selected)
 			{
-				mSelectedEntities.erase(mSelectedEntities.begin() + i);
-				selectedEntities--;
+				if (world->UnselectEntity(entity))
+				{
+					selectedEntitiesCount--;
+				}
+				else
+				{
+					i++;
+				}
 			}
 			else
 			{
 				i++;
 			}
 		}
-
 	}
 	else
 	{
 		ImGui::Text("No CurrentWorld for EntityBrowser");
 	}
-}
-
-bool ImGuiEntityBrowser::IsSelected(const Entity& entity) const
-{
-	if (World* world = Universe::GetInstance().GetCurrentWorld())
-	{
-		if (entity.IsValid() && &entity.GetWorld() == world && mVisible)
-		{
-			const auto& entityToTest = entity.GetEntity();
-			for (const auto& ent : mSelectedEntities)
-			{
-				if (ent == entityToTest)
-				{
-					return true;
-				}
-			}
-		}
-	}
-	return false;
-}
-
-const std::vector<entt::entity>& ImGuiEntityBrowser::GetSelectedEntities() const
-{
-	return mSelectedEntities;
 }
 
 } // namespace en

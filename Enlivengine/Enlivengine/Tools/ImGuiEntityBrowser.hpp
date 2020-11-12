@@ -9,8 +9,6 @@
 
 #include <Enlivengine/Tools/ImGuiToolManager.hpp>
 
-#include <Enlivengine/Core/Entity.hpp>
-
 namespace en
 {
 
@@ -24,12 +22,6 @@ public:
 	virtual const char* GetName() const;
 
 	virtual void Display();
-
-	bool IsSelected(const Entity& entity) const;
-	const std::vector<entt::entity>& GetSelectedEntities() const;
-
-private:
-	std::vector<entt::entity> mSelectedEntities;
 };
 
 } // namespace en

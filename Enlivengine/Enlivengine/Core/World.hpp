@@ -34,19 +34,24 @@ public:
 	Camera& GetMainCamera();
 	const Camera& GetMainCamera() const;
 
-#ifdef ENLIVE_DEBUG
-	Camera& GetFreeCamera();
-	const Camera& GetFreeCamera() const;
-
-	DebugDraw& GetDebugDraw();
-#endif // ENLIVE_DEBUG
-
 	void Play();
 	void Pause();
 	bool IsPlaying() const;
 	
 	void Update(Time dt);
 	void Render();
+
+#ifdef ENLIVE_DEBUG
+	Camera& GetFreeCamera();
+	const Camera& GetFreeCamera() const;
+
+	DebugDraw& GetDebugDraw();
+
+	bool IsSelected(const Entity& entity) const;
+	bool SelectEntity(const Entity& entity);
+	bool UnselectEntity(const Entity& entity);
+	const std::vector<entt::entity>& GetSelectedEntities() const;
+#endif // ENLIVE_DEBUG
 
 private:
 	EntityManager mEntityManager;
@@ -56,12 +61,14 @@ private:
 
 	Camera mMainCamera;
 
+	bool mPlaying;
+
 #ifdef ENLIVE_DEBUG
 	Camera mFreeCamera;
 	DebugDraw mDebugDraw;
-#endif // ENLIVE_DEBUG
 
-	bool mPlaying;
+	std::vector<entt::entity> mSelectedEntities;
+#endif // ENLIVE_DEBUG
 };
 
 template <typename T, typename ... Args>

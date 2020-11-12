@@ -21,7 +21,6 @@ DOCTEST_TEST_CASE("Matrix4")
 	DOCTEST_CHECK(en::Matrix4f() == en::Matrix4f::Identity());
 	DOCTEST_CHECK(en::Matrix4f(en::Matrix4f::Identity()) == en::Matrix4f::Identity());
 	DOCTEST_CHECK(en::Matrix4f(layout) == layout);
-	DOCTEST_CHECK(en::Matrix4f(layout.GetData()) == layout);
 
 	// Sets
 	DOCTEST_CHECK(en::Matrix4f::Identity().Set(en::Matrix4f::Identity()) == en::Matrix4f::Identity());
@@ -218,8 +217,8 @@ DOCTEST_TEST_CASE("Matrix4")
 	DOCTEST_CHECK(b.GetTranslation() == en::Vector3f());
 
 	const en::Matrix4f transform = scale * rotation * translation;
-	const en::Matrix4f transform2 = en::Matrix4f::Transform(vector, vector, roty26);
-	DOCTEST_CHECK(en::Matrix4f::Transform(vector, vector, roty26) == transform);
+	const en::Matrix4f transform2 = en::Matrix4f::Transform(vector, roty26, vector);
+	DOCTEST_CHECK(en::Matrix4f::Transform(vector, roty26, vector) == transform);
 
 	en::Matrix4f at = transform;
 	at.SetScale(3.0f);

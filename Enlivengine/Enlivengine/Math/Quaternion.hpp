@@ -19,7 +19,7 @@ public:
 	constexpr Quaternion(const Quaternion<T>& q) : v(q.v), s(q.s) {}
 	template <typename U>
 	constexpr Quaternion(const Quaternion<U>& q) : v(q.v), s(static_cast<T>(q.s)) {}
-	constexpr Quaternion(const Vector4<T>& v) : v(v.x, v.y, v.z), q(v.w) {}
+	constexpr Quaternion(const Vector4<T>& v) : v(v.x, v.y, v.z), s(v.w) {}
 	constexpr Quaternion(const T& x, const T& y, const T& z, const T& w) : v(x, y, z), s(w) {}
 	constexpr Quaternion(const Vector3<T>& v, const T& s) : v(v), s(s) {}
 	constexpr Quaternion(const Vector3<T>& eulerAngles) { Set(eulerAngles); }
@@ -29,7 +29,7 @@ public:
 	constexpr Quaternion<T>& Set(const Quaternion<T>& q) { v = q.v; s = q.s; return *this; }
 	template <typename U>
 	constexpr Quaternion<T>& Set(const Quaternion<U>& q) { v.Set(q.v); s = static_cast<T>(q.s); return *this; }
-	constexpr Quaternion<T>& Set(const T* a) { v.Set(a); q = a[3]; return *this; }
+	constexpr Quaternion<T>& Set(const T* a) { v.Set(a); s = a[3]; return *this; }
 	constexpr Quaternion<T>& Set(const Vector4<T>& v) { this->v.Set(v.x, v.y, v.z); s = v.w; return *this; }
 	constexpr Quaternion<T>& Set(const T& x, const T& y, const T& z, const T& w) { v.Set(x, y, z); s = w; return *this; }
 	constexpr Quaternion<T>& Set(const Vector3<T>& v, const T& s) { this->v.Set(v); this->s = s; return *this; }

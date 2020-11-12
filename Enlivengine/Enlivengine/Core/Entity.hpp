@@ -36,7 +36,6 @@ public:
 	void Destroy();
 
 	const char* GetName() const;
-	Vector2f GetPosition2D() const;
 	Vector3f GetPosition() const;
 
 	template <typename T> 

@@ -54,7 +54,7 @@ public:
 	{
 		const bgfx::ViewId renderViewId = 0;
 		auto& entityManager = mWorld.GetEntityManager();
-		auto view = entityManager.View<RenderableComponent, SpriteComponent>();
+		auto view = entityManager.View<RenderableComponent>();
 		for (auto entt : view)
 		{
 			Entity entity(entityManager, entt);
@@ -65,19 +65,15 @@ public:
 					bgfx::setTransform(entity.Get<TransformComponent>().transform.GetMatrix().GetData());
 					mWorld.GetDebugDraw().DrawTransform(entity.Get<TransformComponent>().transform.GetMatrix());
 				}
-				entity.Get<SpriteComponent>().sprite.Render(renderViewId);
+				if (entity.Has<SpriteComponent>())
+				{
+					entity.Get<SpriteComponent>().sprite.Render(renderViewId);
+				}
 			}
 		}
 		mWorld.GetDebugDraw().Render(renderViewId);
 	}
 };
-
-/*
-Controller::GetAxis(0, 0)
-Controller::GetAxis(0, 1)
--Controller::GetAxis(0, 3)
-Controller::GetAxis(0, 4)
-*/
 
 void FPSCamera(Camera& camera, F32 dtSeconds, F32 forwardMvt, F32 leftMvt, F32 deltaYaw, F32 deltaPitch)
 {
@@ -221,6 +217,7 @@ int main(int argc, char** argv)
 
 			Entity playerEntity = world.GetEntityManager().CreateEntity();
 			playerEntity.Add<NameComponent>().name = "Player";
+			playerEntity.Add<TransformComponent>().transform.SetPosition(Vector3f(0.0f, 0.0f, 2.0f));
 			Camera& playerCam = playerEntity.Add<CameraComponent>().camera;
 			playerCam.InitializePerspective(80.0f, F32(window.GetWidth()) / F32(window.GetHeight()), 0.1f, 100.0f);
 			playerCam.InitializeView({ 0.0f, 0.8f, 0.0f }, Quaternionf(0.0f, ENLIVE_DEFAULT_FORWARD));
@@ -297,9 +294,10 @@ int main(int argc, char** argv)
 
 				ImGuiToolManager::GetInstance().Update();
 
+#ifdef ENLIVE_DEBUG
 				ImGuiIO& io = ImGui::GetIO();
 				ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-				const auto& selectedEntities = ImGuiEntityBrowser::GetInstance().GetSelectedEntities();
+				const auto& selectedEntities = world.GetSelectedEntities();
 				for (const auto& enttEntity : selectedEntities)
 				{
 					Entity entity(world, enttEntity);
@@ -314,6 +312,7 @@ int main(int argc, char** argv)
 						);
 					}
 				}
+#endif // ENLIVE_DEBUG
 
 				ImGuiWrapper::EndFrame();
 #endif // ENLIVE_ENABLE_IMGUI

@@ -20,7 +20,6 @@ DOCTEST_TEST_CASE("Matrix3")
 	DOCTEST_CHECK(en::Matrix3f() == en::Matrix3f::Identity());
 	DOCTEST_CHECK(en::Matrix3f(en::Matrix3f::Identity()) == en::Matrix3f::Identity());
 	DOCTEST_CHECK(en::Matrix3f(layout) == layout);
-	DOCTEST_CHECK(en::Matrix3f(layout.GetData()) == layout);
 
 	// Sets
 	DOCTEST_CHECK(en::Matrix3f::Identity().Set(en::Matrix3f::Identity()) == en::Matrix3f::Identity());

@@ -10,11 +10,12 @@ World::World()
 	, mSystems()
 	, mPhysicSystem(nullptr)
 	, mMainCamera()
+	, mPlaying(false)
 #ifdef ENLIVE_DEBUG
 	, mFreeCamera()
 	, mDebugDraw()
+	, mSelectedEntities()
 #endif // ENLIVE_DEBUG
-	, mPlaying(false)
 {
 }
 
@@ -61,23 +62,6 @@ const Camera& World::GetMainCamera() const
 	return mMainCamera;
 }
 
-#ifdef ENLIVE_DEBUG
-Camera& World::GetFreeCamera()
-{
-	return mFreeCamera;
-}
-
-const Camera& World::GetFreeCamera() const
-{
-	return mFreeCamera;
-}
-
-DebugDraw& World::GetDebugDraw()
-{
-	return mDebugDraw;
-}
-#endif // ENLIVE_DEBUG
-
 void World::Play()
 {
 	mPlaying = true;
@@ -108,6 +92,75 @@ void World::Render()
 		system->Render();
 	}
 }
+
+#ifdef ENLIVE_DEBUG
+Camera& World::GetFreeCamera()
+{
+	return mFreeCamera;
+}
+
+const Camera& World::GetFreeCamera() const
+{
+	return mFreeCamera;
+}
+
+DebugDraw& World::GetDebugDraw()
+{
+	return mDebugDraw;
+}
+
+bool World::IsSelected(const Entity& entity) const
+{
+	if (entity.IsValid() && &entity.GetWorld() == this)
+	{
+		const auto& entityToTest = entity.GetEntity();
+		for (const auto& ent : mSelectedEntities)
+		{
+			if (ent == entityToTest)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool World::SelectEntity(const Entity& entity)
+{
+	if (entity.IsValid() && &entity.GetWorld() == this && !IsSelected(entity))
+	{
+		mSelectedEntities.push_back(entity.GetEntity());
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool World::UnselectEntity(const Entity& entity)
+{
+	if (entity.IsValid() && &entity.GetWorld() == this)
+	{
+		entt::entity entt = entity.GetEntity();
+		U32 count = static_cast<U32>(mSelectedEntities.size());
+		for (U32 i = 0; i < count; ++i)
+		{
+			if (entt == mSelectedEntities[i])
+			{
+				mSelectedEntities.erase(mSelectedEntities.begin() + i);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+const std::vector<entt::entity>& World::GetSelectedEntities() const
+{
+	return mSelectedEntities;
+}
+#endif // ENLIVE_DEBUG
 
 } // namespace en
 
