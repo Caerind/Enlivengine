@@ -4,7 +4,6 @@
 
 #ifdef ENLIVE_MODULE_AUDIO
 
-#include <unordered_map>
 #include <vector>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
