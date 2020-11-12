@@ -12,7 +12,9 @@
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
+#include <Enlivengine/Meta/MetaSpecialization_Graphics.hpp>
 #include <Enlivengine/Core/ComponentManager.hpp>
+#include <Enlivengine/Core/Universe.hpp>
 
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/Entity.hpp>
@@ -52,6 +54,36 @@ ENLIVE_META_CLASS_END()
 ENLIVE_META_CLASS_BEGIN(en::SpriteComponent)
 	ENLIVE_META_CLASS_MEMBER("sprite", &en::SpriteComponent::sprite)
 ENLIVE_META_CLASS_END()
+
+//////////////////////////////////////////////////////////////////
+// en::CameraComponent
+//////////////////////////////////////////////////////////////////
+ENLIVE_META_CLASS_BEGIN(en::CameraComponent)
+	ENLIVE_META_CLASS_MEMBER("camera", &en::CameraComponent::camera)
+ENLIVE_META_CLASS_END()
+
+#ifdef ENLIVE_ENABLE_IMGUI
+template <>
+struct HasCustomEditor<en::CameraComponent>
+{
+	static constexpr bool value = true;
+	static bool ImGuiEditor(en::CameraComponent& object, const char* name)
+	{
+		bool modified = false;
+#ifdef ENLIVE_DEBUG
+		if (en::World* world = en::Universe::GetInstance().GetCurrentWorld())
+		{
+			world->GetDebugDraw().DrawFrustum(object.camera.CreateFrustum());
+		}
+#endif // ENLIVE_DEBUG
+		if (en::ObjectEditor::ImGuiEditor(object.camera, name))
+		{
+			modified = true;
+		}
+		return modified;
+	}
+};
+#endif // ENLIVE_ENABLE_IMGUI
 
 //////////////////////////////////////////////////////////////////
 // en::Entity

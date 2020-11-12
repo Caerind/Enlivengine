@@ -52,6 +52,7 @@ public:
     U32 GetID() const;
     U32 GetFlags() const;
 
+    static Window* GetFirstWindow();
     static Window* GetGrabbingWindow();
 
 private:

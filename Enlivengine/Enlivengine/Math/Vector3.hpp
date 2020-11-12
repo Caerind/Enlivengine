@@ -22,7 +22,6 @@ public:
 	template <typename U>
 	constexpr Vector3(const Vector3<U>& v) : x(static_cast<T>(v.x)), y(static_cast<T>(v.y)), z(static_cast<T>(v.z)) {}
 	constexpr Vector3(const T& s) : x(s), y(s), z(s) {}
-	constexpr Vector3(const T* a) : x(a[0]), y(a[1]), z(a[2]) {}
 	constexpr Vector3(const T& s1, const T& s2, const T& s3) : x(s1), y(s2), z(s3) {}
 	constexpr Vector3(const Vector2<T>& v12, const T& s3) : x(v12.x), y(v12.y), z(s3) {}
 	constexpr Vector3(const T& s1, const Vector2<T>& v23) : x(s1), y(v23.y), z(v23.y) {}
@@ -133,6 +132,14 @@ typedef Vector3<I32> Vector3i;
 typedef Vector3<U32> Vector3u;
 
 typedef Vector3f vec3; // GLSL-like
+
+// These tests checks that the config for direction and handedness is correct
+static_assert(ENLIVE_DEFAULT_FORWARD == -ENLIVE_DEFAULT_BACKWARD);
+static_assert(ENLIVE_DEFAULT_UP == -ENLIVE_DEFAULT_DOWN);
+static_assert(ENLIVE_DEFAULT_RIGHT == -ENLIVE_DEFAULT_LEFT);
+static_assert((ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Right && ENLIVE_DEFAULT_LEFT.CrossProduct(ENLIVE_DEFAULT_UP) == ENLIVE_DEFAULT_FORWARD) || (ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Left && ENLIVE_DEFAULT_RIGHT.CrossProduct(ENLIVE_DEFAULT_UP) == ENLIVE_DEFAULT_FORWARD));
+static_assert((ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Right && ENLIVE_DEFAULT_UP.CrossProduct(ENLIVE_DEFAULT_FORWARD) == ENLIVE_DEFAULT_LEFT) || (ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Left && ENLIVE_DEFAULT_UP.CrossProduct(ENLIVE_DEFAULT_FORWARD) == ENLIVE_DEFAULT_RIGHT));
+static_assert((ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Right && ENLIVE_DEFAULT_FORWARD.CrossProduct(ENLIVE_DEFAULT_LEFT) == ENLIVE_DEFAULT_UP) || (ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Left && ENLIVE_DEFAULT_FORWARD.CrossProduct(ENLIVE_DEFAULT_RIGHT) == ENLIVE_DEFAULT_UP));
 
 } // namespace en
 

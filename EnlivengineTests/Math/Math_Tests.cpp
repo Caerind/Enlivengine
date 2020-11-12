@@ -205,6 +205,7 @@ DOCTEST_TEST_CASE("Math")
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(100.0f), 89.4270f));
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan(1000.0f), 89.9427f));
 
+	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(0.0f, 1.0f), 90.0f));
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(20.000000f, 10.000000f), 26.5650f));
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(10.000000f, 20.000000f), 63.4349f));
 	DOCTEST_CHECK(en::Math::Equals(en::Math::Atan2(-10.000000f, 20.000000f), 116.5650f));

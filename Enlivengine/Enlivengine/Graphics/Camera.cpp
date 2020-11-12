@@ -8,8 +8,14 @@ namespace en
 {
 
 Camera::Camera()
+	: mViewMatrix()
+	, mProjectionMatrix()
+	, mRotation()
+	, mPosition()
+	, mProjectionMode(ProjectionMode::Perspective)
+	, mProjectionDirty(true)
+	, mViewDirty(true)
 {
-	// TODO : Init members
 }
 
 void Camera::Apply(bgfx::ViewId viewId) const
@@ -20,7 +26,7 @@ void Camera::Apply(bgfx::ViewId viewId) const
 	}
 	else
 	{
-		bgfx::setViewTransform(viewId, nullptr, GetProjectionMatrix().GetData());
+		bgfx::setViewTransform(viewId, GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
 	}
 }
 
@@ -28,7 +34,7 @@ Frustum Camera::CreateFrustum() const
 {
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		return Frustum(perspective.fov, perspective.aspect, perspective.nearPlane, perspective.farPlane, mPosition, mPosition + mDirection, ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+		return Frustum(perspective.fov, perspective.aspect, perspective.nearPlane, perspective.farPlane, mPosition, mPosition + mRotation.Rotate(ENLIVE_DEFAULT_FORWARD), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	}
 	else
 	{
@@ -99,11 +105,11 @@ void Camera::SetFarPlane(F32 farPlane)
 {
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		perspective.nearPlane = farPlane;
+		perspective.farPlane = farPlane;
 	}
 	else
 	{
-		orthographic.nearPlane = farPlane;
+		orthographic.farPlane = farPlane;
 	}
 	mProjectionDirty = true;
 }
@@ -207,25 +213,11 @@ const Matrix4f& Camera::GetProjectionMatrix() const
 	return mProjectionMatrix;
 }
 
-void Camera::InitializeView(const Vector3f& pos, const Vector3f& direction)
+void Camera::InitializeView(const Vector3f& position, const Quaternionf& rotation)
 {
-	mPosition = pos;
-	SetDirection(direction);
-}
-
-void Camera::LookAt(const Vector3f& at)
-{
-	mDirection = (at - mPosition).Normalized();
+	mPosition = position;
+	mRotation = rotation;
 	mViewDirty = true;
-}
-
-const Matrix4f& Camera::GetViewMatrix() const
-{
-	if (mViewDirty)
-	{
-		UpdateViewMatrix();
-	}
-	return mViewMatrix;
 }
 
 void Camera::SetPosition(const Vector3f& position)
@@ -245,22 +237,30 @@ void Camera::Move(const Vector3f& movement)
 	mViewDirty = true;
 }
 
-void Camera::SetDirection(const Vector3f& direction)
+void Camera::SetRotation(const Quaternionf& rotation)
 {
-	if (direction.IsNormalized())
-	{
-		mDirection = direction;
-	}
-	else
-	{
-		mDirection = direction.Normalized();
-	}
+	mRotation = rotation;
 	mViewDirty = true;
 }
 
-const Vector3f& Camera::GetDirection() const
+const Quaternionf& Camera::GetRotation() const
 {
-	return mDirection;
+	return mRotation;
+}
+
+void Camera::Rotate(const Quaternionf& rotation)
+{
+	mRotation *= rotation;
+	mViewDirty = true;
+}
+
+const Matrix4f& Camera::GetViewMatrix() const
+{
+	if (mViewDirty)
+	{
+		UpdateViewMatrix();
+	}
+	return mViewMatrix;
 }
 
 void Camera::UpdateProjectionMatrix() const
@@ -279,7 +279,7 @@ void Camera::UpdateProjectionMatrix() const
 
 void Camera::UpdateViewMatrix() const
 {
-	mViewMatrix = Matrix4f::LookAt(mPosition, mPosition + mDirection, ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+	mViewMatrix = Matrix4f::LookAt(mPosition, mPosition + mRotation.GetForward(), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	mViewDirty = false;
 }
 

@@ -7,6 +7,7 @@
 #include <string>
 #include <Enlivengine/Math/Transform.hpp>
 #include <Enlivengine/Graphics/Sprite.hpp>
+#include <Enlivengine/Graphics/Camera.hpp>
 
 namespace en
 {
@@ -45,6 +46,13 @@ struct SpriteComponent
 	SpriteComponent() : sprite() {}
 
 	Sprite sprite;
+};
+
+struct CameraComponent
+{
+	CameraComponent() : camera() {}
+
+	Camera camera;
 };
 
 } // namespace en

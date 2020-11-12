@@ -51,26 +51,37 @@ public:
 	static constexpr F32 DegToRad(F32 value) { return value * kDegToRad; }
 	static constexpr F32 RadToDeg(F32 value) { return value * kRadToDeg; }
 
-	static constexpr F32 AngleMagnitude(F32 value)
+	static constexpr F32 AngleMagnitude180(F32 value)
 	{
-		constexpr F32 magnitude = 360.0f;
-		while (value >= magnitude)
+		while (value >= 180.0f)
 		{
-			value -= magnitude;
+			value -= 360.0f;
 		};
-		while (value < 0.0f)
+		while (value < -180.0f)
 		{
-			value += magnitude;
+			value += 360.0f;
 		};
 		return value;
 	}
-	static constexpr F32 AngleBetween(F32 a, F32 b) { const F32 x = Abs(AngleMagnitude(a) - AngleMagnitude(b)); return (x < 180.0f) ? x : 360.0f - x; };
-	static constexpr F32 AngleOpposite(F32 value) { return AngleMagnitude(value - 180.0f); }
+	static constexpr F32 AngleMagnitude360(F32 value)
+	{
+		while (value >= 360.0f)
+		{
+			value -= 360.0f;
+		};
+		while (value < 0.0f)
+		{
+			value += 360.0f;
+		};
+		return value;
+	}
+	static constexpr F32 AngleBetween(F32 a, F32 b) { const F32 x = Abs(AngleMagnitude360(a) - AngleMagnitude360(b)); return (x < 180.0f) ? x : 360.0f - x; };
+	static constexpr F32 AngleOpposite(F32 value) { return AngleMagnitude360(value - 180.0f); }
 
 	static constexpr F32 Sin(F32 value)
 	{
 		F32 sign = 1.0f;
-		value = AngleMagnitude(value);
+		value = AngleMagnitude360(value);
 		if (value > 270.0f)
 		{
 			value = 360.0f - value;
@@ -97,7 +108,7 @@ public:
 	static constexpr F32 Cos(F32 value)
 	{
 		F32 sign = 1.0f;
-		value = AngleMagnitude(value);
+		value = AngleMagnitude360(value);
 		if (value > 270.0f)
 		{
 			value = 360.0f - value;

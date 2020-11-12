@@ -56,29 +56,28 @@ public:
 	void SetRight(F32 right);
 	F32 GetRight() const;
 
-	void SetBottom(F32 bottom);
+	void SetBottom(F32 bottom); 
 	F32 GetBottom() const;
 
     const Matrix4f& GetProjectionMatrix() const;
 
     // View
 
-    void InitializeView(const Vector3f& pos, const Vector3f& direction);
-
-	void LookAt(const Vector3f& at);
-    
-    const Matrix4f& GetViewMatrix() const;
+	void InitializeView(const Vector3f& position, const Quaternionf& rotation);
 
 	void SetPosition(const Vector3f& position);
 	const Vector3f& GetPosition() const;
 	void Move(const Vector3f& movement);
 
-	void SetDirection(const Vector3f& direction);
-	const Vector3f& GetDirection() const;
+	void SetRotation(const Quaternionf& rotation);
+	const Quaternionf& GetRotation() const;
+	void Rotate(const Quaternionf& rotation);
+
+    const Matrix4f& GetViewMatrix() const;
 
 private:
-    void UpdateProjectionMatrix() const;
-    void UpdateViewMatrix() const;
+	void UpdateProjectionMatrix() const;
+	void UpdateViewMatrix() const;
 
 private:
     struct PerspectiveData
@@ -101,8 +100,8 @@ private:
 
 	mutable Matrix4f mViewMatrix;
     mutable Matrix4f mProjectionMatrix;
+	Quaternionf mRotation;
 	Vector3f mPosition;
-	Vector3f mDirection;
 	union
 	{
 		PerspectiveData perspective;

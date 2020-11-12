@@ -31,7 +31,6 @@ public:
 	constexpr Matrix3(const Matrix3<T>& m) : data{ m.data[0], m.data[1], m.data[2], m.data[3], m.data[4], m.data[5], m.data[6], m.data[7], m.data[8] } {}
 	template <typename U>
 	constexpr Matrix3(const Matrix3<U>& m) : data{ static_cast<T>(m.data[0]), static_cast<T>(m.data[1]), static_cast<T>(m.data[2]), static_cast<T>(m.data[3]), static_cast<T>(m.data[4]), static_cast<T>(m.data[5]), static_cast<T>(m.data[6]), static_cast<T>(m.data[7]), static_cast<T>(m.data[8]) } {}
-	constexpr Matrix3(const T* a) : data{ a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8] } {}
 	constexpr Matrix3(const T& a11, const T& a12, const T& a13, const T& a21, const T& a22, const T& a23, const T& a31, const T& a32, const T& a33) : data{ a11, a12, a13, a21, a22, a23, a31, a32, a33 } {}
 	~Matrix3() = default;
 
@@ -291,6 +290,13 @@ public:
 		out.z = GetColumn(2).DotProduct(direction);
 		return out;
 	}
+
+	constexpr Vector3f GetForward() const { return TransformDirection(ENLIVE_DEFAULT_FORWARD); }
+	constexpr Vector3f GetBackward() const { return TransformDirection(ENLIVE_DEFAULT_BACKWARD); }
+	constexpr Vector3f GetUp() const { return TransformDirection(ENLIVE_DEFAULT_UP); }
+	constexpr Vector3f GetDown() const { return TransformDirection(ENLIVE_DEFAULT_DOWN); }
+	constexpr Vector3f GetLeft() const { return TransformDirection(ENLIVE_DEFAULT_LEFT); }
+	constexpr Vector3f GetRight() const { return TransformDirection(ENLIVE_DEFAULT_RIGHT); }
 
 	static constexpr Matrix3<T> RotationX(const T & angle) { return RotationX(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }
 	static constexpr Matrix3<T> RotationY(const T & angle) { return RotationY(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }

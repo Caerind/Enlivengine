@@ -22,7 +22,6 @@ public:
 	template <typename U>
 	constexpr Vector4(const Vector4<U>& v) : x(static_cast<T>(v.x)), y(static_cast<T>(v.y)), z(static_cast<T>(v.z)), w(static_cast<T>(v.w)) {}
 	constexpr Vector4(const T& s) : x(s), y(s), z(s), w(s) {}
-	constexpr Vector4(const T* a) : x(a[0]), y(a[1]), z(a[2]), w(a[3]) {}
 	constexpr Vector4(const T& s1, const T& s2, const T& s3, const T& s4) : x(s1), y(s2), z(s3), w(s4) {}
 	constexpr Vector4(const Vector3<T>& v123, const T& s4) : x(v123.x), y(v123.y), z(v123.z), w(s4) {}
 	~Vector4() = default;

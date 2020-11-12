@@ -22,7 +22,6 @@ public:
 	template <typename U>
 	constexpr Vector2(const Vector2<U>& v) : x(static_cast<T>(v.x)), y(static_cast<T>(v.y)) {}
 	constexpr Vector2(const T& s) : x(s), y(s) {}
-	constexpr Vector2(const T* a) : x(a[0]), y(a[1]) {}
 	constexpr Vector2(const T& s1, const T& s2) : x(s1), y(s2) {}
 	~Vector2() = default;
 

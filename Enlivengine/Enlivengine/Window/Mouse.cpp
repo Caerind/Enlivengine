@@ -186,17 +186,29 @@ bool Mouse::IsRelativeMode()
 
 void Mouse::SetRelativeMode(bool relativeMode)
 {
-	SDL_SetRelativeMouseMode(relativeMode ? SDL_TRUE : SDL_FALSE);
+	if (IsRelativeMode() != relativeMode)
+	{
+		if (relativeMode)
+		{
+			SDL_SetRelativeMouseMode(SDL_TRUE);
+			int pX, pY;
+			SDL_GetRelativeMouseState(&pX, &pY);
+		}
+		else
+		{
+			SDL_SetRelativeMouseMode(SDL_FALSE);
+		}
+	}
 }
 
 void Mouse::EnableRelativeMode()
 {
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	SetRelativeMode(true);
 }
 
 void Mouse::DisableRelativeMode()
 {
-	SDL_SetRelativeMouseMode(SDL_FALSE);
+	SetRelativeMode(false);
 }
 
 bool Mouse::IsCursorVisible()

@@ -7,6 +7,7 @@
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Utils/Array.hpp>
 #include <Enlivengine/Graphics/Camera.hpp>
+#include <Enlivengine/Graphics/DebugDraw.hpp>
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/System.hpp>
 #include <Enlivengine/Core/PhysicSystem.hpp>
@@ -36,6 +37,8 @@ public:
 #ifdef ENLIVE_DEBUG
 	Camera& GetFreeCamera();
 	const Camera& GetFreeCamera() const;
+
+	DebugDraw& GetDebugDraw();
 #endif // ENLIVE_DEBUG
 
 	void Play();
@@ -55,6 +58,7 @@ private:
 
 #ifdef ENLIVE_DEBUG
 	Camera mFreeCamera;
+	DebugDraw mDebugDraw;
 #endif // ENLIVE_DEBUG
 
 	bool mPlaying;

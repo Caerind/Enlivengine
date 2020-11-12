@@ -210,6 +210,11 @@ U32 Window::GetFlags() const
     return (mWindow != nullptr) ? SDL_GetWindowFlags(mWindow) : 0;
 }
 
+Window* Window::GetFirstWindow()
+{
+    return sWindows[0];
+}
+
 Window* Window::GetGrabbingWindow()
 {
     return GetWindowFromSDLWindow(SDL_GetGrabbedWindow());

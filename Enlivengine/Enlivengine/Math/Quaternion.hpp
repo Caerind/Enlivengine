@@ -6,6 +6,7 @@
 
 #include <Enlivengine/Math/Vector3.hpp>
 #include <Enlivengine/Math/Vector4.hpp>
+#include <Enlivengine/Math/Matrix3.hpp>
 
 namespace en
 {
@@ -14,13 +15,12 @@ template <typename T>
 class Quaternion
 {
 public:
-	constexpr Quaternion() : v(), s(T(0)) {}
+	constexpr Quaternion() : v(), s(T(1)) {}
 	constexpr Quaternion(const Quaternion<T>& q) : v(q.v), s(q.s) {}
 	template <typename U>
 	constexpr Quaternion(const Quaternion<U>& q) : v(q.v), s(static_cast<T>(q.s)) {}
-	constexpr Quaternion(const T* a) : v(a), s(a[3]) {}
 	constexpr Quaternion(const Vector4<T>& v) : v(v.x, v.y, v.z), q(v.w) {}
-	constexpr Quaternion(const T& x, const T& y, const T& z, const T& w) : v(x, y, z, w), s(w) {}
+	constexpr Quaternion(const T& x, const T& y, const T& z, const T& w) : v(x, y, z), s(w) {}
 	constexpr Quaternion(const Vector3<T>& v, const T& s) : v(v), s(s) {}
 	constexpr Quaternion(const Vector3<T>& eulerAngles) { Set(eulerAngles); }
 	inline Quaternion(const T& angle, const Vector3<T>& axis) { Set(angle, axis); }
@@ -35,17 +35,17 @@ public:
 	constexpr Quaternion<T>& Set(const Vector3<T>& v, const T& s) { this->v.Set(v); this->s = s; return *this; }
 	constexpr Quaternion<T>& Set(const Vector3<T>& eulerAngles)
 	{
-		Vector3<T> halfAngles(T(0.5) * eulerAngles);
+		const Vector3<T> halfAngles(T(0.5) * eulerAngles);
 		const T sx = Math::Sin(halfAngles.x);
 		const T cx = Math::Cos(halfAngles.x);
 		const T sy = Math::Sin(halfAngles.y);
 		const T cy = Math::Cos(halfAngles.y);
 		const T sz = Math::Sin(halfAngles.z);
 		const T cz = Math::Cos(halfAngles.z);
-		v.x = sx * cy * cz - cx * sy * sz;
-		v.y = cx * sy * cz + sx * cy * sz;
-		v.z = cx * cy * sz - sx * sy * cz;
-		s = cx * cy * cz + sx * sy * sz;
+		v.x = sx * cy * cz + cx * sy * sz;
+		v.y = cx * sy * cz - sx * cy * sz;
+		v.z = cx * cy * sz + sx * sy * cz;
+		s = cx * cy * cz - sx * sy * sz;
 		return *this;
 	}
 	inline Quaternion<T>& Set(const T& angle, const Vector3<T>& axis)
@@ -62,9 +62,9 @@ public:
 		{
 			const T t = Math::FastSqrt(trace + 1) * 2;
 			const T overT = 1 / t;
-			v.x = (matrix[5] - matrix[7]) * overT;
-			v.y = (matrix[6] - matrix[2]) * overT;
-			v.z = (matrix[1] - matrix[3]) * overT;
+			v.x = (matrix[7] - matrix[5]) * overT;
+			v.y = (matrix[2] - matrix[6]) * overT;
+			v.z = (matrix[3] - matrix[1]) * overT;
 			s = t * T(0.25);
 			return *this;
 		}
@@ -75,7 +75,7 @@ public:
 			v.x = t * T(0.25);
 			v.y = (matrix[3] + matrix[1]) * overT;
 			v.z = (matrix[6] + matrix[2]) * overT;
-			s = (matrix[5] - matrix[7]) * overT;
+			s = (matrix[7] - matrix[5]) * overT;
 			return *this;
 		}
 		else if (matrix[4] > matrix[8])
@@ -85,7 +85,7 @@ public:
 			v.x = (matrix[3] + matrix[1]) * overT;
 			v.y = t * T(0.25);
 			v.z = (matrix[5] + matrix[7]) * overT;
-			s = (matrix[6] - matrix[2]) * overT;
+			s = (matrix[2] - matrix[6]) * overT;
 			return *this;
 		}
 		else
@@ -95,7 +95,7 @@ public:
 			v.x = (matrix[6] + matrix[2]) * overT;
 			v.y = (matrix[5] + matrix[7]) * overT;
 			v.z = t * T(0.25);
-			s = (matrix[1] - matrix[3]) * overT;
+			s = (matrix[3] - matrix[1]) * overT;
 			return *this;
 		}
 	}
@@ -144,8 +144,8 @@ public:
 		return ss * (v.CrossProduct(vector)) + (ss * s - T(1)) * vector + T(2) * (v.DotProduct(vector)) * vector;
 	}
 
-	constexpr bool operator==(const Quaternion<T>& q) const { return v == other.v && s == other.s; }
-	constexpr bool operator!=(const Quaternion<T>& q) const { return !operator==(other); }
+	constexpr bool operator==(const Quaternion<T>& other) const { return v == other.v && Math::Equals(s, other.s); }
+	constexpr bool operator!=(const Quaternion<T>& other) const { return !operator==(other); }
 
 	constexpr Quaternion<T>& Conjugate() { v *= T(-1); return *this; }
 	constexpr Quaternion<T> Conjugated() const { return Quaternion<T>(-v, s); }
@@ -193,31 +193,58 @@ public:
 
 	inline void ToEulerAngles(Vector3<T>& vector) const
 	{
-		const Matrix3<T> matrix(ToMatrix3());
-		const T cos2 = matrix[0] * matrix[0] + matrix[1] * matrix[1];
-		if (cos2 < T(0.000001))
+		Matrix3<T> m;
+		ToMatrix3(m);
+		vector.y = Math::Asin(Math::Clamp(m[2], T(-1), T(1)));
+		if (Math::Abs(m[2]) < 0.9999) 
 		{
-			vector.set(0, (matrix[2] < 0) ? Math::HalfPi : -Math::HalfPi, -Math::Atan2(matrix[4], matrix[3]));
+			vector.x = Math::Atan2(m[8], -m[5]);
+			vector.z = Math::Atan2(m[0], -m[1]);
 		}
-		else
+		else 
 		{
-			vector.set(Math::Atan2(matrix[8], matrix[5]), Math::Atan2(Math::FastSqrt(cos2), -matrix[2]), Math::Atan2(matrix[0], matrix[1]));
+			vector.x = Math::Atan2(m[4], m[7]);
+			vector.z = 0;
 		}
+	}
+	inline Vector3<T> ToEulerAngles() const
+	{
+		Vector3<T> eulerAngles;
+		ToEulerAngles(eulerAngles);
+		return eulerAngles;
 	}
 	constexpr void ToAngleAxis(T& angle, Vector3<T>& axis) const
 	{
-		axis = (s > T(0)) ? v : -v;
-		angle = T(2) * Math::Atan(Math::Abs(s));
+		angle = 2 * Math::Acos(s);
+		const T t = Math::FastSqrt(1 - s * s);
+		axis = v;
+		if (t > 0.001) 
+		{
+			axis /= t;
+		}
 	}
 	constexpr void ToMatrix3(Matrix3<T>& matrix) const
 	{
 		const T x2 = v.x * v.x; const T y2 = v.y * v.y; const T z2 = v.z * v.z;
 		const T xs = v.x * s;   const T ys = v.y * s;   const T zs = v.z * s;
 		const T xy = v.x * v.y; const T xz = v.x * v.z; const T yz = v.y * v.z;
-		matrix.Set(1 - 2 * (y2 + z2), 2 * (xy + zs), 2 * (xz - ys),
-			2 * (xy - zs), 1 - 2 * (x2 + z2), 2 * (xs + yz),
-			2 * (ys + xz), 2 * (yz - xs), 1 - 2 * (x2 + y2));
+		matrix.Set(1 - 2 * (y2 + z2), 2 * (xy - zs), 2 * (xz + ys),
+			2 * (xy + zs), 1 - 2 * (x2 + z2), 2 * (yz - xs),
+			2 * (xz - ys), 2 * (yz + xs), 1 - 2 * (x2 + y2));
 	}
+	constexpr Matrix3<T> ToMatrix3() const
+	{
+		Matrix3<T> m;
+		ToMatrix3(m);
+		return m;
+	}
+
+	constexpr Vector3f GetForward() const { return Rotate(ENLIVE_DEFAULT_FORWARD); }
+	constexpr Vector3f GetBackward() const { return Rotate(ENLIVE_DEFAULT_BACKWARD); }
+	constexpr Vector3f GetUp() const { return Rotate(ENLIVE_DEFAULT_UP); }
+	constexpr Vector3f GetDown() const { return Rotate(ENLIVE_DEFAULT_DOWN); }
+	constexpr Vector3f GetLeft() const { return Rotate(ENLIVE_DEFAULT_LEFT); }
+	constexpr Vector3f GetRight() const { return Rotate(ENLIVE_DEFAULT_RIGHT); }
 
 	static constexpr Quaternion<T> Slerp(const Quaternion<T>& start, const Quaternion<T>& end, const T& percent)
 	{
@@ -247,7 +274,7 @@ public:
 		return Quaternion<T>(cross, dot + T(1)).Normalize();
 	}
 
-	static constexpr Quaternion<T> Identity() { return Quaternion<T>(Vector3f(), T(1)); }
+	static constexpr Quaternion<T> Identity() { return Quaternion<T>(Vector3f::Zero(), T(1)); }
 
 	Vector3<T> v;
 	T s;

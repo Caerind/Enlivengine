@@ -12,6 +12,7 @@ World::World()
 	, mMainCamera()
 #ifdef ENLIVE_DEBUG
 	, mFreeCamera()
+	, mDebugDraw()
 #endif // ENLIVE_DEBUG
 	, mPlaying(false)
 {
@@ -69,6 +70,11 @@ Camera& World::GetFreeCamera()
 const Camera& World::GetFreeCamera() const
 {
 	return mFreeCamera;
+}
+
+DebugDraw& World::GetDebugDraw()
+{
+	return mDebugDraw;
 }
 #endif // ENLIVE_DEBUG
 

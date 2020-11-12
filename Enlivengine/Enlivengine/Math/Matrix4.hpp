@@ -6,6 +6,7 @@
 
 #include <Enlivengine/Math/Vector4.hpp>
 #include <Enlivengine/Math/Matrix3.hpp>
+#include <Enlivengine/Math/Quaternion.hpp>
 
 // TODO : Constexpr memset, memcpy, swap, LookAt
 
@@ -33,7 +34,6 @@ public:
 	constexpr Matrix4(const Matrix4<T>& m) : data{ m.data[0], m.data[1], m.data[2], m.data[3], m.data[4], m.data[5], m.data[6], m.data[7], m.data[8], m.data[9], m.data[10], m.data[11], m.data[12], m.data[13], m.data[14], m.data[15] } {}
 	template <typename U>
 	constexpr Matrix4(const Matrix4<U>& m) : data{ static_cast<T>(m.data[0]), static_cast<T>(m.data[1]), static_cast<T>(m.data[2]), static_cast<T>(m.data[3]), static_cast<T>(m.data[4]), static_cast<T>(m.data[5]), static_cast<T>(m.data[6]), static_cast<T>(m.data[7]), static_cast<T>(m.data[8]), static_cast<T>(m.data[9]), static_cast<T>(m.data[10]), static_cast<T>(m.data[11]), static_cast<T>(m.data[12]), static_cast<T>(m.data[13]), static_cast<T>(m.data[14]), static_cast<T>(m.data[15]) } {}
-	constexpr Matrix4(const T* a) : data{ a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15] } {}
 	constexpr Matrix4(const T& a11, const T& a12, const T& a13, const T& a14, const T& a21, const T& a22, const T& a23, const T& a24, const T& a31, const T& a32, const T& a33, const T& a34, const T& a41, const T& a42, const T& a43, const T& a44) : data{ a11, a12, a13, a14, a21, a22, a23, a24, a31, a32, a33, a34, a41, a42, a43, a44 } {}
 	~Matrix4() = default;
 
@@ -358,7 +358,7 @@ public:
 		}
 
 		const T invDet = 1 / det;
-		for (int i = 0; i < 16; i++)
+		for (U32 i = 0; i < 16; i++)
 		{
 			inv[i] *= invDet;
 		}
@@ -367,7 +367,7 @@ public:
 		{
 			*succeeded = true;
 		}
-		return Matrix4<T>(inv);
+		return Matrix4<T>(inv[0], inv[1], inv[2], inv[3], inv[4], inv[5], inv[6], inv[7], inv[8], inv[9], inv[10], inv[11], inv[12], inv[13], inv[14], inv[15]);
 	}
 
 	constexpr Matrix4<T>& Transpose()
@@ -546,10 +546,30 @@ public:
 	}
 	constexpr Matrix4<T>& ApplyRotation(const Matrix3<T>& rotation)
 	{
-		// TODO : Can be optimized a bit
+		// TODO : Can be optimized a bit as we know the last col is (0,0,0,1)
 		*this *= Rotation(rotation);
 		return *this;
 	}
+
+	inline Quaternion<T> GetQuaternion() const
+	{
+		return Quaternion<T>(GetRotation());
+	}
+	inline Matrix4<T>& SetQuaternion(const Quaternion<T>& quaternion)
+	{
+		return SetRotation(quaternion.ToMatrix3());
+	}
+	inline Matrix4<T>& ApplyQuaternion(const Quaternion<T>& quaternion)
+	{
+		return ApplyRotation(quaternion.ToMatrix3());
+	}
+
+	constexpr Vector3f GetForward() const { return TransformDirection(ENLIVE_DEFAULT_FORWARD); }
+	constexpr Vector3f GetBackward() const { return TransformDirection(ENLIVE_DEFAULT_BACKWARD); }
+	constexpr Vector3f GetUp() const { return TransformDirection(ENLIVE_DEFAULT_UP); }
+	constexpr Vector3f GetDown() const { return TransformDirection(ENLIVE_DEFAULT_DOWN); }
+	constexpr Vector3f GetLeft() const { return TransformDirection(ENLIVE_DEFAULT_LEFT); }
+	constexpr Vector3f GetRight() const { return TransformDirection(ENLIVE_DEFAULT_RIGHT); }
 	
 	static constexpr Matrix4<T> Rotation(const Matrix3<T> & m) { return Matrix4<T>(m[0], m[1], m[2], T(0), m[3], m[4], m[5], T(0), m[6], m[7], m[8], T(0), T(0), T(0), T(0), T(1)); }
 	static constexpr Matrix4<T> RotationX(const T & angle) { return RotationX(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }
@@ -564,7 +584,7 @@ public:
 	static constexpr Matrix4<T> Translation(const Vector3<T> & translation) { return Matrix4<T>(T(1), T(0), T(0), T(0), T(0), T(1), T(0), T(0), T(0), T(0), T(1), T(0), translation.x, translation.y, translation.z, T(1)); }
 	static constexpr Matrix4<T> Translation(const T & tx, const T & ty, const T & tz) { return Matrix4<T>(T(1), T(0), T(0), T(0), T(0), T(1), T(0), T(0), T(0), T(0), T(1), T(0), tx, ty, tz, T(1)); }
 
-	static constexpr Matrix4<T> Transform(const Vector3<T>& translation, const Vector3<T>& scale, const Matrix3<T>& rotation)
+	static constexpr Matrix4<T> Transform(const Vector3<T>& translation, const Matrix3<T>& rotation, const Vector3<T>& scale = Vector3<T>(1.0f))
 	{
 		Matrix4<T> m;
 		m[0] = scale.x * rotation[0];
@@ -580,6 +600,10 @@ public:
 		m[13] = translation.y;
 		m[14] = translation.z;
 		return m;
+	}
+	static constexpr Matrix4<T> Transform(const Vector3<T>& translation, const Quaternion<T>& rotation, const Vector3<T>& scale = Vector3<T>(1.0f))
+	{
+		return Transform(translation, rotation.ToMatrix3(), scale);
 	}
 
 	static constexpr Matrix4<T> Perspective(const T & fov, const T & aspect, const T & nearPlane, const T & farPlane, bool homogeneousNdc, Math::Handedness handedness)

@@ -39,10 +39,10 @@
 #define ENLIVE_DEFAULT_HANDEDNESS en::Math::Handedness::Right
 // Update the followings according to the two previous :
 #define ENLIVE_DEFAULT_DOWN -en::Vector3f::UnitY()
-#define ENLIVE_DEFAULT_RIGHT en::Vector3f::UnitX()
-#define ENLIVE_DEFAULT_LEFT -en::Vector3f::UnitX()
+#define ENLIVE_DEFAULT_RIGHT -en::Vector3f::UnitX()
+#define ENLIVE_DEFAULT_LEFT en::Vector3f::UnitX()
 #define ENLIVE_DEFAULT_FORWARD en::Vector3f::UnitZ()
-#define ENLIVE_DEFAULT_BACK -en::Vector3f::UnitZ()
+#define ENLIVE_DEFAULT_BACKWARD -en::Vector3f::UnitZ()
 
 
 // Modules mandatory dependencies checks
