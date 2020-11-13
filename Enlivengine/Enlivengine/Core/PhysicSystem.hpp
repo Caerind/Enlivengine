@@ -8,7 +8,9 @@
 
 #include <Enlivengine/Utils/Signal.hpp>
 #include <Enlivengine/Math/Vector2.hpp>
+
 #include <Enlivengine/Core/System.hpp>
+#include <Enlivengine/Core/PhysicSystem.hpp>
 
 #if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
 #include <Enlivengine/Graphics/DebugDraw.hpp>
