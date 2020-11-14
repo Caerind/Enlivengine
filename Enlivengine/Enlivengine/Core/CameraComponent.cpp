@@ -11,18 +11,20 @@ namespace en
 {
 
 CameraComponent::CameraComponent()
-	: mEntity()
+	: Camera()
+	, mEntity()
 {
-}
-
-CameraComponent::CameraComponent(CameraComponent&& other) noexcept
-	: mEntity(other.mEntity)
-{
-	other.mEntity = Entity();
 }
 
 CameraComponent::~CameraComponent()
 {
+}
+
+CameraComponent::CameraComponent(CameraComponent&& other) noexcept
+	: Camera()
+	, mEntity(other.mEntity)
+{
+	other.mEntity = Entity();
 }
 
 CameraComponent& CameraComponent::operator=(CameraComponent&& other) noexcept
@@ -34,204 +36,30 @@ CameraComponent& CameraComponent::operator=(CameraComponent&& other) noexcept
 
 void CameraComponent::Apply() const
 {
-	mCamera.Apply();
-	if (mCamera.GetProjection() == Camera::ProjectionMode::Perspective)
+	Camera::Apply();
+	if (GetProjection() == Camera::ProjectionMode::Perspective)
 	{
-		bgfx::setViewTransform(mCamera.GetViewID(), GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
+		bgfx::setViewTransform(GetViewID(), GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
 	}
 	else
 	{
-		bgfx::setViewTransform(mCamera.GetViewID(), GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
+		bgfx::setViewTransform(GetViewID(), GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
 	}
 }
 
 Frustum CameraComponent::CreateFrustum() const
 {
-	return mCamera.CreateFrustum().Transform(GetEntityMatrix());
-}
-
-void CameraComponent::SetProjection(Camera::ProjectionMode projection)
-{
-	mCamera.SetProjection(projection);
-}
-
-Camera::ProjectionMode CameraComponent::GetProjection() const
-{
-	return mCamera.GetProjection();
-}
-
-void CameraComponent::InitializePerspective(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane)
-{
-	mCamera.InitializePerspective(fov, aspect, nearPlane, farPlane);
-}
-
-void CameraComponent::InitializeOrthographic(F32 left, F32 top, F32 right, F32 bottom, F32 nearPlane, F32 farPlane)
-{
-	mCamera.InitializeOrthographic(left, top, right, bottom, nearPlane, farPlane);
-}
-
-void CameraComponent::SetNearPlane(F32 nearPlane)
-{
-	mCamera.SetNearPlane(nearPlane);
-}
-
-F32 CameraComponent::GetNearPlane() const
-{
-	return mCamera.GetNearPlane();
-}
-
-void CameraComponent::SetFarPlane(F32 farPlane)
-{
-	mCamera.SetFarPlane(farPlane);
-}
-
-F32 CameraComponent::GetFarPlane() const
-{
-	return mCamera.GetFarPlane();
-}
-
-void CameraComponent::SetFOV(F32 fov)
-{
-	mCamera.SetFOV(fov);
-}
-
-F32 CameraComponent::GetFOV() const
-{
-	return mCamera.GetFOV();
-}
-
-void CameraComponent::SetAspect(F32 aspect)
-{
-	mCamera.SetAspect(aspect);
-}
-
-F32 CameraComponent::GetAspect() const
-{
-	return mCamera.GetAspect();
-}
-
-void CameraComponent::SetLeft(F32 left)
-{
-	mCamera.SetLeft(left);
-}
-
-F32 CameraComponent::GetLeft() const
-{
-	return mCamera.GetLeft();
-}
-
-void CameraComponent::SetTop(F32 top)
-{
-	mCamera.SetTop(top);
-}
-
-F32 CameraComponent::GetTop() const
-{
-	return mCamera.GetTop();
-}
-
-void CameraComponent::SetRight(F32 right)
-{
-	mCamera.SetRight(right);
-}
-
-F32 CameraComponent::GetRight() const
-{
-	return mCamera.GetRight();
-}
-
-void CameraComponent::SetBottom(F32 bottom)
-{
-	mCamera.SetBottom(bottom);
-}
-
-F32 CameraComponent::GetBottom() const
-{
-	return mCamera.GetBottom();
-}
-
-const Matrix4f& CameraComponent::GetProjectionMatrix() const
-{
-	return mCamera.GetProjectionMatrix();
-}
-
-void CameraComponent::InitializeView(const Vector3f& position, const Matrix3f& rotation)
-{
-	mCamera.InitializeView(position, rotation);
-}
-
-void CameraComponent::SetPosition(const Vector3f& position)
-{
-	mCamera.SetPosition(position);
-}
-
-const Vector3f& CameraComponent::GetPosition() const
-{
-	return mCamera.GetPosition();
-}
-
-void CameraComponent::Move(const Vector3f& movement)
-{
-	mCamera.Move(movement);
-}
-
-void CameraComponent::SetRotation(const Matrix3f& rotation)
-{
-	mCamera.SetRotation(rotation);
-}
-
-const Matrix3f& CameraComponent::GetRotation() const
-{
-	return mCamera.GetRotation();
-}
-
-void CameraComponent::Rotate(const Matrix3f& rotation)
-{
-	mCamera.Rotate(rotation);
+	return Camera::CreateFrustum().Transform(GetEntityMatrix());
 }
 
 const Matrix4f& CameraComponent::GetViewMatrix() const
 {
 	const Matrix4f& entityMatrix = GetEntityMatrix();
-	const Vector3f position = entityMatrix.TransformPoint(mCamera.GetPosition());
-	const Vector3f direction = entityMatrix.TransformDirection(mCamera.GetRotation().GetForward());
+	const Vector3f position = entityMatrix.TransformPoint(GetPosition());
+	const Vector3f direction = entityMatrix.TransformDirection(GetRotation().GetForward());
+	// TODO : Only if CameraDirty or EntityTransformDirty
 	mViewMatrix = Matrix4f::LookAt(position, position + direction, ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	return mViewMatrix;
-}
-
-void CameraComponent::SetClearColor(const Color& clearColor)
-{
-	mCamera.SetClearColor(clearColor);
-}
-
-const Color& CameraComponent::GetClearColor() const
-{
-	return mCamera.GetClearColor();
-}
-
-void CameraComponent::SetViewport(const Rectf& viewport)
-{
-	mCamera.SetViewport(viewport);
-}
-
-const Rectf& CameraComponent::GetViewport() const
-{
-	return mCamera.GetViewport();
-}
-
-void CameraComponent::SetFramebuffer(bgfx::FrameBufferHandle framebuffer)
-{
-	mCamera.SetFramebuffer(framebuffer);
-}
-
-bgfx::FrameBufferHandle CameraComponent::GetFramebuffer() const
-{
-	return mCamera.GetFramebuffer();
-}
-
-bgfx::ViewId CameraComponent::GetViewID() const
-{
-	return mCamera.GetViewID();
 }
 
 Entity CameraComponent::GetEntity() const

@@ -236,7 +236,8 @@ void BgfxWrapper::Reset(U32 width, U32 height)
 {
     BgfxWrapper& bgfx = GetInstance();
     bgfx.mBackBufferSize.x = width;
-    bgfx.mBackBufferSize.y = height;
+	bgfx.mBackBufferSize.y = height;
+	bgfx::reset(width, height);
 }
 
 } // namespace en

@@ -16,7 +16,13 @@ class Window
 {
 public:
     Window();
-    ~Window();
+	~Window();
+   
+    // NonCopyable / NonMovable
+    Window(Window&& other) = delete;
+    Window(const Window& other) = delete;
+    Window& operator=(Window&& other) = delete;
+    Window& operator=(const Window& other) = delete;
 
     bool Create(const char* name, U32 width, U32 height, U32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	void Destroy();

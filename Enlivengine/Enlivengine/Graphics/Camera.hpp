@@ -19,15 +19,17 @@ class Camera
 {
 public:
 	Camera();
+	~Camera();
+
 	Camera(Camera&& other) noexcept;
 	Camera(const Camera& other) = delete;
 
 	Camera& operator=(Camera&& other) noexcept;
 	Camera& operator=(const Camera& other) = delete;
 
-	void Apply() const;
+	virtual void Apply() const;
 
-	Frustum CreateFrustum() const;
+	virtual Frustum CreateFrustum() const;
 
     // Projection
 
@@ -80,7 +82,7 @@ public:
 	const Matrix3f& GetRotation() const;
 	void Rotate(const Matrix3f& rotation);
 
-    const Matrix4f& GetViewMatrix() const;
+    virtual const Matrix4f& GetViewMatrix() const;
 
 	// View Options
 
@@ -95,11 +97,10 @@ public:
 
 	bgfx::ViewId GetViewID() const;
 
-private:
+protected:
 	void UpdateProjectionMatrix() const;
 	void UpdateViewMatrix() const;
 
-private:
     struct PerspectiveData
 	{
 		F32 nearPlane;
@@ -127,7 +128,7 @@ private:
 	{
 		PerspectiveData perspective;
 		OrthographicData orthographic;
-	};
+	} mProjectionData;
 	Color mClearColor;
 	bgfx::FrameBufferHandle mFramebuffer;
 	bgfx::ViewId mViewId;
@@ -136,6 +137,12 @@ private:
 	mutable bool mViewDirty;
 
 	static bgfx::ViewId sViewIdCounter;
+
+	static constexpr U32 kMaxCameras = 10;
+	static U32 sCameraCount;
+	static Camera* sCameras[kMaxCameras];
+	static void RegisterCamera(Camera* camera);
+	static void UnregisterCamera(Camera* camera);
 };
 
 } // namespace en

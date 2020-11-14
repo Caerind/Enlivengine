@@ -9,10 +9,9 @@ World::World()
 	: mEntityManager(*this)
 	, mSystems()
 	, mPhysicSystem(nullptr)
-	, mMainCamera()
+	, mMainCamera(nullptr)
 	, mPlaying(false)
 #ifdef ENLIVE_DEBUG
-	, mFreeCamera()
 	, mDebugDraw()
 	, mSelectedEntities()
 #endif // ENLIVE_DEBUG
@@ -52,14 +51,14 @@ const PhysicSystem* World::GetPhysicSystem() const
 	return mPhysicSystem;
 }
 
-Camera& World::GetMainCamera()
+Camera* World::GetMainCamera() const
 {
 	return mMainCamera;
 }
 
-const Camera& World::GetMainCamera() const
+void World::SetMainCamera(Camera* camera)
 {
-	return mMainCamera;
+	mMainCamera = camera;
 }
 
 void World::Play()
@@ -94,16 +93,6 @@ void World::Render()
 }
 
 #ifdef ENLIVE_DEBUG
-Camera& World::GetFreeCamera()
-{
-	return mFreeCamera;
-}
-
-const Camera& World::GetFreeCamera() const
-{
-	return mFreeCamera;
-}
-
 DebugDraw& World::GetDebugDraw()
 {
 	return mDebugDraw;

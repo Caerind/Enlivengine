@@ -76,7 +76,7 @@ struct HasCustomEditor<en::CameraComponent>
 			world->GetDebugDraw().DrawFrustum(object.CreateFrustum());
 		}
 #endif // ENLIVE_DEBUG
-		if (en::ObjectEditor::ImGuiEditor(object.mCamera, name))
+		if (en::ObjectEditor::ImGuiEditor(static_cast<en::Camera&>(object), name))
 		{
 			modified = true;
 		}

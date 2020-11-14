@@ -31,8 +31,8 @@ public:
 	PhysicSystem* GetPhysicSystem();
 	const PhysicSystem* GetPhysicSystem() const;
 
-	Camera& GetMainCamera();
-	const Camera& GetMainCamera() const;
+	Camera* GetMainCamera() const;
+	void SetMainCamera(Camera* camera);
 
 	void Play();
 	void Pause();
@@ -42,9 +42,6 @@ public:
 	void Render();
 
 #ifdef ENLIVE_DEBUG
-	Camera& GetFreeCamera();
-	const Camera& GetFreeCamera() const;
-
 	DebugDraw& GetDebugDraw();
 
 	bool IsSelected(const Entity& entity) const;
@@ -59,12 +56,11 @@ private:
 	std::vector<System*> mSystems;
 	PhysicSystem* mPhysicSystem;
 
-	Camera mMainCamera;
+	Camera* mMainCamera;
 
 	bool mPlaying;
 
 #ifdef ENLIVE_DEBUG
-	Camera mFreeCamera;
 	DebugDraw mDebugDraw;
 
 	std::vector<entt::entity> mSelectedEntities;

@@ -10,6 +10,8 @@ namespace en
 {
 
 bgfx::ViewId Camera::sViewIdCounter = 0;
+U32 Camera::sCameraCount = 0;
+Camera* Camera::sCameras[kMaxCameras];
 
 Camera::Camera()
 	: mViewMatrix()
@@ -17,6 +19,7 @@ Camera::Camera()
 	, mRotation()
 	, mViewport(Rectf(0.0f, 0.0f, 1.0f, 1.0f))
 	, mPosition()
+	, mProjectionData()
 	, mClearColor(U32(0x443355FF))
 	, mFramebuffer(BGFX_INVALID_HANDLE)
 	, mViewId(sViewIdCounter++)
@@ -24,18 +27,47 @@ Camera::Camera()
 	, mProjectionDirty(true)
 	, mViewDirty(true)
 {
+	RegisterCamera(this);
+}
+
+Camera::~Camera()
+{
+	UnregisterCamera(this);
 }
 
 Camera::Camera(Camera&& other) noexcept
+	: mViewMatrix(other.mViewMatrix)
+	, mProjectionMatrix(other.mProjectionMatrix)
+	, mRotation(other.mRotation)
+	, mViewport(other.mViewport)
+	, mPosition(other.mPosition)
+	, mProjectionData(other.mProjectionData)
+	, mClearColor(other.mClearColor)
+	, mFramebuffer(other.mFramebuffer)
+	, mViewId(other.mViewId)
+	, mProjectionMode(other.mProjectionMode)
+	, mProjectionDirty(other.mProjectionDirty)
+	, mViewDirty(other.mViewDirty)
 {
-	// TODO
-	ENLIVE_UNUSED(other);
 }
 
 Camera& Camera::operator=(Camera&& other) noexcept
 {
-	// TODO
-	ENLIVE_UNUSED(other);
+	if (&other != this)
+	{
+		mViewMatrix = other.mViewMatrix;
+		mProjectionMatrix = other.mProjectionMatrix;
+		mRotation = other.mRotation;
+		mViewport = other.mViewport;
+		mPosition = other.mPosition;
+		mProjectionData = other.mProjectionData;
+		mClearColor = other.mClearColor;
+		mFramebuffer = other.mFramebuffer;
+		mViewId = other.mViewId;
+		mProjectionMode = other.mProjectionMode;
+		mProjectionDirty = other.mProjectionDirty;
+		mViewDirty = other.mViewDirty;
+	}
 	return *this;
 }
 
@@ -63,11 +95,11 @@ Frustum Camera::CreateFrustum() const
 {
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		return Frustum(perspective.fov, perspective.aspect, perspective.nearPlane, perspective.farPlane, mPosition, mPosition + mRotation.TransformDirection(ENLIVE_DEFAULT_FORWARD), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+		return Frustum(mProjectionData.perspective.fov, mProjectionData.perspective.aspect, mProjectionData.perspective.nearPlane, mProjectionData.perspective.farPlane, mPosition, mPosition + mRotation.TransformDirection(ENLIVE_DEFAULT_FORWARD), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	}
 	else
 	{
-		return Frustum(orthographic.left, orthographic.top, orthographic.right, orthographic.bottom, orthographic.nearPlane, orthographic.farPlane, mPosition, mPosition + mRotation.TransformDirection(ENLIVE_DEFAULT_FORWARD), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+		return Frustum(mProjectionData.orthographic.left, mProjectionData.orthographic.top, mProjectionData.orthographic.right, mProjectionData.orthographic.bottom, mProjectionData.orthographic.nearPlane, mProjectionData.orthographic.farPlane, mPosition, mPosition + mRotation.TransformDirection(ENLIVE_DEFAULT_FORWARD), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	}
 }
 
@@ -85,22 +117,22 @@ Camera::ProjectionMode Camera::GetProjection() const
 void Camera::InitializePerspective(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane)
 {
 	mProjectionMode = ProjectionMode::Perspective;
-	perspective.nearPlane = nearPlane;
-	perspective.farPlane = farPlane;
-	perspective.fov = fov;
-	perspective.aspect = aspect;
+	mProjectionData.perspective.nearPlane = nearPlane;
+	mProjectionData.perspective.farPlane = farPlane;
+	mProjectionData.perspective.fov = fov;
+	mProjectionData.perspective.aspect = aspect;
 	mProjectionDirty = true;
 }
 
 void Camera::InitializeOrthographic(F32 left, F32 top, F32 right, F32 bottom, F32 nearPlane, F32 farPlane)
 {
 	mProjectionMode = ProjectionMode::Orthographic;
-	orthographic.nearPlane = nearPlane;
-	orthographic.farPlane = farPlane;
-	orthographic.left = left;
-	orthographic.top = top;
-	orthographic.right = right;
-	orthographic.bottom = bottom;
+	mProjectionData.orthographic.nearPlane = nearPlane;
+	mProjectionData.orthographic.farPlane = farPlane;
+	mProjectionData.orthographic.left = left;
+	mProjectionData.orthographic.top = top;
+	mProjectionData.orthographic.right = right;
+	mProjectionData.orthographic.bottom = bottom;
 	mProjectionDirty = true;
 }
 
@@ -108,11 +140,11 @@ void Camera::SetNearPlane(F32 nearPlane)
 {
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		perspective.nearPlane = nearPlane;
+		mProjectionData.perspective.nearPlane = nearPlane;
 	}
 	else
 	{
-		orthographic.nearPlane = nearPlane;
+		mProjectionData.orthographic.nearPlane = nearPlane;
 	}
 	mProjectionDirty = true;
 }
@@ -121,11 +153,11 @@ F32 Camera::GetNearPlane() const
 {
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		return perspective.nearPlane;
+		return mProjectionData.perspective.nearPlane;
 	}
 	else
 	{
-		return orthographic.nearPlane;
+		return mProjectionData.orthographic.nearPlane;
 	}
 }
 
@@ -133,11 +165,11 @@ void Camera::SetFarPlane(F32 farPlane)
 {
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		perspective.farPlane = farPlane;
+		mProjectionData.perspective.farPlane = farPlane;
 	}
 	else
 	{
-		orthographic.farPlane = farPlane;
+		mProjectionData.orthographic.farPlane = farPlane;
 	}
 	mProjectionDirty = true;
 }
@@ -146,90 +178,90 @@ F32 Camera::GetFarPlane() const
 {
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		return perspective.farPlane;
+		return mProjectionData.perspective.farPlane;
 	}
 	else
 	{
-		return orthographic.farPlane;
+		return mProjectionData.orthographic.farPlane;
 	}
 }
 
 void Camera::SetFOV(F32 fov)
 {
 	enAssert(mProjectionMode == ProjectionMode::Perspective);
-	perspective.fov = fov;
+	mProjectionData.perspective.fov = fov;
 	mProjectionDirty = true;
 }
 
 F32 Camera::GetFOV() const
 {
 	enAssert(mProjectionMode == ProjectionMode::Perspective);
-	return perspective.fov;
+	return mProjectionData.perspective.fov;
 }
 
 void Camera::SetAspect(F32 aspect)
 {
 	enAssert(mProjectionMode == ProjectionMode::Perspective);
-	perspective.aspect = aspect;
+	mProjectionData.perspective.aspect = aspect;
 	mProjectionDirty = true;
 }
 
 F32 Camera::GetAspect() const
 {
 	enAssert(mProjectionMode == ProjectionMode::Perspective);
-	return perspective.aspect;
+	return mProjectionData.perspective.aspect;
 }
 
 void Camera::SetLeft(F32 left)
 {
 	enAssert(mProjectionMode == ProjectionMode::Orthographic);
-	orthographic.left = left;
+	mProjectionData.orthographic.left = left;
 	mProjectionDirty = true;
 }
 
 F32 Camera::GetLeft() const
 {
 	enAssert(mProjectionMode == ProjectionMode::Orthographic);
-	return orthographic.left;
+	return mProjectionData.orthographic.left;
 }
 
 void Camera::SetTop(F32 top)
 {
 	enAssert(mProjectionMode == ProjectionMode::Orthographic);
-	orthographic.top = top;
+	mProjectionData.orthographic.top = top;
 	mProjectionDirty = true;
 }
 
 F32 Camera::GetTop() const
 {
 	enAssert(mProjectionMode == ProjectionMode::Orthographic);
-	return orthographic.top;
+	return mProjectionData.orthographic.top;
 }
 
 void Camera::SetRight(F32 right)
 {
 	enAssert(mProjectionMode == ProjectionMode::Orthographic);
-	orthographic.right = right;
+	mProjectionData.orthographic.right = right;
 	mProjectionDirty = true;
 }
 
 F32 Camera::GetRight() const
 {
 	enAssert(mProjectionMode == ProjectionMode::Orthographic);
-	return orthographic.right;
+	return mProjectionData.orthographic.right;
 }
 
 void Camera::SetBottom(F32 bottom)
 {
 	enAssert(mProjectionMode == ProjectionMode::Orthographic);
-	orthographic.bottom = bottom;
+	mProjectionData.orthographic.bottom = bottom;
 	mProjectionDirty = true;
 }
 
 F32 Camera::GetBottom() const
 {
 	enAssert(mProjectionMode == ProjectionMode::Orthographic);
-	return orthographic.bottom;
+	return mProjectionData.orthographic.bottom;
 }
 
 const Matrix4f& Camera::GetProjectionMatrix() const
@@ -331,11 +363,11 @@ void Camera::UpdateProjectionMatrix() const
 	const bool homogenousDepth = bgfx::getCaps()->homogeneousDepth;
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		mProjectionMatrix = Matrix4f::Perspective(perspective.fov, perspective.aspect, perspective.nearPlane, perspective.farPlane, homogenousDepth, ENLIVE_DEFAULT_HANDEDNESS);
+		mProjectionMatrix = Matrix4f::Perspective(mProjectionData.perspective.fov, mProjectionData.perspective.aspect, mProjectionData.perspective.nearPlane, mProjectionData.perspective.farPlane, homogenousDepth, ENLIVE_DEFAULT_HANDEDNESS);
 	}
 	else
 	{
-		mProjectionMatrix = Matrix4f::Orthographic(orthographic.left, orthographic.right, orthographic.bottom, orthographic.top, orthographic.nearPlane, orthographic.farPlane, homogenousDepth, ENLIVE_DEFAULT_HANDEDNESS);
+		mProjectionMatrix = Matrix4f::Orthographic(mProjectionData.orthographic.left, mProjectionData.orthographic.right, mProjectionData.orthographic.bottom, mProjectionData.orthographic.top, mProjectionData.orthographic.nearPlane, mProjectionData.orthographic.farPlane, homogenousDepth, ENLIVE_DEFAULT_HANDEDNESS);
 	}
 	mProjectionDirty = false;
 }
@@ -344,6 +376,49 @@ void Camera::UpdateViewMatrix() const
 {
 	mViewMatrix = Matrix4f::LookAt(mPosition, mPosition + mRotation.GetForward(), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	mViewDirty = false;
+}
+
+void Camera::RegisterCamera(Camera* camera)
+{
+	static bool initialized = false;
+	if (!initialized)
+	{
+		for (U32 i = 0; i < kMaxCameras; ++i)
+		{
+			sCameras[i] = nullptr;
+		}
+		initialized = true;
+	}
+
+	if (sCameraCount < kMaxCameras)
+	{
+		sCameras[sCameraCount] = camera;
+		sCameraCount++;
+	}
+	else
+	{
+		// Maximum amount of cameras reached
+		// Increase Camera::kMaxCameras or use less cameras
+		enAssert(false);
+	}
+}
+
+void Camera::UnregisterCamera(Camera* camera)
+{
+	for (U32 i = 0; i < sCameraCount; ++i)
+	{
+		if (sCameras[i] == camera)
+		{
+			sCameraCount--;
+			for (U32 j = i; j < sCameraCount; ++j)
+			{
+				sCameras[j] = sCameras[j + 1];
+			}
+			return;
+		}
+	}
+	// Not found ?
+	enAssert(false);
 }
 
 } // namespace en
