@@ -6,7 +6,7 @@
 
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
-#include <Enlivengine/Core/Components.hpp>
+#include <Enlivengine/Core/TransformComponent.hpp>
 #include <Enlivengine/Core/PhysicComponent.hpp>
 
 namespace en
@@ -50,7 +50,7 @@ bool PhysicSystem::Initialize(const Entity& entity, PhysicComponent& component)
 	static b2BodyDef bodyDef;
 	if (entity.Has<TransformComponent>())
 	{
-		const Transform& transform = entity.Get<TransformComponent>().transform;
+		const TransformComponent& transform = entity.Get<TransformComponent>();
 		bodyDef.position.Set(transform.GetPosition().x, transform.GetPosition().y);
 		// TODO : Fix this
 		//bodyDef.angle = Math::DegToRad(transform.GetRotation2D());

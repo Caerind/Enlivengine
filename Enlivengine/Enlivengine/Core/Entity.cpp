@@ -3,8 +3,9 @@
 #ifdef ENLIVE_MODULE_CORE
 
 #include <Enlivengine/Core/EntityManager.hpp>
-#include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/World.hpp>
+#include <Enlivengine/Core/Components.hpp>
+#include <Enlivengine/Core/TransformComponent.hpp>
 
 namespace en
 {
@@ -68,7 +69,7 @@ Vector3f Entity::GetPosition() const
 	}
 	else
 	{
-		return Get<TransformComponent>().transform.GetPosition();
+		return Get<TransformComponent>().GetPosition();
 	}
 }
 

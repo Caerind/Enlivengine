@@ -37,7 +37,7 @@ public:
 	Matrix4f& GetMatrix();
 	const Matrix4f& GetMatrix() const;
 
-private:
+protected:
 	Matrix4f mMatrix;
 };
 

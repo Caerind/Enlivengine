@@ -21,6 +21,7 @@
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/PhysicComponent.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
+#include <Enlivengine/Core/TransformComponent.hpp>
 
 //////////////////////////////////////////////////////////////////
 // en::NameComponent
@@ -46,8 +47,30 @@ ENLIVE_META_CLASS_END()
 // en::TransformComponent
 //////////////////////////////////////////////////////////////////
 ENLIVE_META_CLASS_BEGIN(en::TransformComponent)
-	ENLIVE_META_CLASS_MEMBER("transform", &en::TransformComponent::transform)
 ENLIVE_META_CLASS_END()
+
+#ifdef ENLIVE_ENABLE_IMGUI
+template <>
+struct HasCustomEditor<en::TransformComponent>
+{
+	static constexpr bool value = true;
+	static bool ImGuiEditor(en::TransformComponent& object, const char* name)
+	{
+		bool modified = false;
+#ifdef ENLIVE_DEBUG
+		if (en::World* world = en::Universe::GetInstance().GetCurrentWorld())
+		{
+			world->GetDebugDraw().DrawTransform(object.GetMatrix());
+		}
+#endif // ENLIVE_DEBUG
+		if (en::ObjectEditor::ImGuiEditor(static_cast<en::Transform&>(object), name))
+		{
+			modified = true;
+		}
+		return modified;
+	}
+};
+#endif // ENLIVE_ENABLE_IMGUI
 
 //////////////////////////////////////////////////////////////////
 // en::SpriteComponent

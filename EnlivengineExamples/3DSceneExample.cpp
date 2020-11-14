@@ -53,12 +53,7 @@ public:
 				bool render = false;
 				if (entity.Has<TransformComponent>())
 				{
-					TransformComponent& comp = entity.Get<TransformComponent>();
-					bgfx::setTransform(comp.transform.GetMatrix().GetData());
-					if (BgfxWrapper::GetCurrentView() == mToolView)
-					{
-						mWorld.GetDebugDraw().DrawTransform(comp.transform.GetMatrix());
-					}
+					bgfx::setTransform(entity.Get<TransformComponent>().GetMatrix().GetData());
 				}
 				if (entity.Has<SpriteComponent>())
 				{
@@ -221,7 +216,7 @@ int main(int argc, char** argv)
 			Entity playerEntity = world.GetEntityManager().CreateEntity();
 			{
 				playerEntity.Add<NameComponent>().name = "Player";
-				Transform& playerTransform = playerEntity.Add<TransformComponent>().transform;
+				TransformComponent& playerTransform = playerEntity.Add<TransformComponent>();
 				playerTransform.SetPosition(Vector3f(0.0f, 0.0f, 2.0f));
 				playerTransform.SetRotation(Matrix3f::RotationY(0.0f));
 				CameraComponent& playerCam = playerEntity.Add<CameraComponent>();
@@ -236,21 +231,21 @@ int main(int argc, char** argv)
 			Entity a1 = world.GetEntityManager().CreateEntity();
 			{
 				a1.Add<NameComponent>().name = "A1";
-				a1.Add<TransformComponent>().transform.SetPosition(Vector3f(0.0f, 1.0f, 0.0f));
+				a1.Add<TransformComponent>().SetPosition(Vector3f(0.0f, 1.0f, 0.0f));
 				a1.Add<RenderableComponent>();
 				a1.Add<SpriteComponent>().sprite.SetTexture(textureA);
 			}
 			Entity a2 = world.GetEntityManager().CreateEntity();
 			{
 				a2.Add<NameComponent>().name = "A2";
-				a2.Add<TransformComponent>().transform.SetPosition(Vector3f(1.0f, 2.0f, 0.0f));
+				a2.Add<TransformComponent>().SetPosition(Vector3f(1.0f, 2.0f, 0.0f));
 				a2.Add<RenderableComponent>();
 				a2.Add<SpriteComponent>().sprite.SetTexture(textureA);
 			}
 			Entity b1 = world.GetEntityManager().CreateEntity();
 			{
 				b1.Add<NameComponent>().name = "B1";
-				b1.Add<TransformComponent>().transform.SetPosition(Vector3f(2.0f, 2.0f, 0.0f));
+				b1.Add<TransformComponent>().SetPosition(Vector3f(2.0f, 2.0f, 0.0f));
 				b1.Add<RenderableComponent>();
 				b1.Add<SpriteComponent>().sprite.SetTexture(textureB);
 			}
@@ -324,7 +319,7 @@ int main(int argc, char** argv)
 								world.GetMainCamera()->GetProjectionMatrix().GetData(),
 								gizmoOperation,
 								ImGuizmo::LOCAL,
-								entity.Get<TransformComponent>().transform.GetMatrix().GetData()
+								entity.Get<TransformComponent>().GetMatrix().GetData()
 							);
 						}
 					}
@@ -347,7 +342,7 @@ int main(int argc, char** argv)
 
 				if (b1.IsValid() && b1.Has<TransformComponent>())
 				{
-					b1.Get<TransformComponent>().transform.GetMatrix().ApplyRotation(Matrix3f::RotationY(180.0f * dt.AsSeconds()));
+					b1.Get<TransformComponent>().GetMatrix().ApplyRotation(Matrix3f::RotationY(180.0f * dt.AsSeconds()));
 				}
 
 				if (Keyboard::IsPressed(Keyboard::Key::Escape))
@@ -388,7 +383,7 @@ int main(int argc, char** argv)
 					const F32 deltaPitch = Controller::GetAxis(0, 4);
 					const F32 dtSeconds = dt.AsSeconds();
 					
-					Transform& playerTransform = playerEntity.Get<TransformComponent>().transform;
+					TransformComponent& playerTransform = playerEntity.Get<TransformComponent>();
 
 					Vector3f direction = playerTransform.GetRotation().GetForward();
 
@@ -426,7 +421,7 @@ int main(int argc, char** argv)
 				if (useFreeCamera)
 				{
 					world.GetDebugDraw().DrawFrustum(playerEntity.Get<CameraComponent>().CreateFrustum(), Colors::Blue);
-					world.GetDebugDraw().DrawTransform(playerEntity.Get<TransformComponent>().transform.GetMatrix());
+					world.GetDebugDraw().DrawTransform(playerEntity.Get<TransformComponent>().GetMatrix());
 				}
 				else
 				{
@@ -437,7 +432,7 @@ int main(int argc, char** argv)
 				world.GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
 
 				Plane p(ENLIVE_DEFAULT_UP, 0.0f);
-				Ray r(playerEntity.Get<TransformComponent>().transform.GetPosition() + playerEntity.Get<CameraComponent>().GetPosition(), (playerEntity.Get<TransformComponent>().transform.GetRotation().GetForward() * 3.0f - ENLIVE_DEFAULT_UP).Normalized());
+				Ray r(playerEntity.Get<TransformComponent>().GetPosition() + playerEntity.Get<CameraComponent>().GetPosition(), (playerEntity.Get<TransformComponent>().GetRotation().GetForward() * 3.0f - ENLIVE_DEFAULT_UP).Normalized());
 				F32 t;
 				if (r.Intersects(p, &t))
 				{
@@ -483,11 +478,11 @@ int main(int argc, char** argv)
 						}
 						else
 						{
-							const Vector3f position = playerEntity.Get<TransformComponent>().transform.GetPosition() + playerEntity.Get<CameraComponent>().GetPosition();
+							const Vector3f position = playerEntity.Get<TransformComponent>().GetPosition() + playerEntity.Get<CameraComponent>().GetPosition();
 							bgfx::dbgTextPrintf(0, 2, 0x0f, "Camera: (%f, %f, %f)", position.x, position.y, position.z);
 						}
 						{
-							const Vector3f position = playerEntity.Get<TransformComponent>().transform.GetPosition();
+							const Vector3f position = playerEntity.Get<TransformComponent>().GetPosition();
 							bgfx::dbgTextPrintf(0, 3, 0x0f, "Position: (%f, %f, %f)", position.x, position.y, position.z);
 						}
 					}

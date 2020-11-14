@@ -2,10 +2,7 @@
 
 #ifdef ENLIVE_MODULE_CORE
 
-#include <Enlivengine/Core/World.hpp>
-#include <Enlivengine/Core/Entity.hpp>
-#include <Enlivengine/Core/Components.hpp>
-#include <Enlivengine/Math/Transform.hpp>
+#include <Enlivengine/Core/TransformComponent.hpp>
 
 namespace en
 {
@@ -95,7 +92,7 @@ const Matrix4f& CameraComponent::GetEntityMatrix() const
 {
 	if (mEntity.IsValid() && mEntity.Has<TransformComponent>())
 	{
-		return mEntity.Get<TransformComponent>().transform.GetMatrix();
+		return mEntity.Get<TransformComponent>().GetMatrix();
 	}
 	else
 	{

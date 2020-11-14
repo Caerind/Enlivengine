@@ -34,13 +34,6 @@ struct RenderableComponent
 {
 };
 
-struct TransformComponent
-{
-	TransformComponent() : transform() {}
-
-	Transform transform;
-};
-
 struct SpriteComponent
 {
 	SpriteComponent() : sprite() {}

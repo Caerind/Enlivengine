@@ -159,6 +159,7 @@ struct HasCustomEditor<en::Matrix3<T>>
 		bool modified = false;
 		if (ImGui::CollapsingHeader(name))
 		{
+			ImGui::Indent();
 			for (en::U32 row = 0; row < en::Matrix3<T>::Rows; ++row)
 			{
 				en::Vector3<T> matrixRow;
@@ -169,6 +170,7 @@ struct HasCustomEditor<en::Matrix3<T>>
 					modified = true;
 				}
 			}
+			ImGui::Unindent();
 		}
 		return modified;
 	}
@@ -234,6 +236,7 @@ struct HasCustomEditor<en::Matrix4<T>>
 		bool modified = false;
 		if (ImGui::CollapsingHeader(name))
 		{
+			ImGui::Indent();
 			for (en::U32 row = 0; row < en::Matrix4<T>::Rows; ++row)
 			{
 				en::Vector4<T> matrixRow;
@@ -244,6 +247,7 @@ struct HasCustomEditor<en::Matrix4<T>>
 					modified = true;
 				}
 			}
+			ImGui::Unindent();
 		}
 		return modified;
 	}
