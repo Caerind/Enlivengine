@@ -10,7 +10,6 @@
 #include <Enlivengine/Math/Vector2.hpp>
 
 #include <Enlivengine/Core/System.hpp>
-#include <Enlivengine/Core/PhysicSystem.hpp>
 
 #if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
 #include <Enlivengine/Graphics/DebugDraw.hpp>
@@ -76,6 +75,9 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 		void DrawPoint(const b2Vec2& p, float32 size, const b2Color& color);
 #endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 
+	private:
+		static b2Body* GetComponentBody(const PhysicComponent& component);
+
     protected:
 		b2World* mPhysicWorld;
         U32 mVelocityIterations;
@@ -99,12 +101,12 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 template <typename F>
 bool PhysicSystem::AddBeginContactSlot(BeginContactSlotType& slot, const PhysicComponent& component, F&& fct)
 {
-	if (b2Body* body = component.mBody)
+	if (b2Body* body = GetComponentBody(component))
 	{
 		auto itr = mContactSignals.find(body);
 		if (itr == mContactSignals.end())
 		{
-			itr = mContactSignals.emplace(std::make_pair(component.mBody, ContactSignals())).first;
+			itr = mContactSignals.emplace(std::make_pair(body, ContactSignals())).first;
 		}
 		if (itr != mContactSignals.end())
 		{
@@ -118,12 +120,12 @@ bool PhysicSystem::AddBeginContactSlot(BeginContactSlotType& slot, const PhysicC
 template <typename F>
 bool PhysicSystem::AddEndContactSlot(EndContactSlotType& slot, const PhysicComponent& component, F&& fct)
 {
-	if (b2Body* body = component.mBody)
+	if (b2Body* body = GetComponentBody(component))
 	{
 		auto itr = mContactSignals.find(body);
 		if (itr == mContactSignals.end())
 		{
-			itr = mContactSignals.emplace(std::make_pair(component.mBody, ContactSignals())).first;
+			itr = mContactSignals.emplace(std::make_pair(body, ContactSignals())).first;
 		}
 		if (itr != mContactSignals.end())
 		{

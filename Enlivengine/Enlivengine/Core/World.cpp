@@ -36,11 +36,6 @@ const EntityManager& World::GetEntityManager() const
 	return mEntityManager;
 }
 
-bool World::HasPhysicSystem() const
-{
-	return mPhysicSystem != nullptr;
-}
-
 PhysicSystem* World::GetPhysicSystem()
 {
 	return mPhysicSystem;
@@ -49,6 +44,11 @@ PhysicSystem* World::GetPhysicSystem()
 const PhysicSystem* World::GetPhysicSystem() const
 {
 	return mPhysicSystem;
+}
+
+bool World::HasPhysicSystem() const
+{
+	return mPhysicSystem != nullptr;
 }
 
 Camera* World::GetMainCamera() const

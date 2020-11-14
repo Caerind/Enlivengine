@@ -322,6 +322,12 @@ void PhysicSystem::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color
 	c.FromBox2DColor(color);
 	mDebugDraw.DrawPoint(pos, c);
 }
+
+b2Body* PhysicSystem::GetComponentBody(const PhysicComponent& component)
+{
+	return component.mBody;
+}
+
 #endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 
 } // namespace en

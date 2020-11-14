@@ -39,8 +39,7 @@ class CameraComponent : public Camera
 		const Matrix4f& GetEntityMatrix() const;
 
 	private:
-		template <typename T> friend struct ComponentHasCustomInitialization;
-		template <typename T> friend struct HasCustomEditor;
+		friend struct ComponentHasCustomInitialization<CameraComponent>;
 
 		Entity mEntity;
 };

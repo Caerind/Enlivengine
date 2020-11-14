@@ -27,9 +27,16 @@ public:
 	template <typename T, typename ... Args>
 	T* CreateSystem(Args&& ... args);
 
-	bool HasPhysicSystem() const;
+	template <typename T>
+	T* GetSystem();
+	template <typename T>
+	const T* GetSystem() const;
+	template <typename T>
+	bool HasSystem() const;
+
 	PhysicSystem* GetPhysicSystem();
 	const PhysicSystem* GetPhysicSystem() const;
+	bool HasPhysicSystem() const;
 
 	Camera* GetMainCamera() const;
 	void SetMainCamera(Camera* camera);
@@ -72,19 +79,59 @@ T* World::CreateSystem(Args&& ... args)
 {
 	static_assert(Traits::IsBaseOf<System, T>::value);
 
-	T* system = new T(*this, std::forward<Args>(args)...);
-	mSystems.push_back(system);
-
-	if constexpr (Traits::IsBaseOf<PhysicSystem, T>::value)
+	if (T* system = GetSystem<T>())
 	{
-		if (mPhysicSystem != nullptr)
-		{
-			enLogWarning(LogChannel::Core, "World have too many PhysicSystems");
-		}
-		mPhysicSystem = system;
+		enLogWarning(LogChannel::Core, "World have too many {}", TypeInfo<T>::GetName());
+		return system;
 	}
+	else
+	{
+		system = new T(*this, std::forward<Args>(args)...);
+		if (system != nullptr)
+		{
+			mSystems.push_back(system);
 
-	return system;
+			if constexpr (Traits::IsBaseOf<PhysicSystem, T>::value)
+			{
+				mPhysicSystem = system;
+			}
+		}
+		return system;
+	}
+}
+
+template <typename T>
+T* World::GetSystem()
+{
+	static_assert(Traits::IsBaseOf<System, T>::value);
+	for (auto system : mSystems)
+	{
+		if (T* s = dynamic_cast<T*>(system)) // TODO : Find how to not use dynamic_cast
+		{
+			return s;
+		}
+	}
+	return nullptr;
+}
+
+template <typename T>
+const T* World::GetSystem() const
+{
+	static_assert(Traits::IsBaseOf<System, T>::value);
+	for (auto system : mSystems)
+	{
+		if (const T* s = dynamic_cast<const T*>(system)) // TODO : Find how to not use dynamic_cast
+		{
+			return s;
+		}
+	}
+	return nullptr;
+}
+
+template <typename T>
+bool World::HasSystem() const
+{
+	return GetSystem<T>() != nullptr;
 }
 
 } // namespace en
