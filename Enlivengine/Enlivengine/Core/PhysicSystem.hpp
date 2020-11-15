@@ -78,7 +78,7 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 #endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 
 	private:
-		static b2Body* GetComponentBody(PhysicComponent& component);
+		static b2Body* GetComponentBody(const PhysicComponent& component);
 
     protected:
 		b2World* mPhysicWorld;

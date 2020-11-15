@@ -320,9 +320,9 @@ void PhysicSystem::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color
 	mDebugDraw.DrawPoint(pos, c);
 }
 
-b2Body* PhysicSystem::GetComponentBody(PhysicComponent& component)
+b2Body* PhysicSystem::GetComponentBody(const PhysicComponent& component)
 {
-	return component.GetBody();
+	return const_cast<b2Body*>(component.GetBody());
 }
 
 #endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
