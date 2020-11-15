@@ -30,6 +30,9 @@ public:
 	Entity(EntityManager& manager, entt::entity entity);
 	Entity(World& world, entt::entity entity);
 
+	bool operator==(const Entity& other) const;
+	bool operator!=(const Entity& other) const;
+
 	operator bool() const;
 	bool IsValid() const;
 	U32 GetID() const;

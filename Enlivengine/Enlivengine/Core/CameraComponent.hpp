@@ -36,7 +36,7 @@ class CameraComponent : public Camera
 		const World* GetWorld() const;
 
 	private:
-		const Matrix4f& GetEntityMatrix() const;
+		Matrix4f GetEntityMatrix() const;
 
 	private:
 		friend struct ComponentHasCustomInitialization<CameraComponent>;
@@ -52,11 +52,9 @@ struct ComponentHasCustomInitialization<en::CameraComponent>
 	static constexpr bool value = true;
 	static bool Initialize(const en::Entity& entity, en::CameraComponent& component)
 	{
-		if (entity.IsValid())
-		{
-			component.mEntity = entity;
-		}
-		return false;
+		enAssert(entity.IsValid());
+		component.mEntity = entity;
+		return true;
 	}
 };
 

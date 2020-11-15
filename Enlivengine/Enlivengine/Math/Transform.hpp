@@ -33,10 +33,6 @@ public:
 	void Scale(const Vector3f& scale);
 	void Scale(F32 uniformScale);
 
-	// Matrix
-	Matrix4f& GetMatrix();
-	const Matrix4f& GetMatrix() const;
-
 protected:
 	Matrix4f mMatrix;
 };

@@ -28,6 +28,16 @@ Entity::Entity(World& world, entt::entity entity)
 {
 }
 
+bool Entity::operator==(const Entity& other) const
+{
+	return mManager == other.mManager && mEntity == other.mEntity;
+}
+
+bool Entity::operator!=(const Entity& other) const
+{
+	return !operator==(other);
+}
+
 Entity::operator bool() const
 {
 	return IsValid();

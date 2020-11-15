@@ -100,15 +100,13 @@ struct ComponentHasCustomInitialization<en::PhysicComponent>
 	static constexpr bool value = true;
 	static bool Initialize(const en::Entity& entity, en::PhysicComponent& component)
 	{
-		if (entity.IsValid())
+		enAssert(entity.IsValid());
+		en::World& world = const_cast<en::World&>(entity.GetWorld());
+		if (world.HasPhysicSystem())
 		{
-			en::World& world = const_cast<en::World&>(entity.GetWorld());
-			if (world.HasPhysicSystem())
-			{
-				return world.GetPhysicSystem()->Initialize(entity, component);
-			}
+			return world.GetPhysicSystem()->Initialize(entity, component);
 		}
-		return false;
+		return true;
 	}
 };
 

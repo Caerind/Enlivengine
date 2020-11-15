@@ -67,16 +67,6 @@ void Transform::Scale(F32 uniformScale)
 	mMatrix.ApplyScale(uniformScale);
 }
 
-Matrix4f& Transform::GetMatrix()
-{
-	return mMatrix;
-}
-
-const Matrix4f& Transform::GetMatrix() const
-{
-	return mMatrix;
-}
-
 } // namespace en
 
 #endif // ENLIVE_MODULE_MATH

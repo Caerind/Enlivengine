@@ -88,16 +88,15 @@ const World* CameraComponent::GetWorld() const
 	}
 }
 
-const Matrix4f& CameraComponent::GetEntityMatrix() const
+Matrix4f CameraComponent::GetEntityMatrix() const
 {
 	if (mEntity.IsValid() && mEntity.Has<TransformComponent>())
 	{
-		return mEntity.Get<TransformComponent>().GetMatrix();
+		return mEntity.Get<TransformComponent>().GetGlobalMatrix();
 	}
 	else
 	{
-		static const Matrix4f staticIdentity = Matrix4f::Identity();
-		return staticIdentity;
+		return Matrix4f::Identity();
 	}
 }
 

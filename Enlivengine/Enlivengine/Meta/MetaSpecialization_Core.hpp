@@ -60,7 +60,7 @@ struct HasCustomEditor<en::TransformComponent>
 #ifdef ENLIVE_DEBUG
 		if (en::World* world = en::Universe::GetInstance().GetCurrentWorld())
 		{
-			world->GetDebugDraw().DrawTransform(object.GetMatrix());
+			world->GetDebugDraw().DrawTransform(object.GetGlobalMatrix());
 		}
 #endif // ENLIVE_DEBUG
 		if (en::ObjectEditor::ImGuiEditor(static_cast<en::Transform&>(object), name))
