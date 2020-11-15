@@ -51,11 +51,14 @@ Frustum CameraComponent::CreateFrustum() const
 
 const Matrix4f& CameraComponent::GetViewMatrix() const
 {
-	const Matrix4f& entityMatrix = GetEntityMatrix();
-	const Vector3f position = entityMatrix.TransformPoint(GetPosition());
-	const Vector3f direction = entityMatrix.TransformDirection(GetRotation().GetForward());
-	// TODO : Only if CameraDirty or EntityTransformDirty
-	mViewMatrix = Matrix4f::LookAt(position, position + direction, ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+	// TODO : Only if EntityTransformDirty
+	if (true)
+	{
+		const Matrix4f& entityMatrix = GetEntityMatrix();
+		const Vector3f position = entityMatrix.TransformPoint(GetPosition());
+		const Vector3f direction = entityMatrix.TransformDirection(GetRotation().GetForward());
+		mViewMatrix = Matrix4f::LookAt(position, position + direction, ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+	}
 	return mViewMatrix;
 }
 
@@ -86,6 +89,41 @@ const World* CameraComponent::GetWorld() const
 	{
 		return nullptr;
 	}
+}
+
+void CameraComponent::InitializeView(const Vector3f& position, const Matrix3f& rotation)
+{
+	Camera::InitializeView(position, rotation);
+}
+
+void CameraComponent::SetPosition(const Vector3f& position)
+{
+	Camera::SetPosition(position);
+}
+
+const Vector3f& CameraComponent::GetPosition() const
+{
+	return Camera::GetPosition();
+}
+
+void CameraComponent::Move(const Vector3f& movement)
+{
+	Camera::Move(movement);
+}
+
+void CameraComponent::SetRotation(const Matrix3f& rotation)
+{
+	Camera::SetRotation(rotation);
+}
+
+const Matrix3f& CameraComponent::GetRotation() const
+{
+	return Camera::GetRotation();
+}
+
+void CameraComponent::Rotate(const Matrix3f& rotation)
+{
+	Camera::Rotate(rotation);
 }
 
 Matrix4f CameraComponent::GetEntityMatrix() const

@@ -9,9 +9,11 @@ namespace en
 
 TransformComponent::TransformComponent()
 	: Transform()
+	, mGlobalMatrix(Matrix4f::Identity())
 	, mEntity()
 	, mParent()
 	, mChildren()
+	, mGlobalMatrixDirty(true)
 {
 }
 
@@ -22,9 +24,11 @@ TransformComponent::~TransformComponent()
 
 TransformComponent::TransformComponent(TransformComponent&& other) noexcept
 	: Transform(other)
+	, mGlobalMatrix(other.mGlobalMatrix)
 	, mEntity(other.mEntity)
 	, mParent(other.mParent)
 	, mChildren(std::move(other.mChildren))
+	, mGlobalMatrixDirty(other.mGlobalMatrixDirty)
 {
 	other.mEntity = Entity();
 	other.mParent = Entity();
@@ -42,6 +46,54 @@ TransformComponent& TransformComponent::operator=(TransformComponent&& other) no
 		other.mParent = Entity();
 	}
 	return *this;
+}
+
+void TransformComponent::SetPosition(const Vector3f& position)
+{
+	Transform::SetPosition(position);
+	MarkGlobalMatrixAsDirty();
+}
+
+void TransformComponent::Move(const Vector3f& movement)
+{
+	Transform::Move(movement);
+	MarkGlobalMatrixAsDirty();
+}
+
+void TransformComponent::SetRotation(const Matrix3f& rotation)
+{
+	Transform::SetRotation(rotation);
+	MarkGlobalMatrixAsDirty();
+}
+
+void TransformComponent::Rotate(const Matrix3f& rotation)
+{
+	Transform::Rotate(rotation);
+	MarkGlobalMatrixAsDirty();
+}
+
+void TransformComponent::SetScale(const Vector3f& scale)
+{
+	Transform::SetScale(scale);
+	MarkGlobalMatrixAsDirty();
+}
+
+void TransformComponent::SetUniformScale(F32 uniformScale)
+{
+	Transform::SetUniformScale(uniformScale);
+	MarkGlobalMatrixAsDirty();
+}
+
+void TransformComponent::Scale(const Vector3f& scale)
+{
+	Transform::Scale(scale);
+	MarkGlobalMatrixAsDirty();
+}
+
+void TransformComponent::Scale(F32 uniformScale)
+{
+	Transform::Scale(uniformScale);
+	MarkGlobalMatrixAsDirty();
 }
 
 void TransformComponent::AttachChild(const Entity& childEntity)
@@ -151,17 +203,13 @@ Entity TransformComponent::GetParent() const
 	return mParent;
 }
 
-Matrix4f TransformComponent::GetGlobalMatrix() const
+const Matrix4f& TransformComponent::GetGlobalMatrix() const
 {
-	if (mParent.IsValid())
+	if (mGlobalMatrixDirty)
 	{
-		enAssert(mParent.Has<TransformComponent>());
-		return mParent.Get<TransformComponent>().GetGlobalMatrix() * mMatrix;
+		UpdateGlobalMatrix();
 	}
-	else
-	{
-		return mMatrix;
-	}
+	return mGlobalMatrix;
 }
 
 Vector3f TransformComponent::GetGlobalPosition() const
@@ -169,9 +217,9 @@ Vector3f TransformComponent::GetGlobalPosition() const
 	return GetGlobalMatrix().GetTranslation();
 }
 
-Matrix4f& TransformComponent::GetLocalMatrix()
+Matrix3f TransformComponent::GetGlobalRotation() const
 {
-	return mMatrix;
+	return GetGlobalMatrix().GetRotation();
 }
 
 const en::Matrix4f& TransformComponent::GetLocalMatrix() const
@@ -206,6 +254,35 @@ const World* TransformComponent::GetWorld() const
 	{
 		return nullptr;
 	}
+}
+
+void TransformComponent::MarkGlobalMatrixAsDirty()
+{
+	mGlobalMatrixDirty = true;
+
+	const U32 childrenCount = GetChildrenCount();
+	for (U32 i = 0; i < childrenCount; ++i)
+	{
+		if (mChildren[i].IsValid())
+		{
+			enAssert(mChildren[i].Has<TransformComponent>());
+			mChildren[i].Get<TransformComponent>().MarkGlobalMatrixAsDirty();
+		}
+	}
+}
+
+void TransformComponent::UpdateGlobalMatrix() const
+{
+	if (mParent.IsValid())
+	{
+		enAssert(mParent.Has<TransformComponent>());
+		mGlobalMatrix = mMatrix * mParent.Get<TransformComponent>().GetGlobalMatrix();
+	}
+	else
+	{
+		mGlobalMatrix = mMatrix;
+	}
+	mGlobalMatrixDirty = false;
 }
 
 } // namespace en

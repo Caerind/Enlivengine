@@ -66,20 +66,12 @@ public:
 				}
 			}
 		}
-		if (BgfxWrapper::GetCurrentView() == mToolView)
+		if (mWorld.GetMainCamera() != nullptr && BgfxWrapper::GetCurrentView() == mWorld.GetMainCamera()->GetViewID())
 		{
 			mWorld.GetDebugDraw().Render();
 			mWorld.GetDebugDraw().Clear();
 		}
 	}
-
-	void SetToolView(bgfx::ViewId viewId)
-	{
-		mToolView = viewId;
-	}
-
-private:
-	bgfx::ViewId mToolView;
 };
 
 #ifdef ENLIVE_DEBUG
@@ -208,8 +200,8 @@ int main(int argc, char** argv)
 			RenderSystem* renderSystem = world.CreateSystem<RenderSystem>();
 #ifdef ENLIVE_DEBUG
 			ToolCameraSystem* toolCameraSystem = world.CreateSystem<ToolCameraSystem>();
-			renderSystem->SetToolView(toolCameraSystem->GetCamera().GetViewID());
 			bool useFreeCamera = true;
+			world.SetMainCamera(&toolCameraSystem->GetCamera());
 #endif // ENLIVE_DEBUG
 			Universe::GetInstance().SetCurrentWorld(&world);
 
@@ -230,6 +222,9 @@ int main(int argc, char** argv)
 				playerCam.InitializePerspective(80.0f, F32(window.GetWidth()) / F32(window.GetHeight()), 0.1f, 100.0f);
 				playerCam.SetViewport(Rectf(0.7f, 0.7f, 0.2f, 0.2f));
 				playerCam.SetClearColor(Colors::LightBlue);
+#ifndef ENLIVE_DEBUG
+				world.SetMainCamera(&playerCam);
+#endif // ENLIVE_DEBUG
 			}
 
 			Entity a1 = world.GetEntityManager().CreateEntity();
@@ -291,10 +286,10 @@ int main(int argc, char** argv)
 			const U32 toggleGraphStats = EventSystem::AddKeyButton("toggleGraphStats", Keyboard::Key::F3, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Control));
 
 			ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
-			const U32 gizmoTranslate = EventSystem::AddKeyButton("gizmoTranslate", Keyboard::Key::T, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Alt));
-			const U32 gizmoRotate = EventSystem::AddKeyButton("gizmoRotate", Keyboard::Key::R, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Alt));
-			const U32 gizmoScale = EventSystem::AddKeyButton("gizmoScale", Keyboard::Key::S, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Alt));
-
+			const U32 gizmoTranslate = EventSystem::AddKeyButton("gizmoTranslate", Keyboard::Key::I, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Control));
+			const U32 gizmoRotate = EventSystem::AddKeyButton("gizmoRotate", Keyboard::Key::O, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Control));
+			const U32 gizmoScale = EventSystem::AddKeyButton("gizmoScale", Keyboard::Key::P, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Control));
+			
 			Clock clock;
 
 			while (!window.ShouldClose())
@@ -304,12 +299,11 @@ int main(int argc, char** argv)
 #ifdef ENLIVE_ENABLE_IMGUI
 				ImGuiWrapper::BeginFrame(250, window.GetWidth(), window.GetHeight());
 
-				ImGuiToolManager::GetInstance().Update();
-
 #ifdef ENLIVE_DEBUG
 				if (EventSystem::IsButtonActive(gizmoTranslate)) gizmoOperation = ImGuizmo::TRANSLATE;
 				if (EventSystem::IsButtonActive(gizmoRotate)) gizmoOperation = ImGuizmo::ROTATE;
 				if (EventSystem::IsButtonActive(gizmoScale)) gizmoOperation = ImGuizmo::SCALE;
+				
 				ImGuiIO& io = ImGui::GetIO();
 				ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 				if (world.GetMainCamera() != nullptr)
@@ -320,36 +314,25 @@ int main(int argc, char** argv)
 						Entity entity(world, enttEntity);
 						if (entity.IsValid() && entity.Has<TransformComponent>())
 						{
+							float* mtxData = const_cast<float*>(entity.Get<TransformComponent>().GetLocalMatrix().GetData());
 							ImGuizmo::Manipulate(
 								world.GetMainCamera()->GetViewMatrix().GetData(),
 								world.GetMainCamera()->GetProjectionMatrix().GetData(),
 								gizmoOperation,
 								ImGuizmo::LOCAL,
-								entity.Get<TransformComponent>().GetLocalMatrix().GetData()
+								mtxData
 							);
 						}
 					}
 				}
 #endif // ENLIVE_DEBUG
 
+				ImGuiToolManager::GetInstance().Update();
+
 				ImGuiWrapper::EndFrame();
 #endif // ENLIVE_ENABLE_IMGUI
 
 				const Time dt = clock.Restart();
-
-				if (EventSystem::IsButtonActive("action") || EventSystem::IsButtonActive("jactionP1"))
-				{
-					printf("Action!\n");
-					if (!Controller::Rumble(0, 0.25f, 100))
-					{
-						printf("Can't rumble : %s\n", SDLWrapper::GetError());
-					}
-				}
-
-				if (b1.IsValid() && b1.Has<TransformComponent>())
-				{
-					b1.Get<TransformComponent>().GetLocalMatrix().ApplyRotation(Matrix3f::RotationY(180.0f * dt.AsSeconds()));
-				}
 
 				if (Keyboard::IsPressed(Keyboard::Key::Escape))
 				{
@@ -381,44 +364,62 @@ int main(int argc, char** argv)
 
 				world.Update(dt);
 
-				// Move player using controller
+				if (world.IsPlaying())
 				{
-					const F32 forwardMvt = -Controller::GetAxis(0, 1);
-					const F32 leftMvt = -Controller::GetAxis(0, 0);
-					const F32 deltaYaw = Controller::GetAxis(0, 3);
-					const F32 deltaPitch = Controller::GetAxis(0, 4);
-					const F32 dtSeconds = dt.AsSeconds();
-					
-					TransformComponent& playerTransform = playerEntity.Get<TransformComponent>();
-
-					Vector3f direction = playerTransform.GetRotation().GetForward();
-
-					// Movement
-					if (forwardMvt != 0.0f || leftMvt != 0.0f)
+					if (EventSystem::IsButtonActive("action") || EventSystem::IsButtonActive("jactionP1"))
 					{
-						Vector3f mvtUnit = direction;
-						mvtUnit.y = 0.0f;
-						mvtUnit.Normalize();
-
-						Vector3f movement;
-						movement += 3.0f * forwardMvt * mvtUnit * dtSeconds;
-						movement -= 3.0f * leftMvt * mvtUnit.CrossProduct(ENLIVE_DEFAULT_UP) * dtSeconds;
-						playerTransform.Move(movement);
+						printf("Action!\n");
+						if (!Controller::Rumble(0, 0.25f, 100))
+						{
+							printf("Can't rumble : %s\n", SDLWrapper::GetError());
+						}
 					}
 
-					// Rotation
-					if (deltaYaw != 0.0f || deltaPitch != 0.0f)
+					if (b1.IsValid() && b1.Has<TransformComponent>())
 					{
-						if (!Math::Equals(deltaYaw, 0.0f))
+						b1.Get<TransformComponent>().Rotate(Matrix3f::RotationY(180.0f * dt.AsSeconds()));
+					}
+
+					// Move player using controller
+					{
+						const F32 forwardMvt = -Controller::GetAxis(0, 1);
+						const F32 leftMvt = -Controller::GetAxis(0, 0);
+						const F32 deltaYaw = Controller::GetAxis(0, 3);
+						const F32 deltaPitch = Controller::GetAxis(0, 4);
+						const F32 dtSeconds = dt.AsSeconds();
+
+						TransformComponent& playerTransform = playerEntity.Get<TransformComponent>();
+
+						Vector3f direction = playerTransform.GetRotation().GetForward();
+
+						// Movement
+						if (forwardMvt != 0.0f || leftMvt != 0.0f)
 						{
-							playerTransform.SetRotation(playerTransform.GetRotation() * Matrix3f::RotationY(100.0f * dtSeconds * deltaYaw));
+							Vector3f mvtUnit = direction;
+							mvtUnit.y = 0.0f;
+							mvtUnit.Normalize();
+
+							Vector3f movement;
+							movement += 3.0f * forwardMvt * mvtUnit * dtSeconds;
+							movement -= 3.0f * leftMvt * mvtUnit.CrossProduct(ENLIVE_DEFAULT_UP) * dtSeconds;
+							playerTransform.Move(movement);
 						}
-						if (!Math::Equals(deltaPitch, 0.0f))
+
+						// Rotation
+						if (deltaYaw != 0.0f || deltaPitch != 0.0f)
 						{
-							//playerTransform.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
+							if (!Math::Equals(deltaYaw, 0.0f))
+							{
+								playerTransform.SetRotation(playerTransform.GetRotation() * Matrix3f::RotationY(100.0f * dtSeconds * deltaYaw));
+							}
+							if (!Math::Equals(deltaPitch, 0.0f))
+							{
+								//playerTransform.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
+							}
 						}
 					}
 				}
+
 
 				world.GetDebugDraw().DrawCross(Vector3f(-1.0f));
 				world.GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
@@ -438,7 +439,7 @@ int main(int argc, char** argv)
 				world.GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
 
 				Plane p(ENLIVE_DEFAULT_UP, 0.0f);
-				Ray r(playerCamEntity.Get<TransformComponent>().GetGlobalPosition() + playerCamEntity.Get<CameraComponent>().GetPosition(), (playerEntity.Get<TransformComponent>().GetRotation().GetForward() * 3.0f - ENLIVE_DEFAULT_UP).Normalized());
+				Ray r(playerCamEntity.Get<TransformComponent>().GetGlobalPosition(), (playerCamEntity.Get<TransformComponent>().GetGlobalRotation().GetForward() * 3.0f - ENLIVE_DEFAULT_UP).Normalized());
 				F32 t;
 				if (r.Intersects(p, &t))
 				{
@@ -484,7 +485,7 @@ int main(int argc, char** argv)
 						}
 						else
 						{
-							const Vector3f position = playerCamEntity.Get<TransformComponent>().GetGlobalPosition() + playerCamEntity.Get<CameraComponent>().GetPosition();
+							const Vector3f position = playerCamEntity.Get<TransformComponent>().GetGlobalPosition();
 							bgfx::dbgTextPrintf(0, 2, 0x0f, "Camera: (%f, %f, %f)", position.x, position.y, position.z);
 						}
 

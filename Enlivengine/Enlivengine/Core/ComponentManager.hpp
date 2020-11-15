@@ -46,7 +46,7 @@ public:
 		{
 			if constexpr (Traits::IsEmpty<T>::value)
 			{
-				ImGui::Text(TypeInfo<T>::GetName());
+				ImGui::Text("%s", TypeInfo<T>::GetName());
 				return false;
 			}
 			else

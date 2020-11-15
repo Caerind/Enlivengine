@@ -15,33 +15,43 @@ namespace en
 
 class CameraComponent : public Camera
 {
-    public:
-        CameraComponent();
-		~CameraComponent();
+public:
+	CameraComponent();
+	~CameraComponent();
 
-		CameraComponent(CameraComponent&& other) noexcept;
-		CameraComponent(const CameraComponent&) = delete;
+	CameraComponent(CameraComponent&& other) noexcept;
+	CameraComponent(const CameraComponent&) = delete;
 
-        CameraComponent& operator=(CameraComponent&& other) noexcept;
-		CameraComponent& operator=(const CameraComponent&) = delete;
+	CameraComponent& operator=(CameraComponent&& other) noexcept;
+	CameraComponent& operator=(const CameraComponent&) = delete;
 
-		virtual void Apply() const override;
+	virtual void Apply() const override;
 
-		virtual Frustum CreateFrustum() const override;
+	virtual Frustum CreateFrustum() const override;
 
-		virtual const Matrix4f& GetViewMatrix() const override;
+	virtual const Matrix4f& GetViewMatrix() const override;
 
-		Entity GetEntity() const;
-		World* GetWorld();
-		const World* GetWorld() const;
+	Entity GetEntity() const;
+	World* GetWorld();
+	const World* GetWorld() const;
 
-	private:
-		Matrix4f GetEntityMatrix() const;
+private:
+	// Hide camera view transform, use entity transform
+	void InitializeView(const Vector3f& position, const Matrix3f& rotation);
+	void SetPosition(const Vector3f& position);
+	const Vector3f& GetPosition() const;
+	void Move(const Vector3f& movement);
+	void SetRotation(const Matrix3f& rotation);
+	const Matrix3f& GetRotation() const;
+	void Rotate(const Matrix3f& rotation);
 
-	private:
-		friend struct ComponentHasCustomInitialization<CameraComponent>;
+private:
+	Matrix4f GetEntityMatrix() const;
 
-		Entity mEntity;
+private:
+	friend struct ComponentHasCustomInitialization<CameraComponent>;
+
+	Entity mEntity;
 };
 
 } // namespace en
