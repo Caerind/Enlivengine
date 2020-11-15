@@ -66,7 +66,7 @@ void ImGuiEntityBrowser::Display()
 			}
 		}
 
-		entityManager.Each([this, &world](auto entityEntt)
+		entityManager.Each([&world](auto entityEntt)
 		{
 			Entity entity(world->GetEntityManager(), entityEntt);
 			if (entity.IsValid())

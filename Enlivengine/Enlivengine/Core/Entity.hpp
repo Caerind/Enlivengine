@@ -33,7 +33,6 @@ public:
 	bool operator==(const Entity& other) const;
 	bool operator!=(const Entity& other) const;
 
-	operator bool() const;
 	bool IsValid() const;
 	U32 GetID() const;
 	void Destroy();

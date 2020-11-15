@@ -48,7 +48,7 @@ public:
 		for (auto entt : view)
 		{
 			Entity entity(entityManager, entt);
-			if (entity)
+			if (entity.IsValid())
 			{
 				bool render = false;
 				if (entity.Has<TransformComponent>())
@@ -318,7 +318,7 @@ int main(int argc, char** argv)
 					for (const auto& enttEntity : selectedEntities)
 					{
 						Entity entity(world, enttEntity);
-						if (entity && entity.Has<TransformComponent>())
+						if (entity.IsValid() && entity.Has<TransformComponent>())
 						{
 							ImGuizmo::Manipulate(
 								world.GetMainCamera()->GetViewMatrix().GetData(),

@@ -75,7 +75,7 @@ void PreviewTexture(const en::Texture& texture, const en::Rectu& textureRect, en
 
 /*
 // TODO : TOOLS UPDATE
-void PreviewAnimationClip(const en::Animation& animation, en::F32 maxSize, const en::U32& clipIndex, en::U32& clipFrameIndex, en::Time& accumulator, en::F32 speedScale /*= 1.0f*//*)
+void PreviewAnimationClip(const en::Animation& animation, en::F32 maxSize, const en::U32& clipIndex, en::U32& clipFrameIndex, en::Time& accumulator, en::F32 speedScale)
 {
     en::U32 clipIndexCopy = clipIndex;
     PreviewAnimation(animation, maxSize, clipIndexCopy, clipFrameIndex, accumulator, speedScale);
@@ -103,7 +103,7 @@ void PreviewAnimationClip(const en::Animation& animation, en::F32 maxSize, const
 
 /*
 // TODO : TOOLS UPDATE
-void PreviewAnimation(const en::Animation& animation, en::F32 maxSize, en::U32& clipIndex, en::U32& clipFrameIndex, en::Time& accumulator, en::F32 speedScale /*= 1.0f*//*)
+void PreviewAnimation(const en::Animation& animation, en::F32 maxSize, en::U32& clipIndex, en::U32& clipFrameIndex, en::Time& accumulator, en::F32 speedScale)
 {
 	if (!animation.GetTexture().IsValid())
 	{

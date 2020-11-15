@@ -38,11 +38,6 @@ bool Entity::operator!=(const Entity& other) const
 	return !operator==(other);
 }
 
-Entity::operator bool() const
-{
-	return IsValid();
-}
-
 bool Entity::IsValid() const
 {
 	return mManager != nullptr && GetRegistry().valid(mEntity);
