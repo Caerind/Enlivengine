@@ -191,6 +191,8 @@ void ImGuiResourceBrowser::Display()
 						ImGui::SetTooltip("This resource is not loaded");
 						//ImGui::SetTooltip("This resource is not loaded yet. Click to load");
 					}
+					*/
+
 					/*
 					if (ImGui::IsItemClicked())
 					{

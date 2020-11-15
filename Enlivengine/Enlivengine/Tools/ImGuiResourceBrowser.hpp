@@ -39,9 +39,10 @@ private:
 	void SoundPreview(ResourceInfo& resourceInfo);
 
 private:
-	static constexpr U32 kBufferSize{ 256 };
-	char mIdentifierBuffer[kBufferSize];
-	char mFilenameBuffer[kBufferSize];
+	// TODO : IMGUI UPDATE
+	//static constexpr U32 kBufferSize{ 256 };
+	//char mIdentifierBuffer[kBufferSize];
+	//char mFilenameBuffer[kBufferSize];
 
 	Array<ResourceInfo> mResourceInfos;
 };
