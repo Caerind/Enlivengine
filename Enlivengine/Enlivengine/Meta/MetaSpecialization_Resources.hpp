@@ -69,7 +69,7 @@ struct HasCustomEditor<en::ResourcePtr<T>>
 		{
 			ImGui::Indent();
 
-			static en::Array<ResourceInfo> resourceInfos;
+			static en::Array<en::ResourceInfo> resourceInfos;
 			en::ResourceManager::GetInstance().GetResourceInfosOfType<T>(resourceInfos);
 
 			static const char* nullResourceIdentifier = "@Null";
