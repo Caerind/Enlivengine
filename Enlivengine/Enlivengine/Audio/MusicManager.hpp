@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 #include <vector>
+#include <string>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Singleton.hpp>

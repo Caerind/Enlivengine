@@ -656,9 +656,9 @@ void ImGuiAnimationEditor::NewState(AnimationStateMachine& stateMachine)
 			const Animation::Clip& clip = animation.GetClip(static_cast<U32>(stateClipIndex));
 			if (clip.GetFrameCount() > 0)
 			{
-				static Time accumulator;
-				static U32 clipFrameIndex = 0;
-                // TODO : TOOLS UPDATE
+				// TODO : TOOLS UPDATE
+				//static Time accumulator;
+				//static U32 clipFrameIndex = 0;
 				//ImGui::PreviewAnimationClip(animation, 100.0f, static_cast<U32>(stateClipIndex), clipFrameIndex, accumulator, 1.0f);
 			}
 			else
@@ -1255,6 +1255,7 @@ void ImGuiAnimationEditor::NodeEditor(AnimationStateMachine& stateMachine)
 			);
 		}
 	}
+	*/
 
 	/*
     if (ax::NodeEditor::BeginCreate())
