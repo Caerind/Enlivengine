@@ -69,8 +69,8 @@ struct HasCustomEditor<en::ResourcePtr<T>>
 		{
 			ImGui::Indent();
 
-			static Array<ResourceInfo> resourceInfos;
-			ResourceManager::GetInstance().GetResourceInfosOfType<T>(resourceInfos);
+			static en::Array<ResourceInfo> resourceInfos;
+			en::ResourceManager::GetInstance().GetResourceInfosOfType<T>(resourceInfos);
 
 			static const char* nullResourceIdentifier = "@Null";
 			static const char* notLoadedResourceIdentifier = "@NotLoaded";
@@ -79,7 +79,7 @@ struct HasCustomEditor<en::ResourcePtr<T>>
 			if (object.HasValidID())
 			{
 				bool found = false;
-				for (U32 i = 0; i < resourceInfos.Size() && !found; ++i)
+				for (en::U32 i = 0; i < resourceInfos.Size() && !found; ++i)
 				{
 					if (resourceInfos[i].id == object.GetID())
 					{
@@ -89,17 +89,20 @@ struct HasCustomEditor<en::ResourcePtr<T>>
 				}
 				if (found)
 				{
-					ImGui::Text(ICON_FA_CHECK);
+					// TODO : IMGUI UPDATE
+					//ImGui::Text(ICON_FA_CHECK);
 				}
 				else
 				{
-					ImGui::Text(ICON_FA_EXCLAMATION);
+					// TODO : IMGUI UPDATE
+					//ImGui::Text(ICON_FA_EXCLAMATION);
 					currentLabel = notLoadedResourceIdentifier;
 				}
 			}
 			else
 			{
-				ImGui::Text(ICON_FA_EXCLAMATION);
+				// TODO : IMGUI UPDATE
+				//ImGui::Text(ICON_FA_EXCLAMATION);
 				currentLabel = nullResourceIdentifier;
 			}
 
@@ -120,12 +123,12 @@ struct HasCustomEditor<en::ResourcePtr<T>>
 						ImGui::SetItemDefaultFocus();
 					}
 				}
-				for (U32 i = 0; i < resourceInfos.Size(); ++i)
+				for (en::U32 i = 0; i < resourceInfos.Size(); ++i)
 				{
 					const bool selected = resourceInfos[i].id == object.GetID();
 					if (ImGui::Selectable(resourceInfos[i].identifier.c_str(), selected))
 					{
-						object = ResourcePtr<T>(resourceInfos[i].id);
+						object = en::ResourcePtr<T>(resourceInfos[i].id);
 						modified = true;
 					}
 					if (selected)

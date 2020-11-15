@@ -555,11 +555,9 @@ struct HasCustomEditor<en::PhysicComponent>
 
 						b2Shape* shape = fixture->GetShape();
 
-						bool shapeChanged = false;
 						en::PhysicShapeType shapeType = en::FromB2ShapeType(shape->GetType());
 						if (en::ObjectEditor::ImGuiEditor(shapeType, "ShapeType"))
 						{
-							shapeChanged = true;
 							modified = true;
 
 							b2FixtureDef newFixtureDef;

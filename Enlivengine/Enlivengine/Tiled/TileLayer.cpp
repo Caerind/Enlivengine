@@ -71,6 +71,8 @@ void TileLayer::SetTile(const Vector2u& tileCoords, U32 tileID)
 		TilesetPtr tilesetPtr = mMap.GetTileset(tilesetIndex);
 		if (tilesetPtr.IsValid())
 		{
+			/*
+			// TODO : TILED UPDATE
 			const Tileset& tileset = tilesetPtr.Get();
 
             const U32 localTileID = tileID - mMap.GetTilesetFirstGid(tilesetIndex);
@@ -78,8 +80,6 @@ void TileLayer::SetTile(const Vector2u& tileCoords, U32 tileID)
 			const Vector2f pos(tileset.ToPos(localTileID));
 			const Vector2f texSize(static_cast<F32>(tilesetTileSize.x), static_cast<F32>(tilesetTileSize.y));
 
-			/*
-			// TODO : TILED UPDATE
 			sf::Vertex* quad = &mVertexArrays[tilesetIndex][vertexIndex];
 			quad[0].texCoords = sf::Vector2f(pos.x, pos.y);
 			quad[1].texCoords = sf::Vector2f(pos.x + texSize.x, pos.y);
