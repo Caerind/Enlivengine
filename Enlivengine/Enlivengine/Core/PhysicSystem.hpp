@@ -4,6 +4,8 @@
 
 #ifdef ENLIVE_MODULE_CORE
 
+#include <unordered_map>
+
 #include <Box2D/Box2D.h>
 
 #include <Enlivengine/Utils/Signal.hpp>
@@ -76,7 +78,7 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 #endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 
 	private:
-		static b2Body* GetComponentBody(const PhysicComponent& component);
+		static b2Body* GetComponentBody(PhysicComponent& component);
 
     protected:
 		b2World* mPhysicWorld;

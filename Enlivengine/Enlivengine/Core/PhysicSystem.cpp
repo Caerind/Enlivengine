@@ -28,11 +28,11 @@ PhysicSystem::PhysicSystem(World& world)
 	enAssert(mPhysicWorld != nullptr);
 
 #if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
-	mPhysicWorld->SetDebugDraw(this);
+	mPhysicWorld->SetDebugDraw(static_cast<b2Draw*>(this));
 	SetFlags(mDebugRenderFlags);
 #endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
 
-	mPhysicWorld->SetContactListener(this);
+	mPhysicWorld->SetContactListener(static_cast<b2ContactListener*>(this));
 }
 
 PhysicSystem::~PhysicSystem()
@@ -42,10 +42,7 @@ PhysicSystem::~PhysicSystem()
 
 bool PhysicSystem::Initialize(const Entity& entity, PhysicComponent& component)
 {
-	if (!entity.IsValid())
-	{
-		return false;
-	}
+	enAssert(entity.IsValid());
 
 	static b2BodyDef bodyDef;
 	if (entity.Has<TransformComponent>())
@@ -323,9 +320,9 @@ void PhysicSystem::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color
 	mDebugDraw.DrawPoint(pos, c);
 }
 
-b2Body* PhysicSystem::GetComponentBody(const PhysicComponent& component)
+b2Body* PhysicSystem::GetComponentBody(PhysicComponent& component)
 {
-	return component.mBody;
+	return component.GetBody();
 }
 
 #endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG

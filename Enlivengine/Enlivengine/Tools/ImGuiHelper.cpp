@@ -71,6 +71,7 @@ void PreviewTexture(const en::Texture& texture, const en::Rectu& textureRect, en
 	previewSprite.setScale(scale, scale);
 	ImGui::Image(previewSprite);
 }
+*/
 
 /*
 // TODO : TOOLS UPDATE
@@ -78,6 +79,7 @@ void PreviewAnimationClip(const en::Animation& animation, en::F32 maxSize, const
 {
     en::U32 clipIndexCopy = clipIndex;
     PreviewAnimation(animation, maxSize, clipIndexCopy, clipFrameIndex, accumulator, speedScale);
+	*/
 
 	/*
 	if (ImGui::IsItemHovered())
@@ -94,6 +96,7 @@ void PreviewAnimationClip(const en::Animation& animation, en::F32 maxSize, const
 		ImGui::EndTooltip();
 	}
 	*/
+
 	/*
 }
 */
