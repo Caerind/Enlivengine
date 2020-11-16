@@ -29,7 +29,6 @@
 #include <Enlivengine/Core/ComponentManager.hpp>
 #include <Enlivengine/Core/TraceryGenerator.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
-
 #include <Enlivengine/Meta/MetaSpecialization.hpp>
 
 using namespace en;
@@ -145,7 +144,7 @@ int main(int argc, char** argv)
 	SDLWrapper::Init();
 	{
 		Window window;
-		window.Create("Test", 800, 600);
+		window.Create("Test", 1600, 900);
 		BgfxWrapper::Init(window);
 #ifdef ENLIVE_ENABLE_IMGUI
 		ImGuiWrapper::Init();
@@ -284,11 +283,6 @@ int main(int argc, char** argv)
 			EventSystem::AddJoystickButton("jactionP2", 1, 0, EventSystem::EventButton::ActionType::Pressed);
 			// Keep the hash for faster lookups (and no error in the strings)
 			const U32 toggleGraphStats = EventSystem::AddKeyButton("toggleGraphStats", Keyboard::Key::F3, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Control));
-
-			ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
-			const U32 gizmoTranslate = EventSystem::AddKeyButton("gizmoTranslate", Keyboard::Key::I, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Control));
-			const U32 gizmoRotate = EventSystem::AddKeyButton("gizmoRotate", Keyboard::Key::O, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Control));
-			const U32 gizmoScale = EventSystem::AddKeyButton("gizmoScale", Keyboard::Key::P, EventSystem::EventButton::ActionType::Pressed, static_cast<U32>(Keyboard::Modifier::Control));
 			
 			Clock clock;
 
@@ -298,37 +292,7 @@ int main(int argc, char** argv)
 
 #ifdef ENLIVE_ENABLE_IMGUI
 				ImGuiWrapper::BeginFrame(250, window.GetWidth(), window.GetHeight());
-
-#ifdef ENLIVE_DEBUG
-				if (EventSystem::IsButtonActive(gizmoTranslate)) gizmoOperation = ImGuizmo::TRANSLATE;
-				if (EventSystem::IsButtonActive(gizmoRotate)) gizmoOperation = ImGuizmo::ROTATE;
-				if (EventSystem::IsButtonActive(gizmoScale)) gizmoOperation = ImGuizmo::SCALE;
-				
-				ImGuiIO& io = ImGui::GetIO();
-				ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-				if (world.GetMainCamera() != nullptr)
-				{
-					const auto& selectedEntities = world.GetSelectedEntities();
-					for (const auto& enttEntity : selectedEntities)
-					{
-						Entity entity(world, enttEntity);
-						if (entity.IsValid() && entity.Has<TransformComponent>())
-						{
-							float* mtxData = const_cast<float*>(entity.Get<TransformComponent>().GetLocalMatrix().GetData());
-							ImGuizmo::Manipulate(
-								world.GetMainCamera()->GetViewMatrix().GetData(),
-								world.GetMainCamera()->GetProjectionMatrix().GetData(),
-								gizmoOperation,
-								ImGuizmo::LOCAL,
-								mtxData
-							);
-						}
-					}
-				}
-#endif // ENLIVE_DEBUG
-
 				ImGuiToolManager::GetInstance().Update();
-
 				ImGuiWrapper::EndFrame();
 #endif // ENLIVE_ENABLE_IMGUI
 

@@ -10,10 +10,12 @@
 #include <Enlivengine/Utils/Profiler.hpp>
 #include <Enlivengine/Graphics/ImGuiWrapper.hpp>
 #include <Enlivengine/Window/Keyboard.hpp>
+#include <Enlivengine/Meta/ObjectEditor.hpp>
 
 #ifdef ENLIVE_MODULE_CORE
 #include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Core/World.hpp>
+#include <Enlivengine/Core/TransformComponent.hpp>
 #endif // ENLIVE_MODULE_CORE
 
 namespace en
@@ -171,6 +173,7 @@ void ImGuiToolManager::Update()
 		if (mShowImGui)
 		{
 			ImGuiMain();
+			ImGuizmo();
 		}
 	}
 }
@@ -214,6 +217,13 @@ void ImGuiToolManager::ImGuiMain()
 				}
 			}
 		}
+
+#ifdef ENLIVE_DEBUG
+		ImGui::PushItemWidth(130);
+		ObjectEditor::ImGuiEditor(mGizmoOperation, "");
+		ImGui::PopItemWidth();
+#endif // ENLIVE_DEBUG
+
 #endif // ENLIVE_MODULE_CORE
 
 		ImGui::EndMainMenuBar();
@@ -252,6 +262,54 @@ void ImGuiToolManager::ImGuiMain()
 			}
 		}
 	}
+}
+
+void ImGuiToolManager::ImGuizmo()
+{
+#ifdef ENLIVE_MODULE_CORE
+#ifdef ENLIVE_DEBUG
+	if (World* world = Universe::GetInstance().GetCurrentWorld())
+	{
+		if (world->GetMainCamera() != nullptr)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+			ImGuizmo::SetOrthographic(world->GetMainCamera()->GetProjection() == Camera::ProjectionMode::Orthographic);
+
+			ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
+			switch (mGizmoOperation)
+			{
+			case GizmoOperation::Translate: gizmoOperation = ImGuizmo::TRANSLATE; break;
+			case GizmoOperation::Rotate: gizmoOperation = ImGuizmo::ROTATE; break;
+			case GizmoOperation::Scale: gizmoOperation = ImGuizmo::SCALE; break;
+			default: enAssert(false); break;
+			}
+
+			const auto& selectedEntities = world->GetSelectedEntities();
+			for (const auto& enttEntity : selectedEntities)
+			{
+				Entity entity(*world, enttEntity);
+				if (entity.IsValid() && entity.Has<TransformComponent>())
+				{
+					TransformComponent& transform = entity.Get<TransformComponent>();
+					float* mtxData = const_cast<float*>(transform.GetLocalMatrix().GetData());
+					ImGuizmo::Manipulate(
+						world->GetMainCamera()->GetViewMatrix().GetData(),
+						world->GetMainCamera()->GetProjectionMatrix().GetData(),
+						gizmoOperation,
+						ImGuizmo::LOCAL,
+						mtxData
+					);
+					if (ImGuizmo::IsUsing())
+					{
+						transform.MarkGlobalMatrixAsDirty();
+					}
+				}
+			}
+		}
+	}
+#endif // ENLIVE_DEBUG
+#endif // ENLIVE_MODULE_CORE
 }
 
 } // namespace en

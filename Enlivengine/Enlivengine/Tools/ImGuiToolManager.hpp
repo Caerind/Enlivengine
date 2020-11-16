@@ -70,17 +70,26 @@ public:
 	void Shutdown();
 	void Update();
 
+	enum class GizmoOperation
+	{
+		Translate,
+		Rotate,
+		Scale
+	};
+
 private:
 	void ImGuiMain();
+	void ImGuizmo();
 
 	friend class ImGuiTool;
 	void RegisterTool(ImGuiTool* tool);
 	void UnregisterTool(ImGuiTool* tool);
 
 private:
+	std::vector<ImGuiTool*> mTools[Enum::GetCount<ImGuiToolTab>()];
+	GizmoOperation mGizmoOperation;
 	bool mShowImGui;
 	bool mRunning;
-	std::vector<ImGuiTool*> mTools[Enum::GetCount<ImGuiToolTab>()];
 };
 
 } // namespace en

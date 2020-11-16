@@ -65,6 +65,7 @@ struct HasCustomEditor<en::TransformComponent>
 #endif // ENLIVE_DEBUG
 		if (en::ObjectEditor::ImGuiEditor(static_cast<en::Transform&>(object), name))
 		{
+			object.MarkGlobalMatrixAsDirty();
 			modified = true;
 		}
 		return modified;

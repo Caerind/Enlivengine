@@ -164,11 +164,13 @@ struct HasCustomEditor<en::Matrix3<T>>
 			{
 				en::Vector3<T> matrixRow;
 				matrixRow = object.GetRow(row);
+				ImGui::PushID(row);
 				if (HasCustomEditor<en::Vector3<T>>::ImGuiEditor(matrixRow, ""))
 				{
 					object.SetRow(row, matrixRow);
 					modified = true;
 				}
+				ImGui::PopID();
 			}
 			ImGui::Unindent();
 		}
@@ -429,6 +431,53 @@ ENLIVE_META_CLASS_BEGIN(en::Transform)
 	ENLIVE_META_CLASS_MEMBER("rotation", &en::Transform::GetRotation, &en::Transform::SetRotation),
 	ENLIVE_META_CLASS_MEMBER("scale", &en::Transform::GetScale, &en::Transform::SetScale)
 ENLIVE_META_CLASS_END()
+
+#ifdef ENLIVE_ENABLE_IMGUI
+template <>
+struct HasCustomEditor<en::Transform>
+{
+	static constexpr bool value = true;
+	static bool ImGuiEditor(en::Transform& object, const char* name)
+	{
+		bool modified = false;
+		if (ImGui::CollapsingHeader(name))
+		{
+			ImGui::Indent();
+			en::Vector3f position = object.GetPosition();
+			if (en::ObjectEditor::ImGuiEditor(position, "position"))
+			{
+				object.SetPosition(position);
+				modified = true;
+			}
+			
+			en::Matrix3f mat = object.GetRotation();
+			en::Vector3f rotation;
+			rotation.x = en::Math::Atan2(mat(2,2), mat(1,2));
+			rotation.y = en::Math::Atan2(en::Math::FastSqrt(mat(1,2) * mat(1,2) + mat(2,2) * mat(2,2)), -mat(0,2));
+			rotation.z = en::Math::Atan2(mat(0,0), mat(0,1));
+			if (en::ObjectEditor::ImGuiEditor(rotation, "rotation"))
+			{
+				en::Matrix3f rot[3];
+				rot[0] = en::Matrix3f::RotationX(rotation[0]);
+				rot[1] = en::Matrix3f::RotationY(rotation[1]);
+				rot[2] = en::Matrix3f::RotationZ(rotation[2]);
+				mat = rot[0] * rot[1] * rot[2];
+				object.SetRotation(mat);
+				modified = true;
+			}
+
+			en::Vector3f scale = object.GetScale();
+			if (en::ObjectEditor::ImGuiEditor(scale, "scale"))
+			{
+				object.SetScale(scale);
+				modified = true;
+			}
+			ImGui::Unindent();
+		}
+		return modified;
+	}
+};
+#endif // ENLIVE_ENABLE_IMGUI
 
 //////////////////////////////////////////////////////////////////
 // en::Vector2
