@@ -34,6 +34,14 @@ source_group("FastNoise" FILES ${SRC_FASTNOISE})
 file(GLOB_RECURSE SRC_FMT "fmt/*")
 source_group("fmt" FILES ${SRC_FMT})
 
+# imgui
+file(GLOB_RECURSE SRC_IMGUI "imgui/*")
+source_group("imgui" FILES ${SRC_IMGUI})
+
+# ImGuizmo
+file(GLOB_RECURSE SRC_IMGUIZMO "ImGuizmo/*")
+source_group("ImGuizmo" FILES ${SRC_IMGUIZMO})
+
 # json
 file(GLOB_RECURSE SRC_JSON "json/*")
 source_group("json" FILES ${SRC_JSON})
@@ -62,6 +70,8 @@ add_library(EnlivengineThirdParty STATIC
 	${SRC_ENTT}
 	${SRC_FASTNOISE}
 	${SRC_FMT}
+	${SRC_IMGUI}
+	${SRC_IMGUIZMO}
 	${SRC_JSON}
 	${SRC_MAGICENUM}
 	${SRC_MINIZ}
@@ -69,5 +79,5 @@ add_library(EnlivengineThirdParty STATIC
 	${SRC_TRACERZ}
 )
 target_include_directories(EnlivengineThirdParty PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-target_link_libraries(EnlivengineThirdParty PUBLIC SDL2-static SDL2main bgfx dear-imgui)
+target_link_libraries(EnlivengineThirdParty PUBLIC SDL2-static SDL2main bgfx)
 set_target_properties(EnlivengineThirdParty PROPERTIES FOLDER "Enlivengine")

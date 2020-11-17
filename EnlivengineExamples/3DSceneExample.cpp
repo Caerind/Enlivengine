@@ -22,6 +22,8 @@
 #include <Enlivengine/Tools/ImGuiMemoryDebugger.hpp>
 #include <Enlivengine/Tools/ImGuiProfiler.hpp>
 #include <Enlivengine/Tools/ImGuiResourceBrowser.hpp>
+#include <Enlivengine/Tools/ImGuiEditor.hpp>
+#include <Enlivengine/Tools/ImGuiGame.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Core/Entity.hpp>
@@ -65,69 +67,8 @@ public:
 				}
 			}
 		}
-		if (mWorld.GetMainCamera() != nullptr && BgfxWrapper::GetCurrentView() == mWorld.GetMainCamera()->GetViewID())
-		{
-			mWorld.GetDebugDraw().Render();
-			mWorld.GetDebugDraw().Clear();
-		}
 	}
 };
-
-#ifdef ENLIVE_DEBUG
-class ToolCameraSystem : public System
-{
-public:
-	ToolCameraSystem(World& world) : System(world) 
-	{
-		const Vector2u framebufferSize = BgfxWrapper::GetFramebufferSize(mToolCamera.GetFramebuffer());
-		mToolCamera.InitializePerspective(80.0f, F32(framebufferSize.x) / F32(framebufferSize.y), 0.1f, 100.0f);
-		mToolCamera.InitializeView(Vector3f(0.0f, 0.8f, 0.0f), Matrix3f::Identity());
-		mToolCamera.SetViewport(Rectf(0.0f, 0.0f, 1.0f, 1.0f));
-
-		mCameraWindowResize.Connect(Window::GetFirstWindow()->OnResized, [&world, this](const Window*, U32 width, U32 height)
-			{
-				const Vector2u framebufferSize = BgfxWrapper::GetFramebufferSize(mToolCamera.GetFramebuffer());
-				mToolCamera.InitializePerspective(80.0f, F32(width) / F32(height), 0.1f, 100.0f);
-			});
-	}
-
-	void Update(Time dt) override
-	{
-		if (Keyboard::IsAltHold())
-		{
-			Mouse::SetRelativeMode(true);
-
-			F32 forward = 0.0f;
-			F32 left = 0.0;
-			if (Keyboard::IsHold(Keyboard::Key::W)) forward += 1.0f;
-			if (Keyboard::IsHold(Keyboard::Key::S)) forward -= 1.0f;
-			if (Keyboard::IsHold(Keyboard::Key::A)) left += 1.0f;
-			if (Keyboard::IsHold(Keyboard::Key::D)) left -= 1.0f;
-			const F32 deltaYaw = Mouse::GetMouseMovement().x * 0.25f;
-			const F32 deltaPitch = Mouse::GetMouseMovement().y * 0.15f;
-			FPSCamera(mToolCamera, dt.AsSeconds(), forward, left, deltaYaw, deltaPitch);
-		}
-		else
-		{
-			Mouse::SetRelativeMode(false);
-		}
-	}
-
-	Camera& GetCamera()
-	{
-		return mToolCamera;
-	}
-
-	const Camera& GetCamera() const
-	{
-		return mToolCamera;
-	}
-
-private:
-	Camera mToolCamera;
-	enSlotType(Window, OnResized) mCameraWindowResize;
-};
-#endif // ENLIVE_DEBUG
 
 
 int main(int argc, char** argv)
@@ -164,6 +105,8 @@ int main(int argc, char** argv)
 		ImGuiPhysic::GetInstance().Register();
 		ImGuiProfiler::GetInstance().Register();
 		ImGuiResourceBrowser::GetInstance().Register();
+		ImGuiEditor::GetInstance().Register();
+		ImGuiGame::GetInstance().Register();
 		{
 			ComponentManager::Register<NameComponent>();
 			ComponentManager::Register<TransformComponent>();
@@ -195,14 +138,29 @@ int main(int argc, char** argv)
 				enAssert(false);
 			}
 
+			// Editor window
+			ImGuiEditor::SetFramebuffer(bgfx::createFrameBuffer(1600, 900, bgfx::TextureFormat::RGBA8));
+			ImGuiEditor::GetCamera().SetFramebuffer(ImGuiEditor::GetFramebuffer());
+			ImGuiEditor::GetCamera().InitializePerspective(80.0f, 1600.0f / 900.0f, 0.1f, 100.0f);
+			ImGuiEditor::GetCamera().InitializeView(Vector3f(0.0f, 0.8f, 0.0f), Matrix3f::Identity());
+			/*
+			enSlotType(Window, OnResized) mCameraWindowResize;
+			mCameraWindowResize.Connect(Window::GetFirstWindow()->OnResized, [&world, this](const Window*, U32 width, U32 height)
+				{
+					const Vector2u framebufferSize = BgfxWrapper::GetFramebufferSize(mToolCamera.GetFramebuffer());
+					mToolCamera.InitializePerspective(80.0f, F32(width) / F32(height), 0.1f, 100.0f);
+				});
+			*/
+
+			// Game window
+			ImGuiGame::SetFramebuffer(bgfx::createFrameBuffer(1600, 900, bgfx::TextureFormat::RGBA8));
+
+
 			World world;
-			RenderSystem* renderSystem = world.CreateSystem<RenderSystem>();
-#ifdef ENLIVE_DEBUG
-			ToolCameraSystem* toolCameraSystem = world.CreateSystem<ToolCameraSystem>();
-			bool useFreeCamera = true;
-			world.SetMainCamera(&toolCameraSystem->GetCamera());
-#endif // ENLIVE_DEBUG
+			world.CreateSystem<RenderSystem>();
 			Universe::GetInstance().SetCurrentWorld(&world);
+
+
 
 			Entity playerEntity = world.GetEntityManager().CreateEntity();
 			{
@@ -219,11 +177,8 @@ int main(int argc, char** argv)
 				playerCamTransform.AttachToParent(playerEntity); // Attach this entity to player entity
 				CameraComponent& playerCam = playerCamEntity.Add<CameraComponent>();
 				playerCam.InitializePerspective(80.0f, F32(window.GetWidth()) / F32(window.GetHeight()), 0.1f, 100.0f);
-				playerCam.SetViewport(Rectf(0.7f, 0.7f, 0.2f, 0.2f));
+				playerCam.SetFramebuffer(ImGuiGame::GetFramebuffer());
 				playerCam.SetClearColor(Colors::LightBlue);
-#ifndef ENLIVE_DEBUG
-				world.SetMainCamera(&playerCam);
-#endif // ENLIVE_DEBUG
 			}
 
 			Entity a1 = world.GetEntityManager().CreateEntity();
@@ -302,22 +257,6 @@ int main(int argc, char** argv)
 				{
 					window.Close();
 				}
-#ifdef ENLIVE_DEBUG
-				if (Keyboard::IsPressed(Keyboard::Key::Space))
-				{
-					useFreeCamera = !useFreeCamera;
-					if (useFreeCamera)
-					{
-						playerCamEntity.Get<CameraComponent>().SetViewport(Rectf(0.7f, 0.7f, 0.2f, 0.2f));
-						toolCameraSystem->GetCamera().SetViewport(Rectf(0.0f, 0.0f, 1.0f, 1.0f));
-					}
-					else
-					{
-						toolCameraSystem->GetCamera().SetViewport(Rectf(0.7f, 0.7f, 0.2f, 0.2f));
-						playerCamEntity.Get<CameraComponent>().SetViewport(Rectf(0.0f, 0.0f, 1.0f, 1.0f));
-					}
-				}
-#endif // ENLIVE_DEBUG
 
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
 				if (EventSystem::IsButtonActive(toggleGraphStats))
@@ -388,20 +327,9 @@ int main(int argc, char** argv)
 				world.GetDebugDraw().DrawCross(Vector3f(-1.0f));
 				world.GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
 				world.GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
-#ifdef ENLIVE_DEBUG
-				if (useFreeCamera)
-				{
-					world.GetDebugDraw().DrawFrustum(playerCamEntity.Get<CameraComponent>().CreateFrustum(), Colors::Blue);
-					world.GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
-				}
-				else
-				{
-					world.GetDebugDraw().DrawFrustum(toolCameraSystem->GetCamera().CreateFrustum(), Colors::Green);
-					world.GetDebugDraw().DrawTransform(Matrix4f::Transform(toolCameraSystem->GetCamera().GetPosition(), toolCameraSystem->GetCamera().GetRotation()));
-				}
-#endif // ENLIVE_DEBUG
+				world.GetDebugDraw().DrawFrustum(playerCamEntity.Get<CameraComponent>().CreateFrustum(), Colors::Blue);
+				world.GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
 				world.GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
-
 				Plane p(ENLIVE_DEFAULT_UP, 0.0f);
 				Ray r(playerCamEntity.Get<TransformComponent>().GetGlobalPosition(), (playerCamEntity.Get<TransformComponent>().GetGlobalRotation().GetForward() * 3.0f - ENLIVE_DEFAULT_UP).Normalized());
 				F32 t;
@@ -412,71 +340,43 @@ int main(int argc, char** argv)
 
 				// Render
 				{
-
-#ifdef ENLIVE_DEBUG
-					// Render the other camera on the preview
-					if (useFreeCamera)
+					if (ImGuiGame::GetInstance().IsVisible())
 					{
 						playerCamEntity.Get<CameraComponent>().Apply();
 						bgfx::setTransform(tilemapTransform.GetData());
 						tilemap.Render(playerCamEntity.Get<CameraComponent>().GetViewID());
+						world.Render();
 					}
-					else
-					{
-						toolCameraSystem->GetCamera().Apply();
-						bgfx::setTransform(tilemapTransform.GetData());
-						tilemap.Render(toolCameraSystem->GetCamera().GetViewID());
-					}
-					world.Render();
-#endif // ENLIVE_DEBUG
 
-					// Main view
-#ifdef ENLIVE_DEBUG
-					// Debug texts
+					if (ImGuiEditor::GetInstance().IsVisible())
 					{
-						bgfx::dbgTextClear();
 
-						/*
-						const Vector2i dbgMousePos = Mouse::GetPositionCurrentWindow();
-						const Vector2i dbgMouseDeltaPos = Mouse::GetMouseMovement();
-						const I32 dbgMouseWheel = Mouse::GetWheel();
-						bgfx::dbgTextPrintf(0, 0, 0x0f, "Mouse: (%d, %d) (%d, %d) (%d)", dbgMousePos.x, dbgMousePos.y, dbgMouseDeltaPos.x, dbgMouseDeltaPos.y, dbgMouseWheel);
-						*/
-						if (useFreeCamera)
+						if (Keyboard::IsAltHold())
 						{
-							const Vector3f position = toolCameraSystem->GetCamera().GetPosition();
-							bgfx::dbgTextPrintf(0, 2, 0x0f, "Camera: (%f, %f, %f)", position.x, position.y, position.z);
+							Mouse::SetRelativeMode(true);
+
+							F32 forward = 0.0f;
+							F32 left = 0.0;
+							if (Keyboard::IsHold(Keyboard::Key::W)) forward += 1.0f;
+							if (Keyboard::IsHold(Keyboard::Key::S)) forward -= 1.0f;
+							if (Keyboard::IsHold(Keyboard::Key::A)) left += 1.0f;
+							if (Keyboard::IsHold(Keyboard::Key::D)) left -= 1.0f;
+							const F32 deltaYaw = Mouse::GetMouseMovement().x * 0.25f;
+							const F32 deltaPitch = Mouse::GetMouseMovement().y * 0.15f;
+							FPSCamera(ImGuiEditor::GetCamera(), dt.AsSeconds(), forward, left, deltaYaw, deltaPitch);
 						}
 						else
 						{
-							const Vector3f position = playerCamEntity.Get<TransformComponent>().GetGlobalPosition();
-							bgfx::dbgTextPrintf(0, 2, 0x0f, "Camera: (%f, %f, %f)", position.x, position.y, position.z);
+							Mouse::SetRelativeMode(false);
 						}
 
-						{
-							const Vector3f position = playerEntity.Get<TransformComponent>().GetGlobalPosition();
-							bgfx::dbgTextPrintf(0, 3, 0x0f, "Position: (%f, %f, %f)", position.x, position.y, position.z);
-						}
-					}
-#endif // ENLIVE_DEBUG
-
-#ifdef ENLIVE_DEBUG
-					if (useFreeCamera)
-					{
-						toolCameraSystem->GetCamera().Apply();
+						ImGuiEditor::GetCamera().Apply();
 						bgfx::setTransform(tilemapTransform.GetData());
-						tilemap.Render(toolCameraSystem->GetCamera().GetViewID());
+						tilemap.Render(ImGuiEditor::GetCamera().GetViewID());
+						world.GetDebugDraw().Render();
+						world.GetDebugDraw().Clear();
+						world.Render();
 					}
-					else
-					{
-#endif // ENLIVE_DEBUG
-						playerCamEntity.Get<CameraComponent>().Apply();
-						bgfx::setTransform(tilemapTransform.GetData());
-						tilemap.Render(playerCamEntity.Get<CameraComponent>().GetViewID());
-#ifdef ENLIVE_DEBUG
-					}
-#endif // ENLIVE_DEBUG
-					world.Render();
 
 					bgfx::frame();
 				}
@@ -487,6 +387,8 @@ int main(int argc, char** argv)
 			textureA.ReleaseFromManager();
 			textureB.ReleaseFromManager();
 		}
+		ImGuiGame::GetInstance().Unregister();
+		ImGuiEditor::GetInstance().Unregister();
 		ImGuiResourceBrowser::GetInstance().Unregister();
 		ImGuiProfiler::GetInstance().Unregister();
 		ImGuiPhysic::GetInstance().Unregister();

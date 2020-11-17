@@ -38,9 +38,6 @@ public:
 	const PhysicSystem* GetPhysicSystem() const;
 	bool HasPhysicSystem() const;
 
-	Camera* GetMainCamera() const;
-	void SetMainCamera(Camera* camera);
-
 	void Play();
 	void Pause();
 	bool IsPlaying() const;
@@ -62,8 +59,6 @@ private:
 
 	std::vector<System*> mSystems;
 	PhysicSystem* mPhysicSystem;
-
-	Camera* mMainCamera;
 
 	bool mPlaying;
 

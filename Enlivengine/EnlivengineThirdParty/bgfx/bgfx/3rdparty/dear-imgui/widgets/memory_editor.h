@@ -17,13 +17,8 @@ namespace ImGui
             Rows = 16;
             DataEditingAddr = -1;
             DataEditingTakeFocus = false;
-#ifdef _MSC_VER
-            strcpy_s(DataInput, "");
-            strcpy_s(AddrInput, "");
-#else
-			strcpy(DataInput, "");
-			strcpy(AddrInput, "");
-#endif // _MSC_VER
+            strcpy(DataInput, "");
+            strcpy(AddrInput, "");
         }
 
         void Draw(void* mem_data, int mem_size, int base_display_addr = 0);

@@ -6,7 +6,7 @@
 
 #include <filesystem>
 
-#include <dear-imgui/imgui.h>
+#include <imgui/imgui.h>
 //#include <ImGuiFileDialog/ImGuiFileDialog.h> // TODO : TOOLS UPDATE
 
 #include <Enlivengine/Utils/ParserXml.hpp>

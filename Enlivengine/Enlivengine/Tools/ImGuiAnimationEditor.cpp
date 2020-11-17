@@ -4,8 +4,8 @@
 #ifdef ENLIVE_MODULE_ANIMATION
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <dear-imgui/imgui.h>
-#include <dear-imgui/imgui_internal.h>
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 #include <Enlivengine/Math/Color.hpp>
 
@@ -107,7 +107,6 @@ bool ImGuiAnimationEditor::Initialize(AnimationStateMachinePtr stateMachinePtr)
 		*/
 
 		mVisible = true;
-		AskForFocus();
 
 		return true;
 	}

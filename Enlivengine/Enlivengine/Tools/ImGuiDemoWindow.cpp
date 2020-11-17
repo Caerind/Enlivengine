@@ -3,7 +3,7 @@
 #ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <dear-imgui/imgui.h>
+#include <imgui/imgui.h>
 
 namespace en
 {

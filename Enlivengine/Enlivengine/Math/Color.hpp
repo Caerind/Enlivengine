@@ -7,7 +7,7 @@
 #include <Enlivengine/Math/Math.hpp>
 
 #ifdef ENLIVE_ENABLE_IMGUI
-#include <dear-imgui/imgui.h>
+#include <imgui/imgui.h>
 #endif // ENLIVE_ENABLE_IMGUI
 
 #ifdef ENLIVE_MODULE_CORE

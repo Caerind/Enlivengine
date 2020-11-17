@@ -9,7 +9,6 @@ World::World()
 	: mEntityManager(*this)
 	, mSystems()
 	, mPhysicSystem(nullptr)
-	, mMainCamera(nullptr)
 	, mPlaying(false)
 #ifdef ENLIVE_DEBUG
 	, mDebugDraw()
@@ -49,16 +48,6 @@ const PhysicSystem* World::GetPhysicSystem() const
 bool World::HasPhysicSystem() const
 {
 	return mPhysicSystem != nullptr;
-}
-
-Camera* World::GetMainCamera() const
-{
-	return mMainCamera;
-}
-
-void World::SetMainCamera(Camera* camera)
-{
-	mMainCamera = camera;
 }
 
 void World::Play()

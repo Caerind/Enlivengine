@@ -5,8 +5,9 @@
 #ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <dear-imgui/imgui.h>
 //#include <IconFontCppHeaders/IconsFontAwesome5.h> // TODO : Restore FontAwesome
+
+#include <Enlivengine/Graphics/ImGuiWrapper.hpp>
 
 #include <Enlivengine/Math/Rect.hpp>
 #include <Enlivengine/Math/Vector2.hpp>

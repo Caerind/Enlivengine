@@ -3,7 +3,7 @@
 #ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_LOG)
 
-#include <dear-imgui/imgui.h>
+#include <imgui/imgui.h>
 
 #include <Enlivengine/Utils/String.hpp>
 
@@ -73,7 +73,6 @@ void ImGuiLogger::Write(const LogMessage& message)
 		mMessages.erase(mMessages.begin());
 	}
 	mMessages.push_back(message);
-	AskForResize();
 }
 
 void ImGuiLogger::SetMaxSize(U32 size)

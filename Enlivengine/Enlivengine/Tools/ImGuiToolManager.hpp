@@ -43,22 +43,14 @@ class ImGuiTool
 		virtual int GetWindowFlags() const;
 		virtual bool IsImGuiDemoTool() const;
 
-		void AskForResize();
-		void AskForFocus();
+		bool IsVisible() const;
 
 	private:
 		bool mRegistered;
 
-		friend class ImGuiToolManager;
-		bool ShouldResize() const;
-		void Resize();
-		bool ShouldFocus() const;
-		void Focus();
-
 	protected:
+		friend class ImGuiToolManager;
 		bool mVisible;
-		bool mShouldResize;
-		bool mShouldFocus;
 };
 
 class ImGuiToolManager
@@ -70,16 +62,9 @@ public:
 	void Shutdown();
 	void Update();
 
-	enum class GizmoOperation
-	{
-		Translate,
-		Rotate,
-		Scale
-	};
-
 private:
 	void ImGuiMain();
-	void ImGuizmo();
+	void ImGuiTools();
 
 	friend class ImGuiTool;
 	void RegisterTool(ImGuiTool* tool);
@@ -87,8 +72,6 @@ private:
 
 private:
 	std::vector<ImGuiTool*> mTools[Enum::GetCount<ImGuiToolTab>()];
-	GizmoOperation mGizmoOperation;
-	bool mShowImGui;
 	bool mRunning;
 };
 

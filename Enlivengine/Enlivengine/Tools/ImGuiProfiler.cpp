@@ -3,7 +3,7 @@
 #ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_PROFILE)
 
-#include <dear-imgui/imgui.h>
+#include <imgui/imgui.h>
 
 #include <Enlivengine/Utils/Hash.hpp>
 #include <Enlivengine/Utils/Assert.hpp>
@@ -34,7 +34,6 @@ void ImGuiProfiler::Display()
 	if (ImGui::Button(IsEnabled() ? "Disable Profiler" : "Enable Profiler"))
 	{
 		SetEnabled(!IsEnabled());
-		AskForResize();
 	}
 
 	if (IsEnabled())
@@ -44,7 +43,6 @@ void ImGuiProfiler::Display()
 		if (ImGui::Button("Capture"))
 		{
 			Profiler::GetInstance().CaptureFrames(mCaptureFrames);
-			AskForResize();
 		}
 
 		ImGui::SameLine();
@@ -102,7 +100,6 @@ void ImGuiProfiler::Display()
 	else
 	{
 		ImGui::Text("Capturing...");
-		AskForResize();
 	}
 
 	ImGui::Separator();
@@ -114,7 +111,6 @@ void ImGuiProfiler::CaptureCurrentFrameAndOpenProfiler()
 	{
 		Profiler::GetInstance().CaptureCurrentFrame();
 		mVisible = true;
-		AskForResize();
 	}
 }
 

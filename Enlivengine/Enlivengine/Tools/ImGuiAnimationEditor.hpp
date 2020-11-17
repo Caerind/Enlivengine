@@ -14,7 +14,7 @@
 
 // TODO : TOOLS UPDATE
 //#include <imgui-node-editor/imgui_node_editor.h>
-#include <dear-imgui/imgui_internal.h>
+#include <imgui/imgui_internal.h>
 
 namespace en
 {

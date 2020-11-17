@@ -357,28 +357,6 @@ public:
 		return TypedID<U>(*this);
 	}
 
-	bool operator==(const TypedID &other) const
-	{
-		return id == other.id;
-	}
-
-	bool operator!=(const TypedID &other) const
-	{
-		return id != other.id;
-	}
-
-	template <Types type>
-	bool operator==(const TypedID<type> &other) const
-	{
-		return id == uint32_t(other);
-	}
-
-	template <Types type>
-	bool operator!=(const TypedID<type> &other) const
-	{
-		return id != uint32_t(other);
-	}
-
 private:
 	uint32_t id = 0;
 };
@@ -401,26 +379,6 @@ public:
 	operator uint32_t() const
 	{
 		return id;
-	}
-
-	bool operator==(const TypedID &other) const
-	{
-		return id == other.id;
-	}
-
-	bool operator!=(const TypedID &other) const
-	{
-		return id != other.id;
-	}
-
-	bool operator==(const TypedID<TypeNone> &other) const
-	{
-		return id == uint32_t(other);
-	}
-
-	bool operator!=(const TypedID<TypeNone> &other) const
-	{
-		return id != uint32_t(other);
 	}
 
 private:
@@ -558,6 +516,7 @@ struct SPIRType : IVariant
 
 		// Keep internal types at the end.
 		ControlPointArray,
+		Interpolant,
 		Char
 	};
 
@@ -1615,6 +1574,13 @@ enum ExtendedDecorations
 	// addition of swizzles to keep the generated code compiling.
 	SPIRVCrossDecorationTessIOOriginalInputTypeID,
 
+	// Apply to any access chain of an interface variable used with pull-model interpolation, where the variable is a
+	// vector but the resulting pointer is a scalar; stores the component index that is to be accessed by the chain.
+	// This is used when emitting calls to interpolation functions on the chain in MSL: in this case, the component
+	// must be applied to the result, since pull-model interpolants in MSL cannot be swizzled directly, but the
+	// results of interpolation can.
+	SPIRVCrossDecorationInterpolantComponentExpr,
+
 	SPIRVCrossDecorationCount
 };
 
@@ -1634,6 +1600,7 @@ struct Meta
 		uint32_t offset = 0;
 		uint32_t xfb_buffer = 0;
 		uint32_t xfb_stride = 0;
+		uint32_t stream = 0;
 		uint32_t array_stride = 0;
 		uint32_t matrix_stride = 0;
 		uint32_t input_attachment = 0;

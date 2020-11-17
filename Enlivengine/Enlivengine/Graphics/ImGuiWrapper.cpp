@@ -8,14 +8,19 @@
 
 #include <bgfx/embedded_shader.h>
 
+#include <ImGuizmo/ImGuizmo.h>
+
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Window/Mouse.hpp>
 #include <Enlivengine/Window/Keyboard.hpp>
 
 #include <Enlivengine/Graphics/CompiledFonts/roboto_regular.ttf.h>
 #include <Enlivengine/Graphics/CompiledFonts/robotomono_regular.ttf.h>
+// TODO : UPDATE : FONT AWESOME
+/*
 #include <Enlivengine/Graphics/CompiledFonts/icons_kenney.ttf.h>
 #include <Enlivengine/Graphics/CompiledFonts/icons_font_awesome.ttf.h>
+*/
 
 #include <Enlivengine/Graphics/CompiledShaders/vs_ocornut_imgui.bin.h>
 #include <Enlivengine/Graphics/CompiledShaders/fs_ocornut_imgui.bin.h>
@@ -35,6 +40,8 @@ static const bgfx::EmbeddedShader s_embeddedShaders[] =
 	BGFX_EMBEDDED_SHADER_END()
 };
 
+// TODO : UPDATE : FONT AWESOME
+/*
 struct FontRangeMerge
 {
 	const void* data;
@@ -47,6 +54,7 @@ static FontRangeMerge s_fontRangeMerge[] =
 	{ s_iconsKenneyTtf,      sizeof(s_iconsKenneyTtf),      { ICON_MIN_KI, ICON_MAX_KI, 0 } },
 	{ s_iconsFontAwesomeTtf, sizeof(s_iconsFontAwesomeTtf), { ICON_MIN_FA, ICON_MAX_FA, 0 } },
 };
+*/
 
 bool ImGuiWrapper::Init()
 {
@@ -157,6 +165,8 @@ bool ImGuiWrapper::Init()
 		imgui.mFonts[ImGui::Font::Regular] = io.Fonts->AddFontFromMemoryTTF((void*)s_robotoRegularTtf, sizeof(s_robotoRegularTtf), fontSize, &config, ranges);
 		imgui.mFonts[ImGui::Font::Mono] = io.Fonts->AddFontFromMemoryTTF((void*)s_robotoMonoRegularTtf, sizeof(s_robotoMonoRegularTtf), fontSize - 3.0f, &config, ranges);
 
+		// TODO : UPDATE : FONT AWESOME
+		/*
 		config.MergeMode = true;
 		config.DstFont = imgui.mFonts[ImGui::Font::Regular];
 
@@ -165,11 +175,14 @@ bool ImGuiWrapper::Init()
 			const FontRangeMerge& frm = s_fontRangeMerge[i];
 			io.Fonts->AddFontFromMemoryTTF((void*)frm.data, (int)frm.size, fontSize - 3.0f, &config, frm.ranges);
 		}
+		*/
 	}
 	io.Fonts->GetTexDataAsRGBA32(&data, &width, &height);
 	imgui.mTexture = bgfx::createTexture2D((uint16_t)width, (uint16_t)height, false, 1, bgfx::TextureFormat::BGRA8, 0, bgfx::copy(data, width * height * 4));
 
-	ImGui::InitDockContext();
+	// Docking
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigDockingWithShift = true;
 
 	imgui.mInitialized = true;
     return true;
@@ -186,7 +199,6 @@ bool ImGuiWrapper::Release()
 
 	enAssert(imgui.mInitialized);
 
-	ImGui::ShutdownDockContext();
 	ImGui::DestroyContext(imgui.mContext);
 
 	bgfx::destroy(imgui.mTexture);
@@ -369,7 +381,7 @@ ImGuiWrapper::ImGuiWrapper()
 	, mTexture(BGFX_INVALID_HANDLE)
 	, mSamplerTexture(BGFX_INVALID_HANDLE)
 	, mImageLodEnabled(BGFX_INVALID_HANDLE)
-	, mFonts()
+	// TODO : UPDATE : FONT AWESOME: , mFonts()
 	, mLast(0)
 	, mViewId(255)
 {
@@ -426,9 +438,9 @@ BX_PRAGMA_DIAGNOSTIC_IGNORED_CLANG_GCC("-Wtype-limits") // warning: comparison i
 #define STBTT_malloc(size, userData) en::ImGuiWrapperAllocatorAccess::MemAlloc(size, userData)
 #define STBTT_free(ptr, userData) en::ImGuiWrapperAllocatorAccess::MemFree(ptr, userData)
 #define STB_RECT_PACK_IMPLEMENTATION
-#include <stb/stb_rect_pack.h>
+#include <imgui/imstb_rectpack.h>
 #define STB_TRUETYPE_IMPLEMENTATION
-#include <stb/stb_truetype.h>
+#include <imgui/imstb_truetype.h>
 BX_PRAGMA_DIAGNOSTIC_POP()
 
 #endif // ENLIVE_ENABLE_IMGUI

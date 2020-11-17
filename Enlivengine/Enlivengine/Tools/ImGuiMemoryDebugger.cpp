@@ -3,7 +3,7 @@
 #ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_DEBUG_MEMORY)
 
-#include <dear-imgui/imgui.h>
+#include <imgui/imgui.h>
 
 #include <Enlivengine/Utils/MemoryAllocator.hpp>
 

@@ -3,7 +3,7 @@
 #ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <dear-imgui/imgui.h>
+#include <imgui/imgui.h>
 #include <Enlivengine/Utils/String.hpp>
 
 namespace en
@@ -55,7 +55,7 @@ void ImGuiConsole::Display()
 #endif // ENLIVE_COMPILER_MSVC
 	}
 	// Keep auto focus on the input box
-	if (ImGui::IsItemHovered() || (ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0)))
+	if (ImGui::IsItemHovered() || (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootWindow) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0)))
 	{
 		ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
 	}
@@ -94,8 +94,6 @@ void ImGuiConsole::AddLine(const std::string& line)
 	}
 
 	mLines.push_back(line);
-
-	AskForResize();
 }
 
 void ImGuiConsole::SetMaxSize(U32 size)
