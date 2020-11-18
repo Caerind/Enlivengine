@@ -73,7 +73,7 @@
 #include "preprocessor/PpTokens.h"
 
 // Build-time generated includes
-#include "../build_info.h"
+#include "../../build_info.h"
 
 namespace { // anonymous namespace for file-local functions and symbols
 
