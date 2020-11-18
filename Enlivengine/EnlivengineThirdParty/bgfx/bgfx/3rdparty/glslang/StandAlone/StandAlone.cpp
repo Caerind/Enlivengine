@@ -62,7 +62,7 @@
 #include "../glslang/OSDependent/osinclude.h"
 
 // Build-time generated includes
-#include "glslang/build_info.h"
+#include "../build_info.h"
 
 extern "C" {
     GLSLANG_EXPORT void ShOutputHtml();
