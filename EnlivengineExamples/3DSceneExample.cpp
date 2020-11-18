@@ -85,6 +85,7 @@ int main(int argc, char** argv)
 		DebugDraw::InitializeDebugDraws();
 
 		ImGuiToolManager::GetInstance().Initialize();
+		ImGuiToolManager::GetInstance().LoadFromFile(PathManager::GetAssetsPath() + "tools.json");
 		{
 			ComponentManager::Register<NameComponent>();
 			ComponentManager::Register<TransformComponent>();
@@ -365,6 +366,7 @@ int main(int argc, char** argv)
 			textureA.ReleaseFromManager();
 			textureB.ReleaseFromManager();
 		}
+		ImGuiToolManager::GetInstance().SaveToFile(PathManager::GetAssetsPath() + "tools.json");
 		ImGuiToolManager::GetInstance().Release();
 
 		DebugDraw::ReleaseDebugDraws();

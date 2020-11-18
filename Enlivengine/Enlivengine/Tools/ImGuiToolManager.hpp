@@ -22,6 +22,9 @@ public:
 	void Initialize();
 	void Release();
 
+	bool LoadFromFile(const std::string& filename);
+	bool SaveToFile(const std::string& filename);
+
 	void Update();
 
 private:

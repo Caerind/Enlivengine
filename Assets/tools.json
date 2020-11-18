@@ -1,0 +1,14 @@
+{
+    "AnimationEditor": false,
+    "Console": false,
+    "Editor": true,
+    "EntityBrowser": false,
+    "Game": true,
+    "ImGuiDemo": false,
+    "InputEditor": false,
+    "Logs": false,
+    "MemoryDebugger": false,
+    "Physic": false,
+    "Profiler": false,
+    "ResourceBrowser": false
+}

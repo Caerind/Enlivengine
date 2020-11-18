@@ -3,6 +3,8 @@
 #ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
+#include <json/json.hpp>
+
 #include <Enlivengine/Utils/Hash.hpp>
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Utils/Profiler.hpp>
@@ -65,6 +67,73 @@ void ImGuiToolManager::Release()
 	}
 
 	mRunning = false;
+}
+
+bool ImGuiToolManager::LoadFromFile(const std::string& filename)
+{
+	nlohmann::json jsonInput;
+
+	{
+		std::ifstream file(filename);
+		if (!file)
+		{
+			return false;
+		}
+		// Don't know why, but it seems the operator>> is not recognized...
+		nlohmann::detail::parser<nlohmann::json>(nlohmann::detail::input_adapter(file)).parse(false, jsonInput);
+		file.close();
+	}
+
+	constexpr size_t tabs = static_cast<size_t>(Enum::GetCount<ImGuiToolTab>());
+	for (size_t i = 0; i < tabs; ++i)
+	{
+		const size_t size = mTools[i].size();
+		for (size_t j = 0; j < size; ++j)
+		{
+			if (ImGuiTool* tool = mTools[i][j])
+			{
+				auto itr = jsonInput.find(tool->GetSaveName());
+				if (itr != jsonInput.end() && itr->is_boolean())
+				{
+					tool->mVisible = itr.value();
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+bool ImGuiToolManager::SaveToFile(const std::string& filename)
+{
+	nlohmann::json jsonInput;
+
+	constexpr size_t tabs = static_cast<size_t>(Enum::GetCount<ImGuiToolTab>());
+	for (size_t i = 0; i < tabs; ++i)
+	{
+		const size_t size = mTools[i].size();
+		for (size_t j = 0; j < size; ++j)
+		{
+			if (ImGuiTool* tool = mTools[i][j])
+			{
+				jsonInput[tool->GetSaveName()] = tool->mVisible;
+			}
+		}
+	}
+
+	{
+		std::ofstream file(filename);
+		if (!file)
+		{
+			return false;
+		}
+
+		file << std::setw(4) << jsonInput;
+
+		file.close();
+	}
+
+	return true;
 }
 
 void ImGuiToolManager::Update()
