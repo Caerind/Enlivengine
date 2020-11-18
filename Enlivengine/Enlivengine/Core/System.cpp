@@ -1,6 +1,5 @@
 #include <Enlivengine/Core/System.hpp>
 
-#ifdef ENLIVE_MODULE_CORE
 
 #include <Enlivengine/Core/World.hpp>
 
@@ -26,5 +25,3 @@ void System::Render()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

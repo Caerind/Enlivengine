@@ -1,7 +1,5 @@
 #include <Enlivengine/Tiled/ObjectBase.hpp>
 
-#ifdef ENLIVE_MODULE_TILED
-
 #include <Enlivengine/Tiled/ObjectGroup.hpp>
 
 namespace en
@@ -74,5 +72,3 @@ bool ObjectBase::Parse(ParserXml& parser)
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

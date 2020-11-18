@@ -1,7 +1,5 @@
 #include <Enlivengine/Core/PhysicComponent.hpp>
 
-#ifdef ENLIVE_MODULE_CORE
-
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 namespace en
@@ -310,5 +308,3 @@ const World* PhysicComponent::GetWorld() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

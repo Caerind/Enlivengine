@@ -1,7 +1,5 @@
 #include <Enlivengine/SDL/SDLWrapper.hpp>
 
-#ifdef ENLIVE_MODULE_SDL
-
 #include <Enlivengine/Utils/Assert.hpp>
 
 namespace en
@@ -13,15 +11,10 @@ bool SDLWrapper::Init()
 
     enAssert(!sdl.mInitialized);
 
-    U32 initFlags = 0;
-
-#ifdef ENLIVE_MODULE_WINDOW
-    initFlags |= SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC; // | SDL_INIT_TIMER | SDL_INIT_SENSOR | SDL_INIT_GAMECONTROLLER
-#endif // ENLIVE_MODULE_WINDOW
-
-#ifdef ENLIVE_MODULE_AUDIO
+	U32 initFlags = 0;
+	initFlags |= SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC; // | SDL_INIT_TIMER | SDL_INIT_SENSOR | SDL_INIT_GAMECONTROLLER
+    initFlags |= SDL_INIT_VIDEO;
     initFlags |= SDL_INIT_AUDIO;
-#endif // ENLIVE_MODULE_AUDIO
 
     sdl.mInitialized = SDL_Init(initFlags) >= 0;
     if (sdl.mInitialized)
@@ -91,5 +84,3 @@ SDLWrapper::~SDLWrapper()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_SDL

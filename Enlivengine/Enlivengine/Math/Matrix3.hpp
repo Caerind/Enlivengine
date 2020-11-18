@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/Vector3.hpp>
 
 // TODO : Constexpr memcpy, swap
@@ -320,5 +316,3 @@ typedef Matrix3<F32> Matrix3f;
 typedef Matrix3f mat3; // GLSL-like
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

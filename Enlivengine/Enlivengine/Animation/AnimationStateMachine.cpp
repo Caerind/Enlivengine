@@ -1,7 +1,5 @@
 #include <Enlivengine/Animation/AnimationStateMachine.hpp>
 
-#ifdef ENLIVE_MODULE_ANIMATION
-
 #include <Enlivengine/Utils/ParserXml.hpp>
 
 namespace en
@@ -1452,5 +1450,3 @@ U32 AnimationStateMachine::GetDefaultStateIndex() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_ANIMATION

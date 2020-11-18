@@ -1,7 +1,5 @@
 #include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
-#ifdef ENLIVE_MODULE_ANIMATION
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <imgui/imgui.h>
@@ -1442,5 +1440,3 @@ void ImGuiAnimationEditor::AnimationStateMachineList()
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_ANIMATION
-#endif // ENLIVE_MODULE_TOOLS

@@ -1,7 +1,5 @@
 #include <Enlivengine/Core/Entity.hpp>
 
-#ifdef ENLIVE_MODULE_CORE
-
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Components.hpp>
@@ -125,5 +123,3 @@ const entt::registry& Entity::GetRegistry() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

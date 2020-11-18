@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <FastNoise/FastNoise.h>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
@@ -75,5 +71,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

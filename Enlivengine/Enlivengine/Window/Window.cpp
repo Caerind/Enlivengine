@@ -1,7 +1,5 @@
 #include <Enlivengine/Window/Window.hpp>
 
-#ifdef ENLIVE_MODULE_WINDOW
-
 #include <Enlivengine/Utils/Assert.hpp>
 
 namespace en
@@ -306,5 +304,3 @@ Window* Window::GetWindowFromSDLWindowID(U32 sdlWindowID)
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_WINDOW

@@ -1,7 +1,5 @@
 #include <Enlivengine/Core/CameraComponent.hpp>
 
-#ifdef ENLIVE_MODULE_CORE
-
 #include <Enlivengine/Core/TransformComponent.hpp>
 
 namespace en
@@ -139,5 +137,3 @@ Matrix4f CameraComponent::GetEntityMatrix() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

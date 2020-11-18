@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/Vector4.hpp>
 #include <Enlivengine/Math/Matrix3.hpp>
 #include <Enlivengine/Math/Quaternion.hpp>
@@ -672,5 +668,3 @@ typedef Matrix4<F32> Matrix4f;
 typedef Matrix4f mat4; // GLSL-like
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

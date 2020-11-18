@@ -1,7 +1,5 @@
 #include <Enlivengine/Utils/Compression.hpp>
 
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <cstring>
 
 #include <miniz/miniz.hpp>
@@ -150,5 +148,3 @@ bool Compression::DecompressZlib(const std::vector<U8>& input, std::vector<U8>& 
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

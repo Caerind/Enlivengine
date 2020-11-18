@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_TILED
-
 #include <memory>
 #include <unordered_map>
 
@@ -59,5 +55,3 @@ private:
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

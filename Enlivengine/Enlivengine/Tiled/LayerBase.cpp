@@ -1,7 +1,5 @@
 #include <Enlivengine/Tiled/LayerBase.hpp>
 
-#ifdef ENLIVE_MODULE_TILED
-
 #include <Enlivengine/Tiled/Map.hpp>
 
 namespace en
@@ -88,5 +86,3 @@ bool LayerBase::Parse(ParserXml& parser)
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

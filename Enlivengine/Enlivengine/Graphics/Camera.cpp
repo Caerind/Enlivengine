@@ -1,7 +1,5 @@
 #include <Enlivengine/Graphics/Camera.hpp>
 
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <Enlivengine/Utils/Assert.hpp>
 
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
@@ -422,5 +420,3 @@ void Camera::UnregisterCamera(Camera* camera)
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

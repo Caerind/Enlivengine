@@ -1,7 +1,5 @@
 #include <Enlivengine/Math/Random.hpp>
 
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Platform/Time.hpp>
 
 namespace en
@@ -50,5 +48,3 @@ bool Random::GetBool()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

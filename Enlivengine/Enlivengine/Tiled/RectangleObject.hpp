@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_TILED
-
 #include <Enlivengine/Math/Rect.hpp>
 #include <Enlivengine/Tiled/ObjectBase.hpp>
 
@@ -35,5 +31,3 @@ private:
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

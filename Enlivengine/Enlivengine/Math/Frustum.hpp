@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/Plane.hpp>
 #include <Enlivengine/Math/Ray.hpp>
 
@@ -57,5 +53,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

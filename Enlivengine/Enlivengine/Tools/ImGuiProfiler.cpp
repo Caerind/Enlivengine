@@ -1,6 +1,5 @@
 #include <Enlivengine/Tools/ImGuiProfiler.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_PROFILE)
 
 #include <imgui/imgui.h>
@@ -222,4 +221,3 @@ void ImGuiProfiler::DisplayFrame(const ProfilerFrame& frame) const
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI && ENLIVE_ENABLE_PROFILE
-#endif // ENLIVE_MODULE_TOOLS

@@ -84,8 +84,12 @@ int main(int argc, char** argv)
 		Tilemap::InitializeTilemaps();
 		DebugDraw::InitializeDebugDraws();
 
+#ifdef ENLIVE_ENABLE_IMGUI
 		ImGuiToolManager::GetInstance().Initialize();
+#ifdef ENLIVE_TOOL
 		ImGuiToolManager::GetInstance().LoadFromFile(PathManager::GetAssetsPath() + "tools.json");
+#endif // ENLIVE_TOOL
+#endif // ENLIVE_ENABLE_IMGUI
 		{
 			ComponentManager::Register<NameComponent>();
 			ComponentManager::Register<TransformComponent>();
@@ -117,6 +121,7 @@ int main(int argc, char** argv)
 				enAssert(false);
 			}
 
+#ifdef ENLIVE_TOOL
 			// Editor window
 			ImGuiEditor::SetFramebuffer(bgfx::createFrameBuffer(1600, 900, bgfx::TextureFormat::RGBA8));
 			ImGuiEditor::GetCamera().SetFramebuffer(ImGuiEditor::GetFramebuffer());
@@ -133,13 +138,16 @@ int main(int argc, char** argv)
 
 			// Game window
 			ImGuiGame::SetFramebuffer(bgfx::createFrameBuffer(1600, 900, bgfx::TextureFormat::RGBA8));
+#endif // ENLIVE_TOOL
 
 
 			World world;
 			world.CreateSystem<RenderSystem>();
 			Universe::GetInstance().SetCurrentWorld(&world);
 
-
+#ifdef ENLIVE_RELEASE
+			world.Play();
+#endif // ENLIVE_RELEASE
 
 			Entity playerEntity = world.GetEntityManager().CreateEntity();
 			{
@@ -319,6 +327,7 @@ int main(int argc, char** argv)
 
 				// Render
 				{
+#ifdef ENLIVE_TOOL
 					if (ImGuiGame::GetInstance().IsVisible())
 					{
 						playerCamEntity.Get<CameraComponent>().Apply();
@@ -356,6 +365,14 @@ int main(int argc, char** argv)
 						world.GetDebugDraw().Clear();
 						world.Render();
 					}
+#endif // ENLIVE_TOOL
+
+#ifdef ENLIVE_RELEASE
+					playerCamEntity.Get<CameraComponent>().Apply();
+					bgfx::setTransform(tilemapTransform.GetData());
+					tilemap.Render(playerCamEntity.Get<CameraComponent>().GetViewID());
+					world.Render();
+#endif // ENLIVE_RELEASE
 
 					bgfx::frame();
 				}
@@ -366,8 +383,12 @@ int main(int argc, char** argv)
 			textureA.ReleaseFromManager();
 			textureB.ReleaseFromManager();
 		}
+#ifdef ENLIVE_ENABLE_IMGUI
+#ifdef ENLIVE_TOOL
 		ImGuiToolManager::GetInstance().SaveToFile(PathManager::GetAssetsPath() + "tools.json");
+#endif // ENLIVE_TOOL
 		ImGuiToolManager::GetInstance().Release();
+#endif // ENLIVE_ENABLE_IMGUI
 
 		DebugDraw::ReleaseDebugDraws();
 		Tilemap::ReleaseTilemaps();

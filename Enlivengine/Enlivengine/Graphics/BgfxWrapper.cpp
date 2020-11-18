@@ -1,7 +1,5 @@
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
 
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <SDL.h>
 #include <SDL_syswm.h>
 
@@ -241,5 +239,3 @@ void BgfxWrapper::Reset(U32 width, U32 height)
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

@@ -2,7 +2,6 @@
 
 #include <Enlivengine/Config.hpp>
 
-#ifdef ENLIVE_MODULE_GRAPHICS
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <bx/allocator.h>
@@ -151,4 +150,3 @@ namespace ImGui
 } // namespace ImGui
 
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_GRAPHICS

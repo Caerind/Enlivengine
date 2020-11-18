@@ -1,7 +1,5 @@
 #include <Enlivengine/Utils/Log.hpp>
 
-#ifdef ENLIVE_MODULE_UTILS
-
 #ifdef ENLIVE_ENABLE_LOG
 
 #include <bitset>
@@ -311,5 +309,3 @@ void VisualStudioLogger::Write(const LogMessage& message)
 } // namespace en
 
 #endif // ENLIVE_ENABLE_LOG
-
-#endif // ENLIVE_MODULE_UTILS

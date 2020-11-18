@@ -1,7 +1,5 @@
 #include <Enlivengine/Core/TransformComponent.hpp>
 
-#ifdef ENLIVE_MODULE_CORE
-
 #include <Enlivengine/Core/Components.hpp>
 
 namespace en
@@ -286,5 +284,3 @@ void TransformComponent::UpdateGlobalMatrix() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

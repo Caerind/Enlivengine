@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_PLATFORM
-
 #include <Enlivengine/Platform/CompilerDetection.hpp>
 
 #if defined(__has_feature)
@@ -112,5 +108,3 @@
 #else
 	#define ENLIVE_FUNCTION __func__ // __func__ has been standardized in C++ 2011
 #endif
-
-#endif // ENLIVE_MODULE_PLATFORM

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_CORE
-
 #include <Enlivengine/Platform/Time.hpp>
 
 namespace en
@@ -25,5 +21,3 @@ class System
 };
         
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

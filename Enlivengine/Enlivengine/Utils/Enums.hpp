@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <magic_enum/magic_enum.hpp>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
@@ -68,5 +64,3 @@ constexpr E GetFromIndex(en::U32 index)
 } // namespace Enum
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

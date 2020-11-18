@@ -1,7 +1,5 @@
 #include <Enlivengine/Tiled/Map.hpp>
 
-#ifdef ENLIVE_MODULE_TILED
-
 #include <filesystem>
 
 #include <Enlivengine/Utils/ParserXml.hpp>
@@ -599,5 +597,3 @@ void Map::Render(bool renderObjects /*= false*/) const
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

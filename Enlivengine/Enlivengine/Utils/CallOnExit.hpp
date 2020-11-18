@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <functional>
 
 namespace en
@@ -53,5 +49,3 @@ class CallOnExit
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

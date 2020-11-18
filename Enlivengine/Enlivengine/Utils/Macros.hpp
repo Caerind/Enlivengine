@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 
 #define ENLIVE_ARRAY_SIZE(arr) static_cast<en::U32>(sizeof(arr)/sizeof(arr[0]))
@@ -26,5 +22,3 @@ namespace en
 		}
 	} // namespace priv
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

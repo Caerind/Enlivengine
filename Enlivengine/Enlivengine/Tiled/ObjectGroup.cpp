@@ -1,7 +1,5 @@
 #include <Enlivengine/Tiled/ObjectGroup.hpp>
 
-#ifdef ENLIVE_MODULE_TILED
-
 #include <Enlivengine/Utils/String.hpp>
 
 #include <Enlivengine/Tiled/RectangleObject.hpp>
@@ -155,5 +153,3 @@ bool ObjectGroup::Parse(ParserXml& parser)
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

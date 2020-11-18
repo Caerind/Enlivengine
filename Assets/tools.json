@@ -2,13 +2,13 @@
     "AnimationEditor": false,
     "Console": false,
     "Editor": true,
-    "EntityBrowser": false,
+    "EntityBrowser": true,
     "Game": true,
     "ImGuiDemo": false,
     "InputEditor": false,
-    "Logs": false,
+    "Logs": true,
     "MemoryDebugger": false,
     "Physic": false,
     "Profiler": false,
-    "ResourceBrowser": false
+    "ResourceBrowser": true
 }

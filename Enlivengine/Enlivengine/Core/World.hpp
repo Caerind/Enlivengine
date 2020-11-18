@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_CORE
-
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Utils/Array.hpp>
 #include <Enlivengine/Graphics/Camera.hpp>
@@ -130,5 +126,3 @@ bool World::HasSystem() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

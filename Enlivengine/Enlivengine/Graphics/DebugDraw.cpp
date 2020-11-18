@@ -1,7 +1,5 @@
 #include <Enlivengine/Graphics/DebugDraw.hpp>
 
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <Enlivengine/Utils/Assert.hpp>
 
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
@@ -236,5 +234,3 @@ bool DebugDraw::ReleaseDebugDraws()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

@@ -2,8 +2,6 @@
 
 #include <Enlivengine/Config.hpp>
 
-#ifdef ENLIVE_MODULE_UTILS
-
 #ifdef ENLIVE_ENABLE_LOG
 
 #include <fstream>
@@ -235,5 +233,3 @@ private:
 #define enLogFatal(channel, message, ...) 
 
 #endif // ENLIVE_ENABLE_LOG
-
-#endif // ENLIVE_MODULE_UTILS

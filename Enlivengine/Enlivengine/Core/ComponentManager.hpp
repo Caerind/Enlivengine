@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_CORE
-
 #include <entt/entt.hpp>
 
 #include <Enlivengine/Meta/Meta.hpp>
@@ -121,5 +117,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

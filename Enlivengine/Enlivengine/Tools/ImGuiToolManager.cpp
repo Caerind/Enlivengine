@@ -1,6 +1,5 @@
 #include <Enlivengine/Tools/ImGuiToolManager.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <json/json.hpp>
@@ -151,12 +150,15 @@ void ImGuiToolManager::RegisterTools()
 {
 	enAssert(!mRunning);
 
+#ifdef ENLIVE_TOOL
+	RegisterTool(ImGuiEditor::GetInstance());
+	RegisterTool(ImGuiGame::GetInstance());
+#endif // ENLIVE_TOOL
+
 	RegisterTool(ImGuiAnimationEditor::GetInstance());
 	RegisterTool(ImGuiConsole::GetInstance());
 	RegisterTool(ImGuiDemoWindow::GetInstance());
-	RegisterTool(ImGuiEditor::GetInstance());
 	RegisterTool(ImGuiEntityBrowser::GetInstance());
-	RegisterTool(ImGuiGame::GetInstance());
 	RegisterTool(ImGuiInputEditor::GetInstance());
 	RegisterTool(ImGuiLogger::GetInstance());
 	RegisterTool(ImGuiMemoryDebugger::GetInstance());
@@ -206,7 +208,9 @@ void ImGuiToolManager::ImGuiMain()
 		ImGui::EndMainMenuBar();
 	}
 
+#ifdef ENLIVE_TOOL
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+#endif // ENLIVE_TOOL
 }
 
 void ImGuiToolManager::ImGuiTools()
@@ -242,4 +246,3 @@ void ImGuiToolManager::ImGuiTools()
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_TOOLS

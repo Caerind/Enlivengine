@@ -1,7 +1,5 @@
 #include <Enlivengine/Utils/MemoryAllocator.hpp>
 
-#ifdef ENLIVE_MODULE_UTILS
-
 namespace en
 {
 
@@ -145,5 +143,3 @@ bool MemoryAllocator::DebugAllocator::Owns(const void* ptr) const
 #endif // ENLIVE_ENABLE_DEBUG_MEMORY
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

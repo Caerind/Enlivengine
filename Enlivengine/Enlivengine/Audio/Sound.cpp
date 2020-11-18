@@ -1,7 +1,5 @@
 #include <Enlivengine/Audio/Sound.hpp>
 
-#ifdef ENLIVE_MODULE_AUDIO
-
 #include <Enlivengine/Audio/SoundManager.hpp>
 
 namespace en
@@ -194,5 +192,3 @@ const Sound* SoundPtr::GetSound() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_AUDIO

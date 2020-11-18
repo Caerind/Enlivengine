@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/Vector3.hpp>
 
 // TODO : Constexpr Sqrt => GetLength, SetLength, Normalize, Normalized
@@ -133,5 +129,3 @@ typedef Vector4<U32> Vector4u;
 typedef Vector4f vec4; // GLSL-like
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

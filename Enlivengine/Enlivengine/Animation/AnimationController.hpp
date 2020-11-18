@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_ANIMATION
-
 #include <Enlivengine/Animation/Animation.hpp>
 #include <Enlivengine/Animation/AnimationStateMachine.hpp>
 
@@ -71,5 +67,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_ANIMATION

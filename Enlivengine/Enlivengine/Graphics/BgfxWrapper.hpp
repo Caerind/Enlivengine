@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <bgfx/bgfx.h>
 
 #include <Enlivengine/Utils/Signal.hpp>
@@ -49,5 +45,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <string> // std::string_view, std::string
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
@@ -63,5 +59,3 @@ public:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

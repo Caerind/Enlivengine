@@ -1,10 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_META
-#ifdef ENLIVE_MODULE_CORE
-
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Meta/TypeInfo.hpp>
 #include <Enlivengine/Meta/Meta.hpp>
@@ -894,6 +889,3 @@ struct HasCustomEditor<en::PhysicComponent>
 	}
 };
 #endif // ENLIVE_ENABLE_IMGUI
-
-#endif // ENLIVE_MODULE_CORE
-#endif // ENLIVE_MODULE_META

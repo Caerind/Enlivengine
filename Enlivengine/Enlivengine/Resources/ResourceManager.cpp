@@ -1,7 +1,5 @@
 #include <Enlivengine/Resources/ResourceManager.hpp>
 
-#ifdef ENLIVE_MODULE_RESOURCES
-
 #include <Enlivengine/Utils/Enums.hpp>
 
 namespace en
@@ -219,5 +217,3 @@ ResourceIDType ResourceManager::CreateResourceIDTypeFromResourceIDAndType(Resour
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_RESOURCES

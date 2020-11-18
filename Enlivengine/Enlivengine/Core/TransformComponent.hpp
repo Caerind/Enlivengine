@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_CORE
-
 #include <vector>
 
 #include <Enlivengine/Math/Transform.hpp>
@@ -99,5 +95,3 @@ struct ComponentHasCustomInitialization<en::TransformComponent>
 		return true;
 	}
 };
-
-#endif // ENLIVE_MODULE_CORE

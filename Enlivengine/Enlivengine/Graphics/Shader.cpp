@@ -1,7 +1,5 @@
 #include <Enlivengine/Graphics/Shader.hpp>
 
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <cstdio>
 
 #include <Enlivengine/Utils/Assert.hpp>
@@ -126,5 +124,3 @@ bgfx::ShaderHandle Shader::CreateModule(const char* filename)
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

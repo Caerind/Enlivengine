@@ -1,10 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_META
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Meta/TypeInfo.hpp>
 #include <Enlivengine/Meta/Meta.hpp>
@@ -781,6 +776,3 @@ struct HasCustomEditor<en::Vector4<T>>
 	}
 };
 #endif // ENLIVE_ENABLE_IMGUI
-
-#endif // ENLIVE_MODULE_MATH
-#endif // ENLIVE_MODULE_META

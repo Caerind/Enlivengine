@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_RESOURCES
-
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -284,5 +280,3 @@ private:
 } // namespace en
 
 #include "ResourceManager.inl"
-
-#endif // ENLIVE_MODULE_RESOURCES

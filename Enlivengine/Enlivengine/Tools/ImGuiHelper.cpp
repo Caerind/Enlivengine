@@ -1,6 +1,5 @@
 #include <Enlivengine/Tools/ImGuiHelper.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <imgui/imgui_internal.h>
@@ -163,4 +162,3 @@ void PreviewAnimation(const en::Animation& animation, en::F32 maxSize, en::U32& 
 } // namespace ImGui
 
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_TOOLS

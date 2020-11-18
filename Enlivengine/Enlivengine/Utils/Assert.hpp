@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <Enlivengine/Platform/Debugger.hpp>
 #include <Enlivengine/Utils/Log.hpp>
 
@@ -20,5 +16,3 @@
 	#define enAssertChannel(expr, channel) 
 	#define enAssert(expr) 
 #endif
-
-#endif // ENLIVE_MODULE_UTILS

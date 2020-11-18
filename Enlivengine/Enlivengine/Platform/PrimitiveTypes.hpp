@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_PLATFORM
-
 #include <cstdint>
 #include <cfloat>
 #include <cstddef>
@@ -77,5 +73,3 @@ static_assert(sizeof(F32) == 4);
 static_assert(sizeof(F64) == 8);
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_PLATFORM

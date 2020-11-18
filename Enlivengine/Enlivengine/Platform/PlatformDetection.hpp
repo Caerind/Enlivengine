@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_PLATFORM
-
 #include <Enlivengine/Platform/Preprocessor.hpp>
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(_WIN64)
@@ -288,5 +284,3 @@
 	#define ENLIVE_EXPORT
 	#define ENLIVE_IMPORT
 #endif
-
-#endif // ENLIVE_MODULE_PLATFORM

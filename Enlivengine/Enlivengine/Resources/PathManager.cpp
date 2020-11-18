@@ -1,7 +1,5 @@
 #include <Enlivengine/Resources/PathManager.hpp>
 
-#ifdef ENLIVE_MODULE_RESOURCES
-
 #include <filesystem>
 
 #include <Enlivengine/Utils/Assert.hpp>
@@ -32,7 +30,7 @@ const std::string& PathManager::GetExecutablePath()
 bool PathManager::AutoDetectAssetsPath()
 {
 	PathManager& instance = GetInstance();
-#ifdef ENLIVE_DEBUG
+#ifdef ENLIVE_TOOL
 	for (U32 i = 0; i < 5; ++i)
 	{
 		std::string backfolder = "";
@@ -61,7 +59,7 @@ bool PathManager::AutoDetectAssetsPath()
 		SetAssetsPath("Assets/");
 		return true;
 	}
-#endif // ENLIVE_DEBUG
+#endif // ENLIVE_TOOL
 	return false;
 }
 
@@ -78,7 +76,7 @@ const std::string& PathManager::GetAssetsPath()
 bool PathManager::AutoDetectShadersPath()
 {
 	PathManager& instance = GetInstance();
-#ifdef ENLIVE_DEBUG
+#ifdef ENLIVE_TOOL
 	for (U32 i = 0; i < 5; ++i)
 	{
 		std::string backfolder = "";
@@ -108,17 +106,14 @@ bool PathManager::AutoDetectShadersPath()
 		SetShadersPath("Assets/Shaders/");
 		return true;
 	}
-#endif // ENLIVE_DEBUG
+#endif // ENLIVE_TOOL
 	return false;
 }
 
 void PathManager::SetShadersPath(const std::string& shadersPath)
 {
 	GetInstance().mShadersPath = shadersPath;
-
-#ifdef ENLIVE_MODULE_GRAPHICS
 	GetInstance().mShadersPathRenderer.clear();
-#endif // ENLIVE_MODULE_GRAPHICS
 }
 
 const std::string& PathManager::GetShadersPath()
@@ -126,7 +121,6 @@ const std::string& PathManager::GetShadersPath()
 	return GetInstance().mShadersPath;
 }
 
-#ifdef ENLIVE_MODULE_GRAPHICS
 const std::string& PathManager::GetShadersPathForRenderer(bgfx::RendererType::Enum renderer)
 {
 	PathManager& instance = GetInstance();
@@ -170,7 +164,6 @@ const std::string& PathManager::GetShadersPathForRenderer(bgfx::RendererType::En
 		return instance.mShadersPathRenderer;
 	}
 }
-#endif // ENLIVE_MODULE_GRAPHICS
 
 void PathManager::SetScreenshotPath(const std::string& screenshotPath)
 {
@@ -192,13 +185,9 @@ PathManager::PathManager()
 	: mExecutablePath("")
 	, mAssetsPath("")
 	, mShadersPath("")
-#ifdef ENLIVE_MODULE_GRAPHICS
 	, mShadersPathRenderer("")
-#endif // ENLIVE_MODULE_GRAPHICS
 	, mScreenshotPath("")
 {
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_RESOURCES

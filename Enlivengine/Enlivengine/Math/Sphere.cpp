@@ -1,7 +1,5 @@
 #include <Enlivengine/Math/Sphere.hpp>
 
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/AABB.hpp>
 #include <Enlivengine/Math/Frustum.hpp>
 #include <Enlivengine/Math/Plane.hpp>
@@ -156,5 +154,3 @@ Sphere Sphere::Transform(const Matrix4f& transform) const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

@@ -1,7 +1,5 @@
 #include <Enlivengine/Utils/Profiler.hpp>
 
-#ifdef ENLIVE_MODULE_UTILS
-
 #ifdef ENLIVE_ENABLE_PROFILE
 
 #include <Enlivengine/Utils/Assert.hpp>
@@ -231,5 +229,3 @@ U32 Profiler::GetCurrentDepth() const
 } // namespace en
 
 #endif // ENLIVE_ENABLE_PROFILE
-
-#endif // ENLIVE_MODULE_UTILS

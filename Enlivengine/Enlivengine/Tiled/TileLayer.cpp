@@ -1,7 +1,5 @@
 #include <Enlivengine/Tiled/TileLayer.hpp>
 
-#ifdef ENLIVE_MODULE_TILED
-
 #include <sstream>
 
 #include <Enlivengine/Utils/Compression.hpp>
@@ -353,5 +351,3 @@ void TileLayer::Update()
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_CORE
-
 #include <Enlivengine/Graphics/Camera.hpp>
 
 #include <Enlivengine/Core/ComponentTraits.hpp>
@@ -67,5 +63,3 @@ struct ComponentHasCustomInitialization<en::CameraComponent>
 		return true;
 	}
 };
-
-#endif // ENLIVE_MODULE_CORE

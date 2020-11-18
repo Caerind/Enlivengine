@@ -2,7 +2,6 @@
 
 #include <Enlivengine/Config.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_LOG)
 
 #include <Enlivengine/Tools/ImGuiTool.hpp>
@@ -40,4 +39,3 @@ private:
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI && ENLIVE_ENABLE_LOG
-#endif // ENLIVE_MODULE_TOOLS

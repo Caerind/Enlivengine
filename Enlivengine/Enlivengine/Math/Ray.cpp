@@ -1,7 +1,5 @@
 #include <Enlivengine/Math/Ray.hpp>
 
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Utils/Assert.hpp>
 
 #include <Enlivengine/Math/AABB.hpp>
@@ -203,5 +201,3 @@ Ray Ray::Transform(const Matrix4f& transform) const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

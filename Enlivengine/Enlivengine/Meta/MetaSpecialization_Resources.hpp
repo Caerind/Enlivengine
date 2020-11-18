@@ -1,10 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_META
-#ifdef ENLIVE_MODULE_RESOURCES
-
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Meta/TypeInfo.hpp>
 #include <Enlivengine/Meta/Meta.hpp>
@@ -146,6 +141,3 @@ struct HasCustomEditor<en::ResourcePtr<T>>
 	}
 };
 #endif // ENLIVE_ENABLE_IMGUI
-
-#endif // ENLIVE_MODULE_RESOURCES
-#endif // ENLIVE_MODULE_META

@@ -2,7 +2,6 @@
 
 #include <Enlivengine/Config.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
 //#include <IconFontCppHeaders/IconsFontAwesome5.h> // TODO : Restore FontAwesome
@@ -29,4 +28,3 @@ void PreviewAnimation(const en::Animation& animation, en::F32 maxSize, en::U32& 
 } // namespace ImGui
 
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_TOOLS

@@ -1,6 +1,5 @@
 #include <Enlivengine/Tools/ImGuiInputEditor.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <imgui/imgui.h>
@@ -42,4 +41,3 @@ void ImGuiInputEditor::Display()
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_TOOLS

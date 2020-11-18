@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_PLATFORM
-
 #include <utility> // std::swap
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
@@ -84,5 +80,3 @@ namespace Endian
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_PLATFORM

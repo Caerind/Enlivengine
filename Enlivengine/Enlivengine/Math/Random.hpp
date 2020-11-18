@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <random>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
@@ -125,5 +121,3 @@ inline F32 RandomEngine::GetDev(F32 middle, F32 deviation)
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

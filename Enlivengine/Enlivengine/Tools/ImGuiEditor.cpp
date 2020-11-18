@@ -1,7 +1,6 @@
 #include <Enlivengine/Tools/ImGuiEditor.hpp>
 
-#if defined(ENLIVE_MODULE_TOOLS) && defined(ENLIVE_MODULE_CORE)
-#ifdef ENLIVE_ENABLE_IMGUI
+#if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_TOOL)
 
 #include <ImGuizmo/ImGuizmo.h>
 
@@ -137,5 +136,4 @@ Camera& ImGuiEditor::GetCamera()
 
 } // namespace en
 
-#endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_TOOLS && ENLIVE_MODULE_CORE
+#endif // ENLIVE_ENABLE_IMGUI && defined(ENLIVE_TOOL)

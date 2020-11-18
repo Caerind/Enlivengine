@@ -1,7 +1,5 @@
 #include <Enlivengine/Audio/SoundManager.hpp>
 
-#ifdef ENLIVE_MODULE_AUDIO
-
 namespace en
 {
 
@@ -281,5 +279,3 @@ void SoundManager::UpdateSoundsVolume()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_AUDIO

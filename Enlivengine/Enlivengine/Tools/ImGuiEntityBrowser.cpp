@@ -1,9 +1,6 @@
 #include <Enlivengine/Tools/ImGuiEntityBrowser.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
-#ifdef ENLIVE_MODULE_META
-#ifdef ENLIVE_MODULE_CORE
 
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/Universe.hpp>
@@ -148,7 +145,4 @@ void ImGuiEntityBrowser::Display()
 
 } // namespace en
 
-#endif // ENLIVE_MODULE_CORE
-#endif // ENLIVE_MODULE_META
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_TOOLS

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 namespace en
 {
 
@@ -16,5 +12,3 @@ protected:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

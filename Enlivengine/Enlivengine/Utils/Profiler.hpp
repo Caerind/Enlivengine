@@ -2,8 +2,6 @@
 
 #include <Enlivengine/Config.hpp>
 
-#ifdef ENLIVE_MODULE_UTILS
-
 #ifdef ENLIVE_ENABLE_PROFILE
 
 #include <vector> // Store profiling info when profiling
@@ -101,5 +99,3 @@ private:
 #define ENLIVE_PROFILE_SCOPE(name)
 
 #endif // ENLIVE_ENABLE_PROFILE
-
-#endif // ENLIVE_MODULE_UTILS

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 // Define byte for completeness
 #define ENLIVE_BYTE(x) (x)
 
@@ -22,5 +18,3 @@
 #define ENLIVE_TEBIBYTE(x) ((x) * 1024 * 1024 * 1024 * 1024)
 #define ENLIVE_PEBIBYTE(x) ((x) * 1024 * 1024 * 1024 * 1024 * 1024)
 #define ENLIVE_EXBIBYTE(x) ((x) * 1024 * 1024 * 1024 * 1024 * 1024 * 1024)
-
-#endif // ENLIVE_MODULE_UTILS

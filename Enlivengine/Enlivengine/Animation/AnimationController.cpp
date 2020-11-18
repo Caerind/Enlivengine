@@ -1,7 +1,5 @@
 #include <Enlivengine/Animation/AnimationController.hpp>
 
-#ifdef ENLIVE_MODULE_ANIMATION
-
 #include <Enlivengine/Utils/Hash.hpp>
 #include <Enlivengine/Utils/Profiler.hpp>
 
@@ -492,5 +490,3 @@ bool AnimationController::CanUseTransition(const AnimationStateMachine::Transiti
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_ANIMATION

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_PLATFORM
-
 namespace en
 {
 	
@@ -17,5 +13,3 @@ public:
 };
 	
 } // namespace en
-
-#endif // ENLIVE_MODULE_PLATFORM

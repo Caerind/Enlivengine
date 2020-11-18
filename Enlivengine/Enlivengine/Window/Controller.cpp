@@ -1,7 +1,5 @@
 #include <Enlivengine/Window/Controller.hpp>
 
-#ifdef ENLIVE_MODULE_WINDOW
-
 namespace en
 {
 
@@ -475,5 +473,3 @@ F32 Controller::NormalizeSignedInt(I16 value)
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_WINDOW

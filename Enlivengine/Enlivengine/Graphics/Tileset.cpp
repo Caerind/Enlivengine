@@ -1,7 +1,5 @@
 #include <Enlivengine/Graphics/Tileset.hpp>
 
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 namespace en
 {
 
@@ -86,5 +84,3 @@ Vector2f Tileset::GetTexCoords(U32 tileID) const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

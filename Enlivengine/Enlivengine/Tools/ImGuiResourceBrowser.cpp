@@ -1,7 +1,5 @@
 #include <Enlivengine/Tools/ImGuiResourceBrowser.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
-#ifdef ENLIVE_MODULE_RESOURCES
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <filesystem>
@@ -718,5 +716,3 @@ void ImGuiResourceBrowser::SoundPreview(ResourceInfo& resourceInfo)
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_RESOURCES
-#endif // ENLIVE_MODULE_TOOLS

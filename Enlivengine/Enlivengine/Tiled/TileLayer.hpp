@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_TILED
-
 #include <Enlivengine/Tiled/Map.hpp>
 #include <Enlivengine/Tiled/LayerBase.hpp>
 
@@ -67,5 +63,3 @@ private:
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

@@ -1,7 +1,5 @@
 #include <Enlivengine/Window/EventSystem.hpp>
 
-#ifdef ENLIVE_MODULE_WINDOW
-
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/SDL/SDLWrapper.hpp>
 
@@ -432,5 +430,3 @@ void EventSystem::HandleEvent(const SDL_Event& event)
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_WINDOW

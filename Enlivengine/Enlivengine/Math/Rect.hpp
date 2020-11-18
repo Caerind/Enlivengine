@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/Vector2.hpp>
 
 namespace en 
@@ -140,5 +136,3 @@ typedef Rect<I32> Recti;
 typedef Rect<U32> Rectu;
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

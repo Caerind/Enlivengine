@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_AUDIO
-
 namespace en
 {
 
@@ -15,5 +11,3 @@ enum class AudioStatus
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_AUDIO

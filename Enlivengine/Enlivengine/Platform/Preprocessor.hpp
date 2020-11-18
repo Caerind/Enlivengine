@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_PLATFORM
-
 #define ENLIVE_STRINGIFY_EX(x) #x
 #define ENLIVE_STRINGIFY(x) ENLIVE_STRINGIFY_EX(x)
 
@@ -16,5 +12,3 @@
 #define ENLIVE_VERSION_DECODE_REVISION(version) ((version) % 1000)
 
 #define ENLIVE_UNUSED(var) (void(var))
-
-#endif // ENLIVE_MODULE_PLATFORM

@@ -1,7 +1,5 @@
 #include <Enlivengine/Meta/DataFile.hpp>
 
-#ifdef ENLIVE_MODULE_META
-
 namespace en
 {
 
@@ -75,5 +73,3 @@ U32 DataFile::ReadCurrentType() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_META

@@ -1,6 +1,4 @@
-#include "Sprite.hpp"
-
-#ifdef ENLIVE_MODULE_GRAPHICS
+#include <Enlivengine/Graphics/Sprite.hpp>
 
 #include <Enlivengine/Utils/Assert.hpp>
 
@@ -221,5 +219,3 @@ bool Sprite::ReleaseSprites()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

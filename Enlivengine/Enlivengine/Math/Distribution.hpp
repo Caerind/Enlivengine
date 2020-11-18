@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <functional>
 #include <type_traits>
 
@@ -55,5 +51,3 @@ class Distribution
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

@@ -1,7 +1,5 @@
 #include <Enlivengine/Window/Keyboard.hpp>
 
-#ifdef ENLIVE_MODULE_WINDOW
-
 #include <Enlivengine/Utils/Assert.hpp>
 
 namespace en
@@ -339,5 +337,3 @@ Keyboard::Keyboard()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_WINDOW

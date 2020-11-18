@@ -1,7 +1,5 @@
 #include <Enlivengine/Platform/Time.hpp>
 
-#ifdef ENLIVE_MODULE_PLATFORM
-
 #include <chrono>
 #include <ctime>
 
@@ -172,5 +170,3 @@ DateTime DateTime::Today()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_PLATFORM

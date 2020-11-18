@@ -1,7 +1,5 @@
 #include <Enlivengine/Math/Transform.hpp>
 
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Utils/Assert.hpp>
 
 namespace en
@@ -68,5 +66,3 @@ void Transform::Scale(F32 uniformScale)
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

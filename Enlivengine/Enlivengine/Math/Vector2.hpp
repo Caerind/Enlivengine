@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/Math.hpp>
 
 // TODO : Constexpr Sqrt => GetLength, SetLength, Normalize, Normalized, SetPolarAngle
@@ -146,5 +142,3 @@ typedef Vector2<U32> Vector2u;
 typedef Vector2f vec2; // GLSL-like
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

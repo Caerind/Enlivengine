@@ -2,10 +2,7 @@
 
 #include <Enlivengine/Config.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
-#ifdef ENLIVE_MODULE_META
-#ifdef ENLIVE_MODULE_CORE
 
 #include <Enlivengine/Tools/ImGuiTool.hpp>
 
@@ -26,7 +23,4 @@ public:
 
 } // namespace en
 
-#endif // ENLIVE_MODULE_CORE
-#endif // ENLIVE_MODULE_META
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_TOOLS

@@ -1,7 +1,5 @@
 #include <Enlivengine/Graphics/Tilemap.hpp>
 
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <Enlivengine/Utils/Assert.hpp>
 
 namespace en
@@ -256,5 +254,3 @@ bool Tilemap::ReleaseTilemaps()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

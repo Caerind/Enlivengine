@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/Vector3.hpp>
 #include <Enlivengine/Math/Matrix4.hpp>
 
@@ -79,5 +75,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

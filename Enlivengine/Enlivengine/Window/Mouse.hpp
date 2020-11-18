@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_WINDOW
-
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Math/Vector2.hpp>
 #include <Enlivengine/Window/Window.hpp>
@@ -78,5 +74,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_WINDOW

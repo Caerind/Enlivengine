@@ -1,21 +1,18 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_CORE
-
 #include <unordered_map>
 
 #include <Box2D/Box2D.h>
 
+#include <Enlivengine/Config.hpp>
 #include <Enlivengine/Utils/Signal.hpp>
 #include <Enlivengine/Math/Vector2.hpp>
 
 #include <Enlivengine/Core/System.hpp>
 
-#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+#if defined(ENLIVE_DEBUG)
 #include <Enlivengine/Graphics/DebugDraw.hpp>
-#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
+#endif // ENLIVE_DEBUG
 
 namespace en
 {
@@ -59,7 +56,7 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 		template <typename F>
 		bool AddEndContactSlot(EndContactSlotType& slot, const PhysicComponent& component, F&& fct);
 
-#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+#if defined(ENLIVE_DEBUG)
 		void Render() override;
 
 		void SetDebugRendering(bool value);
@@ -75,7 +72,7 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 		void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) override;
 		void DrawTransform(const b2Transform& xf) override;
 		void DrawPoint(const b2Vec2& p, float32 size, const b2Color& color) override;
-#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
+#endif // ENLIVE_DEBUG
 
 	private:
 		static b2Body* GetComponentBody(const PhysicComponent& component);
@@ -93,11 +90,11 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 		};
 		std::unordered_map<b2Body*, ContactSignals> mContactSignals;
 
-#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+#if defined(ENLIVE_DEBUG)
 		DebugDraw mDebugDraw;
 		U32 mDebugRenderFlags;
         bool mDebugRender;
-#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
+#endif // ENLIVE_DEBUG
 };
 
 template <typename F>
@@ -139,5 +136,3 @@ bool PhysicSystem::AddEndContactSlot(EndContactSlotType& slot, const PhysicCompo
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

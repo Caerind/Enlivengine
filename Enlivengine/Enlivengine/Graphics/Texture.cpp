@@ -1,7 +1,5 @@
 #include <Enlivengine/Graphics/Texture.hpp>
 
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <cstdio>
 
 #include <bx/allocator.h>
@@ -193,5 +191,3 @@ void Texture::ImageReleaseCallback(void* ptr, void* userData)
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

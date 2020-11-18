@@ -1,7 +1,5 @@
 #include <Enlivengine/Utils/String.hpp>
 
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <algorithm> // std::transform
 #include <cctype>
 
@@ -145,5 +143,3 @@ bool LimitSize(const std::string& string, std::string& result, U32 size)
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

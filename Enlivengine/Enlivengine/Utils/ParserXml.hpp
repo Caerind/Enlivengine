@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <string>
 
 #include <pugixml/pugixml.hpp>
@@ -55,5 +51,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

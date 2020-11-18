@@ -1,6 +1,5 @@
 #include <Enlivengine/Graphics/ImGuiWrapper.hpp>
 
-#ifdef ENLIVE_MODULE_GRAPHICS
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <bx/math.h>
@@ -444,4 +443,3 @@ BX_PRAGMA_DIAGNOSTIC_IGNORED_CLANG_GCC("-Wtype-limits") // warning: comparison i
 BX_PRAGMA_DIAGNOSTIC_POP()
 
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_GRAPHICS

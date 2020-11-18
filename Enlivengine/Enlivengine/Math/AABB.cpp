@@ -1,7 +1,5 @@
 #include <Enlivengine/Math/AABB.hpp>
 
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/Frustum.hpp>
 #include <Enlivengine/Math/Plane.hpp>
 #include <Enlivengine/Math/Ray.hpp>
@@ -309,5 +307,3 @@ AABB AABB::Transform(const Matrix4f& transform) const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

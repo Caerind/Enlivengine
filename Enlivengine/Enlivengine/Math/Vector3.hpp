@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/Vector2.hpp>
 
 // TODO : Constexpr Sqrt => GetLength, SetLength, Normalize, Normalized
@@ -142,5 +138,3 @@ static_assert((ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Right && ENLIV
 static_assert((ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Right && ENLIVE_DEFAULT_FORWARD.CrossProduct(ENLIVE_DEFAULT_LEFT) == ENLIVE_DEFAULT_UP) || (ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Left && ENLIVE_DEFAULT_FORWARD.CrossProduct(ENLIVE_DEFAULT_RIGHT) == ENLIVE_DEFAULT_UP));
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

@@ -1,7 +1,5 @@
 #include <Enlivengine/Audio/Music.hpp>
 
-#ifdef ENLIVE_MODULE_AUDIO
-
 #include <Enlivengine/Audio/MusicManager.hpp>
 
 namespace en
@@ -222,5 +220,3 @@ const Music* MusicPtr::GetMusic() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_AUDIO

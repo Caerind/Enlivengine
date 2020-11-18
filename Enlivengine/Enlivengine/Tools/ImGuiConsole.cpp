@@ -1,6 +1,5 @@
 #include <Enlivengine/Tools/ImGuiConsole.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <imgui/imgui.h>
@@ -115,4 +114,3 @@ U32 ImGuiConsole::GetCurrentSize() const
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_TOOLS

@@ -1,7 +1,5 @@
 #include <Enlivengine/Utils/ParserXml.hpp>
 
-#ifdef ENLIVE_MODULE_UTILS
-
 namespace en
 {
 
@@ -247,5 +245,3 @@ const std::string& ParserXml::GetFilename() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

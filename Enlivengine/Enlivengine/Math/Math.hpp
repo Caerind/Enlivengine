@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Assert.hpp>
 
@@ -374,5 +370,3 @@ public:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

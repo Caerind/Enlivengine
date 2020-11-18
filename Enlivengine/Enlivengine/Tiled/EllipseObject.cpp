@@ -1,7 +1,5 @@
 #include <Enlivengine/Tiled/EllipseObject.hpp>
 
-#ifdef ENLIVE_MODULE_TILED
-
 #include <Enlivengine/Utils/Assert.hpp>
 
 namespace en
@@ -47,5 +45,3 @@ bool EllipseObject::Parse(ParserXml& parser)
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

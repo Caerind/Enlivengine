@@ -2,7 +2,6 @@
 
 #include <Enlivengine/Config.hpp>
 
-#ifdef ENLIVE_MODULE_META
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
@@ -397,4 +396,3 @@ private:
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_META

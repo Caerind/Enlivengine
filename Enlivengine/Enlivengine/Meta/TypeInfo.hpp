@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_META
-
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 
 #include <Enlivengine/Utils/TypeTraits.hpp>
@@ -54,5 +50,3 @@ struct TypeInfo
 		static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(templateType<T>); } \
 		static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(templateType<T>); } \
 	}; } // namespace en
-
-#endif // ENLIVE_MODULE_META

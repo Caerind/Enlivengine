@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_TILED
-
 #include <memory>
 #include <string>
 
@@ -61,5 +57,3 @@ protected:
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

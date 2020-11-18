@@ -1,7 +1,5 @@
 #include <Enlivengine/Window/Mouse.hpp>
 
-#ifdef ENLIVE_MODULE_WINDOW
-
 #include <SDL.h>
 
 #include <Enlivengine/Utils/Assert.hpp>
@@ -248,5 +246,3 @@ Mouse::Mouse()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_WINDOW

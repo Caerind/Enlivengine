@@ -1,7 +1,5 @@
 #include <Enlivengine/Animation/Animation.hpp>
 
-#ifdef ENLIVE_MODULE_ANIMATION
-
 #include <json/json.hpp>
 
 #include <fstream>
@@ -213,5 +211,3 @@ const TexturePtr& Animation::GetTexture() const
 */
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_ANIMATION

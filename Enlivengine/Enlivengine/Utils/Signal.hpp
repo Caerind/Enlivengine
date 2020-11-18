@@ -2,10 +2,6 @@
 
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <functional>
 #include <memory>
 #include <utility>
@@ -412,5 +408,3 @@ typename Signal<Args...>::ConnectionGuard& Signal<Args...>::ConnectionGuard::ope
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

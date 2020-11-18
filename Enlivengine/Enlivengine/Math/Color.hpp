@@ -1,18 +1,12 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_MATH
-
 #include <Enlivengine/Math/Math.hpp>
 
 #ifdef ENLIVE_ENABLE_IMGUI
 #include <imgui/imgui.h>
 #endif // ENLIVE_ENABLE_IMGUI
 
-#ifdef ENLIVE_MODULE_CORE
 #include <Box2D/Box2D.h>
-#endif // ENLIVE_MODULE_CORE
 
 namespace en
 {
@@ -72,7 +66,6 @@ public:
 	}
 #endif // ENLIVE_ENABLE_IMGUI
 
-#ifdef ENLIVE_MODULE_CORE
 	inline b2Color ToBox2DColor() const { const F32 factor = 1.0f / 255.0f; return b2Color(factor * r, factor * g, factor * b, factor * a); }
 	inline Color& FromBox2DColor(const b2Color& color)
 	{
@@ -83,7 +76,6 @@ public:
 		a = static_cast<U8>(factor * color.a);
 		return *this;
 	}
-#endif // ENLIVE_MODULE_CORE
 
 	constexpr bool operator==(const Color& other) const { return r == other.r && g == other.g && b == other.b && a == other.a; }
 	constexpr bool operator!=(const Color& other) const { return !operator==(other); }
@@ -165,5 +157,3 @@ namespace Colors
 } // namespace Colors
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_MATH

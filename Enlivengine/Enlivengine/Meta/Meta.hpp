@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_META
-
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Hash.hpp>
 #include <Enlivengine/Utils/TypeTraits.hpp>
@@ -426,5 +422,3 @@ constexpr U32 GetClassVersion()
 	}
 
 } // namespace en::Meta
-
-#endif // ENLIVE_MODULE_META

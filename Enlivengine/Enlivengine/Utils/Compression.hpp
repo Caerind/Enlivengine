@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <string>
 #include <vector> // Input/Output byte array
 
@@ -37,5 +33,3 @@ public: // Zlib
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

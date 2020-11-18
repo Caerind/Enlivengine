@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <type_traits>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
@@ -274,5 +270,3 @@ namespace Traits
 } // namespace Traits
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

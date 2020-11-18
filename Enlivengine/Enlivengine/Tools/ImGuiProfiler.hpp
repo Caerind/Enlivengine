@@ -2,7 +2,6 @@
 
 #include <Enlivengine/Config.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_PROFILE)
 
 #include <Enlivengine/Utils/Profiler.hpp>
@@ -44,4 +43,3 @@ private:
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI && ENLIVE_ENABLE_PROFILE
-#endif // ENLIVE_MODULE_TOOLS

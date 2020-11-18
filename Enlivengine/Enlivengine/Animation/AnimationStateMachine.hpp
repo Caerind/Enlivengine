@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_ANIMATION
-
 #include <Enlivengine/Resources/ResourceManager.hpp>
 #include <Enlivengine/Animation/Animation.hpp>
 
@@ -316,5 +312,3 @@ public:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_ANIMATION

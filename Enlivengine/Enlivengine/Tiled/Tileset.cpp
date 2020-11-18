@@ -1,7 +1,5 @@
 #include <Enlivengine/Tiled/Tileset.hpp>
 
-#ifdef ENLIVE_MODULE_TILED
-
 #include <filesystem>
 
 #include <Enlivengine/Utils/ParserXml.hpp>
@@ -168,5 +166,3 @@ Vector2f Tileset::ToPos(U32 tileId) const
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

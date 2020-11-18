@@ -1,7 +1,5 @@
 #include <Enlivengine/Core/PhysicSystem.hpp>
 
-#ifdef ENLIVE_MODULE_CORE
-
 #include <Enlivengine/Utils/Profiler.hpp>
 
 #include <Enlivengine/Core/World.hpp>
@@ -18,19 +16,19 @@ PhysicSystem::PhysicSystem(World& world)
 	, mVelocityIterations(8)
 	, mPositionIterations(3)
 	, mPlaying(true)
-#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+#if defined(ENLIVE_DEBUG)
 	, mDebugDraw()
 	, mDebugRenderFlags(static_cast<U32>(b2Draw::e_shapeBit))
 	, mDebugRender(false)
-#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
+#endif // ENLIVE_DEBUG
 {
 	mPhysicWorld = new b2World(b2Vec2(0.0f, 0.0f));
 	enAssert(mPhysicWorld != nullptr);
 
-#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+#if defined(ENLIVE_DEBUG)
 	mPhysicWorld->SetDebugDraw(static_cast<b2Draw*>(this));
 	SetFlags(mDebugRenderFlags);
-#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
+#endif // ENLIVE_DEBUG
 
 	mPhysicWorld->SetContactListener(static_cast<b2ContactListener*>(this));
 }
@@ -203,7 +201,7 @@ void PhysicSystem::EndContact(b2Contact* contact)
 	}
 }
 
-#if defined(ENLIVE_MODULE_GRAPHICS) && defined(ENLIVE_DEBUG)
+#if defined(ENLIVE_DEBUG)
 void PhysicSystem::Render()
 {
 	ENLIVE_PROFILE_FUNCTION();
@@ -325,8 +323,6 @@ b2Body* PhysicSystem::GetComponentBody(const PhysicComponent& component)
 	return const_cast<b2Body*>(component.GetBody());
 }
 
-#endif // ENLIVE_MODULE_GRAPHICS && ENLIVE_DEBUG
+#endif // ENLIVE_DEBUG
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

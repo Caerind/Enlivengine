@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_CORE
-
 #include <Box2D/Box2D.h>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
@@ -109,5 +105,3 @@ struct ComponentHasCustomInitialization<en::PhysicComponent>
 		return true;
 	}
 };
-
-#endif // ENLIVE_MODULE_CORE

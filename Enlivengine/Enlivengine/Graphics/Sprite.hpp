@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <bgfx/bgfx.h>
 
 #include <Enlivengine/Math/Rect.hpp>
@@ -66,5 +62,3 @@ public:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

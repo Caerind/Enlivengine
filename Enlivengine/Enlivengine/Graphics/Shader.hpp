@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <bgfx/bgfx.h>
 
 namespace en
@@ -35,5 +31,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

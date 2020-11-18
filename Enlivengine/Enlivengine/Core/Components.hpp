@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_CORE
-
 #include <string>
 #include <Enlivengine/Math/Transform.hpp>
 #include <Enlivengine/Graphics/Sprite.hpp>
@@ -42,5 +38,3 @@ struct SpriteComponent
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

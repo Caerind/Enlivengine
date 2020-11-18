@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <bgfx/bgfx.h>
 
 #include <Enlivengine/Math/Vector3.hpp>
@@ -67,5 +63,3 @@ public:
 using TexturePtr = ResourcePtr<Texture>;
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_GRAPHICS

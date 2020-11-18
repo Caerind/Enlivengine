@@ -1,7 +1,5 @@
 #include <Enlivengine/Tiled/PropertyHolder.hpp>
 
-#ifdef ENLIVE_MODULE_TILED
-
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Utils/Log.hpp>
 #include <Enlivengine/Utils/Assert.hpp>
@@ -176,5 +174,3 @@ const std::string& PropertyHolder::GetStringProperty(const std::string& name) co
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

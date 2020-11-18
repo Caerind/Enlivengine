@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_META
-
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Enums.hpp>
 #include <Enlivengine/Utils/String.hpp>
@@ -876,5 +872,3 @@ void DataFile::WriteCurrentType()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_META

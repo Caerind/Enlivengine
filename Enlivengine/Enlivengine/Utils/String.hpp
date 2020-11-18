@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #include <codecvt>
 #include <locale>
 #include <sstream>
@@ -174,5 +170,3 @@ struct ConstexprIntToString : priv::explode<number>{};
 
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_UTILS

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_AUDIO
-
 #include <unordered_map>
 #include <memory>
 #include <vector>
@@ -84,5 +80,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_AUDIO

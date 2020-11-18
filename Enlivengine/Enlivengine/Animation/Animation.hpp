@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_ANIMATION	
-
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Resources/ResourceManager.hpp>
 #include <Enlivengine/Math/Rect.hpp>
@@ -108,5 +104,3 @@ public:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_ANIMATION

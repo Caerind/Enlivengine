@@ -1,7 +1,5 @@
 #include <Enlivengine/Tiled/PolygonObject.hpp>
 
-#ifdef ENLIVE_MODULE_TILED
-
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Utils/String.hpp>
 
@@ -59,5 +57,3 @@ bool PolygonObject::Parse(ParserXml& parser)
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

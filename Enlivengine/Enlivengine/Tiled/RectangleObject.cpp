@@ -1,7 +1,5 @@
 #include <Enlivengine/Tiled/RectangleObject.hpp>
 
-#ifdef ENLIVE_MODULE_TILED
-
 namespace en
 {
 namespace tmx
@@ -38,5 +36,3 @@ bool RectangleObject::Parse(ParserXml& parser)
 
 } // namespace tmx
 } // namespace en
-
-#endif // ENLIVE_MODULE_TILED

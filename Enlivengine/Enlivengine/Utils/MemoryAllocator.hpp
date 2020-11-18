@@ -1,20 +1,16 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
-#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
-#include <vector> // Store MemoryBlock infos when debugging memory
-#include <filesystem>
-#endif // ENLIVE_ENABLE_DEBUG_MEMORY
-
 #include <Dyma/Dyma.hpp>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Macros.hpp>
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Utils/TypeTraits.hpp>
+
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+#include <vector> // Store MemoryBlock infos when debugging memory
+#include <filesystem>
+#endif // ENLIVE_ENABLE_DEBUG_MEMORY
 
 namespace en
 {
@@ -178,5 +174,3 @@ private:
 
 #define enNew(type, context) enNewCount(type, context, 1)
 #define enDelete(type, ptr) en::MemoryAllocator::TypedDeallocate<type>(ptr)
-
-#endif // ENLIVE_MODULE_UTILS

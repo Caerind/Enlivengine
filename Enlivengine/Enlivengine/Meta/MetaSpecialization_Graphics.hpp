@@ -1,10 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_META
-#ifdef ENLIVE_MODULE_GRAPHICS
-
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Meta/TypeInfo.hpp>
 #include <Enlivengine/Meta/Meta.hpp>
@@ -126,6 +121,3 @@ struct HasCustomEditor<en::Camera>
 	}
 };
 #endif // ENLIVE_ENABLE_IMGUI
-
-#endif // ENLIVE_MODULE_GRAPHICS
-#endif // ENLIVE_MODULE_META

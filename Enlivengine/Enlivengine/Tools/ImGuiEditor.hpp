@@ -2,8 +2,7 @@
 
 #include <Enlivengine/Config.hpp>
 
-#if defined(ENLIVE_MODULE_TOOLS) && defined(ENLIVE_MODULE_CORE)
-#ifdef ENLIVE_ENABLE_IMGUI
+#if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_TOOL)
 
 #include <bgfx/bgfx.h>
 
@@ -47,5 +46,4 @@ private:
 
 } // namespace en
 
-#endif // ENLIVE_ENABLE_IMGUI
-#endif // ENLIVE_MODULE_TOOLS && ENLIVE_MODULE_CORE
+#endif // ENLIVE_ENABLE_IMGUI && defined(ENLIVE_TOOL)

@@ -1,7 +1,5 @@
 #include <Enlivengine/Core/World.hpp>
 
-#ifdef ENLIVE_MODULE_CORE
-
 namespace en
 {
 
@@ -141,5 +139,3 @@ const std::vector<entt::entity>& World::GetSelectedEntities() const
 #endif // ENLIVE_DEBUG
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

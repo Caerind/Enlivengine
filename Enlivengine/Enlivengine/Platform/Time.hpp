@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_PLATFORM
-
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 
 namespace en
@@ -307,5 +303,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_PLATFORM

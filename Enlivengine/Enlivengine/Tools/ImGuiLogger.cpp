@@ -1,6 +1,5 @@
 #include <Enlivengine/Tools/ImGuiLogger.hpp>
 
-#ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_LOG)
 
 #include <imgui/imgui.h>
@@ -102,4 +101,3 @@ U32 ImGuiLogger::GetCurrentSize() const
 } // namespace en
 
 #endif // ENLIVE_ENABLE_IMGUI && ENLIVE_ENABLE_LOG
-#endif // ENLIVE_MODULE_TOOLS

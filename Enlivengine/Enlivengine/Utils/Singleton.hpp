@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_UTILS
-
 #define ENLIVE_SINGLETON(className) \
 	private: \
 		className(); \
@@ -16,5 +12,3 @@
 			static className instance; \
 			return instance; \
 		}
-
-#endif // ENLIVE_MODULE_UTILS

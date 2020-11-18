@@ -1,7 +1,5 @@
 #include <Enlivengine/Audio/AudioManager.hpp>
 
-#ifdef ENLIVE_MODULE_AUDIO
-
 #include <Enlivengine/Audio/MusicManager.hpp>
 #include <Enlivengine/Audio/SoundManager.hpp>
 
@@ -252,5 +250,3 @@ void AudioManager::ReleaseSounds()
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_AUDIO

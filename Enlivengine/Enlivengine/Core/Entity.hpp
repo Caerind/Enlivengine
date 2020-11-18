@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_CORE
-
 #include <entt/entt.hpp>
 
 #include <Enlivengine/Utils/Assert.hpp>
@@ -159,5 +155,3 @@ const T& Entity::Get() const
 }
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_CORE

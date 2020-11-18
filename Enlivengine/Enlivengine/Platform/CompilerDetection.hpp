@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_PLATFORM
-
 #include <Enlivengine/Platform/Preprocessor.hpp>
 
 #if defined(__cplusplus)
@@ -122,5 +118,3 @@
 	#error Unknown compiler
 
 #endif
-
-#endif // ENLIVE_MODULE_PLATFORM

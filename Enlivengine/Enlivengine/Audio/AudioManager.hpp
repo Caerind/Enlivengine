@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Config.hpp>
-
-#ifdef ENLIVE_MODULE_AUDIO
-
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Singleton.hpp>
 #include <Enlivengine/Audio/AudioStatus.hpp>
@@ -75,5 +71,3 @@ private:
 };
 
 } // namespace en
-
-#endif // ENLIVE_MODULE_AUDIO
