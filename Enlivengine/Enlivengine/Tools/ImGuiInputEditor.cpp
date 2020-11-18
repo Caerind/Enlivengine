@@ -25,6 +25,11 @@ const char* ImGuiInputEditor::GetName() const
 	return /*ICON_FA_GAMEPAD*/ " InputEditor"; // TODO : Restore FontAwesome
 }
 
+const char* ImGuiInputEditor::GetSaveName() const
+{
+	return "InputEditor";
+}
+
 void ImGuiInputEditor::Display()
 {
 	/*

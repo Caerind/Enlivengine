@@ -6,7 +6,7 @@
 #ifdef ENLIVE_MODULE_ANIMATION
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiTool.hpp>
 
 #include <Enlivengine/Animation/Animation.hpp>
 #include <Enlivengine/Animation/AnimationController.hpp>
@@ -22,13 +22,16 @@ namespace en
 class ImGuiAnimationEditor : public ImGuiTool
 {
 	ENLIVE_SINGLETON(ImGuiAnimationEditor);
-	~ImGuiAnimationEditor();
 
 public:
-	virtual ImGuiToolTab GetTab() const;
-	virtual const char* GetName() const;
+	ImGuiToolTab GetTab() const override;
+	const char* GetName() const override;
+	const char* GetSaveName() const override;
 
-    virtual void Display();
+	void Initialize() override;
+	void Release() override;
+
+    void Display() override;
 
 	bool Initialize(AnimationStateMachinePtr stateMachinePtr);
 	void Uninitialize();

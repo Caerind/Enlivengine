@@ -5,25 +5,23 @@
 #ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiTool.hpp>
 
 namespace en
 {
 
 class ImGuiDemoWindow : public ImGuiTool
 {
+	ENLIVE_SINGLETON(ImGuiDemoWindow);
+
 public:
-	static ImGuiDemoWindow& GetInstance();
+	ImGuiToolTab GetTab() const override;
+	const char* GetName() const override;
+	const char* GetSaveName() const override;
 
-	virtual ImGuiToolTab GetTab() const;
-	virtual const char* GetName() const;
+	void Display() override;
 
-	virtual void Display();
-
-	virtual bool IsImGuiDemoTool() const;
-
-private:
-	ImGuiDemoWindow();
+	bool IsImGuiDemoTool() const override;
 };
 
 } // namespace en

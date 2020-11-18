@@ -7,51 +7,12 @@
 
 #include <vector>
 
-#include <Enlivengine/Platform/PrimitiveTypes.hpp>
-#include <Enlivengine/Platform/Time.hpp>
-#include <Enlivengine/Utils/Singleton.hpp>
 #include <Enlivengine/Utils/Enums.hpp>
-#include <Enlivengine/Window/Window.hpp>
-#include <Enlivengine/Tools/ImGuiHelper.hpp>
+#include <Enlivengine/Utils/Singleton.hpp>
+#include <Enlivengine/Tools/ImGuiTool.hpp>
 
 namespace en
 {
-
-class ImGuiToolManager;
-
-enum class ImGuiToolTab : U32
-{
-	Main = 0,
-	Engine,
-	Game
-};
-
-class ImGuiTool
-{
-	public:
-		ImGuiTool();
-
-		virtual ImGuiToolTab GetTab() const = 0;
-		virtual const char* GetName() const = 0;
-
-		virtual void Display();
-
-		void Register();
-		void Unregister();
-		bool IsRegistered() const;
-
-		virtual int GetWindowFlags() const;
-		virtual bool IsImGuiDemoTool() const;
-
-		bool IsVisible() const;
-
-	private:
-		bool mRegistered;
-
-	protected:
-		friend class ImGuiToolManager;
-		bool mVisible;
-};
 
 class ImGuiToolManager
 {
@@ -59,16 +20,16 @@ class ImGuiToolManager
 
 public:
 	void Initialize();
-	void Shutdown();
+	void Release();
+
 	void Update();
 
 private:
+	void RegisterTools();
+	void RegisterTool(ImGuiTool& tool);
+
 	void ImGuiMain();
 	void ImGuiTools();
-
-	friend class ImGuiTool;
-	void RegisterTool(ImGuiTool* tool);
-	void UnregisterTool(ImGuiTool* tool);
 
 private:
 	std::vector<ImGuiTool*> mTools[Enum::GetCount<ImGuiToolTab>()];

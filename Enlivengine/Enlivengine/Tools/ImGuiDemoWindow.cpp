@@ -8,10 +8,9 @@
 namespace en
 {
 
-ImGuiDemoWindow& ImGuiDemoWindow::GetInstance()
+ImGuiDemoWindow::ImGuiDemoWindow()
+	: ImGuiTool()
 {
-	static ImGuiDemoWindow instance;
-	return instance;
 }
 
 ImGuiToolTab ImGuiDemoWindow::GetTab() const
@@ -24,6 +23,11 @@ const char* ImGuiDemoWindow::GetName() const
 	return /*ICON_FA_INFO_CIRCLE*/ " ImGui Demo"; // TODO : Restore FontAwesome
 }
 
+const char* ImGuiDemoWindow::GetSaveName() const
+{
+	return "ImGuiDemo";
+}
+
 void ImGuiDemoWindow::Display()
 {
 	ImGui::ShowDemoWindow(&mVisible);
@@ -32,11 +36,6 @@ void ImGuiDemoWindow::Display()
 bool ImGuiDemoWindow::IsImGuiDemoTool() const
 {
 	return true;
-}
-
-ImGuiDemoWindow::ImGuiDemoWindow()
-	: ImGuiTool()
-{
 }
 
 } // namespace en

@@ -69,6 +69,11 @@ const char* ImGuiResourceBrowser::GetName() const
 	return /*ICON_FA_COMPASS*/ " ResourceBrowser"; // TODO : Restore FontAwesome
 }
 
+const char* ImGuiResourceBrowser::GetSaveName() const
+{
+	return "ResourceBrowser";
+}
+
 void ImGuiResourceBrowser::Display()
 {
 	/*

@@ -6,7 +6,7 @@
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_PROFILE)
 
 #include <Enlivengine/Utils/Profiler.hpp>
-#include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiTool.hpp>
 
 namespace en
 {
@@ -16,10 +16,11 @@ class ImGuiProfiler : public ImGuiTool
 	ENLIVE_SINGLETON(ImGuiProfiler);
 
 public:
-	virtual ImGuiToolTab GetTab() const;
-	virtual const char* GetName() const;
+	ImGuiToolTab GetTab() const override;
+	const char* GetName() const override;
+	const char* GetSaveName() const override;
 
-	virtual void Display();
+	void Display() override;
 
 	// Shortcuts for Profiler
 	void SetEnabled(bool enabled);

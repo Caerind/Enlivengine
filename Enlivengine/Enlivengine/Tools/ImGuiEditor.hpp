@@ -9,7 +9,7 @@
 
 #include <Enlivengine/Graphics/Camera.hpp>
 
-#include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiTool.hpp>
 
 namespace en
 {
@@ -17,14 +17,14 @@ namespace en
 class ImGuiEditor : public ImGuiTool
 {
 	ENLIVE_SINGLETON(ImGuiEditor);
-	~ImGuiEditor();
 
 public:
-	virtual ImGuiToolTab GetTab() const;
-	virtual const char* GetName() const;
-	virtual int GetWindowFlags() const;
+	ImGuiToolTab GetTab() const override;
+	const char* GetName() const override;
+	const char* GetSaveName() const override;
+	int GetWindowFlags() const override; 
 
-	virtual void Display();
+	void Display() override;
 
 	static void SetFramebuffer(bgfx::FrameBufferHandle framebuffer);
 	static bgfx::FrameBufferHandle GetFramebuffer();

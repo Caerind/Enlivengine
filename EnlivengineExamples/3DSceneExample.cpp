@@ -11,19 +11,6 @@
 #include <Enlivengine/Graphics/Sprite.hpp>
 #include <Enlivengine/Graphics/Tilemap.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
-#include <Enlivengine/Tools/ImGuiToolManager.hpp>
-#include <Enlivengine/Tools/ImGuiDemoWindow.hpp>
-#include <Enlivengine/Tools/ImGuiEntityBrowser.hpp>
-#include <Enlivengine/Tools/ImGuiInputEditor.hpp>
-#include <Enlivengine/Tools/ImGuiConsole.hpp>
-#include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
-#include <Enlivengine/Tools/ImGuiLogger.hpp>
-#include <Enlivengine/Tools/ImGuiPhysic.hpp>
-#include <Enlivengine/Tools/ImGuiMemoryDebugger.hpp>
-#include <Enlivengine/Tools/ImGuiProfiler.hpp>
-#include <Enlivengine/Tools/ImGuiResourceBrowser.hpp>
-#include <Enlivengine/Tools/ImGuiEditor.hpp>
-#include <Enlivengine/Tools/ImGuiGame.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Core/Entity.hpp>
@@ -32,6 +19,9 @@
 #include <Enlivengine/Core/TraceryGenerator.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
 #include <Enlivengine/Meta/MetaSpecialization.hpp>
+#include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiEditor.hpp>
+#include <Enlivengine/Tools/ImGuiGame.hpp>
 
 using namespace en;
 
@@ -95,18 +85,6 @@ int main(int argc, char** argv)
 		DebugDraw::InitializeDebugDraws();
 
 		ImGuiToolManager::GetInstance().Initialize();
-		ImGuiDemoWindow::GetInstance().Register();
-		ImGuiEntityBrowser::GetInstance().Register();
-		ImGuiAnimationEditor::GetInstance().Register();
-		ImGuiConsole::GetInstance().Register();
-		ImGuiInputEditor::GetInstance().Register();
-		ImGuiLogger::GetInstance().Register();
-		ImGuiMemoryDebugger::GetInstance().Register();
-		ImGuiPhysic::GetInstance().Register();
-		ImGuiProfiler::GetInstance().Register();
-		ImGuiResourceBrowser::GetInstance().Register();
-		ImGuiEditor::GetInstance().Register();
-		ImGuiGame::GetInstance().Register();
 		{
 			ComponentManager::Register<NameComponent>();
 			ComponentManager::Register<TransformComponent>();
@@ -387,19 +365,7 @@ int main(int argc, char** argv)
 			textureA.ReleaseFromManager();
 			textureB.ReleaseFromManager();
 		}
-		ImGuiGame::GetInstance().Unregister();
-		ImGuiEditor::GetInstance().Unregister();
-		ImGuiResourceBrowser::GetInstance().Unregister();
-		ImGuiProfiler::GetInstance().Unregister();
-		ImGuiPhysic::GetInstance().Unregister();
-		ImGuiMemoryDebugger::GetInstance().Unregister();
-		ImGuiLogger::GetInstance().Unregister();
-		ImGuiInputEditor::GetInstance().Unregister();
-		ImGuiConsole::GetInstance().Unregister();
-		ImGuiAnimationEditor::GetInstance().Unregister();
-		ImGuiEntityBrowser::GetInstance().Unregister();
-		ImGuiDemoWindow::GetInstance().Unregister();
-		ImGuiToolManager::GetInstance().Shutdown();
+		ImGuiToolManager::GetInstance().Release();
 
 		DebugDraw::ReleaseDebugDraws();
 		Tilemap::ReleaseTilemaps();

@@ -26,10 +26,6 @@ ImGuiPhysic::ImGuiPhysic()
 {
 }
 
-ImGuiPhysic::~ImGuiPhysic()
-{
-}
-
 ImGuiToolTab ImGuiPhysic::GetTab() const
 {
 	return ImGuiToolTab::Engine;
@@ -38,6 +34,11 @@ ImGuiToolTab ImGuiPhysic::GetTab() const
 const char* ImGuiPhysic::GetName() const
 {
 	return /*ICON_FA_METEOR*/ " Physic"; // TODO : Restore FontAwesome
+}
+
+const char* ImGuiPhysic::GetSaveName() const
+{
+	return "Physic";
 }
 
 void ImGuiPhysic::Display()

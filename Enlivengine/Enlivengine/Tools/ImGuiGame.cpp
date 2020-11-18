@@ -15,10 +15,6 @@ ImGuiGame::ImGuiGame()
 {
 }
 
-ImGuiGame::~ImGuiGame()
-{
-}
-
 ImGuiToolTab ImGuiGame::GetTab() const
 {
 	return ImGuiToolTab::Game;
@@ -29,9 +25,22 @@ const char* ImGuiGame::GetName() const
 	return "Game";
 }
 
+const char* ImGuiGame::GetSaveName() const
+{
+	return "Game";
+}
+
 int ImGuiGame::GetWindowFlags() const
 {
 	return ImGuiWindowFlags_MenuBar;
+}
+
+void ImGuiGame::Initialize()
+{
+}
+
+void ImGuiGame::Release()
+{
 }
 
 void ImGuiGame::Display()

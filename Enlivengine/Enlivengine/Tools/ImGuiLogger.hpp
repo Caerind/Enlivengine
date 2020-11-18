@@ -5,7 +5,7 @@
 #ifdef ENLIVE_MODULE_TOOLS
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_ENABLE_LOG)
 
-#include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiTool.hpp>
 #include <Enlivengine/Utils/Log.hpp>
 
 namespace en
@@ -14,15 +14,18 @@ namespace en
 class ImGuiLogger : public ImGuiTool, public Logger
 {
 	ENLIVE_SINGLETON(ImGuiLogger);
-	~ImGuiLogger();
 
 public:
-	virtual ImGuiToolTab GetTab() const;
-	virtual const char* GetName() const;
+	ImGuiToolTab GetTab() const override;
+	const char* GetName() const override;
+	const char* GetSaveName() const override;
 
-	virtual void Display();
+	void Initialize() override;
+	void Release() override;
 
-	virtual void Write(const LogMessage& message);
+	void Display() override;
+
+	void Write(const LogMessage& message) override;
 
 	static constexpr U32 kDefaultMaxSize{ 128 };
 	void SetMaxSize(U32 size);

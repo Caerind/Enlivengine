@@ -25,6 +25,11 @@ const char* ImGuiMemoryDebugger::GetName() const
 	return /*ICON_FA_MEMORY*/ " MemoryDebugger"; // TODO : Restore FontAwesome
 }
 
+const char* ImGuiMemoryDebugger::GetSaveName() const
+{
+	return "MemoryDebugger";
+}
+
 void ImGuiMemoryDebugger::Display()
 {
 	const MemoryAllocator::DebugAllocator& debugAllocator = MemoryAllocator::GetDebugAllocator();

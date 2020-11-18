@@ -29,6 +29,11 @@ const char* ImGuiProfiler::GetName() const
 	return /*ICON_FA_CLOCK*/ " Profiler"; // TODO : Restore FontAwesome
 }
 
+const char* ImGuiProfiler::GetSaveName() const
+{
+	return "Profiler";
+}
+
 void ImGuiProfiler::Display()
 {
 	if (ImGui::Button(IsEnabled() ? "Disable Profiler" : "Enable Profiler"))

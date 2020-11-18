@@ -20,10 +20,6 @@ ImGuiEntityBrowser::ImGuiEntityBrowser()
 {
 }
 
-ImGuiEntityBrowser::~ImGuiEntityBrowser()
-{
-}
-
 ImGuiToolTab ImGuiEntityBrowser::GetTab() const
 {
 	return ImGuiToolTab::Engine;
@@ -32,6 +28,11 @@ ImGuiToolTab ImGuiEntityBrowser::GetTab() const
 const char* ImGuiEntityBrowser::GetName() const
 {
 	return /*ICON_FA_USER_COG*/ " EntityBrowser"; // TODO : FONT AWESOME
+}
+
+const char* ImGuiEntityBrowser::GetSaveName() const
+{
+	return "EntityBrowser";
 }
 
 void ImGuiEntityBrowser::Display()

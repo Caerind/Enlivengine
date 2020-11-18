@@ -24,16 +24,17 @@ ImGuiEditor::ImGuiEditor()
 {
 }
 
-ImGuiEditor::~ImGuiEditor()
-{
-}
-
 ImGuiToolTab ImGuiEditor::GetTab() const
 {
 	return ImGuiToolTab::Engine;
 }
 
 const char* ImGuiEditor::GetName() const
+{
+	return "Editor";
+}
+
+const char* ImGuiEditor::GetSaveName() const
 {
 	return "Editor";
 }

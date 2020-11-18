@@ -5,7 +5,7 @@
 #ifdef ENLIVE_MODULE_TOOLS
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiTool.hpp>
 
 namespace en
 {
@@ -15,13 +15,13 @@ namespace en
 class ImGuiConsole : public ImGuiTool
 {
 	ENLIVE_SINGLETON(ImGuiConsole);
-	~ImGuiConsole();
 
 public:
-	virtual ImGuiToolTab GetTab() const;
-	virtual const char* GetName() const;
+	ImGuiToolTab GetTab() const override;
+	const char* GetName() const override;
+	const char* GetSaveName() const override;
 
-	virtual void Display();
+	void Display() override;
 
 	// Only display
 	void AddLine(const std::string& line);

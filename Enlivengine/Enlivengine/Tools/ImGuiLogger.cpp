@@ -18,11 +18,6 @@ ImGuiLogger::ImGuiLogger()
 {
 }
 
-ImGuiLogger::~ImGuiLogger()
-{
-	UnregisterLogger();
-}
-
 ImGuiToolTab ImGuiLogger::GetTab() const
 {
 	return ImGuiToolTab::Main;
@@ -30,7 +25,21 @@ ImGuiToolTab ImGuiLogger::GetTab() const
 
 const char* ImGuiLogger::GetName() const
 {
-	return /*ICON_FA_LIST_UL*/ " Logger"; // TODO : Restore FontAwesome
+	return /*ICON_FA_LIST_UL*/ " Logs"; // TODO : Restore FontAwesome
+}
+
+const char* ImGuiLogger::GetSaveName() const
+{
+	return "Logs";
+}
+
+void ImGuiLogger::Initialize()
+{
+}
+
+void ImGuiLogger::Release()
+{
+	UnregisterLogger();
 }
 
 void ImGuiLogger::Display()

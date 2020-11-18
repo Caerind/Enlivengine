@@ -23,23 +23,6 @@ ImGuiAnimationEditor::ImGuiAnimationEditor()
 {
 }
 
-ImGuiAnimationEditor::~ImGuiAnimationEditor()
-{
-	// We won't be able to save here as the resource might have 
-	// been freed before by the ResourceManager.
-	// We can't neither test the IsInitialized as it requires the 
-	// ResourceManager to be valid and we can't be sure about it.
-
-	mStateMachine = AnimationStateMachinePtr();
-	/*
-	// TODO : TOOLS UPDATE
-	if (mEditorContext != nullptr)
-	{
-		ax::NodeEditor::DestroyEditor(mEditorContext);
-	}
-	*/
-}
-
 ImGuiToolTab ImGuiAnimationEditor::GetTab() const
 {
 	return ImGuiToolTab::Main;
@@ -48,6 +31,33 @@ ImGuiToolTab ImGuiAnimationEditor::GetTab() const
 const char* ImGuiAnimationEditor::GetName() const
 {
 	return /*ICON_FA_RUNNING*/ " AnimationEditor"; // TODO : Restore FontAwesome
+}
+
+const char* ImGuiAnimationEditor::GetSaveName() const
+{
+	return "AnimationEditor";
+}
+
+void ImGuiAnimationEditor::Initialize()
+{
+}
+
+void ImGuiAnimationEditor::Release()
+{
+	// We won't be able to save here as the resource might have 
+	// been freed before by the ResourceManager.
+	// We can't neither test the IsInitialized as it requires the 
+	// ResourceManager to be valid and we can't be sure about it.
+	// TODO : THIS HAS BEEN CHANGED NOW WITH THE Release function
+	
+	mStateMachine = AnimationStateMachinePtr();
+	/*
+	// TODO : TOOLS UPDATE
+	if (mEditorContext != nullptr)
+	{
+		ax::NodeEditor::DestroyEditor(mEditorContext);
+	}
+	*/
 }
 
 void ImGuiAnimationEditor::Display()

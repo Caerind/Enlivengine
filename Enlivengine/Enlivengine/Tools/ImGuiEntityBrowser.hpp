@@ -7,7 +7,7 @@
 #ifdef ENLIVE_MODULE_META
 #ifdef ENLIVE_MODULE_CORE
 
-#include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiTool.hpp>
 
 namespace en
 {
@@ -15,13 +15,13 @@ namespace en
 class ImGuiEntityBrowser : public ImGuiTool
 {
 	ENLIVE_SINGLETON(ImGuiEntityBrowser);
-	~ImGuiEntityBrowser();
 
 public:
-	virtual ImGuiToolTab GetTab() const;
-	virtual const char* GetName() const;
+	ImGuiToolTab GetTab() const override;
+	const char* GetName() const override;
+	const char* GetSaveName() const override;
 
-	virtual void Display();
+	void Display() override;
 };
 
 } // namespace en

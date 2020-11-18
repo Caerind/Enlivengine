@@ -17,10 +17,6 @@ ImGuiConsole::ImGuiConsole()
 {
 }
 
-ImGuiConsole::~ImGuiConsole()
-{
-}
-
 ImGuiToolTab ImGuiConsole::GetTab() const
 {
 	return ImGuiToolTab::Main;
@@ -29,6 +25,11 @@ ImGuiToolTab ImGuiConsole::GetTab() const
 const char* ImGuiConsole::GetName() const
 {
 	return /*ICON_FA_TERMINAL*/ " Console"; // TODO : Restore FontAwesome
+}
+
+const char* ImGuiConsole::GetSaveName() const
+{
+	return "Console";
 }
 
 void ImGuiConsole::Display()
