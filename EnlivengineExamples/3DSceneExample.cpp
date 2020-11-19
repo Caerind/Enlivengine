@@ -164,7 +164,11 @@ int main(int argc, char** argv)
 				playerCamTransform.AttachToParent(playerEntity); // Attach this entity to player entity
 				CameraComponent& playerCam = playerCamEntity.Add<CameraComponent>();
 				playerCam.InitializePerspective(80.0f, F32(window.GetWidth()) / F32(window.GetHeight()), 0.1f, 100.0f);
+#if defined(ENLIVE_TOOL)
 				playerCam.SetFramebuffer(ImGuiGame::GetFramebuffer());
+#elif defined(ENLIVE_RELEASE)
+				playerCam.SetFramebuffer(BGFX_INVALID_HANDLE);
+#endif // ENLIVE_TOOL
 				playerCam.SetClearColor(Colors::LightBlue);
 			}
 
@@ -310,7 +314,7 @@ int main(int argc, char** argv)
 					}
 				}
 
-
+#ifdef ENLIVE_DEBUG
 				world.GetDebugDraw().DrawCross(Vector3f(-1.0f));
 				world.GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
 				world.GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
@@ -324,6 +328,7 @@ int main(int argc, char** argv)
 				{
 					world.GetDebugDraw().DrawSphere(r.GetPoint(t), 0.1f);
 				}
+#endif // ENLIVE_DEBUG
 
 				// Render
 				{
@@ -371,6 +376,10 @@ int main(int argc, char** argv)
 					playerCamEntity.Get<CameraComponent>().Apply();
 					bgfx::setTransform(tilemapTransform.GetData());
 					tilemap.Render(playerCamEntity.Get<CameraComponent>().GetViewID());
+#ifdef ENLIVE_DEBUG
+					world.GetDebugDraw().Render();
+					world.GetDebugDraw().Clear();
+#endif // ENLIVE_DEBUG
 					world.Render();
 #endif // ENLIVE_RELEASE
 

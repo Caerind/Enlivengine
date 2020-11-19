@@ -612,6 +612,7 @@ bool AnimationStateMachine::LoadFromFile(const std::string& filename)
     return true;
 }
 
+#ifdef ENLIVE_DEBUG
 bool AnimationStateMachine::SaveToFile(const std::string& filename)
 {
 	Precompute();
@@ -811,6 +812,7 @@ bool AnimationStateMachine::SaveToFile(const std::string& filename)
 
     return true;
 }
+#endif // ENLIVE_DEBUG
 
 void AnimationStateMachine::Precompute()
 {

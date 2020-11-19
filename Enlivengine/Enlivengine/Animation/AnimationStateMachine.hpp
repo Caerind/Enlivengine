@@ -206,7 +206,9 @@ public:
 
 	// IO
 	bool LoadFromFile(const std::string& filename);
+#ifdef ENLIVE_DEBUG
 	bool SaveToFile(const std::string& filename);
+#endif // ENLIVE_DEBUG
     void Precompute();
 	void Clear();
 

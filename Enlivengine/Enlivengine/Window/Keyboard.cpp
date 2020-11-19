@@ -1,5 +1,7 @@
 #include <Enlivengine/Window/Keyboard.hpp>
 
+#include <cstring>
+
 #include <Enlivengine/Utils/Assert.hpp>
 
 namespace en

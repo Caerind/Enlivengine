@@ -192,6 +192,7 @@ bool BgfxWrapper::IsDisplayingStats()
 {
     return GetInstance().mDisplayStats;
 }
+#endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
 
 void BgfxWrapper::SetCurrentView(bgfx::ViewId view)
 {
@@ -210,8 +211,6 @@ Vector2u BgfxWrapper::GetFramebufferSize(bgfx::FrameBufferHandle framebuffer)
     return GetInstance().mBackBufferSize;
 }
 
-#endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
-
 BgfxWrapper& BgfxWrapper::GetInstance()
 {
     static BgfxWrapper instance;
@@ -220,8 +219,10 @@ BgfxWrapper& BgfxWrapper::GetInstance()
 
 BgfxWrapper::BgfxWrapper()
     : mResizeRenderer()
-    , mInitialized(false)
+	, mInitialized(false)
+#ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
     , mDisplayStats(false)
+#endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
 {
 }
 

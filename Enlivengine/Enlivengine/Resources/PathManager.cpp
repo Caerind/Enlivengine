@@ -30,7 +30,7 @@ const std::string& PathManager::GetExecutablePath()
 bool PathManager::AutoDetectAssetsPath()
 {
 	PathManager& instance = GetInstance();
-#ifdef ENLIVE_TOOL
+
 	for (U32 i = 0; i < 5; ++i)
 	{
 		std::string backfolder = "";
@@ -52,14 +52,16 @@ bool PathManager::AutoDetectAssetsPath()
 			return true;
 		}
 	}
-#else
+
+#if defined(ENLIVE_RELEASE)
 	std::filesystem::path tempAssetsPath = std::filesystem::path(instance.mExecutablePath + "/Assets");
 	if (std::filesystem::exists(tempAssetsPath))
 	{
 		SetAssetsPath("Assets/");
 		return true;
 	}
-#endif // ENLIVE_TOOL
+#endif // ENLIVE_RELEASE 
+
 	return false;
 }
 
@@ -76,7 +78,7 @@ const std::string& PathManager::GetAssetsPath()
 bool PathManager::AutoDetectShadersPath()
 {
 	PathManager& instance = GetInstance();
-#ifdef ENLIVE_TOOL
+
 	for (U32 i = 0; i < 5; ++i)
 	{
 		std::string backfolder = "";
@@ -99,14 +101,16 @@ bool PathManager::AutoDetectShadersPath()
 			return true;
 		}
 	}
-#else
+
+#if defined(ENLIVE_RELEASE)
 	std::filesystem::path tempAssetsPath = std::filesystem::path(instance.mExecutablePath + "/Assets/Shaders");
 	if (std::filesystem::exists(tempAssetsPath))
 	{
 		SetShadersPath("Assets/Shaders/");
 		return true;
 	}
-#endif // ENLIVE_TOOL
+#endif // ENLIVE_RELEASE
+
 	return false;
 }
 

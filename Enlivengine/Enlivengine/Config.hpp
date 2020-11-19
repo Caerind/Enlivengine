@@ -4,21 +4,34 @@
 #define ENLIVE_VERSION_MAJOR 0
 #define ENLIVE_VERSION_MINOR 3
 
-// Configuration
+//////////////////////////////////////////////////////////////////////////////////
+
+// You must define ENLIVE_TOOL or ENLIVE_RELEASE
+// ENLIVE_TOOL is the Editor with docked tools
+// ENLIVE_RELEASE is the MainGame
 #define ENLIVE_TOOL
 
-// Configuration checks
-#if !defined(ENLIVE_DEBUG) && !defined(ENLIVE_TOOL) && !defined(ENLIVE_RELEASE)
+#if !defined(ENLIVE_TOOL) && !defined(ENLIVE_RELEASE)
 #define ENLIVE_RELEASE
 #endif
-#if !defined(ENLIVE_DEBUG) && defined(ENLIVE_TOOL)
-#define ENLIVE_DEBUG
-#endif
-#if defined(ENLIVE_RELEASE) && defined(ENLIVE_TOOL)
+#if defined(ENLIVE_TOOL) && defined(ENLIVE_RELEASE)
 #undef ENLIVE_RELEASE
 #endif
 
+//////////////////////////////////////////////////////////////////////////////////
+
+// You can also define ENLIVE_DEBUG if you want for ENLIVE_RELEASE
+// If you are in ENLIVE_TOOL it is automatic
+//#define ENLIVE_DEBUG
+
+#if defined(ENLIVE_TOOL) && !defined(ENLIVE_DEBUG)
+#define ENLIVE_DEBUG
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////
+
 // Debug auto enable some defines
+// You can still define them individually
 #ifdef ENLIVE_DEBUG
 
 #define ENLIVE_ENABLE_ASSERT
@@ -30,11 +43,15 @@
 
 #endif // ENLIVE_DEBUG
 
+//////////////////////////////////////////////////////////////////////////////////
+
 // Some more specific choices
 #define ENLIVE_ENABLE_DEFAULT_LOGGER
 #define ENLIVE_ENABLE_DEFAULT_MALLOCATOR // Define a default Mallocator
 //#define ENLIVE_NO_RENDER // No render
 //#define ENLIVE_ENABLE_DOUBLE_PRECISION // Real = float or double
+
+//////////////////////////////////////////////////////////////////////////////////
 
 // Engine default axes
 #define ENLIVE_DEFAULT_HANDEDNESS en::Math::Handedness::Right
