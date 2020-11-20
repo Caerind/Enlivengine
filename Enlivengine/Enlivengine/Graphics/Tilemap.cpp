@@ -2,6 +2,8 @@
 
 #include <Enlivengine/Utils/Assert.hpp>
 
+#include <Enlivengine/Graphics/BgfxWrapper.hpp>
+
 namespace en
 {
 	
@@ -15,9 +17,32 @@ Tilemap::Tilemap()
 	, mTiles()
 	, mVertices()
 	, mVertexBuffer(BGFX_INVALID_HANDLE)
+	, mIndices()
 	, mIndexBuffer(BGFX_INVALID_HANDLE)
 	, mTileset(nullptr)
 {
+}
+
+Tilemap::Tilemap(Tilemap&& other)
+	: mSize(other.mSize)
+	, mTiles(std::move(other.mTiles))
+	, mVertices(std::move(other.mVertices))
+	, mVertexBuffer(other.mVertexBuffer)
+	, mIndices(std::move(other.mIndices))
+	, mIndexBuffer(other.mIndexBuffer)
+	, mTileset(other.mTileset)
+{
+	other.mSize = Vector2u(0, 0);
+	other.mTiles.clear();
+	other.mVertices.clear();
+	other.mVertexBuffer = BGFX_INVALID_HANDLE;
+	other.mIndices.clear();
+	other.mIndexBuffer = BGFX_INVALID_HANDLE;
+	other.mTileset = nullptr; 
+
+	UpdateTexCoords();
+	UpdateVertexBuffer();
+	UpdateIndexBuffer();
 }
 
 Tilemap::~Tilemap()
@@ -30,6 +55,33 @@ Tilemap::~Tilemap()
 	{
 		bgfx::destroy(mIndexBuffer);
 	}
+}
+
+Tilemap& Tilemap::operator=(Tilemap&& other)
+{
+	if (&other != this)
+	{
+		mSize = other.mSize;
+		mTiles = std::move(other.mTiles);
+		mVertices = std::move(other.mVertices);
+		mVertexBuffer = other.mVertexBuffer;
+		mIndices = std::move(other.mIndices);
+		mIndexBuffer = other.mIndexBuffer;
+		mTileset = other.mTileset;
+			
+		other.mSize = Vector2u(0, 0);
+		other.mTiles.clear();
+		other.mVertices.clear();
+		other.mVertexBuffer = BGFX_INVALID_HANDLE;
+		other.mIndices.clear();
+		other.mIndexBuffer = BGFX_INVALID_HANDLE;
+		other.mTileset = nullptr;
+
+		UpdateTexCoords();
+		UpdateVertexBuffer();
+		UpdateIndexBuffer();
+	}
+	return *this;
 }
 
 void Tilemap::SetTileset(const Tileset& tileset)
@@ -109,7 +161,7 @@ Rectf Tilemap::GetGlobalBounds() const
 	return GetLocalBounds();
 }
 
-void Tilemap::Render(const bgfx::ViewId& viewId) const
+void Tilemap::Render() const
 {
 	if (bgfx::isValid(mVertexBuffer) && bgfx::isValid(mIndexBuffer) && mTileset != nullptr && mTileset->GetTexture().IsValid())
 	{
@@ -120,7 +172,7 @@ void Tilemap::Render(const bgfx::ViewId& viewId) const
 			bgfx::setIndexBuffer(mIndexBuffer);
 			bgfx::setVertexBuffer(0, mVertexBuffer);
 			bgfx::setTexture(0, kUniformTexture, texture.GetHandle());
-			kShader.Submit(viewId);
+			kShader.Submit(BgfxWrapper::GetCurrentView());
 		}
 	}
 }

@@ -51,6 +51,11 @@ public:
 					entity.Get<SpriteComponent>().sprite.Render();
 					render = true;
 				}
+				if (entity.Has<TilemapComponent>())
+				{
+					entity.Get<TilemapComponent>().tilemap.Render();
+					render = true;
+				}
 				if (!render)
 				{
 					bgfx::setTransform(Matrix4f::Identity().GetData());
@@ -94,6 +99,7 @@ int main(int argc, char** argv)
 			ComponentManager::Register<RenderableComponent>();
 			ComponentManager::Register<SpriteComponent>();
 			ComponentManager::Register<CameraComponent>();
+			ComponentManager::Register<TilemapComponent>();
 
 			printf("%d joysticks, %d haptics\n", Controller::GetJoystickCount(), Controller::GetHapticCount());
 			for (U32 i = 0; i < Controller::GetJoystickCount(); ++i)
@@ -117,6 +123,11 @@ int main(int argc, char** argv)
 			{
 				enAssert(false);
 			}
+
+			Tileset tileset;
+			tileset.SetGridSize({ 2,2 });
+			tileset.SetTileSize({ 256, 256 });
+			tileset.SetTexture(textureA);
 
 #ifdef ENLIVE_TOOL
 			// Editor window
@@ -179,19 +190,19 @@ int main(int argc, char** argv)
 				b1.Add<RenderableComponent>();
 				b1.Add<SpriteComponent>().sprite.SetTexture(textureB);
 			}
-
-			Tileset tileset;
-			tileset.SetGridSize({ 2,2 });
-			tileset.SetTileSize({ 256, 256 });
-			tileset.SetTexture(textureA);
-			Tilemap tilemap;
-			tilemap.SetTileset(tileset);
-			tilemap.SetSize({ 4,4 });
-			tilemap.SetTile({ 1,1 }, 0);
-			tilemap.SetTile({ 2,1 }, 1);
-			tilemap.SetTile({ 2,2 }, 2);
-			tilemap.SetTile({ 1,2 }, 3);
-			Matrix4f tilemapTransform = Matrix4f::RotationX(90.0f);
+			Entity c1 = world.GetEntityManager().CreateEntity();
+			{
+				c1.Add<NameComponent>().name = "C1";
+				c1.Add<TransformComponent>().SetRotation(Matrix3f::RotationX(90.0f));
+				c1.Add<RenderableComponent>();
+				TilemapComponent& tilemapComponent = c1.Add<TilemapComponent>();
+				tilemapComponent.tilemap.SetTileset(tileset);
+				tilemapComponent.tilemap.SetSize({ 4,4 });
+				tilemapComponent.tilemap.SetTile({ 1,1 }, 0);
+				tilemapComponent.tilemap.SetTile({ 2,1 }, 1);
+				tilemapComponent.tilemap.SetTile({ 2,2 }, 2);
+				tilemapComponent.tilemap.SetTile({ 1,2 }, 3);
+			}
 
 			const bgfx::ViewId imguiViewId = 250;
 			
@@ -311,8 +322,6 @@ int main(int argc, char** argv)
 					if (ImGuiGame::GetInstance().IsVisible())
 					{
 						playerCamEntity.Get<CameraComponent>().Apply();
-						bgfx::setTransform(tilemapTransform.GetData());
-						tilemap.Render(playerCamEntity.Get<CameraComponent>().GetViewID());
 						world.Render();
 					}
 
@@ -339,11 +348,9 @@ int main(int argc, char** argv)
 						}
 
 						ImGuiEditor::GetCamera().Apply();
-						bgfx::setTransform(tilemapTransform.GetData());
-						tilemap.Render(ImGuiEditor::GetCamera().GetViewID());
+						world.Render();
 						world.GetDebugDraw().Render();
 						world.GetDebugDraw().Clear();
-						world.Render();
 					}
 #endif // ENLIVE_TOOL
 

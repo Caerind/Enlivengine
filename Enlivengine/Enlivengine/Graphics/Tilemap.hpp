@@ -15,7 +15,12 @@ class Tilemap
 {
 public:
 	Tilemap();
+	Tilemap(Tilemap&& other);
+	Tilemap(const Tilemap& other) = delete;
 	~Tilemap();
+
+	Tilemap& operator=(Tilemap&& other);
+	Tilemap& operator=(const Tilemap& other) = delete;
 
 	void SetTileset(const Tileset& tileset);
 	const Tileset* GetTileset() const;
@@ -29,7 +34,7 @@ public:
 	Rectf GetLocalBounds() const;
 	Rectf GetGlobalBounds() const;
 
-	void Render(const bgfx::ViewId& viewId) const;
+	void Render() const;
 
 private:
 	void UpdateTexCoords();
@@ -46,6 +51,7 @@ private:
 
 		static bgfx::VertexLayout kLayout;
 	};
+
 	Vector2u mSize;
 	std::vector<U32> mTiles;
 	std::vector<Vertex> mVertices;

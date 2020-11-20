@@ -14,9 +14,11 @@ class Sprite
 public:
 	Sprite();
 	Sprite(Sprite&& other);
+	Sprite(const Sprite& other) = delete;
 	~Sprite();
 
 	Sprite& operator=(Sprite&& other);
+	Sprite& operator=(const Sprite& other) = delete;
 
 	void SetTexture(TexturePtr texture);
 	TexturePtr GetTexture() const;

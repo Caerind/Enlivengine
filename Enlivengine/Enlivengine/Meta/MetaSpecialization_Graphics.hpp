@@ -8,6 +8,7 @@
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
 #include <Enlivengine/Graphics/Sprite.hpp>
+#include <Enlivengine/Graphics/Tilemap.hpp>
 #include <Enlivengine/Graphics/Camera.hpp>
 
 //////////////////////////////////////////////////////////////////
@@ -16,6 +17,13 @@
 ENLIVE_META_CLASS_BEGIN(en::Sprite)
 	ENLIVE_META_CLASS_MEMBER("texture", &en::Sprite::GetTexture, &en::Sprite::SetTexture),
 	ENLIVE_META_CLASS_MEMBER("textureRect", &en::Sprite::GetTextureRect, &en::Sprite::SetTextureRect)
+ENLIVE_META_CLASS_END()
+
+//////////////////////////////////////////////////////////////////
+// en::Tilemap
+//////////////////////////////////////////////////////////////////
+ENLIVE_META_CLASS_BEGIN(en::Tilemap)
+	ENLIVE_META_CLASS_MEMBER("size", &en::Tilemap::GetSize, &en::Tilemap::SetSize)
 ENLIVE_META_CLASS_END()
 
 //////////////////////////////////////////////////////////////////

@@ -8,7 +8,6 @@ namespace en
 {
 
 bgfx::VertexLayout Sprite::Vertex::kLayout;
-
 const U16 Sprite::kIndices[6] = { 0, 2, 1, 0, 3, 2 };
 Shader Sprite::kShader;
 bgfx::UniformHandle Sprite::kUniformTexture = BGFX_INVALID_HANDLE;

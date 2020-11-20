@@ -3,7 +3,7 @@
 #include <string>
 #include <Enlivengine/Math/Transform.hpp>
 #include <Enlivengine/Graphics/Sprite.hpp>
-#include <Enlivengine/Graphics/Camera.hpp>
+#include <Enlivengine/Graphics/Tilemap.hpp>
 
 namespace en
 {
@@ -35,6 +35,13 @@ struct SpriteComponent
 	SpriteComponent() : sprite() {}
 
 	Sprite sprite;
+};
+
+struct TilemapComponent
+{
+	TilemapComponent() : tilemap() {}
+
+	Tilemap tilemap;
 };
 
 } // namespace en
