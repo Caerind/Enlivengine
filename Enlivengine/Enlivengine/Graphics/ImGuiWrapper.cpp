@@ -212,7 +212,7 @@ bool ImGuiWrapper::Release()
     return true;
 }
 
-void ImGuiWrapper::BeginFrame(bgfx::ViewId viewId, U32 windowWidth, U32 windowHeight)
+void ImGuiWrapper::BeginFrame(bgfx::ViewId viewId, U32 windowWidth, U32 windowHeight, F32 dtSeconds)
 {
 	ImGuiWrapper& imgui = GetInstance();
 	enAssert(imgui.mInitialized);
@@ -222,11 +222,7 @@ void ImGuiWrapper::BeginFrame(bgfx::ViewId viewId, U32 windowWidth, U32 windowHe
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 
-	const I64 now = bx::getHPCounter();
-	const I64 frameTime = now - imgui.mLast;
-	imgui.mLast = now;
-	const double freq = double(bx::getHPFrequency());
-	io.DeltaTime = float(frameTime / freq);
+	io.DeltaTime = dtSeconds;
 	
 	const Vector2i mousePos = Mouse::GetPositionCurrentWindow();
 	io.MousePos = ImVec2(static_cast<F32>(mousePos.x), static_cast<F32>(mousePos.y));

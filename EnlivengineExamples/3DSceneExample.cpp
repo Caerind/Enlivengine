@@ -7,7 +7,6 @@
 #include <Enlivengine/Window/Mouse.hpp>
 #include <Enlivengine/Window/Keyboard.hpp>
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
-#include <Enlivengine/Graphics/ImGuiWrapper.hpp>
 #include <Enlivengine/Graphics/Framebuffer.hpp>
 #include <Enlivengine/Graphics/Sprite.hpp>
 #include <Enlivengine/Graphics/Tilemap.hpp>
@@ -78,9 +77,6 @@ int main(int argc, char** argv)
 		Window window;
 		window.Create("Test", 1600, 900);
 		BgfxWrapper::Init(window);
-#ifdef ENLIVE_ENABLE_IMGUI
-		ImGuiWrapper::Init();
-#endif // ENLIVE_ENABLE_IMGUI
 		Sprite::InitializeSprites();
 		Tilemap::InitializeTilemaps();
 		DebugDraw::InitializeDebugDraws();
@@ -217,14 +213,11 @@ int main(int argc, char** argv)
 			{
 				EventSystem::Update();
 
-#ifdef ENLIVE_ENABLE_IMGUI
-				const Vector2u windowSize = window.GetSize();
-				ImGuiWrapper::BeginFrame(250, windowSize.x, windowSize.y);
-				ImGuiToolManager::GetInstance().Update();
-				ImGuiWrapper::EndFrame();
-#endif // ENLIVE_ENABLE_IMGUI
-
 				const Time dt = clock.Restart();
+
+#ifdef ENLIVE_ENABLE_IMGUI
+				ImGuiToolManager::GetInstance().Update(window, dt);
+#endif // ENLIVE_ENABLE_IMGUI
 
 				if (Keyboard::IsPressed(Keyboard::Key::Escape))
 				{
@@ -384,9 +377,6 @@ int main(int argc, char** argv)
 		DebugDraw::ReleaseDebugDraws();
 		Tilemap::ReleaseTilemaps();
 		Sprite::ReleaseSprites();
-#ifdef ENLIVE_ENABLE_IMGUI
-		ImGuiWrapper::Release();
-#endif // ENLIVE_ENABLE_IMGUI
 		BgfxWrapper::Release();
 	}
 	SDLWrapper::Release();

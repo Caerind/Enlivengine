@@ -45,7 +45,7 @@ public:
 	static bool IsInitialized();
 	static bool Release();
 
-	static void BeginFrame(bgfx::ViewId viewId, U32 windowWidth, U32 windowHeight);
+	static void BeginFrame(bgfx::ViewId viewId, U32 windowWidth, U32 windowHeight, F32 dtSeconds);
 	static void EndFrame();
 
 private:
