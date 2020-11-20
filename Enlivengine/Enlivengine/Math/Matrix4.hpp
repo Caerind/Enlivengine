@@ -629,10 +629,10 @@ public:
 		return Matrix4<T>(w, T(0), T(0), T(0), T(0), h, T(0), T(0), T(0), T(0), _10, _11, T(0), T(0), _14, T(0));
 	}
 
-	static constexpr Matrix4<T> Orthographic(const T & left, const T & right, const T & top, const T & bottom, const T & nearPlane, const T & farPlane, bool homogeneousNdc, Math::Handedness handedness)
+	static constexpr Matrix4<T> Orthographic(const T & left, const T & top, const T & right, const T & bottom, const T & nearPlane, const T & farPlane, bool homogeneousNdc, Math::Handedness handedness)
 	{
 		const T invWidth = T(1) / (right - left);
-		const T invHeight = T(1) / (top - bottom);
+		const T invHeight = T(1) / (bottom - top);
 		const T invZDiff = T(1) / (farPlane - nearPlane);
 
 		const T _10 = (homogeneousNdc ? T(2) : T(1)) * invZDiff;

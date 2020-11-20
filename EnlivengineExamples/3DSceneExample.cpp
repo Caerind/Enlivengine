@@ -126,14 +126,6 @@ int main(int argc, char** argv)
 			// Editor window
 			ImGuiEditor::GetCamera().InitializePerspective(80.0f);
 			ImGuiEditor::GetCamera().InitializeView(Vector3f(0.0f, 0.8f, 0.0f), Matrix3f::Identity());
-			/*
-			enSlotType(Window, OnResized) mCameraWindowResize;
-			mCameraWindowResize.Connect(Window::GetFirstWindow()->OnResized, [&world, this](const Window*, U32 width, U32 height)
-				{
-					const Vector2u framebufferSize = BgfxWrapper::GetFramebufferSize(mToolCamera.GetFramebuffer());
-					mToolCamera.InitializePerspective(80.0f, F32(width) / F32(height), 0.1f, 100.0f);
-				});
-			*/
 #endif // ENLIVE_TOOL
 
 

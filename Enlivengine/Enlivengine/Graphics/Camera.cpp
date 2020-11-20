@@ -323,7 +323,7 @@ void Camera::UpdateProjectionMatrix() const
 	}
 	else
 	{
-		mProjectionMatrix = Matrix4f::Orthographic(-mProjectionData.orthographic.size * aspect, mProjectionData.orthographic.size * aspect, -mProjectionData.orthographic.size, mProjectionData.orthographic.size, mProjectionData.orthographic.nearPlane, mProjectionData.orthographic.farPlane, homogenousDepth, ENLIVE_DEFAULT_HANDEDNESS);
+		mProjectionMatrix = Matrix4f::Orthographic(-mProjectionData.orthographic.size * aspect, -mProjectionData.orthographic.size, mProjectionData.orthographic.size * aspect, mProjectionData.orthographic.size, mProjectionData.orthographic.nearPlane, mProjectionData.orthographic.farPlane, homogenousDepth, ENLIVE_DEFAULT_HANDEDNESS);
 	}
 	mProjectionDirty = false;
 }
