@@ -4,6 +4,7 @@
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Signal.hpp>
+#include <Enlivengine/Math/Vector2.hpp>
 
 namespace en
 {
@@ -37,10 +38,8 @@ public:
     bool IsMinimized() const;
     bool IsMaximized() const;
 
-    void SetSize(U32 width, U32 height);
-    U32 GetWidth() const;
-	U32 GetHeight() const;
-    void GetSize(U32& width, U32& height) const;
+    void SetSize(const Vector2u& size);
+    Vector2u GetSize() const;
     enSignal(OnResized, const Window*, U32, U32);
 
     void SetTitle(const char* title);

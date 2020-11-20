@@ -10,7 +10,7 @@ namespace en
 
 ImGuiGame::ImGuiGame()
 	: ImGuiTool()
-	, mFramebuffer(BGFX_INVALID_HANDLE)
+	, mFramebuffer()
 {
 }
 
@@ -66,21 +66,27 @@ void ImGuiGame::Display()
 		ImGui::EndMenuBar();
 	}
 
-	if (bgfx::isValid(mFramebuffer))
+	ImVec2 windowSize = ImGui::GetWindowSize();
 	{
-		ImVec2 windowSize = ImGui::GetWindowSize();
-		ImGui::Image(bgfx::getTexture(mFramebuffer), windowSize);
+		ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+		ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+		vMin.x += ImGui::GetWindowPos().x;
+		vMin.y += ImGui::GetWindowPos().y;
+		vMax.x += ImGui::GetWindowPos().x;
+		vMax.y += ImGui::GetWindowPos().y;
+		windowSize = ImVec2(vMax.x - vMin.x, vMax.y - vMin.y);
 	}
+	const Vector2u imWindowSize = Vector2u(static_cast<U32>(windowSize.x), static_cast<U32>(windowSize.y));
+	if (imWindowSize != mFramebuffer.GetSize())
+	{
+		mFramebuffer.Resize(imWindowSize);
+	}
+	ImGui::Image(mFramebuffer.GetTexture(), windowSize);
 }
 
-void ImGuiGame::SetFramebuffer(bgfx::FrameBufferHandle framebuffer)
+Framebuffer* ImGuiGame::GetFramebuffer()
 {
-	GetInstance().mFramebuffer = framebuffer;
-}
-
-bgfx::FrameBufferHandle ImGuiGame::GetFramebuffer()
-{
-	return GetInstance().mFramebuffer;
+	return &GetInstance().mFramebuffer;
 }
 
 } // namespace en

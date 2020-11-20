@@ -8,6 +8,8 @@
 #include <Enlivengine/Platform/PlatformDetection.hpp>
 #include <Enlivengine/Utils/Assert.hpp>
 
+#include <Enlivengine/Graphics/Framebuffer.hpp>
+
 namespace en
 {
 
@@ -135,25 +137,25 @@ bool BgfxWrapper::Init(Window& window)
 	// Most graphics APIs must be used on the same thread that created the window.
     bgfx::renderFrame();
 
+    const Vector2u windowSize = window.GetSize();
+
     bgfx::Init init;
     init.type = bgfx::RendererType::Count; // Automatically choose a renderer
-    init.resolution.width = window.GetWidth();
-    init.resolution.height = window.GetHeight();
+    init.resolution.width = windowSize.x;
+    init.resolution.height = windowSize.y;
     init.resolution.reset = BGFX_RESET_VSYNC;
     if (!bgfx::init(init))
     {
         return false;
     }
 
-    bgfx.mBackBufferSize.x = window.GetWidth();
-    bgfx.mBackBufferSize.y = window.GetHeight();
-    bgfx.mCurrentView = BGFX_INVALID_HANDLE;
+	bgfx.mCurrentView = BGFX_INVALID_HANDLE;
+    Framebuffer::ResizeDefaultFramebuffer(windowSize);
+    Framebuffer::sResizeWindow.Connect(window.OnResized, [](const Window*, U32 width, U32 height) { Framebuffer::ResizeDefaultFramebuffer(Vector2u(width, height)); });
 
 #ifdef ENLIVE_DEBUG
     bgfx::setDebug(BGFX_DEBUG_TEXT);
 #endif // ENLIVE_DEBUG
-
-    bgfx.mResizeRenderer.Connect(window.OnResized, [](const Window*, U32 width, U32 height) { GetInstance().Reset(static_cast<U32>(width), static_cast<U32>(height)); });
 
     bgfx.mInitialized = true;
     return true;
@@ -204,13 +206,6 @@ bgfx::ViewId BgfxWrapper::GetCurrentView()
     return GetInstance().mCurrentView;
 }
 
-Vector2u BgfxWrapper::GetFramebufferSize(bgfx::FrameBufferHandle framebuffer)
-{
-    // TODO : Framebuffers
-    ENLIVE_UNUSED(framebuffer);
-    return GetInstance().mBackBufferSize;
-}
-
 BgfxWrapper& BgfxWrapper::GetInstance()
 {
     static BgfxWrapper instance;
@@ -218,8 +213,7 @@ BgfxWrapper& BgfxWrapper::GetInstance()
 }
 
 BgfxWrapper::BgfxWrapper()
-    : mResizeRenderer()
-	, mInitialized(false)
+    : mInitialized(false)
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
     , mDisplayStats(false)
 #endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
@@ -229,14 +223,6 @@ BgfxWrapper::BgfxWrapper()
 BgfxWrapper::~BgfxWrapper()
 {
     enAssert(!mInitialized);
-}
-
-void BgfxWrapper::Reset(U32 width, U32 height)
-{
-    BgfxWrapper& bgfx = GetInstance();
-    bgfx.mBackBufferSize.x = width;
-	bgfx.mBackBufferSize.y = height;
-	bgfx::reset(width, height);
 }
 
 } // namespace en

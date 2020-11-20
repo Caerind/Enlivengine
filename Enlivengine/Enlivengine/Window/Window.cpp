@@ -104,55 +104,25 @@ bool Window::IsMaximized() const
     return (mWindow != nullptr) ? (SDL_GetWindowFlags(mWindow) & SDL_WINDOW_MAXIMIZED) > 0 : false;
 }
 
-void Window::SetSize(U32 width, U32 height)
+void Window::SetSize(const Vector2u& size)
 {
     if (mWindow != nullptr)
     {
-		SDL_SetWindowSize(mWindow, static_cast<I32>(width), static_cast<I32>(height));
+		SDL_SetWindowSize(mWindow, static_cast<I32>(size.x), static_cast<I32>(size.y));
     }
 }
 
-U32 Window::GetWidth() const
-{
-    if (mWindow != nullptr)
-    {
-        I32 width, dummy;
-        SDL_GetWindowSize(mWindow, &width, &dummy);
-        return static_cast<U32>(width);
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-U32 Window::GetHeight() const
-{
-    if (mWindow != nullptr)
-    {
-        I32 dummy, height;
-        SDL_GetWindowSize(mWindow, &dummy, &height);
-        return static_cast<U32>(height);
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-void Window::GetSize(U32& width, U32& height) const
+Vector2u Window::GetSize() const
 {
     if (mWindow != nullptr)
     {
         I32 w, h;
-        SDL_GetWindowSize(mWindow, &w, &h);
-        width = static_cast<U32>(w);
-        height = static_cast<U32>(h);
+		SDL_GetWindowSize(mWindow, &w, &h);
+		return Vector2u(static_cast<U32>(w), static_cast<U32>(h));
     }
     else
     {
-        width = 0;
-        height = 0;
+        return Vector2u(0, 0);
     }
 }
 

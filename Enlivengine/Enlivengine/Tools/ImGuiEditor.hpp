@@ -4,9 +4,8 @@
 
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_TOOL)
 
-#include <bgfx/bgfx.h>
-
 #include <Enlivengine/Graphics/Camera.hpp>
+#include <Enlivengine/Graphics/Framebuffer.hpp>
 
 #include <Enlivengine/Tools/ImGuiTool.hpp>
 
@@ -25,8 +24,7 @@ public:
 
 	void Display() override;
 
-	static void SetFramebuffer(bgfx::FrameBufferHandle framebuffer);
-	static bgfx::FrameBufferHandle GetFramebuffer();
+	static Framebuffer* GetFramebuffer();
 
 	static Camera& GetCamera();
 
@@ -38,7 +36,7 @@ public:
 	};
 
 private:
-	bgfx::FrameBufferHandle mFramebuffer;
+	Framebuffer mFramebuffer;
 	Camera mCamera;
 	bool mEditCamera;
 	GizmoOperation mGizmoOperation;

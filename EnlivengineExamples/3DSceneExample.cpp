@@ -8,6 +8,7 @@
 #include <Enlivengine/Window/Keyboard.hpp>
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
 #include <Enlivengine/Graphics/ImGuiWrapper.hpp>
+#include <Enlivengine/Graphics/Framebuffer.hpp>
 #include <Enlivengine/Graphics/Sprite.hpp>
 #include <Enlivengine/Graphics/Tilemap.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
@@ -123,9 +124,7 @@ int main(int argc, char** argv)
 
 #ifdef ENLIVE_TOOL
 			// Editor window
-			ImGuiEditor::SetFramebuffer(bgfx::createFrameBuffer(1600, 900, bgfx::TextureFormat::RGBA8));
-			ImGuiEditor::GetCamera().SetFramebuffer(ImGuiEditor::GetFramebuffer());
-			ImGuiEditor::GetCamera().InitializePerspective(80.0f, 1600.0f / 900.0f, 0.1f, 100.0f);
+			ImGuiEditor::GetCamera().InitializePerspective(80.0f);
 			ImGuiEditor::GetCamera().InitializeView(Vector3f(0.0f, 0.8f, 0.0f), Matrix3f::Identity());
 			/*
 			enSlotType(Window, OnResized) mCameraWindowResize;
@@ -135,9 +134,6 @@ int main(int argc, char** argv)
 					mToolCamera.InitializePerspective(80.0f, F32(width) / F32(height), 0.1f, 100.0f);
 				});
 			*/
-
-			// Game window
-			ImGuiGame::SetFramebuffer(bgfx::createFrameBuffer(1600, 900, bgfx::TextureFormat::RGBA8));
 #endif // ENLIVE_TOOL
 
 
@@ -163,11 +159,11 @@ int main(int argc, char** argv)
 				playerCamTransform.SetPosition(Vector3f(0.0f, 0.8f, 0.0f));
 				playerCamTransform.AttachToParent(playerEntity); // Attach this entity to player entity
 				CameraComponent& playerCam = playerCamEntity.Add<CameraComponent>();
-				playerCam.InitializePerspective(80.0f, F32(window.GetWidth()) / F32(window.GetHeight()), 0.1f, 100.0f);
+				playerCam.InitializePerspective(80.0f);
 #if defined(ENLIVE_TOOL)
 				playerCam.SetFramebuffer(ImGuiGame::GetFramebuffer());
 #elif defined(ENLIVE_RELEASE)
-				playerCam.SetFramebuffer(BGFX_INVALID_HANDLE);
+				playerCam.SetFramebuffer(&Framebuffer::GetDefaultFramebuffer());
 #endif // ENLIVE_TOOL
 				playerCam.SetClearColor(Colors::LightBlue);
 			}
@@ -209,13 +205,6 @@ int main(int argc, char** argv)
 			tilemap.SetTile({ 1,2 }, 3);
 			Matrix4f tilemapTransform = Matrix4f::RotationX(90.0f);
 
-			enSlotType(Window, OnResized) cameraWindowResize;
-			cameraWindowResize.Connect(window.OnResized, [&playerCamEntity](const Window*, U32 width, U32 height)
-				{
-					playerCamEntity.Get<CameraComponent>().InitializeOrthographic(-5.0f, -4.0f, 5.0f, 4.0f, 0.1f, 100.0f);
-					//playerEntity.Get<CameraComponent>().InitializePerspective(80.0f, F32(width) / F32(height), 0.1f, 100.0f);
-				});
-
 			const bgfx::ViewId imguiViewId = 250;
 			
 			// Create button event using generic way 
@@ -237,7 +226,8 @@ int main(int argc, char** argv)
 				EventSystem::Update();
 
 #ifdef ENLIVE_ENABLE_IMGUI
-				ImGuiWrapper::BeginFrame(250, window.GetWidth(), window.GetHeight());
+				const Vector2u windowSize = window.GetSize();
+				ImGuiWrapper::BeginFrame(250, windowSize.x, windowSize.y);
 				ImGuiToolManager::GetInstance().Update();
 				ImGuiWrapper::EndFrame();
 #endif // ENLIVE_ENABLE_IMGUI

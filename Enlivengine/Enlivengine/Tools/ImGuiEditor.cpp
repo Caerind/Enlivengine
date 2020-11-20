@@ -16,11 +16,12 @@ namespace en
 
 ImGuiEditor::ImGuiEditor()
 	: ImGuiTool()
-	, mFramebuffer(BGFX_INVALID_HANDLE)
+	, mFramebuffer()
 	, mCamera()
 	, mEditCamera(false)
 	, mGizmoOperation(GizmoOperation::Translate)
 {
+	mCamera.SetFramebuffer(&mFramebuffer);
 }
 
 ImGuiToolTab ImGuiEditor::GetTab() const
@@ -111,22 +112,28 @@ void ImGuiEditor::Display()
 			mEditCamera = false;
 		}
 	}
-
-	if (bgfx::isValid(mFramebuffer))
+	
+	ImVec2 windowSize = ImGui::GetWindowSize();
 	{
-		ImVec2 windowSize = ImGui::GetWindowSize();
-		ImGui::Image(bgfx::getTexture(mFramebuffer), windowSize);
+		ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+		ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+		vMin.x += ImGui::GetWindowPos().x;
+		vMin.y += ImGui::GetWindowPos().y;
+		vMax.x += ImGui::GetWindowPos().x;
+		vMax.y += ImGui::GetWindowPos().y;
+		windowSize = ImVec2(vMax.x - vMin.x, vMax.y - vMin.y);
 	}
+	const Vector2u imWindowSize = Vector2u(static_cast<U32>(windowSize.x), static_cast<U32>(windowSize.y));
+	if (imWindowSize != mFramebuffer.GetSize())
+	{
+		mFramebuffer.Resize(imWindowSize);
+	}
+	ImGui::Image(mFramebuffer.GetTexture(), windowSize);
 }
 
-void ImGuiEditor::SetFramebuffer(bgfx::FrameBufferHandle framebuffer)
+Framebuffer* ImGuiEditor::GetFramebuffer()
 {
-	GetInstance().mFramebuffer = framebuffer;
-}
-
-bgfx::FrameBufferHandle ImGuiEditor::GetFramebuffer()
-{
-	return GetInstance().mFramebuffer;
+	return &GetInstance().mFramebuffer;
 }
 
 Camera& ImGuiEditor::GetCamera()

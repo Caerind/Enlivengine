@@ -2,11 +2,15 @@
 
 #include <bgfx/bgfx.h>
 
+#include <Enlivengine/Utils/Signal.hpp>
+
 #include <Enlivengine/Math/Vector3.hpp>
 #include <Enlivengine/Math/Matrix4.hpp>
 #include <Enlivengine/Math/Frustum.hpp>
 #include <Enlivengine/Math/Color.hpp>
 #include <Enlivengine/Math/Rect.hpp>
+
+#include <Enlivengine/Graphics/Framebuffer.hpp>
 
 namespace en
 {
@@ -37,8 +41,8 @@ public:
     void SetProjection(ProjectionMode projection);
     ProjectionMode GetProjection() const;
 
-    void InitializePerspective(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane);
-	void InitializeOrthographic(F32 left, F32 top, F32 right, F32 bottom, F32 nearPlane, F32 farPlane);
+    void InitializePerspective(F32 fov, F32 nearPlane = 0.1f, F32 farPlane = 100.0f);
+	void InitializeOrthographic(F32 size, F32 nearPlane = 0.1f, F32 farPlane = 100.0f);
 
 	void SetNearPlane(F32 nearPlane);
 	F32 GetNearPlane() const;
@@ -49,20 +53,8 @@ public:
 	void SetFOV(F32 fov);
 	F32 GetFOV() const;
 
-	void SetAspect(F32 aspect);
-	F32 GetAspect() const;
-
-	void SetLeft(F32 left);
-	F32 GetLeft() const;
-
-	void SetTop(F32 top);
-	F32 GetTop() const;
-
-	void SetRight(F32 right);
-	F32 GetRight() const;
-
-	void SetBottom(F32 bottom); 
-	F32 GetBottom() const;
+	void SetSize(F32 size);
+	F32 GetSize() const;
 
     const Matrix4f& GetProjectionMatrix() const;
 
@@ -88,31 +80,28 @@ public:
 	void SetViewport(const Rectf& viewport);
 	const Rectf& GetViewport() const;
 
-	void SetFramebuffer(bgfx::FrameBufferHandle framebuffer);
-	bgfx::FrameBufferHandle GetFramebuffer() const;
+	void SetFramebuffer(Framebuffer* framebuffer);
+	Framebuffer* GetFramebuffer() const;
 
 	bgfx::ViewId GetViewID() const;
 
 protected:
 	void UpdateProjectionMatrix() const;
 	void UpdateViewMatrix() const;
+	F32 GetAspect() const;
 
     struct PerspectiveData
 	{
 		F32 nearPlane;
 		F32 farPlane;
 		F32 fov;
-		F32 aspect;
 	};
 
 	struct OrthographicData
 	{
 		F32 nearPlane;
 		F32 farPlane;
-		F32 left;
-		F32 top;
-		F32 right;
-		F32 bottom;
+		F32 size;
 	};
 
 	mutable Matrix4f mViewMatrix;
@@ -126,7 +115,8 @@ protected:
 		OrthographicData orthographic;
 	} mProjectionData;
 	Color mClearColor;
-	bgfx::FrameBufferHandle mFramebuffer;
+	Framebuffer* mFramebuffer;
+	enSlotType(Framebuffer, OnResized) mFramebufferResized;
 	bgfx::ViewId mViewId;
 	ProjectionMode mProjectionMode;
 	mutable bool mProjectionDirty;
