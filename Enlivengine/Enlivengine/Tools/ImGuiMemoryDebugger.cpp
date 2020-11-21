@@ -21,7 +21,7 @@ ImGuiToolTab ImGuiMemoryDebugger::GetTab() const
 
 const char* ImGuiMemoryDebugger::GetName() const
 {
-	return /*ICON_FA_MEMORY*/ " MemoryDebugger"; // TODO : Restore FontAwesome
+	return ICON_FA_MEMORY " MemoryDebugger";
 }
 
 const char* ImGuiMemoryDebugger::GetSaveName() const

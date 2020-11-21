@@ -19,7 +19,7 @@ ImGuiToolTab ImGuiDemoWindow::GetTab() const
 
 const char* ImGuiDemoWindow::GetName() const
 {
-	return /*ICON_FA_INFO_CIRCLE*/ " ImGui Demo"; // TODO : Restore FontAwesome
+	return ICON_FA_INFO_CIRCLE " ImGui Demo";
 }
 
 const char* ImGuiDemoWindow::GetSaveName() const

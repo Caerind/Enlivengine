@@ -10,11 +10,8 @@
 
 #include <imgui/imgui.h>
 
-// TODO : UPDATE : FONT AWESOME
-/*
-#include <iconfontheaders/icons_kenney.h>
-#include <iconfontheaders/icons_font_awesome.h>
-*/
+#include <IconFontCppHeaders/IconsFontAwesome5.h>
+#include <IconFontCppHeaders/IconsKenney.h>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 

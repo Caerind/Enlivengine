@@ -64,7 +64,7 @@ ImGuiToolTab ImGuiResourceBrowser::GetTab() const
 
 const char* ImGuiResourceBrowser::GetName() const
 {
-	return /*ICON_FA_COMPASS*/ " ResourceBrowser"; // TODO : Restore FontAwesome
+	return ICON_FA_COMPASS " ResourceBrowser";
 }
 
 const char* ImGuiResourceBrowser::GetSaveName() const

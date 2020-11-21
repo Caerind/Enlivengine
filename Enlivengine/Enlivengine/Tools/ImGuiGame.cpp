@@ -50,14 +50,14 @@ void ImGuiGame::Display()
 		{
 			if (world->IsPlaying())
 			{
-				if (ImGui::SmallButton("Pause" /*ICON_FA_PAUSE*/)) // TODO : FONT AWESOME
+				if (ImGui::SmallButton(ICON_FA_PAUSE))
 				{
 					world->Pause();
 				}
 			}
 			else
 			{
-				if (ImGui::SmallButton("Play" /*ICON_FA_PLAY*/)) // TODO : FONT AWESOME
+				if (ImGui::SmallButton(ICON_FA_PLAY))
 				{
 					world->Play();
 				}

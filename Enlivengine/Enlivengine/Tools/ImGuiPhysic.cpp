@@ -32,7 +32,7 @@ ImGuiToolTab ImGuiPhysic::GetTab() const
 
 const char* ImGuiPhysic::GetName() const
 {
-	return /*ICON_FA_METEOR*/ " Physic"; // TODO : Restore FontAwesome
+	return ICON_FA_METEOR " Physic";
 }
 
 const char* ImGuiPhysic::GetSaveName() const

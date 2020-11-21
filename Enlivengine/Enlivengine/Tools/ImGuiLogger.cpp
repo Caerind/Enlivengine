@@ -24,7 +24,7 @@ ImGuiToolTab ImGuiLogger::GetTab() const
 
 const char* ImGuiLogger::GetName() const
 {
-	return /*ICON_FA_LIST_UL*/ " Logs"; // TODO : Restore FontAwesome
+	return ICON_FA_LIST_UL " Logs";
 }
 
 const char* ImGuiLogger::GetSaveName() const

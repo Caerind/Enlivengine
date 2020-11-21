@@ -24,7 +24,7 @@ ImGuiToolTab ImGuiEntityBrowser::GetTab() const
 
 const char* ImGuiEntityBrowser::GetName() const
 {
-	return /*ICON_FA_USER_COG*/ " EntityBrowser"; // TODO : FONT AWESOME
+	return ICON_FA_USER_COG " EntityBrowser";
 }
 
 const char* ImGuiEntityBrowser::GetSaveName() const

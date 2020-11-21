@@ -4,8 +4,6 @@
 
 #ifdef ENLIVE_ENABLE_IMGUI
 
-//#include <IconFontCppHeaders/IconsFontAwesome5.h> // TODO : Restore FontAwesome
-
 #include <Enlivengine/Graphics/ImGuiWrapper.hpp>
 
 #include <Enlivengine/Math/Rect.hpp>

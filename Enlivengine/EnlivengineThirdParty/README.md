@@ -2,7 +2,7 @@
 - https://github.com/scottt/debugbreak  
 
 # Utils
-- https://github.com/Cmdu76/Dyma  
+- https://github.com/Caerind/Dyma  
 - https://github.com/fmtlib/fmt  
 - https://github.com/Neargye/magic_enum  
 - https://github.com/richgel999/miniz   
@@ -24,6 +24,7 @@
 # Tools
 - https://github.com/ocornut/imgui  
 - https://github.com/CedricGuillemet/ImGuizmo  
+- https://github.com/juliettef/IconFontCppHeaders  
 
 # Tests
 - https://github.com/onqtam/doctest  

@@ -84,20 +84,17 @@ struct HasCustomEditor<en::ResourcePtr<T>>
 				}
 				if (found)
 				{
-					// TODO : IMGUI UPDATE
-					//ImGui::Text(ICON_FA_CHECK);
+					ImGui::Text(ICON_FA_CHECK);
 				}
 				else
 				{
-					// TODO : IMGUI UPDATE
-					//ImGui::Text(ICON_FA_EXCLAMATION);
+					ImGui::Text(ICON_FA_EXCLAMATION);
 					currentLabel = notLoadedResourceIdentifier;
 				}
 			}
 			else
 			{
-				// TODO : IMGUI UPDATE
-				//ImGui::Text(ICON_FA_EXCLAMATION);
+				ImGui::Text(ICON_FA_EXCLAMATION);
 				currentLabel = nullResourceIdentifier;
 			}
 

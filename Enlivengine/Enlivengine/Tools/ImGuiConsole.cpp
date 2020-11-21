@@ -23,7 +23,7 @@ ImGuiToolTab ImGuiConsole::GetTab() const
 
 const char* ImGuiConsole::GetName() const
 {
-	return /*ICON_FA_TERMINAL*/ " Console"; // TODO : Restore FontAwesome
+	return ICON_FA_TERMINAL " Console";
 }
 
 const char* ImGuiConsole::GetSaveName() const

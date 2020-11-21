@@ -21,7 +21,7 @@ ImGuiToolTab ImGuiInputEditor::GetTab() const
 
 const char* ImGuiInputEditor::GetName() const
 {
-	return /*ICON_FA_GAMEPAD*/ " InputEditor"; // TODO : Restore FontAwesome
+	return ICON_FA_GAMEPAD " InputEditor";
 }
 
 const char* ImGuiInputEditor::GetSaveName() const

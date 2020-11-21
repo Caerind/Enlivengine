@@ -28,7 +28,7 @@ ImGuiToolTab ImGuiAnimationEditor::GetTab() const
 
 const char* ImGuiAnimationEditor::GetName() const
 {
-	return /*ICON_FA_RUNNING*/ " AnimationEditor"; // TODO : Restore FontAwesome
+	return ICON_FA_RUNNING " AnimationEditor";
 }
 
 const char* ImGuiAnimationEditor::GetSaveName() const
@@ -920,7 +920,7 @@ void ImGuiAnimationEditor::ParametersList(AnimationStateMachine& stateMachine)
             }
 
             ImGui::SameLine();
-            //ImGui::Text(ICON_FA_BAN); // TODO : Restore FontAwesome
+            ImGui::Text(ICON_FA_BAN);
             if (ImGui::IsItemClicked())
             {
                 stateMachine.RemoveParameter(parameterIndex);

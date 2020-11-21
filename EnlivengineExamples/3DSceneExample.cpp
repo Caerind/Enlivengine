@@ -130,7 +130,6 @@ int main(int argc, char** argv)
 			tileset.SetTexture(textureA);
 
 #ifdef ENLIVE_TOOL
-			// Editor window
 			ImGuiEditor::GetCamera().InitializePerspective(80.0f);
 			ImGuiEditor::GetCamera().InitializeView(Vector3f(0.0f, 0.8f, 0.0f), Matrix3f::Identity());
 #endif // ENLIVE_TOOL
@@ -203,8 +202,6 @@ int main(int argc, char** argv)
 				tilemapComponent.tilemap.SetTile({ 2,2 }, 2);
 				tilemapComponent.tilemap.SetTile({ 1,2 }, 3);
 			}
-
-			const bgfx::ViewId imguiViewId = 250;
 			
 			// Create button event using generic way 
 			EventSystem::AddButton("moveForward", EventSystem::EventButton::Type::KeyboardKey, static_cast<U32>(Keyboard::Key::W), static_cast<U32>(Keyboard::Modifier::None), EventSystem::EventButton::ActionType::Hold);
@@ -301,18 +298,22 @@ int main(int argc, char** argv)
 				}
 
 #ifdef ENLIVE_DEBUG
-				world.GetDebugDraw().DrawCross(Vector3f(-1.0f));
-				world.GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
-				world.GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
-				world.GetDebugDraw().DrawFrustum(playerCamEntity.Get<CameraComponent>().CreateFrustum(), Colors::Blue);
-				world.GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
-				world.GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
-				Plane p(ENLIVE_DEFAULT_UP, 0.0f);
-				Ray r(playerCamEntity.Get<TransformComponent>().GetGlobalPosition(), (playerCamEntity.Get<TransformComponent>().GetGlobalRotation().GetForward() * 3.0f - ENLIVE_DEFAULT_UP).Normalized());
-				F32 t;
-				if (r.Intersects(p, &t))
 				{
-					world.GetDebugDraw().DrawSphere(r.GetPoint(t), 0.1f);
+					world.GetDebugDraw().DrawCross(Vector3f(-1.0f));
+					world.GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
+					world.GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
+					world.GetDebugDraw().DrawFrustum(playerCamEntity.Get<CameraComponent>().CreateFrustum(), Colors::Blue);
+					world.GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
+					world.GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
+					Plane p(ENLIVE_DEFAULT_UP, 0.0f);
+					Ray r(playerCamEntity.Get<TransformComponent>().GetGlobalPosition(), (playerCamEntity.Get<TransformComponent>().GetGlobalRotation().GetForward() * 3.0f - ENLIVE_DEFAULT_UP).Normalized());
+					F32 t;
+					if (r.Intersects(p, &t))
+					{
+						const Vector3f p = r.GetPoint(t);
+						world.GetDebugDraw().DrawLine(playerCamEntity.Get<TransformComponent>().GetGlobalPosition(), p);
+						world.GetDebugDraw().DrawSphere(p, 0.1f);
+					}
 				}
 #endif // ENLIVE_DEBUG
 
@@ -327,7 +328,6 @@ int main(int argc, char** argv)
 
 					if (ImGuiEditor::GetInstance().IsVisible())
 					{
-
 						if (Keyboard::IsAltHold())
 						{
 							Mouse::SetRelativeMode(true);

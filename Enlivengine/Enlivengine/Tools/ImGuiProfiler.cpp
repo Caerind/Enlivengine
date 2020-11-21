@@ -25,7 +25,7 @@ ImGuiToolTab ImGuiProfiler::GetTab() const
 
 const char* ImGuiProfiler::GetName() const
 {
-	return /*ICON_FA_CLOCK*/ " Profiler"; // TODO : Restore FontAwesome
+	return ICON_FA_CLOCK " Profiler";
 }
 
 const char* ImGuiProfiler::GetSaveName() const

@@ -9,17 +9,15 @@
 
 #include <ImGuizmo/ImGuizmo.h>
 
+#include <IconFontCppHeaders/IconsFontAwesome5.ttf.h>
+#include <IconFontCppHeaders/IconsKenney.ttf.h>
+
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Window/Mouse.hpp>
 #include <Enlivengine/Window/Keyboard.hpp>
 
 #include <Enlivengine/Graphics/CompiledFonts/roboto_regular.ttf.h>
 #include <Enlivengine/Graphics/CompiledFonts/robotomono_regular.ttf.h>
-// TODO : UPDATE : FONT AWESOME
-/*
-#include <Enlivengine/Graphics/CompiledFonts/icons_kenney.ttf.h>
-#include <Enlivengine/Graphics/CompiledFonts/icons_font_awesome.ttf.h>
-*/
 
 #include <Enlivengine/Graphics/CompiledShaders/vs_ocornut_imgui.bin.h>
 #include <Enlivengine/Graphics/CompiledShaders/fs_ocornut_imgui.bin.h>
@@ -39,8 +37,6 @@ static const bgfx::EmbeddedShader s_embeddedShaders[] =
 	BGFX_EMBEDDED_SHADER_END()
 };
 
-// TODO : UPDATE : FONT AWESOME
-/*
 struct FontRangeMerge
 {
 	const void* data;
@@ -50,10 +46,9 @@ struct FontRangeMerge
 
 static FontRangeMerge s_fontRangeMerge[] =
 {
-	{ s_iconsKenneyTtf,      sizeof(s_iconsKenneyTtf),      { ICON_MIN_KI, ICON_MAX_KI, 0 } },
-	{ s_iconsFontAwesomeTtf, sizeof(s_iconsFontAwesomeTtf), { ICON_MIN_FA, ICON_MAX_FA, 0 } },
+	{ s_kenney_icon_font,   sizeof(s_kenney_icon_font), { ICON_MIN_KI, ICON_MAX_KI, 0 } },
+	{ s_fa_solid_900,		sizeof(s_fa_solid_900),	{ ICON_MIN_FA, ICON_MAX_FA, 0 } }
 };
-*/
 
 bool ImGuiWrapper::Init()
 {
@@ -164,8 +159,6 @@ bool ImGuiWrapper::Init()
 		imgui.mFonts[ImGui::Font::Regular] = io.Fonts->AddFontFromMemoryTTF((void*)s_robotoRegularTtf, sizeof(s_robotoRegularTtf), fontSize, &config, ranges);
 		imgui.mFonts[ImGui::Font::Mono] = io.Fonts->AddFontFromMemoryTTF((void*)s_robotoMonoRegularTtf, sizeof(s_robotoMonoRegularTtf), fontSize - 3.0f, &config, ranges);
 
-		// TODO : UPDATE : FONT AWESOME
-		/*
 		config.MergeMode = true;
 		config.DstFont = imgui.mFonts[ImGui::Font::Regular];
 
@@ -174,7 +167,6 @@ bool ImGuiWrapper::Init()
 			const FontRangeMerge& frm = s_fontRangeMerge[i];
 			io.Fonts->AddFontFromMemoryTTF((void*)frm.data, (int)frm.size, fontSize - 3.0f, &config, frm.ranges);
 		}
-		*/
 	}
 	io.Fonts->GetTexDataAsRGBA32(&data, &width, &height);
 	imgui.mTexture = bgfx::createTexture2D((uint16_t)width, (uint16_t)height, false, 1, bgfx::TextureFormat::BGRA8, 0, bgfx::copy(data, width * height * 4));
@@ -376,7 +368,7 @@ ImGuiWrapper::ImGuiWrapper()
 	, mTexture(BGFX_INVALID_HANDLE)
 	, mSamplerTexture(BGFX_INVALID_HANDLE)
 	, mImageLodEnabled(BGFX_INVALID_HANDLE)
-	// TODO : UPDATE : FONT AWESOME: , mFonts()
+	, mFonts()
 	, mLast(0)
 	, mViewId(255)
 {

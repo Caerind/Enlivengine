@@ -7,7 +7,7 @@ set_target_properties(SDL2-static PROPERTIES FOLDER "Enlivengine")
 add_subdirectory(bgfx)
 
 # Box2D
-file(GLOB_RECURSE SRC_DEBUGBREAK "Box2D/*")
+file(GLOB_RECURSE SRC_BOX2D "Box2D/*")
 source_group("Box2D" FILES ${SRC_BOX2D})
 	
 # debug_break
@@ -33,6 +33,10 @@ source_group("FastNoise" FILES ${SRC_FASTNOISE})
 # fmt
 file(GLOB_RECURSE SRC_FMT "fmt/*")
 source_group("fmt" FILES ${SRC_FMT})
+
+# IconFontCppHeaders
+file(GLOB_RECURSE SRC_ICONFONTCPPHEADERS "IconFontCppHeaders/*")
+source_group("IconFontCppHeaders" FILES ${SRC_ICONFONTCPPHEADERS})
 
 # imgui
 file(GLOB_RECURSE SRC_IMGUI "imgui/*")
@@ -70,6 +74,7 @@ add_library(EnlivengineThirdParty STATIC
 	${SRC_ENTT}
 	${SRC_FASTNOISE}
 	${SRC_FMT}
+	${SRC_ICONFONTCPPHEADERS}
 	${SRC_IMGUI}
 	${SRC_IMGUIZMO}
 	${SRC_JSON}
