@@ -5,13 +5,18 @@
 #include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Core/World.hpp>
 
+#include <Enlivengine/Window/Mouse.hpp>
+
 namespace en
 {
 
 ImGuiGame::ImGuiGame()
 	: ImGuiTool()
 	, mFramebuffer()
+	, mViewRect()
+	, mViewVisible(false)
 {
+	mFramebuffer.Create(Vector2u(840, 600), true);
 }
 
 ImGuiToolTab ImGuiGame::GetTab() const
@@ -66,27 +71,41 @@ void ImGuiGame::Display()
 		ImGui::EndMenuBar();
 	}
 
-	ImVec2 windowSize = ImGui::GetWindowSize();
+	const ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+	const ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+	const ImVec2 windowPos = ImGui::GetWindowPos();
+	mViewRect.SetMin(Vector2f(vMin.x + windowPos.x, vMin.y + windowPos.y));
+	mViewRect.SetMax(Vector2f(vMax.x + windowPos.x, vMax.y + windowPos.y));
+	const Vector2f windowSize = mViewRect.GetSize();
+	const Vector2u uWindowSize = Vector2u(windowSize);
+
+	if (uWindowSize != mFramebuffer.GetSize())
 	{
-		ImVec2 vMin = ImGui::GetWindowContentRegionMin();
-		ImVec2 vMax = ImGui::GetWindowContentRegionMax();
-		vMin.x += ImGui::GetWindowPos().x;
-		vMin.y += ImGui::GetWindowPos().y;
-		vMax.x += ImGui::GetWindowPos().x;
-		vMax.y += ImGui::GetWindowPos().y;
-		windowSize = ImVec2(vMax.x - vMin.x, vMax.y - vMin.y);
+		mFramebuffer.Resize(uWindowSize);
 	}
-	const Vector2u imWindowSize = Vector2u(static_cast<U32>(windowSize.x), static_cast<U32>(windowSize.y));
-	if (imWindowSize != mFramebuffer.GetSize())
-	{
-		mFramebuffer.Resize(imWindowSize);
-	}
-	ImGui::Image(mFramebuffer.GetTexture(), windowSize);
+	ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
+
+	mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...
 }
 
 Framebuffer* ImGuiGame::GetFramebuffer()
 {
 	return &GetInstance().mFramebuffer;
+}
+
+Vector2i ImGuiGame::GetMouseScreenCoordinates()
+{
+	return Mouse::GetPositionCurrentWindow() - Vector2i(GetInstance().mViewRect.GetMin());
+}
+
+bool ImGuiGame::IsMouseInView()
+{
+	return GetInstance().mViewRect.Contains(Vector2f(Mouse::GetPositionCurrentWindow()));
+}
+
+bool ImGuiGame::IsViewVisible()
+{
+	return GetInstance().IsVisible() && GetInstance().mViewVisible;
 }
 
 } // namespace en

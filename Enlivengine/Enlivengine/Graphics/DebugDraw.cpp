@@ -189,7 +189,7 @@ void DebugDraw::Render()
 		mBuffer = bgfx::createVertexBuffer(bgfx::makeRef(mVertices, mVertexCount * sizeof(Vertex)), Vertex::kLayout);
 		enAssert(bgfx::isValid(mBuffer));
 
-		bgfx::setState(BGFX_STATE_PT_LINES | BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_BLEND_ALPHA_TO_COVERAGE);
+		bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_PT_LINES);
 		bgfx::setVertexBuffer(0, mBuffer);
 		kShader.Submit(BgfxWrapper::GetCurrentView());
 	}

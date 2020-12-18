@@ -305,14 +305,24 @@ int main(int argc, char** argv)
 					world.GetDebugDraw().DrawFrustum(playerCamEntity.Get<CameraComponent>().CreateFrustum(), Colors::Blue);
 					world.GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
 					world.GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
-					Plane p(ENLIVE_DEFAULT_UP, 0.0f);
-					Ray r(playerCamEntity.Get<TransformComponent>().GetGlobalPosition(), (playerCamEntity.Get<TransformComponent>().GetGlobalRotation().GetForward() * 3.0f - ENLIVE_DEFAULT_UP).Normalized());
-					F32 t;
-					if (r.Intersects(p, &t))
+
+					if (ImGuiGame::IsMouseInView())
 					{
-						const Vector3f p = r.GetPoint(t);
-						world.GetDebugDraw().DrawLine(playerCamEntity.Get<TransformComponent>().GetGlobalPosition(), p);
-						world.GetDebugDraw().DrawSphere(p, 0.1f);
+						Vector3f mouseDir;
+						const Vector3f mousePos = playerCamEntity.Get<CameraComponent>().ScreenToWorldPoint(ImGuiGame::GetMouseScreenCoordinates(), &mouseDir);
+						const Plane p(ENLIVE_DEFAULT_UP, 0.0f);
+						const Ray r(mousePos, mouseDir);
+						F32 t;
+						if (r.Intersects(p, &t))
+						{
+							const Vector3f point = r.GetPoint(t);
+							world.GetDebugDraw().DrawLine(mousePos, point, Colors::Green);
+							world.GetDebugDraw().DrawSphere(point, 0.05f, Colors::Green);
+						}
+						else
+						{
+							world.GetDebugDraw().DrawLine(mousePos, r.GetPoint(100.0f), Colors::Red);
+						}
 					}
 				}
 #endif // ENLIVE_DEBUG
@@ -320,13 +330,13 @@ int main(int argc, char** argv)
 				// Render
 				{
 #ifdef ENLIVE_TOOL
-					if (ImGuiGame::GetInstance().IsVisible())
+					if (ImGuiGame::IsViewVisible())
 					{
 						playerCamEntity.Get<CameraComponent>().Apply();
 						world.Render();
 					}
 
-					if (ImGuiEditor::GetInstance().IsVisible())
+					if (ImGuiEditor::IsViewVisible())
 					{
 						if (Keyboard::IsAltHold())
 						{
@@ -356,13 +366,11 @@ int main(int argc, char** argv)
 
 #ifdef ENLIVE_RELEASE
 					playerCamEntity.Get<CameraComponent>().Apply();
-					bgfx::setTransform(tilemapTransform.GetData());
-					tilemap.Render(playerCamEntity.Get<CameraComponent>().GetViewID());
+					world.Render();
 #ifdef ENLIVE_DEBUG
 					world.GetDebugDraw().Render();
 					world.GetDebugDraw().Clear();
 #endif // ENLIVE_DEBUG
-					world.Render();
 #endif // ENLIVE_RELEASE
 
 					bgfx::frame();

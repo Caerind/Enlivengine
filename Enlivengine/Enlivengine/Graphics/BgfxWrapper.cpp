@@ -131,7 +131,8 @@ bool BgfxWrapper::Init(Window& window)
     pd.context = nullptr;
     pd.backBuffer = nullptr;
     pd.backBufferDS = nullptr;
-    bgfx::setPlatformData(pd);
+	bgfx::setPlatformData(pd);
+	Framebuffer::sDefaultFramebuffer.mDepthTexture = true;
 
 	// Call bgfx::renderFrame before bgfx::init to signal to bgfx not to create a render thread.
 	// Most graphics APIs must be used on the same thread that created the window.

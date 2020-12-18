@@ -9,6 +9,8 @@
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
 
+#include <Enlivengine/Window/Mouse.hpp>
+
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
 namespace en
@@ -17,10 +19,13 @@ namespace en
 ImGuiEditor::ImGuiEditor()
 	: ImGuiTool()
 	, mFramebuffer()
+	, mViewRect()
+	, mViewVisible(false)
 	, mCamera()
 	, mEditCamera(false)
 	, mGizmoOperation(GizmoOperation::Translate)
 {
+	mFramebuffer.Create(Vector2u(840, 600), true);
 	mCamera.SetFramebuffer(&mFramebuffer);
 }
 
@@ -46,10 +51,16 @@ int ImGuiEditor::GetWindowFlags() const
 
 void ImGuiEditor::Display()
 {
+	const ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+	const ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+	const ImVec2 windowPos = ImGui::GetWindowPos();
+	mViewRect.SetMin(Vector2f(vMin.x + windowPos.x, vMin.y + windowPos.y));
+	mViewRect.SetMax(Vector2f(vMax.x + windowPos.x, vMax.y + windowPos.y));
+	const Vector2f windowSize = mViewRect.GetSize();
+
 	if (World* world = Universe::GetInstance().GetCurrentWorld())
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+		ImGuizmo::SetRect(mViewRect.GetMin().x, mViewRect.GetMin().y, windowSize.x, windowSize.y);
 		ImGuizmo::SetOrthographic(mCamera.GetProjection() == Camera::ProjectionMode::Orthographic);
 
 		ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
@@ -113,27 +124,34 @@ void ImGuiEditor::Display()
 		}
 	}
 	
-	ImVec2 windowSize = ImGui::GetWindowSize();
+	const Vector2u uWindowSize = Vector2u(windowSize);
+	if (uWindowSize != mFramebuffer.GetSize())
 	{
-		ImVec2 vMin = ImGui::GetWindowContentRegionMin();
-		ImVec2 vMax = ImGui::GetWindowContentRegionMax();
-		vMin.x += ImGui::GetWindowPos().x;
-		vMin.y += ImGui::GetWindowPos().y;
-		vMax.x += ImGui::GetWindowPos().x;
-		vMax.y += ImGui::GetWindowPos().y;
-		windowSize = ImVec2(vMax.x - vMin.x, vMax.y - vMin.y);
+		mFramebuffer.Resize(uWindowSize);
 	}
-	const Vector2u imWindowSize = Vector2u(static_cast<U32>(windowSize.x), static_cast<U32>(windowSize.y));
-	if (imWindowSize != mFramebuffer.GetSize())
-	{
-		mFramebuffer.Resize(imWindowSize);
-	}
-	ImGui::Image(mFramebuffer.GetTexture(), windowSize);
+	ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
+
+	mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...
 }
 
 Framebuffer* ImGuiEditor::GetFramebuffer()
 {
 	return &GetInstance().mFramebuffer;
+}
+
+Vector2i ImGuiEditor::GetMouseScreenCoordinates()
+{
+	return Mouse::GetPositionCurrentWindow() - Vector2i(GetInstance().mViewRect.GetMin());
+}
+
+bool ImGuiEditor::IsMouseInView()
+{
+	return GetInstance().mViewRect.Contains(Vector2f(Mouse::GetPositionCurrentWindow()));
+}
+
+bool ImGuiEditor::IsViewVisible()
+{
+	return GetInstance().IsVisible() && GetInstance().mViewVisible;
 }
 
 Camera& ImGuiEditor::GetCamera()

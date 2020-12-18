@@ -25,6 +25,9 @@ public:
 	void Display() override;
 
 	static Framebuffer* GetFramebuffer();
+	static Vector2i GetMouseScreenCoordinates();
+	static bool IsMouseInView();
+	static bool IsViewVisible();
 
 	static Camera& GetCamera();
 
@@ -37,6 +40,9 @@ public:
 
 private:
 	Framebuffer mFramebuffer;
+	Rectf mViewRect;
+	bool mViewVisible;
+
 	Camera mCamera;
 	bool mEditCamera;
 	GizmoOperation mGizmoOperation;

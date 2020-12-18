@@ -11,21 +11,30 @@ enSlotType(Window, OnResized) Framebuffer::sResizeWindow;
 Framebuffer::Framebuffer()
 	: mSize()
 	, mFramebuffer(BGFX_INVALID_HANDLE)
+	, mDepthTexture(false)
 {
+}
+
+Framebuffer::Framebuffer(const Vector2u& size, bool depth)
+	: Framebuffer()
+{
+	Create(size, depth);
 }
 
 Framebuffer::Framebuffer(Framebuffer&& other) noexcept
 	: mSize(other.mSize)
 	, mFramebuffer(other.mFramebuffer)
+	, mTextures()
+	, mDepthTexture(other.mDepthTexture)
 {
+	mTextures[0] = other.mTextures[0];
+	mTextures[1] = other.mTextures[1];
+
 	other.mSize = Vector2u(0, 0);
 	other.mFramebuffer = BGFX_INVALID_HANDLE;
-}
-
-Framebuffer::Framebuffer(const Vector2u& size)
-	: Framebuffer()
-{
-	Create(size);
+	other.mTextures[0] = BGFX_INVALID_HANDLE;
+	other.mTextures[1] = BGFX_INVALID_HANDLE;
+	other.mDepthTexture = false;
 }
 
 Framebuffer::~Framebuffer()
@@ -42,21 +51,62 @@ Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
 	{
 		mSize = other.mSize;
 		mFramebuffer = other.mFramebuffer;
+		mTextures[0] = other.mTextures[0];
+		mTextures[1] = other.mTextures[1];
+		mDepthTexture = other.mDepthTexture;
 
 		other.mSize = Vector2u(0, 0);
 		other.mFramebuffer = BGFX_INVALID_HANDLE;
+		other.mTextures[0] = BGFX_INVALID_HANDLE;
+		other.mTextures[1] = BGFX_INVALID_HANDLE;
+		other.mDepthTexture = false;
 	}
 	return *this;
 }
 
-void Framebuffer::Create(const Vector2u& size)
+void Framebuffer::Create(const Vector2u& size, bool depth)
 {
 	enAssert(!IsValid());
 	enAssert(!IsDefaultFramebuffer());
 
 	mSize = size;
-	mFramebuffer = bgfx::createFrameBuffer(static_cast<U16>(size.x), static_cast<U16>(size.y), bgfx::TextureFormat::RGBA8);
 	OnResized(this, mSize);
+
+	mTextures[0] = bgfx::createTexture2D(
+		static_cast<U16>(size.x),
+		static_cast<U16>(size.y),
+		false,
+		1,
+		bgfx::TextureFormat::RGBA8,
+		BGFX_TEXTURE_RT | BGFX_SAMPLER_U_CLAMP | BGFX_SAMPLER_V_CLAMP
+	);
+
+	if (depth)
+	{
+		const uint64_t depthTextureFlags = BGFX_TEXTURE_RT | BGFX_SAMPLER_U_CLAMP | BGFX_SAMPLER_V_CLAMP;
+		const bgfx::TextureFormat::Enum depthFormat =
+			bgfx::isTextureValid(0, false, 1, bgfx::TextureFormat::D16, depthTextureFlags) ? bgfx::TextureFormat::D16
+			: bgfx::isTextureValid(0, false, 1, bgfx::TextureFormat::D24S8, depthTextureFlags) ? bgfx::TextureFormat::D24S8
+			: bgfx::TextureFormat::D32
+			;
+
+		mTextures[1] = bgfx::createTexture2D(
+			static_cast<U16>(size.x),
+			static_cast<U16>(size.y),
+			false,
+			1,
+			depthFormat,
+			depthTextureFlags
+		);
+		mDepthTexture = true;
+	}
+	else
+	{
+		mTextures[1] = BGFX_INVALID_HANDLE;
+		mDepthTexture = false;
+	}
+
+	mFramebuffer = bgfx::createFrameBuffer((mDepthTexture) ? 2 : 1, mTextures, true);
 }
 
 void Framebuffer::Destroy()
@@ -82,7 +132,7 @@ bool Framebuffer::IsDefaultFramebuffer() const
 void Framebuffer::Resize(const Vector2u& size)
 {
 	Destroy();
-	Create(size);
+	Create(size, mDepthTexture);
 }
 
 const Vector2u& Framebuffer::GetSize() const
@@ -90,11 +140,16 @@ const Vector2u& Framebuffer::GetSize() const
 	return mSize;
 }
 
+bgfx::FrameBufferHandle Framebuffer::GetHandle() const
+{
+	return mFramebuffer;
+}
+
 bgfx::TextureHandle Framebuffer::GetTexture() const
 {
 	if (IsValid())
 	{
-		return bgfx::getTexture(mFramebuffer);
+		return mTextures[0];
 	}
 	else
 	{
@@ -102,9 +157,21 @@ bgfx::TextureHandle Framebuffer::GetTexture() const
 	}
 }
 
-bgfx::FrameBufferHandle Framebuffer::GetHandle() const
+bool Framebuffer::HasDepthTexture() const
 {
-	return mFramebuffer;
+	return mDepthTexture;
+}
+
+bgfx::TextureHandle Framebuffer::GetDepthTexture() const
+{
+	if (IsValid() && HasDepthTexture())
+	{
+		return mTextures[1];
+	}
+	else
+	{
+		return BGFX_INVALID_HANDLE;
+	}
 }
 
 Framebuffer& Framebuffer::GetDefaultFramebuffer()

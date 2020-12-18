@@ -27,9 +27,14 @@ public:
 	void Display() override;
 
 	static Framebuffer* GetFramebuffer();
+	static Vector2i GetMouseScreenCoordinates();
+	static bool IsMouseInView();
+	static bool IsViewVisible();
 
 private:
 	Framebuffer mFramebuffer;
+	Rectf mViewRect;
+	bool mViewVisible;
 };
 
 } // namespace en
