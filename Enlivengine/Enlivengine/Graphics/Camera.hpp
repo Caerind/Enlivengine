@@ -31,6 +31,8 @@ public:
 
 	virtual Frustum CreateFrustum() const;
 
+	virtual Vector3f ScreenToWorldPoint(const Vector2i& screenCoordinates, Vector3f* outDirection = nullptr) const;
+
     // Projection
 
     enum class ProjectionMode

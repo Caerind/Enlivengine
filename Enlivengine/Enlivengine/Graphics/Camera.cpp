@@ -105,6 +105,38 @@ Frustum Camera::CreateFrustum() const
 	}
 }
 
+Vector3f Camera::ScreenToWorldPoint(const Vector2i& screenCoordinates, Vector3f* outDirection) const
+{
+	if (mFramebuffer == nullptr)
+	{
+		return Vector3f::Zero();
+	}
+
+	const Vector2u& fbSize = mFramebuffer->GetSize();
+	enAssert(fbSize.x > 0);
+	enAssert(fbSize.y > 0);
+
+	const Frustum frustum = CreateFrustum();
+
+	const F32 ratioX = static_cast<F32>(screenCoordinates.x) / fbSize.x;
+	const F32 ratioY = static_cast<F32>(screenCoordinates.y) / fbSize.y;
+	const Vector3f& nearOrigin = frustum.GetCorner(Frustum::Corners::NTL);
+	const Vector3f nearUnitX = (frustum.GetCorner(Frustum::Corners::NTR) - nearOrigin);
+	const Vector3f nearUnitY = (frustum.GetCorner(Frustum::Corners::NBL) - nearOrigin);
+	const Vector3f nearResult = nearOrigin + nearUnitX * ratioX + nearUnitY * ratioY;
+
+	if (outDirection != nullptr)
+	{
+		const Vector3f& farOrigin = frustum.GetCorner(Frustum::Corners::FTL);
+		const Vector3f farUnitX = (frustum.GetCorner(Frustum::Corners::FTR) - farOrigin);
+		const Vector3f farUnitY = (frustum.GetCorner(Frustum::Corners::FBL) - farOrigin);
+		const Vector3f farResult = farOrigin + farUnitX * ratioX + farUnitY * ratioY;
+		*outDirection = (farResult - nearResult).Normalized();
+	}
+
+	return nearResult;
+}
+
 void Camera::SetProjection(ProjectionMode projection)
 {
 	mProjectionMode = projection;
