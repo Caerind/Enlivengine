@@ -65,4 +65,9 @@ void Transform::Scale(F32 uniformScale)
 	mMatrix.ApplyScale(uniformScale);
 }
 
+void Transform::SetTransform(const Vector3f& translation, const Matrix3f& rotation, const Vector3f& scale /*= Vector3f(1.0f)*/)
+{
+	mMatrix = Matrix4f::Transform(translation, rotation, scale);
+}
+
 } // namespace en

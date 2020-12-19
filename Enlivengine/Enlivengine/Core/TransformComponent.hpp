@@ -40,6 +40,9 @@ public:
 	void Scale(const Vector3f& scale);
 	void Scale(F32 uniformScale);
 
+	// Transform
+	void SetTransform(const Vector3f& translation, const Matrix3f& rotation, const Vector3f& scale = Vector3f(1.0f));
+
 	// Children
 	void AttachChild(const Entity& childEntity);
 	void DetachChild(const Entity& childEntity);

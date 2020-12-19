@@ -65,7 +65,6 @@ void ImGuiEditor::Display()
 
 	if (World* world = Universe::GetInstance().GetCurrentWorld())
 	{
-
 		ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
 		switch (mGizmoOperation)
 		{
@@ -82,7 +81,8 @@ void ImGuiEditor::Display()
 			if (entity.IsValid() && entity.Has<TransformComponent>())
 			{
 				TransformComponent& transform = entity.Get<TransformComponent>();
-				float* mtxData = const_cast<float*>(transform.GetLocalMatrix().GetData());
+				float mtxData[16];
+				std::memcpy(mtxData, transform.GetGlobalMatrix().GetData(), sizeof(float) * 16);
 				ImGuizmo::Manipulate(
 					mCamera.GetViewMatrix().GetData(),
 					mCamera.GetProjectionMatrix().GetData(),
@@ -90,9 +90,13 @@ void ImGuiEditor::Display()
 					ImGuizmo::LOCAL,
 					mtxData
 				);
+
+				Matrix4f parentMtx = transform.HasParent() ? transform.GetParent().Get<TransformComponent>().GetGlobalMatrix() : Matrix4f::Identity();
+				world->GetDebugDraw().DrawTransform(parentMtx);
 				if (ImGuizmo::IsUsing())
 				{
-					transform.MarkGlobalMatrixAsDirty();
+					const Matrix4f result = Matrix4f::Identity().Set(mtxData) * parentMtx.Inversed();
+					transform.SetTransform(result.GetTranslation(), result.GetRotation(), result.GetScale());
 				}
 			}
 		}

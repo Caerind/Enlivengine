@@ -94,6 +94,12 @@ void TransformComponent::Scale(F32 uniformScale)
 	MarkGlobalMatrixAsDirty();
 }
 
+void TransformComponent::SetTransform(const Vector3f& translation, const Matrix3f& rotation, const Vector3f& scale /*= Vector3f(1.0f)*/)
+{
+	Transform::SetTransform(translation, rotation, scale);
+	MarkGlobalMatrixAsDirty();
+}
+
 void TransformComponent::AttachChild(const Entity& childEntity)
 {
 	enAssert(childEntity != mEntity);
@@ -220,7 +226,7 @@ Matrix3f TransformComponent::GetGlobalRotation() const
 	return GetGlobalMatrix().GetRotation();
 }
 
-const en::Matrix4f& TransformComponent::GetLocalMatrix() const
+const Matrix4f& TransformComponent::GetLocalMatrix() const
 {
 	return mMatrix;
 }
