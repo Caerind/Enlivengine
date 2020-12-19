@@ -736,9 +736,9 @@ namespace ImGuizmo
       rayOrigin.Transform(makeVect(mox, moy, 0.f, 1.f), mViewProjInverse);
       rayOrigin *= 1.f / rayOrigin.w;
       vec_t rayEnd;
-      rayEnd.Transform(makeVect(mox, moy, 1.f - FLT_EPSILON, 1.f), mViewProjInverse);
-      rayEnd *= 1.f / rayEnd.w;
-      rayDir = Normalized(rayEnd - rayOrigin);
+	  rayEnd.Transform(makeVect(mox, moy, 1.f - FLT_EPSILON, 1.f), mViewProjInverse);
+	  rayEnd *= 1.f / rayEnd.w;
+	  rayDir = Normalized(rayEnd - rayOrigin);
    }
 
    static float GetSegmentLengthClipSpace(const vec_t& start, const vec_t& end)
@@ -2367,7 +2367,7 @@ namespace ImGuizmo
       }
    }
 
-   void ViewManipulate(float* view, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor)
+   bool ViewManipulate(float* view, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor)
    {
       static bool isDraging = false;
       static bool isClicking = false;
@@ -2376,6 +2376,8 @@ namespace ImGuizmo
       static vec_t interpolationDir;
       static int interpolationFrames = 0;
       const vec_t referenceUp = makeVect(0.f, 1.f, 0.f);
+
+      bool modified = false;
 
       matrix_t svgView, svgProjection;
       svgView = gContext.mViewMat;
@@ -2544,6 +2546,7 @@ namespace ImGuizmo
          newUp = interpolationUp;
          vec_t newEye = camTarget + newDir * length;
          LookAt(&newEye.x, &camTarget.x, &newUp.x, view);
+         modified = true;
       }
       isInside = ImRect(position, position + size).Contains(io.MousePos);
 
@@ -2584,10 +2587,13 @@ namespace ImGuizmo
 
          vec_t newEye = camTarget + newDir * length;
          LookAt(&newEye.x, &camTarget.x, &referenceUp.x, view);
+         modified = true;
       }
 
       // restore view/projection because it was used to compute ray
       ComputeContext(svgView.m16, svgProjection.m16, gContext.mModelSource.m16, gContext.mMode);
+
+      return modified;
    }
 };
 

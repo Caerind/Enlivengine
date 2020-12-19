@@ -9,6 +9,7 @@
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
 
+#include <Enlivengine/Math/Math.hpp>
 #include <Enlivengine/Window/Mouse.hpp>
 
 #include <Enlivengine/Meta/ObjectEditor.hpp>
@@ -22,7 +23,8 @@ ImGuiEditor::ImGuiEditor()
 	, mViewRect()
 	, mViewVisible(false)
 	, mCamera()
-	, mEditCamera(false)
+	, mEditConfig(false)
+	, mShowManipulator(true)
 	, mGizmoOperation(GizmoOperation::Translate)
 {
 	mFramebuffer.Create(Vector2u(840, 600), true);
@@ -58,10 +60,11 @@ void ImGuiEditor::Display()
 	mViewRect.SetMax(Vector2f(vMax.x + windowPos.x, vMax.y + windowPos.y));
 	const Vector2f windowSize = mViewRect.GetSize();
 
+	ImGuizmo::SetRect(mViewRect.GetMin().x, mViewRect.GetMin().y, windowSize.x, windowSize.y);
+	ImGuizmo::SetOrthographic(mCamera.GetProjection() == Camera::ProjectionMode::Orthographic);
+
 	if (World* world = Universe::GetInstance().GetCurrentWorld())
 	{
-		ImGuizmo::SetRect(mViewRect.GetMin().x, mViewRect.GetMin().y, windowSize.x, windowSize.y);
-		ImGuizmo::SetOrthographic(mCamera.GetProjection() == Camera::ProjectionMode::Orthographic);
 
 		ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
 		switch (mGizmoOperation)
@@ -97,30 +100,31 @@ void ImGuiEditor::Display()
 
 	if (ImGui::BeginMenuBar())
 	{
+		if (ImGui::SmallButton("Config"))
+		{
+			mEditConfig = true;
+		}
+
 #ifdef ENLIVE_DEBUG
 		ImGui::PushItemWidth(130);
 		ObjectEditor::ImGuiEditor(mGizmoOperation, "");
 		ImGui::PopItemWidth();
 #endif // ENLIVE_DEBUG
 
-		if (ImGui::SmallButton("Camera"))
-		{
-			mEditCamera = true;
-		}
-
 		ImGui::EndMenuBar();
 	}
 
-	if (mEditCamera)
+	if (mEditConfig)
 	{
-		if (ImGui::Begin("Editor - Camera", &mEditCamera))
+		if (ImGui::Begin("Editor - Config", &mEditConfig))
 		{
-			ObjectEditor::ImGuiEditor(mCamera, "");
+			ObjectEditor::ImGuiEditor(mCamera, "Camera Settings");
+			ImGui::Checkbox("Show Manipulator", &mShowManipulator);
 			ImGui::End();
 		}
 		else
 		{
-			mEditCamera = false;
+			mEditConfig = false;
 		}
 	}
 	
@@ -132,6 +136,25 @@ void ImGuiEditor::Display()
 	ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
 
 	mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...
+
+	// ViewManipulator
+	if (mShowManipulator)
+	{
+		float manipulatorSize = 100;
+		float viewMtx[16];
+		float viewMtxR[16];
+		std::memcpy(viewMtx, mCamera.GetViewMatrix().GetData(), sizeof(float) * 16);
+		std::memcpy(viewMtxR, mCamera.GetViewMatrix().GetData(), sizeof(float) * 16);
+		ImGuizmo::ViewManipulate(viewMtx, 8.0f, ImVec2(mViewRect.GetMin().x + mViewRect.GetSize().x - manipulatorSize, mViewRect.GetMin().y), ImVec2(manipulatorSize, manipulatorSize), 0x10101010);
+		if (std::memcmp(viewMtx, viewMtxR, sizeof(float) * 16) != 0)
+		{
+			const Matrix4f iMtx = Matrix4f::Identity().Set(viewMtx).Inversed();
+			const Matrix3f rot = Matrix3f(-1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f) * iMtx.GetRotation(); // Don't exactly know why, but it seems we need to negate X too...
+
+			mCamera.SetPosition(iMtx.GetTranslation());
+			mCamera.SetRotation(rot);
+		}
+	}
 }
 
 Framebuffer* ImGuiEditor::GetFramebuffer()

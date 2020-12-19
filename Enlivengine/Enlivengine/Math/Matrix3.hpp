@@ -301,6 +301,32 @@ public:
 	static constexpr Matrix3<T> RotationY(const Vector2<T> & v) { return Matrix3<T>(v.x, T(0), v.y, T(0), T(1), T(0), -v.y, T(0), v.x); }
 	static constexpr Matrix3<T> RotationZ(const Vector2<T> & v) { return Matrix3<T>(v.x, -v.y, T(0), v.y, v.x, T(0), T(0), T(0), T(1)); }
 
+	static inline Matrix3<T> RotationAxis(const Vector3<T>& axis, const T& angle)
+	{
+		const T length2 = axis.GetSquaredLength();
+		if (length2 < T(Math::Epsilon))
+		{
+			return Matrix3f::Identity();
+		}
+
+		const Vector3<T> n = axis * (1.f / Math::FastSqrt(length2));
+		const T s = Math::Sin(angle);
+		const T c = Math::Cos(angle);
+		const T k = 1.f - c;
+
+		const T xx = n.x * n.x * k + c;
+		const T yy = n.y * n.y * k + c;
+		const T zz = n.z * n.z * k + c;
+		const T xy = n.x * n.y * k;
+		const T yz = n.y * n.z * k;
+		const T zx = n.z * n.x * k;
+		const T xs = n.x * s;
+		const T ys = n.y * s;
+		const T zs = n.z * s;
+
+		return Matrix3f(xx, xy + zs, zx - ys, xy - zs, yy, yz + xs, zx + ys, yz - xs, zz); // Might be the translated
+	}
+
 	static constexpr Matrix3<T> Zero() { return Matrix3<T>(T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0)); }
 	static constexpr Matrix3<T> Identity() { return Matrix3<T>(T(1), T(0), T(0), T(0), T(1), T(0), T(0), T(0), T(1)); }
 

@@ -51,7 +51,7 @@ void Plane::Set(const Vector3f& normal, F32 constant)
 void Plane::Set(const Vector3f& normal, const Vector3f& point)
 {
 	mNormal = normal;
-	mConstant = -normal.DotProduct(point);
+	mConstant = -normal.DotProduct(point); // TODO : Might be wrong here ?
 }
 
 void Plane::Set(F32 a, F32 b, F32 c, F32 d)
@@ -65,7 +65,7 @@ void Plane::Set(const Vector3f& point1, const Vector3f& point2, const Vector3f& 
 	const Vector3f edge1 = point2 - point1;
 	const Vector3f edge2 = point3 - point1;
 	mNormal = edge1.CrossProduct(edge2).Normalized();
-	mConstant = -mNormal.DotProduct(point1);
+	mConstant = -mNormal.DotProduct(point1); // TODO : Might be wrong here ?
 }
 
 const Vector3f& Plane::GetNormal() const

@@ -44,7 +44,8 @@ private:
 	bool mViewVisible;
 
 	Camera mCamera;
-	bool mEditCamera;
+	bool mEditConfig;
+	bool mShowManipulator;
 	GizmoOperation mGizmoOperation;
 };
 

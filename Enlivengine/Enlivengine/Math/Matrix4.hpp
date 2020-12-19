@@ -398,6 +398,15 @@ public:
 		out.z = Vector3<T>(data[2], data[6], data[10]).DotProduct(point) + data[14];
 		return out;
 	}
+	constexpr Vector4<T> Transform4(const Vector4<T>& vector) const
+	{
+		Vector4<T> out;
+		out.x = Vector4<T>(data[0], data[4], data[8], data[12]).DotProduct(vector);
+		out.y = Vector4<T>(data[1], data[5], data[9], data[13]).DotProduct(vector);
+		out.z = Vector4<T>(data[2], data[6], data[10], data[14]).DotProduct(vector);
+		out.w = Vector4<T>(data[3], data[7], data[11], data[15]).DotProduct(vector);
+		return out;
+	}
 	constexpr Vector3<T> TransformDirection(const Vector3<T>& direction) const
 	{
 		Vector3<T> out;
@@ -574,6 +583,7 @@ public:
 	static constexpr Matrix4<T> RotationX(const Vector2<T> & v) { return Matrix4<T>(T(1), T(0), T(0), T(0), T(0), v.x, -v.y, T(0), T(0), v.y, v.x, T(0), T(0), T(0), T(0), T(1)); }
 	static constexpr Matrix4<T> RotationY(const Vector2<T> & v) { return Matrix4<T>(v.x, T(0), v.y, T(0), T(0), T(1), T(0), T(0), -v.y, T(0), v.x, T(0), T(0), T(0), T(0), T(1)); }
 	static constexpr Matrix4<T> RotationZ(const Vector2<T> & v) { return Matrix4<T>(v.x, -v.y, T(0), T(0), v.y, v.x, T(0), T(0), T(0), T(0), T(1), T(0), T(0), T(0), T(0), T(1)); }
+	static inline Matrix4<T> RotationAxis(const Vector3<T>& axis, const T& angle) { return Rotation(Matrix3f::RotationAxis(axis, angle)); }
 	static constexpr Matrix4<T> Scale(const Vector3<T> & scale) { return Matrix4<T>(scale.x, T(0), T(0), T(0), T(0), scale.y, T(0), T(0), T(0), T(0), scale.z, T(0), T(0), T(0), T(0), T(1)); }
 	static constexpr Matrix4<T> Scale(const T & sx, const T & sy, const T & sz) { return Matrix4<T>(sx, T(0), T(0), T(0), T(0), sy, T(0), T(0), T(0), T(0), sz, T(0), T(0), T(0), T(0), T(1)); }
 	static constexpr Matrix4<T> Scale(const T & s) { return Matrix4<T>(s, T(0), T(0), T(0), T(0), s, T(0), T(0), T(0), T(0), s, T(0), T(0), T(0), T(0), T(1)); }
