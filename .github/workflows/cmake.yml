@@ -18,15 +18,15 @@ jobs:
           }
         - {
             name: "Ubuntu GCC",
-            os:ubuntu-latest,
-            cc:"gcc-9",
-            cxx:"g++-9"
+            os: ubuntu-latest,
+            cc: "gcc-9",
+            cxx: "g++-9"
           }
         - {
             name: "MacOS Clang",
-            os:macos-latest,
-            cc:"clang",
-            cxx:"clang++"
+            os: macos-latest,
+            cc: "clang",
+            cxx: "clang++"
           }
           
     name: ${{ matrix.platform.name }}
