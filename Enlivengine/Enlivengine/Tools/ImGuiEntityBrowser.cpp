@@ -182,7 +182,7 @@ void ImGuiEntityBrowser::DisplayEntity(Entity& entity, World* world)
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 		{
 			ImGui::SetDragDropPayload("ENTITY_DRAG_N_DROP", &entity, sizeof(Entity));
-			ImGui::Text(entityName);
+			ImGui::Text("%s", entityName);
 			ImGui::EndDragDropSource();
 		}
 
