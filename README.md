@@ -1,6 +1,6 @@
 # Enlivengine
 
-[![Build Status](https://travis-ci.com/Caerind/Enlivengine.svg?branch=master)](https://travis-ci.com/Caerind/Enlivengine)
+![CMake](https://github.com/Caerind/Enlivengine/workflows/CMake/badge.svg?branch=master)
 
 My new engine using C++17, SDL & Bgfx
 
