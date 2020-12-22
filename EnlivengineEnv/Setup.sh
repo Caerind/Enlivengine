@@ -6,11 +6,7 @@ fi
 
 ./EnlivengineEnv/GenerateProject.sh
 
-# ShaderC
+./EnlivengineEnv/BuildAll.sh
+
 ./EnlivengineEnv/CompileShaders.sh
-
-# Enlivengine
-MSBuild.exe build/Enlivengine/Enlivengine/Enlivengine.vcxproj
-
-./EnlivengineEnv/StartVisual.sh
 
