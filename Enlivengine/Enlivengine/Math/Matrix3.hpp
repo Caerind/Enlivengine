@@ -306,7 +306,7 @@ public:
 		const T length2 = axis.GetSquaredLength();
 		if (length2 < T(Math::Epsilon))
 		{
-			return Matrix3f::Identity();
+			return Matrix3<T>::Identity();
 		}
 
 		const Vector3<T> n = axis * (1.f / Math::FastSqrt(length2));
@@ -324,7 +324,7 @@ public:
 		const T ys = n.y * s;
 		const T zs = n.z * s;
 
-		return Matrix3f(xx, xy + zs, zx - ys, xy - zs, yy, yz + xs, zx + ys, yz - xs, zz); // Might be the translated
+		return Matrix3<T>(xx, xy + zs, zx - ys, xy - zs, yy, yz + xs, zx + ys, yz - xs, zz); // Might be the translated
 	}
 
 	static constexpr Matrix3<T> Zero() { return Matrix3<T>(T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0)); }

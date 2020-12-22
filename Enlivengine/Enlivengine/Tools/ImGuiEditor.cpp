@@ -75,9 +75,9 @@ void ImGuiEditor::Display()
 		}
 
 		const auto& selectedEntities = world->GetSelectedEntities();
-		for (const auto& enttEntity : selectedEntities)
+		if (selectedEntities.size() == 1)
 		{
-			Entity entity(*world, enttEntity);
+			Entity entity(*world, selectedEntities[0]);
 			if (entity.IsValid() && entity.Has<TransformComponent>())
 			{
 				TransformComponent& transform = entity.Get<TransformComponent>();

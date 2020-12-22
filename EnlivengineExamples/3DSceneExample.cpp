@@ -153,9 +153,10 @@ int main(int argc, char** argv)
 
 			Entity playerCamEntity = world.GetEntityManager().CreateEntity();
 			{
+				playerCamEntity.Add<NameComponent>().name = "PlayerCam";
 				TransformComponent& playerCamTransform = playerCamEntity.Add<TransformComponent>();
-				playerCamTransform.SetPosition(Vector3f(0.0f, 0.8f, 0.0f));
 				playerCamTransform.AttachToParent(playerEntity); // Attach this entity to player entity
+				playerCamTransform.SetPosition(Vector3f(0.0f, 0.8f, 0.0f));
 				CameraComponent& playerCam = playerCamEntity.Add<CameraComponent>();
 				playerCam.InitializePerspective(80.0f);
 #if defined(ENLIVE_TOOL)
@@ -168,30 +169,29 @@ int main(int argc, char** argv)
 
 			Entity a1 = world.GetEntityManager().CreateEntity();
 			{
-				a1.Add<NameComponent>().name = "A1";
+				a1.Add<NameComponent>().name = "Wall1";
 				a1.Add<TransformComponent>().SetPosition(Vector3f(0.0f, 1.0f, 0.0f));
 				a1.Add<RenderableComponent>();
 				a1.Add<SpriteComponent>().sprite.SetTexture(textureA);
 			}
 			Entity a2 = world.GetEntityManager().CreateEntity();
 			{
-				a2.Add<NameComponent>().name = "A2";
-				a2.Add<TransformComponent>().SetPosition(Vector3f(1.0f, 2.0f, 0.0f));
+				a2.Add<NameComponent>().name = "Wall2";
+				a2.Add<TransformComponent>().SetPosition(Vector3f(1.0f, 1.0f, 0.0f));;
 				a2.Add<RenderableComponent>();
 				a2.Add<SpriteComponent>().sprite.SetTexture(textureA);
 			}
 			Entity b1 = world.GetEntityManager().CreateEntity();
 			{
-				b1.Add<NameComponent>().name = "B1";
+				b1.Add<NameComponent>().name = "Ship";
 				TransformComponent& b1Transform = b1.Add<TransformComponent>();
 				b1Transform.SetPosition(Vector3f(2.0f, 2.0f, 0.0f));
-				b1Transform.AttachChild(a2);
 				b1.Add<RenderableComponent>();
 				b1.Add<SpriteComponent>().sprite.SetTexture(textureB);
 			}
 			Entity c1 = world.GetEntityManager().CreateEntity();
 			{
-				c1.Add<NameComponent>().name = "C1";
+				c1.Add<NameComponent>().name = "Ground1";
 				c1.Add<TransformComponent>().SetRotation(Matrix3f::RotationX(90.0f));
 				c1.Add<RenderableComponent>();
 				TilemapComponent& tilemapComponent = c1.Add<TilemapComponent>();

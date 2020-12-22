@@ -221,10 +221,9 @@ struct HasCustomEditor<en::Entity>
 	static constexpr bool value = true;
 	static bool ImGuiEditor(en::Entity& object, const char* name)
 	{
-		const bool fromEntityBrowser = name == nullptr;
 		bool display = true;
-
-		if (!fromEntityBrowser)
+		bool onlyThisOneSelected = object.GetWorld().GetSelectedEntities().size() == 1;
+		if (!onlyThisOneSelected)
 		{
 			display = ImGui::CollapsingHeader(name);
 		}
@@ -232,14 +231,22 @@ struct HasCustomEditor<en::Entity>
 		bool modified = false;
 		if (display)
 		{
-			if (!fromEntityBrowser)
+			if (!onlyThisOneSelected)
 			{
 				ImGui::Indent();
 			}
 			if (object.IsValid())
 			{
 				const en::U32 entityID = object.GetID();
-				ImGui::Text("ID: %d", entityID);
+				ImGui::Text("%s (ID: %d)", name, entityID);
+
+				ImGui::SameLine();
+				bool destroyed = false;
+				if (ImGui::SmallButton(ICON_FA_BAN))
+				{
+					destroyed = true;
+				}
+
 				ImGui::PushID(entityID);
 
 				const auto& componentInfos = en::ComponentManager::GetComponentInfos();
@@ -302,12 +309,17 @@ struct HasCustomEditor<en::Entity>
 				}
 
 				ImGui::PopID();
+
+				if (destroyed)
+				{
+					object.Destroy();
+				}
 			}
 			else
 			{
 				ImGui::Text("Invalid entity");
 			}
-			if (!fromEntityBrowser)
+			if (!onlyThisOneSelected)
 			{
 				ImGui::Unindent();
 			}

@@ -132,6 +132,11 @@ bool World::UnselectEntity(const Entity& entity)
 	return false;
 }
 
+void World::ClearSelectedEntities()
+{
+	mSelectedEntities.clear();
+}
+
 const std::vector<entt::entity>& World::GetSelectedEntities() const
 {
 	return mSelectedEntities;

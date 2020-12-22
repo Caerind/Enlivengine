@@ -438,18 +438,21 @@ struct HasCustomEditor<en::Transform>
 		if (ImGui::CollapsingHeader(name))
 		{
 			ImGui::Indent();
+
 			en::Vector3f position = object.GetPosition();
+			en::Matrix3f mat = object.GetRotation();
+			en::Vector3f rotation;
+			rotation.x = en::Math::Atan2(mat(2, 2), mat(1, 2));
+			rotation.y = en::Math::Atan2(en::Math::FastSqrt(mat(1, 2) * mat(1, 2) + mat(2, 2) * mat(2, 2)), -mat(0, 2));
+			rotation.z = en::Math::Atan2(mat(0, 0), mat(0, 1));
+			en::Vector3f scale = object.GetScale();
+
 			if (en::ObjectEditor::ImGuiEditor(position, "position"))
 			{
 				object.SetPosition(position);
 				modified = true;
 			}
-			
-			en::Matrix3f mat = object.GetRotation();
-			en::Vector3f rotation;
-			rotation.x = en::Math::Atan2(mat(2,2), mat(1,2));
-			rotation.y = en::Math::Atan2(en::Math::FastSqrt(mat(1,2) * mat(1,2) + mat(2,2) * mat(2,2)), -mat(0,2));
-			rotation.z = en::Math::Atan2(mat(0,0), mat(0,1));
+
 			if (en::ObjectEditor::ImGuiEditor(rotation, "rotation"))
 			{
 				en::Matrix3f rot[3];
@@ -461,12 +464,12 @@ struct HasCustomEditor<en::Transform>
 				modified = true;
 			}
 
-			en::Vector3f scale = object.GetScale();
 			if (en::ObjectEditor::ImGuiEditor(scale, "scale"))
 			{
 				object.SetScale(scale);
 				modified = true;
 			}
+
 			ImGui::Unindent();
 		}
 		return modified;

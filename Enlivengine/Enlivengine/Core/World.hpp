@@ -47,6 +47,7 @@ public:
 	bool IsSelected(const Entity& entity) const;
 	bool SelectEntity(const Entity& entity);
 	bool UnselectEntity(const Entity& entity);
+	void ClearSelectedEntities();
 	const std::vector<entt::entity>& GetSelectedEntities() const;
 #endif // ENLIVE_DEBUG
 

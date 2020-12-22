@@ -9,6 +9,9 @@
 namespace en
 {
 
+class Entity;
+class World;
+
 class ImGuiEntityBrowser : public ImGuiTool
 {
 	ENLIVE_SINGLETON(ImGuiEntityBrowser);
@@ -19,6 +22,9 @@ public:
 	const char* GetSaveName() const override;
 
 	void Display() override;
+
+private:
+	void DisplayEntity(Entity& entity, World* world);
 };
 
 } // namespace en

@@ -122,8 +122,10 @@ void TransformComponent::AttachChild(const Entity& childEntity)
 		childTransform.mParent.Get<TransformComponent>().DetachChild(childEntity);
 	}
 
-	// Set the new parent
+	// Set the new parent & matrix
+	const Matrix4f result = childTransform.GetGlobalMatrix() * GetGlobalMatrix().Inversed();
 	childTransform.mParent = mEntity;
+	childTransform.SetTransform(result.GetTranslation(), result.GetRotation(), result.GetScale());
 
 	// Store the child on parent's side
 	mChildren.push_back(childEntity);
@@ -139,8 +141,10 @@ void TransformComponent::DetachChild(const Entity& childEntity)
 	// It should be the parent
 	enAssert(childTransform.mParent == mEntity);
 
-	// Reset the parent
+	// Reset the parent & matrix
+	const Matrix4f result = childTransform.GetGlobalMatrix();
 	childTransform.mParent = Entity();
+	childTransform.SetTransform(result.GetTranslation(), result.GetRotation(), result.GetScale());
 
 	// Remove the child on parent's side
 	const U32 childrenCount = GetChildrenCount();
