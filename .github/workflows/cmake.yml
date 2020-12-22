@@ -1,25 +1,41 @@
-# See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-# See: https://github.com/actions/starter-workflows/issues/53
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake.yml
+# See: https://github.com/cristianadam/HelloWorld/blob/master/.github/workflows/build_cmake.yml
     
 name: CMake
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  build-ubuntu:
-    runs-on: ubuntu-latest
-  
-    steps:
-      - uses: actions/checkout@v2
-      - name: InstallDependencies
-        run: sudo apt-get install gcc-9 g++-9 libgl1-mesa-dev cmake
-      - name: GenerateProject
-        run: bash ./EnlivengineEnv/GenerateProject.sh
-      - name: BuildAll
-        run: ./EnlivengineEnv/BuildAll.sh
-      - name: Tests
-        run: ./EnlivengineEnv/Tests.sh
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "Ubuntu Latest GCC"
+            os: ubuntu-latest,
+            cc: "gcc", 
+            cxx: "g++"
+          }
+        - {
+            name: "macOS Latest Clang",
+            os: macos-latest,
+            cc: "clang", 
+            cxx: "clang++"
+          }
 
+    steps:
+    - uses: actions/checkout@v2
     
-    
+    - name: Install dependencies
+      run: bash ./EnlivengineEnv/Dependencies.sh
+      
+    - name: GenerateProject
+      run: bash ./EnlivengineEnv/GenerateProject.sh
+      
+    - name: BuildAll
+      run: bash ./EnlivengineEnv/BuildAll.sh
+      
+    - name: Tests
+      run: bash ./EnlivengineEnv/Tests.sh
