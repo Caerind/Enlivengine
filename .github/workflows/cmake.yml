@@ -6,30 +6,35 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
-        config:
-        - {
-            name: "Ubuntu Latest GCC"
-            os: ubuntu-latest,
-            cc: "gcc", 
-            cxx: "g++"
+        platform: [
+          {
+            os:windows-latest,
+            cc:cl,
+            cxx:cl
+          },
+          {
+            os:ubuntu-latest,
+            cc:gcc-9,
+            cxx:g++-9
+          },
+          {
+            os:macos-latest,
+            cc:clang,
+            cxx:clang++
           }
-        - {
-            name: "macOS Latest Clang",
-            os: macos-latest,
-            cc: "clang", 
-            cxx: "clang++"
-          }
-
+        ]
+    runs-on: ${{ matrix.platform.os }}
+    
     steps:
     - uses: actions/checkout@v2
     
     - name: Install dependencies
-      run: bash ./EnlivengineEnv/Dependencies.sh
+      run: |
+          bash ./EnlivengineEnv/Dependencies.sh
+          export CXX=${{ matrix.platform.cxx }} CC=${{ matrix.platform.cc }}
       
     - name: GenerateProject
       run: bash ./EnlivengineEnv/GenerateProject.sh

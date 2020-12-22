@@ -19,6 +19,8 @@ else
 	platform='windows'
 fi
 
-if [[ "$platform" != "windows" ]]; then
+if [[ "$platform" == "mac" ]]; then
+	sudo apt-get install -y cmake clang libgl1-mesa-dev
+elif [[ "$platform" != "windows" ]]; then
 	sudo apt-get install -y cmake gcc-9 g++-9 libgl1-mesa-dev
 fi
