@@ -17,9 +17,9 @@ jobs:
       - name: GenerateProject
         run: bash ./EnlivengineEnv/GenerateProject.sh
       - name: BuildAll
-        run: ./EnlivengineEnv/BuildAll.sh
+        run: bash ./EnlivengineEnv/BuildAll.sh
       - name: Tests
-        run: ./EnlivengineEnv/Tests.sh
+        run: bash ./EnlivengineEnv/Tests.sh
 
     
     
