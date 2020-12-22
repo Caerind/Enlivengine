@@ -16,6 +16,8 @@ jobs:
         run: sudo apt-get install gcc-9 g++-9 libgl1-mesa-dev cmake
       - name: GenerateProject
         run: bash ./EnlivengineEnv/GenerateProject.sh
+      - name: Build
+        run: cd build && ls
 
     
     
