@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Platform detection
+platform='unknown'
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+	platform='linux'
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+	platform='bsd'
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+	platform='mac'
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+	platform='windows'
+elif [[ "$OSTYPE" == "msys" ]]; then
+	platform='windows'
+elif [[ "$OSTYPE" == "win32" ]]; then
+	platform='windows'
+else
+	echo "OSTYPE == ${OSTYPE} not reconized, assuming it's windows"
+	platform='windows'
+fi
+
+if [[ "$platform" == "windows" ]]; then
+    ./build/EnlivengineTests/Debug/EnlivengineTests.exe # default path for Visual Studio users
+else
+    ./build/EnlivengineTests/EnlivengineTests.exe # for Linux/Unix GCC users
+fi
+
