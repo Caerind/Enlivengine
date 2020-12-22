@@ -36,7 +36,7 @@ jobs:
       run: bash ./EnlivengineEnv/GenerateProject.sh
       
     - name: BuildAll
-      run: bash ./EnlivengineEnv/BuildAll.sh
+      run: bash ./EnlivengineEnv/BuildMain.sh
       
     - name: Tests
       run: bash ./EnlivengineEnv/Tests.sh

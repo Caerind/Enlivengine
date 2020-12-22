@@ -6,5 +6,6 @@ else
 	./EnlivengineEnv/GenerateProject.sh
 fi
 
-cmake --build build
+cmake --build build --target Enlivengine
+cmake --build build --target EnlivengineTests
 

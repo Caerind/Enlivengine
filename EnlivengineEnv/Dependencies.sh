@@ -21,5 +21,6 @@ fi
 
 if [[ "$platform" == "linux" ]]; then
 	sudo apt-get install -y cmake gcc-9 g++-9 libgl1-mesa-dev
-	export CXX="g++-9" CC="gcc-9"
+	export CC=/usr/bin/gcc-9
+	export CXX=/usr/bin/g++-9
 fi
