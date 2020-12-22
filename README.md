@@ -1,6 +1,6 @@
 # Enlivengine
 
-![CMake](https://github.com/Caerind/Enlivengine/workflows/CMake/badge.svg?branch=master)
+![Build](https://github.com/Caerind/Enlivengine/workflows/CMake/badge.svg?branch=master)
 
 My new engine using C++17, SDL & Bgfx
 
