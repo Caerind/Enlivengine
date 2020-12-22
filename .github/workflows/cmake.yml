@@ -15,13 +15,13 @@ jobs:
             os: windows-latest,
             cc: "cl",
             cxx: "cl"
-          },
+          }
         - {
             name: "Ubuntu GCC",
             os:ubuntu-latest,
             cc:"gcc-9",
             cxx:"g++-9"
-          },
+          }
         - {
             name: "MacOS Clang",
             os:macos-latest,
