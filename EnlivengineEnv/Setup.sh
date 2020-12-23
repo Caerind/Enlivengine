@@ -6,7 +6,7 @@ fi
 
 ./EnlivengineEnv/GenerateProject.sh
 
-./EnlivengineEnv/BuildAll.sh
+./EnlivengineEnv/BuildMain.sh
 
 ./EnlivengineEnv/CompileShaders.sh
 

@@ -28,11 +28,7 @@ fi
 
 # Check if shaderc exists, if not then try to build
 if [ ! -x $path_shaderc ]; then
-	if [[ "$platform" == "windows" ]]; then
-		MSBuild.exe build/Enlivengine/EnlivengineThirdParty/bgfx/shaderc.vcxproj
-	else
-		echo "Shaderc haven't been built"
-	fi
+	cmake --build build --target shaderc
 	
 	# Check if shaderc exists a second time, if not exit
 	if [ ! -x $path_shaderc ]; then
