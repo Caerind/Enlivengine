@@ -58,6 +58,7 @@ add_library(Enlivengine STATIC
 	${ENLIVENGINE_CORE_FILES}
 	${ENLIVENGINE_TOOLS_FILES}
 )
+target_compile_definitions(Enlivengine PUBLIC $<$<CONFIG:RelWithDebInfo>:ENLIVE_DEBUG>)
 if (MSVC)
 	target_compile_options(Enlivengine PRIVATE /W4 /WX)
 else()

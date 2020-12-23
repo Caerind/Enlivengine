@@ -13,5 +13,5 @@ if [ -z "$2" ]; then
 fi
 compilerFlags="$temp1 $temp2"
 
-cmake $compilerFlags ..
+cmake ${compilerFlags} ..
 

@@ -28,6 +28,7 @@ jobs:
             cc: clang,
             cxx: clang++
           }
+        config: [debug, relwithdebinfo, release]
           
     name: ${{ matrix.platform.name }}
     runs-on: ${{ matrix.platform.os }}
@@ -41,8 +42,8 @@ jobs:
     - name: GenerateProject
       run: bash ./EnlivengineEnv/GenerateProject.sh ${{ matrix.platform.cc }} ${{ matrix.platform.cxx }}
       
-    - name: BuildAll
-      run: bash ./EnlivengineEnv/BuildMain.sh
+    - name: BuildMain
+      run: bash ./EnlivengineEnv/BuildMain.sh ${{ matrix.config }}
       
     - name: Tests
-      run: bash ./EnlivengineEnv/Tests.sh
+      run: bash ./EnlivengineEnv/Tests.sh ${{ matrix.config }}
