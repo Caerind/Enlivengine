@@ -51,7 +51,7 @@ if [[ "$platform" == "windows" ]]; then
 		generatorFlag='-G "MinGW Makefiles"'
 	fi
 fi
-echo "ProjectGenerator : ${generatorFlag}"
+echo "ProjectGenerator : $generatorFlag"
 
-cmake ${compilerFlags} ${generatorFlag} ..
+cmake $compilerFlags $generatorFlag ..
 
