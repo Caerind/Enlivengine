@@ -12,28 +12,34 @@ jobs:
         platform:
         - {
             name: "Windows MSVC",
-            os: windows-latest
+            os: windows-latest,
+            cc: cl,
+            cxx: cl
           }
         - {
             name: "Ubuntu GCC",
-            os: ubuntu-latest
+            os: ubuntu-latest,
+            cc: gcc-9,
+            cxx: g++-9
           }
         - {
             name: "MacOS Clang",
-            os: macos-latest
+            os: macos-latest,
+            cc: clang,
+            cxx: clang++
           }
           
     name: ${{ matrix.platform.name }}
     runs-on: ${{ matrix.platform.os }}
     
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     
     - name: Install dependencies
       run: bash ./EnlivengineEnv/Dependencies.sh
       
     - name: GenerateProject
-      run: bash ./EnlivengineEnv/GenerateProject.sh
+      run: bash ./EnlivengineEnv/GenerateProject.sh ${{ matrix.platform.cc }} ${{ matrix.platform.cxx }}
       
     - name: BuildAll
       run: bash ./EnlivengineEnv/BuildMain.sh
