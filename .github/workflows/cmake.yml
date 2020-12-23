@@ -28,9 +28,9 @@ jobs:
             cc: clang,
             cxx: clang++
           }
-        config: [debug, relwithdebinfo, release]
+        config: [Debug, RelWithDebInfo, Release]
           
-    name: ${{ matrix.platform.name }}
+    name: ${{ matrix.platform.name }}-${{ matrix.config }}
     runs-on: ${{ matrix.platform.os }}
     
     steps:
