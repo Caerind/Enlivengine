@@ -45,13 +45,15 @@ fi
 compilerFlags="$temp1 $temp2"
 echo "CompilerFlags : $compilerFlags"
 
-generatorFlag='' # Default is good most of the time basing on the compilerFlags
+# For MinGW, we need to define the -G, elsewhere the default value is fine
+generated=false
 if [[ "$platform" == "windows" ]]; then
 	if [[ "$1" == "gcc" ]]; then
-		generatorFlag="-G \"MinGW Makefiles\""
+		cmake $compilerFlags -G "MinGW Makefiles" ..
+		generated=true
 	fi
 fi
-echo "ProjectGenerator : $generatorFlag"
-
-cmake $compilerFlags $generatorFlag ..
+if [ "$generated" = false ] ; then
+	cmake $compilerFlags ..
+fi
 
