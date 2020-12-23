@@ -22,6 +22,6 @@ fi
 if [[ "$platform" == "windows" ]]; then
     ./build/EnlivengineTests/Debug/EnlivengineTests.exe # default path for Visual Studio users
 else
-    ./build/EnlivengineTests/EnlivengineTests.exe # for Linux/Unix GCC users
+    ./build/EnlivengineTests/EnlivengineTests # for Linux/Unix GCC users
 fi
 
