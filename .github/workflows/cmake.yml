@@ -19,8 +19,8 @@ jobs:
         - {
             name: "Windows MinGW",
             os: windows-latest,
-            cc: Mingw-w64,
-            cxx: Mingw-w64
+            cc: gcc,
+            cxx: g++
           }
         - {
             name: "Ubuntu GCC",
