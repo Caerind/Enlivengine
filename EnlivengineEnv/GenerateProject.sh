@@ -43,7 +43,7 @@ else
 	fi
 fi
 compilerFlags='$temp1 $temp2'
-echo "CompilerFlags : ${compilerFlags}"
+echo "CompilerFlags : $compilerFlags"
 
 generatorFlag='' # Default is good most of the time basing on the compilerFlags
 if [[ "$platform" == "windows" ]]; then
@@ -53,5 +53,5 @@ if [[ "$platform" == "windows" ]]; then
 fi
 echo "ProjectGenerator : $generatorFlag"
 
-cmake ${compilerFlags} ${generatorFlag} ..
+cmake $compilerFlags $generatorFlag ..
 
