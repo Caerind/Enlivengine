@@ -25,6 +25,8 @@ cd build
 temp1=""
 temp2=""
 if [ -z "$1" ]; then
+	echo "C Compiler not specified, using default"
+else
         echo "C Compiler : $1"
 	temp1="-D CMAKE_C_COMPILER=$1"
 	if [[ "$platform" == "linux" ]]; then
@@ -32,6 +34,8 @@ if [ -z "$1" ]; then
 	fi
 fi
 if [ -z "$2" ]; then
+	echo "C++ Compiler not specified, using default"
+else
         echo "C++ Compiler : $2"
 	temp2="-D CMAKE_CXX_COMPILER=$2"
 	if [[ "$platform" == "linux" ]]; then
@@ -39,6 +43,7 @@ if [ -z "$2" ]; then
 	fi
 fi
 compilerFlags="$temp1 $temp2"
+echo "CompilerFlags : $compilerFlags"
 
 cmake $compilerFlags ..
 
