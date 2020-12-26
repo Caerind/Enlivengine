@@ -8,7 +8,6 @@
 #include <Enlivengine/Resources/PathManager.hpp>
 #include <Enlivengine/Core/Engine.hpp>
 #include <Enlivengine/Core/World.hpp>
-#include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/TraceryGenerator.hpp>
 #include <Enlivengine/Tools/ImGuiEditor.hpp>
@@ -112,7 +111,7 @@ int main(int argc, char** argv)
 
 		World world;
 		world.CreateSystem<RenderSystem>();
-		Universe::GetInstance().SetCurrentWorld(&world);
+		Engine::SetCurrentWorld(&world);
 
 #ifdef ENLIVE_RELEASE
 		world.Play();
@@ -177,7 +176,7 @@ int main(int argc, char** argv)
 			tilemapComponent.tilemap.SetTile({ 2,2 }, 2);
 			tilemapComponent.tilemap.SetTile({ 1,2 }, 3);
 		}
-			
+
 		// Create button event using generic way 
 		EventSystem::AddButton("moveForward", EventSystem::EventButton::Type::KeyboardKey, static_cast<U32>(Keyboard::Key::W), static_cast<U32>(Keyboard::Modifier::None), EventSystem::EventButton::ActionType::Hold);
 		// Create button event using specific helpers
@@ -255,6 +254,7 @@ int main(int argc, char** argv)
 				world.GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
 				world.GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
 
+#ifdef ENLIVE_TOOL
 				if (ImGuiGame::IsMouseInView())
 				{
 					Vector3f mouseDir;
@@ -273,6 +273,7 @@ int main(int argc, char** argv)
 						world.GetDebugDraw().DrawLine(mousePos, r.GetPoint(100.0f), Colors::Red);
 					}
 				}
+#endif // ENLIVE_TOOL
 			}
 #endif // ENLIVE_DEBUG
 
@@ -330,9 +331,8 @@ int main(int argc, char** argv)
 
 		textureA.ReleaseFromManager();
 		textureB.ReleaseFromManager();
-
-		Engine::Release();
 	}
+	Engine::Release();
 	return 0;
 }
 

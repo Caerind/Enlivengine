@@ -9,7 +9,7 @@
 // TODO : TOOLS UPDATE
 
 #include <Enlivengine/Core/Components.hpp>
-#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/Engine.hpp>
 
 #include <Enlivengine/Core/EntitySpecialization.hpp>
 #include <Enlivengine/Core/EntityManagerSpecialization.hpp>
@@ -46,7 +46,7 @@ void ImGuiPhysic::Display()
 	
 	// TODO : TOOLS UPDATE
 
-	if (World* world = Universe::GetInstance().GetCurrentWorld())
+	if (World* world = Engine::GetCurrentWorld())
 	{
 		if (world->HasPhysicSystem())
 		{

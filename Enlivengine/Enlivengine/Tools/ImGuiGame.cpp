@@ -2,7 +2,7 @@
 
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_TOOL)
 
-#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/Engine.hpp>
 #include <Enlivengine/Core/World.hpp>
 
 #include <Enlivengine/Window/Mouse.hpp>
@@ -51,7 +51,7 @@ void ImGuiGame::Display()
 {
 	if (ImGui::BeginMenuBar())
 	{
-		if (World* world = Universe::GetInstance().GetCurrentWorld())
+		if (World* world = Engine::GetCurrentWorld())
 		{
 			if (world->IsPlaying())
 			{

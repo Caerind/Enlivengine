@@ -96,7 +96,6 @@ bool Engine::IsInitialized()
 bool Engine::Release()
 {
 	Engine& engine = GetInstance();
-	enAssert(engine.mInitialized);
 
 	engine.mInitialized = false;
 
@@ -107,6 +106,8 @@ bool Engine::Release()
 		ImGuiToolManager::GetInstance().SaveToFile(PathManager::GetAssetsPath() + "tools.json");
 #endif // ENLIVE_TOOL
 		ImGuiToolManager::GetInstance().Release();
+
+		ImGuiWrapper::Release();
 	}
 #endif // ENLIVE_ENABLE_IMGUI
 
@@ -163,6 +164,16 @@ bool Engine::Update(Time& dt)
 	{
 		return false;
 	}
+}
+
+void Engine::SetCurrentWorld(World* world)
+{
+	GetInstance().mCurrentWorld = world;
+}
+
+World* Engine::GetCurrentWorld()
+{
+	return GetInstance().mCurrentWorld;
 }
 
 Engine& Engine::GetInstance()

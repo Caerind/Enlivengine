@@ -4,7 +4,7 @@
 
 #include <ImGuizmo/ImGuizmo.h>
 
-#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/Engine.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
@@ -63,7 +63,7 @@ void ImGuiEditor::Display()
 	ImGuizmo::SetRect(mViewRect.GetMin().x, mViewRect.GetMin().y, windowSize.x, windowSize.y);
 	ImGuizmo::SetOrthographic(mCamera.GetProjection() == Camera::ProjectionMode::Orthographic);
 
-	if (World* world = Universe::GetInstance().GetCurrentWorld())
+	if (World* world = Engine::GetCurrentWorld())
 	{
 		ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
 		switch (mGizmoOperation)

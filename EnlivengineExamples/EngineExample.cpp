@@ -5,7 +5,7 @@
 #include <Enlivengine/Graphics/View.hpp>
 #include <Enlivengine/System/ClassManager.hpp>
 #include <Enlivengine/Core/ComponentManager.hpp>
-#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/Engine.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/PhysicSystem.hpp>
 #include <Enlivengine/Core/Components.hpp>
@@ -429,7 +429,7 @@ public:
 		mWorld.CreateSystem<DestructionSystem>();
 		mWorld.CreateSystem<TransformRenderSystem>();
 
-		en::Universe::GetInstance().SetCurrentWorld(&mWorld);
+		en::Engine::SetCurrentWorld(&mWorld);
 		mWorld.GetFreeCamView() = getApplication().GetWindow().getMainView();
 		mWorld.GetGameView() = getApplication().GetWindow().getMainView();
 		auto* physSystem = mWorld.GetPhysicSystem();

@@ -9,7 +9,7 @@
 
 #include <Enlivengine/Meta/MetaSpecialization_Graphics.hpp>
 #include <Enlivengine/Core/ComponentManager.hpp>
-#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/Engine.hpp>
 
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/Entity.hpp>
@@ -91,7 +91,7 @@ struct HasCustomEditor<en::CameraComponent>
 	{
 		bool modified = false;
 #ifdef ENLIVE_DEBUG
-		if (en::World* world = en::Universe::GetInstance().GetCurrentWorld())
+		if (en::World* world = en::Engine::GetCurrentWorld())
 		{
 			world->GetDebugDraw().DrawFrustum(object.CreateFrustum());
 		}

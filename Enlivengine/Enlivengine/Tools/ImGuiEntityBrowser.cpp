@@ -3,7 +3,7 @@
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <Enlivengine/Core/Components.hpp>
-#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/Engine.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
@@ -40,7 +40,7 @@ const char* ImGuiEntityBrowser::GetSaveName() const
 
 void ImGuiEntityBrowser::Display()
 {
-	if (World* world = Universe::GetInstance().GetCurrentWorld())
+	if (World* world = Engine::GetCurrentWorld())
 	{
 		static constexpr U32 entityNameMaxSize = 255;
 		static char entityNameInput[entityNameMaxSize] = "";
