@@ -77,15 +77,22 @@ void ImGuiGame::Display()
 	mViewRect.SetMin(Vector2f(vMin.x + windowPos.x, vMin.y + windowPos.y));
 	mViewRect.SetMax(Vector2f(vMax.x + windowPos.x, vMax.y + windowPos.y));
 	const Vector2f windowSize = mViewRect.GetSize();
-	const Vector2u uWindowSize = Vector2u(windowSize);
 
-	if (uWindowSize != mFramebuffer.GetSize())
+	const Vector2u uWindowSize = Vector2u(windowSize);
+	if (uWindowSize != mFramebuffer.GetSize() && uWindowSize.x > 0 && uWindowSize.y > 0)
 	{
 		mFramebuffer.Resize(uWindowSize);
 	}
-	ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
+	if (uWindowSize.x > 0 && uWindowSize.y > 0)
+	{
+		ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
 
-	mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...
+		mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...
+	}
+	else
+	{
+		mViewVisible = false;
+	}
 }
 
 Framebuffer* ImGuiGame::GetFramebuffer()

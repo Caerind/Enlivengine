@@ -133,13 +133,20 @@ void ImGuiEditor::Display()
 	}
 	
 	const Vector2u uWindowSize = Vector2u(windowSize);
-	if (uWindowSize != mFramebuffer.GetSize())
+	if (uWindowSize != mFramebuffer.GetSize() && uWindowSize.x > 0 && uWindowSize.y > 0)
 	{
 		mFramebuffer.Resize(uWindowSize);
 	}
-	ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
+	if (uWindowSize.x > 0 && uWindowSize.y > 0)
+	{
+		ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
 
-	mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...
+		mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...
+	}
+	else
+	{
+		mViewVisible = false;
+	}
 
 	// ViewManipulator
 	if (mShowManipulator)
