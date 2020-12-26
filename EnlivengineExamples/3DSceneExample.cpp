@@ -42,17 +42,16 @@ public:
 			if (entity.IsValid())
 			{
 				bool render = false;
-				if (entity.Has<TransformComponent>())
-				{
-					bgfx::setTransform(entity.Get<TransformComponent>().GetGlobalMatrix().GetData());
-				}
+				const Matrix4f matrix = (entity.Has<TransformComponent>()) ? entity.Get<TransformComponent>().GetGlobalMatrix() : Matrix4f::Identity();
 				if (entity.Has<SpriteComponent>())
 				{
+					bgfx::setTransform(matrix.GetData());
 					entity.Get<SpriteComponent>().sprite.Render();
 					render = true;
 				}
 				if (entity.Has<TilemapComponent>())
 				{
+					bgfx::setTransform(matrix.GetData());
 					entity.Get<TilemapComponent>().tilemap.Render();
 					render = true;
 				}
@@ -79,9 +78,19 @@ int main(int argc, char** argv)
 
 	SDLWrapper::Init();
 	{
+		U32 bestDisplayIndex = 0;
+
+		// TODO : Dev/Player personal window options
+		if (SDL_GetNumVideoDisplays() > 1)
+		{
+			bestDisplayIndex = 1;
+		}
+
 		Window window;
-		window.Create("Test", 1600, 900);
+		window.Create("Enlivengine", bestDisplayIndex);
+
 		BgfxWrapper::Init(window);
+
 		Sprite::InitializeSprites();
 		Tilemap::InitializeTilemaps();
 		DebugDraw::InitializeDebugDraws();
