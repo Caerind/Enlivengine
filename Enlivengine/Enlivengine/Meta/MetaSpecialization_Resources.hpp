@@ -117,11 +117,12 @@ struct HasCustomEditor<en::ResourcePtr<T>>
 				}
 				for (en::U32 i = 0; i < resourceInfos.Size(); ++i)
 				{
-					const bool selected = resourceInfos[i].id == object.GetID();
+					bool selected = resourceInfos[i].id == object.GetID();
 					if (ImGui::Selectable(resourceInfos[i].identifier.c_str(), selected))
 					{
 						object = en::ResourcePtr<T>(resourceInfos[i].id);
 						modified = true;
+						selected = true;
 					}
 					if (selected)
 					{

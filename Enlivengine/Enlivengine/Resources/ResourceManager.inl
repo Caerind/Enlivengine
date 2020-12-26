@@ -70,6 +70,18 @@ void ResourcePtr<T>::ReleaseFromManager()
 }
 
 template <typename T>
+bool ResourcePtr<T>::operator==(const ResourcePtr<T>& other) const
+{
+	return mID == other.mID;
+}
+
+template <typename T>
+bool ResourcePtr<T>::operator!=(const ResourcePtr<T>& other) const
+{
+	return !operator==(other);
+}
+
+template <typename T>
 Resource<T>::Resource()
 	: priv::BaseResource()
 {

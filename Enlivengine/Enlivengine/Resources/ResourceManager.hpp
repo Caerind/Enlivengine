@@ -140,6 +140,9 @@ public:
 	T& Get() const;
 
 	void ReleaseFromManager();
+	
+	bool operator==(const ResourcePtr<T>& other) const;
+	bool operator!=(const ResourcePtr<T>& other) const;
 
 private:
 	ResourceID mID;
