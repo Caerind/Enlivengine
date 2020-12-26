@@ -14,6 +14,7 @@
 #include <IconFontCppHeaders/IconsKenney.h>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
+#include <string>
 
 namespace ImGui
 {
@@ -38,7 +39,7 @@ namespace en
 class ImGuiWrapper
 {
 public:
-	static bool Init();
+	static bool Init(const std::string& iniFilename = "");
 	static bool IsInitialized();
 	static bool Release();
 
@@ -67,6 +68,7 @@ private:
 	ImFont* mFonts[ImGui::Font::Count];
 	I64 mLast;
 	bgfx::ViewId mViewId;
+	std::string mIniFilename;
 
 	friend void ImGui::PushFont(ImGui::Font::Enum font);
 	friend class ImGuiWrapperAllocatorAccess;

@@ -33,14 +33,9 @@ ImGuiToolManager::ImGuiToolManager()
 
 void ImGuiToolManager::Initialize()
 {
-	enAssert(!ImGuiWrapper::IsInitialized());
 	enAssert(!mRunning);
 
 	RegisterTools();
-
-	ImGuiWrapper::Init();
-
-	enAssert(ImGuiWrapper::IsInitialized());
 
 	mRunning = true;
 
@@ -57,7 +52,6 @@ void ImGuiToolManager::Initialize()
 
 void ImGuiToolManager::Release()
 {
-	enAssert(ImGuiWrapper::IsInitialized());
 	enAssert(mRunning);
 
 	constexpr size_t tabs = static_cast<size_t>(Enum::GetCount<ImGuiToolTab>());
@@ -71,10 +65,6 @@ void ImGuiToolManager::Release()
 	}
 
 	mRunning = false;
-
-	ImGuiWrapper::Release();
-
-	enAssert(!ImGuiWrapper::IsInitialized());
 }
 
 bool ImGuiToolManager::LoadFromFile(const std::string& filename)
