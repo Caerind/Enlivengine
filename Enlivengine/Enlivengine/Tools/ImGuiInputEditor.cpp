@@ -117,7 +117,7 @@ void ImGuiInputEditor::Axes()
 #ifdef ENLIVE_COMPILER_MSVC
 			strcpy_s(newAxisName, "");
 #else
-			strcpy(newButtonName, "");
+			strcpy(newAxisName, "");
 #endif // ENLIVE_COMPILER_MSVC
 			newAxis = EventSystem::EventAxis();
 		}
