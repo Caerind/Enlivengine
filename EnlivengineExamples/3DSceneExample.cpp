@@ -10,6 +10,7 @@
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/TraceryGenerator.hpp>
+#include <Enlivengine/Core/PhysicSystem.hpp>
 #include <Enlivengine/Tools/ImGuiEditor.hpp>
 #include <Enlivengine/Tools/ImGuiGame.hpp>
 
@@ -20,6 +21,7 @@
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
+#include <Enlivengine/Core/PhysicComponent.hpp>
 
 using namespace en;
 
@@ -214,6 +216,7 @@ int main(int argc, char** argv)
 	ComponentManager::Register<TilemapComponent>();
 	ComponentManager::Register<CameraComponent>();
 	ComponentManager::Register<TransformComponent>();
+	ComponentManager::Register<PhysicComponent>();
 
 	// Own components
 	ComponentManager::Register<StupidShipComponent>();
@@ -226,6 +229,8 @@ int main(int argc, char** argv)
 		world.CreateSystem<StupidShipSystem>();
 		world.CreateSystem<PlayerSystem>();
 		world.CreateSystem<DebugSystem>();
+		PhysicSystem* physicSystem = world.CreateSystem<PhysicSystem>();
+		physicSystem->SetGravity(Vector2f(0.0f, -1.0f));
 		Engine::SetCurrentWorld(&world);
 
 #ifdef ENLIVE_RELEASE
@@ -292,8 +297,7 @@ int main(int argc, char** argv)
 			Entity b1 = world.GetEntityManager().CreateEntity();
 			{
 				b1.Add<NameComponent>().name = "Ship";
-				TransformComponent& b1Transform = b1.Add<TransformComponent>();
-				b1Transform.SetPosition(Vector3f(2.0f, 2.0f, 0.0f));
+				b1.Add<TransformComponent>().SetPosition(Vector3f(2.0f, 2.0f, 0.0f));
 				b1.Add<RenderableComponent>();
 				b1.Add<SpriteComponent>().sprite.SetTexture(textureB);
 				b1.Add<StupidShipComponent>();
@@ -311,16 +315,15 @@ int main(int argc, char** argv)
 				tilemapComponent.tilemap.SetTile({ 2,2 }, 2);
 				tilemapComponent.tilemap.SetTile({ 1,2 }, 3);
 			}
-
-			// Create button event using generic way 
-			EventSystem::AddButton("moveForward", EventSystem::EventButton::Type::KeyboardKey, static_cast<U32>(Keyboard::Key::W), static_cast<U32>(Keyboard::Modifier::None), EventSystem::EventButton::ActionType::Hold);
-			// Create button event using specific helpers
-			EventSystem::AddKeyButton("moveLeft", Keyboard::Key::A, EventSystem::EventButton::ActionType::Hold);
-			EventSystem::AddKeyButton("moveBackward", Keyboard::Key::S, EventSystem::EventButton::ActionType::Hold);
-			EventSystem::AddKeyButton("moveRight", Keyboard::Key::D, EventSystem::EventButton::ActionType::Hold);
-			EventSystem::AddKeyButton("action", Keyboard::Key::E, EventSystem::EventButton::ActionType::Pressed);
-			EventSystem::AddJoystickButton("jactionP1", 0, 0, EventSystem::EventButton::ActionType::Pressed);
-			EventSystem::AddJoystickButton("jactionP2", 1, 0, EventSystem::EventButton::ActionType::Pressed);
+			Entity az = world.GetEntityManager().CreateEntity();
+			{
+				az.Add<NameComponent>().name = "Ship2";
+				az.Add<TransformComponent>().SetPosition(Vector3f(1.0f, 3.0f, 4.0f));
+				az.Add<RenderableComponent>();
+				az.Add<SpriteComponent>().sprite.SetTexture(textureB);
+				auto& phys = az.Add<PhysicComponent>();
+				phys.SetBodyType(PhysicBodyType::Dynamic);
+			}
 		}
 
 		Time dt;

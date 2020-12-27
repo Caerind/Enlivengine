@@ -15,9 +15,7 @@ PhysicSystem::PhysicSystem(World& world)
 	, mPhysicWorld(nullptr)
 	, mVelocityIterations(8)
 	, mPositionIterations(3)
-	, mPlaying(true)
 #if defined(ENLIVE_DEBUG)
-	, mDebugDraw()
 	, mDebugRenderFlags(static_cast<U32>(b2Draw::e_shapeBit))
 	, mDebugRender(false)
 #endif // ENLIVE_DEBUG
@@ -94,25 +92,60 @@ bool PhysicSystem::Deinitialize(const Entity& entity, PhysicComponent& component
 void PhysicSystem::Update(Time dt)
 {
 	ENLIVE_PROFILE_FUNCTION();
-	if (mPlaying)
+	BeforeUpdate();
 	{
+		ENLIVE_PROFILE_SCOPE("Box2D_Update");
 		mPhysicWorld->Step(dt.AsSeconds(), mVelocityIterations, mPositionIterations);
+	}
+	AfterUpdate();
+}
+
+void PhysicSystem::BeforeUpdate()
+{
+	ENLIVE_PROFILE_FUNCTION();
+	auto& entityManager = mWorld.GetEntityManager();
+	auto view = entityManager.View<TransformComponent, PhysicComponent>();
+	for (auto entt : view)
+	{
+		Entity entity(entityManager, entt);
+		if (entity.IsValid())
+		{
+			auto& physicComponent = entity.Get<PhysicComponent>();
+			if (auto* body = physicComponent.GetBody())
+			{
+				const auto& transformComponent = entity.Get<TransformComponent>();
+				const auto position = transformComponent.GetPosition();
+				// TODO : Fix this
+				body->SetTransform(b2Vec2(position.x, position.y), 0.0f);
+			}
+		}
 	}
 }
 
-void PhysicSystem::Play()
+void PhysicSystem::AfterUpdate()
 {
-	mPlaying = true;
-}
-
-void PhysicSystem::Pause()
-{
-	mPlaying = false;
-}
-
-bool PhysicSystem::IsPlaying() const
-{
-	return mPlaying;
+	ENLIVE_PROFILE_FUNCTION();
+	auto& entityManager = mWorld.GetEntityManager();
+	auto view = entityManager.View<TransformComponent, PhysicComponent>();
+	for (auto entt : view)
+	{
+		en::Entity entity(entityManager, entt);
+		if (entity.IsValid())
+		{
+			const auto& physicComponent = entity.Get<en::PhysicComponent>();
+			if (physicComponent.GetBodyType() != en::PhysicBodyType::Static)
+			{
+				if (const auto* body = physicComponent.GetBody())
+				{
+					const auto& position = body->GetPosition();
+					auto& transformComponent = entity.Get<en::TransformComponent>();
+					// TODO : Fix this
+					transformComponent.SetPosition(Vector3f(position.x, position.y, transformComponent.GetPosition().z));
+					//transformComponent.SetRotation(en::Math::RadToDeg(body->GetAngle()));
+				}
+			}
+		}
+	}
 }
 
 void PhysicSystem::DisableGravity()
@@ -208,7 +241,6 @@ void PhysicSystem::Render()
 	if (mDebugRender)
 	{
 		mPhysicWorld->DrawDebugData();
-		mDebugDraw.Render();
 	}
 }
 
@@ -245,7 +277,7 @@ void PhysicSystem::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const 
 	{
 		const Vector3f pos1(vertices[i].x, vertices[i].y, 0.0f);
 		Vector3f pos2;
-		if (i <= vertexCount - 1)
+		if (i < vertexCount - 1)
 		{
 			pos2.Set(vertices[i+1].x, vertices[i+1].y, 0.0f);
 		}
@@ -253,7 +285,7 @@ void PhysicSystem::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const 
 		{
 			pos2.Set(vertices[0].x, vertices[0].y, 0.0f);
 		}
-		mDebugDraw.DrawLine(pos1, pos2, c);
+		mWorld.GetDebugDraw().DrawLine(pos1, pos2, c);
 	}
 }
 
@@ -298,7 +330,7 @@ void PhysicSystem::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color
 	const Vector3f pos2(p2.x, p2.y, 0.0f);
 	Color c;
 	c.FromBox2DColor(color);
-	mDebugDraw.DrawLine(pos1, pos2, c);
+	mWorld.GetDebugDraw().DrawLine(pos1, pos2, c);
 }
 
 void PhysicSystem::DrawTransform(const b2Transform& xf)
@@ -315,7 +347,7 @@ void PhysicSystem::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color
 	const Vector3f pos(p.x, p.y, 0.0f);
 	Color c;
 	c.FromBox2DColor(color);
-	mDebugDraw.DrawPoint(pos, c);
+	mWorld.GetDebugDraw().DrawPoint(pos, c);
 }
 
 b2Body* PhysicSystem::GetComponentBody(const PhysicComponent& component)
