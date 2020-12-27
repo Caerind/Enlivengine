@@ -177,18 +177,24 @@ void EventSystem::Update()
 
 U32 EventSystem::AddButton(const char* name, EventButton::Type type, U32 buttonIdentifier, U32 extraInfo, EventButton::ActionType action)
 {
+	const U32 hash = HashFct(name);
+	if (HasButton(hash))
+	{
+		return hash;
+	}
+
 	EventButton eventButton;
 #ifdef ENLIVE_DEBUG
 	eventButton.name = name;
 #endif // ENLIVE_DEBUG
-	eventButton.hash = HashFct(name);
+	eventButton.hash = hash;
 	eventButton.active = false;
 	eventButton.action = action;
 	eventButton.type = type;
 	eventButton.buttonIdentifier = buttonIdentifier;
 	eventButton.extraInfo = extraInfo;
 	GetInstance().mButtons.push_back(eventButton);
-	return eventButton.hash;
+	return hash;
 }
 
 U32 EventSystem::AddKeyButton(const char* name, Keyboard::Key key, EventButton::ActionType action, U32 modifiers /*= static_cast<U32>(Keyboard::Modifier::None)*/)
@@ -204,6 +210,25 @@ U32 EventSystem::AddMouseButton(const char* name, Mouse::Button mouseButton, Eve
 U32 EventSystem::AddJoystickButton(const char* name, U32 controllerId, U32 buttonIndex, EventButton::ActionType action)
 {
 	return AddButton(name, EventButton::Type::JoystickButton, buttonIndex, controllerId, action);
+}
+
+bool EventSystem::HasButton(const char* name)
+{
+	return IsButtonActive(HashFct(name));
+}
+
+bool EventSystem::HasButton(U32 hash)
+{
+	EventSystem& eventSystem = GetInstance();
+	const U32 buttonCount = static_cast<U32>(eventSystem.mButtons.size());
+	for (U32 i = 0; i < buttonCount; ++i)
+	{
+		if (eventSystem.mButtons[i].hash == hash)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 bool EventSystem::IsButtonActive(const char* name)
@@ -261,6 +286,11 @@ const EventSystem::EventButton& EventSystem::GetButton(U32 index)
 	return GetInstance().mButtons[index];
 }
 
+const std::vector<en::EventSystem::EventButton>& EventSystem::GetButtons()
+{
+	return GetInstance().mButtons;
+}
+
 const EventSystem::EventButton& EventSystem::GetLastButton()
 {
 	return GetInstance().mLastButton;
@@ -268,18 +298,43 @@ const EventSystem::EventButton& EventSystem::GetLastButton()
 
 U32 EventSystem::AddAxis(const char* name, EventAxis::Type type, U32 axisIdentifier /*= 0*/, U32 extraInfo /*= 0*/)
 {
+	const U32 hash = HashFct(name);
+	if (HasAxis(hash))
+	{
+		return hash;
+	}
+
 	EventAxis eventAxis;
 #ifdef ENLIVE_DEBUG
 	eventAxis.name = name;
 #endif // ENLIVE_DEBUG
-	eventAxis.hash = HashFct(name);
+	eventAxis.hash = hash;
 	eventAxis.active = false;
 	eventAxis.value = 0.0f;
 	eventAxis.type = type;
 	eventAxis.axisIdentifier = axisIdentifier;
 	eventAxis.extraInfo = extraInfo;
 	GetInstance().mAxes.push_back(eventAxis);
-	return eventAxis.hash;
+	return hash;
+}
+
+bool EventSystem::HasAxis(const char* name)
+{
+	return HasAxis(HashFct(name));
+}
+
+bool EventSystem::HasAxis(U32 hash)
+{
+	EventSystem& eventSystem = GetInstance();
+	const U32 axisCount = static_cast<U32>(eventSystem.mAxes.size());
+	for (U32 i = 0; i < axisCount; ++i)
+	{
+		if (eventSystem.mAxes[i].hash == hash)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 bool EventSystem::IsAxisActive(const char* name)
@@ -354,6 +409,11 @@ const EventSystem::EventAxis& EventSystem::GetAxis(U32 index)
 {
 	enAssert(index < GetButtonCount());
 	return GetInstance().mAxes[index];
+}
+
+const std::vector<en::EventSystem::EventAxis>& EventSystem::GetAxes()
+{
+	return GetInstance().mAxes;
 }
 
 void EventSystem::SetLastButton(EventButton::Type type, U32 buttonIdentifier, U32 extraInfo /*= 0*/)

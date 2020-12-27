@@ -18,17 +18,11 @@ public:
 	{
 	public:
 #ifdef ENLIVE_DEBUG
-		const std::string& GetName() const { return name; }
-#endif // ENLIVE_DEBUG
-		U32 GetHash() const { return hash; }
-		bool IsActive() const { return active; }
-
-	protected:
-		EventBase() = default;
-#ifdef ENLIVE_DEBUG
 		std::string name{};
 #endif // ENLIVE_DEBUG
 		U32 hash{ 0 };
+	protected:
+		friend class EventSystem;
 		bool active{ false };
 	};
 
@@ -54,8 +48,6 @@ public:
 		U32 extraInfo{ 0 };
 	private:
 		friend class EventSystem;
-		friend class ImGuiInputEditor;
-		EventButton() = default;
 	};
 
 	class EventAxis : public EventBase
@@ -77,8 +69,6 @@ public:
 		F32 GetValue() const { return value; }
 	private:
 		friend class EventSystem;
-		friend class ImGuiInputEditor;
-		EventAxis() = default;
 		F32 value{ 0.0f };
 	};
 
@@ -89,6 +79,8 @@ public:
 	static U32 AddKeyButton(const char* name, Keyboard::Key key, EventButton::ActionType action, U32 modifiers = static_cast<U32>(Keyboard::Modifier::None));
 	static U32 AddMouseButton(const char* name, Mouse::Button mouseButton, EventButton::ActionType action);
 	static U32 AddJoystickButton(const char* name, U32 controllerId, U32 buttonIndex, EventButton::ActionType action);
+	static bool HasButton(const char* name);
+	static bool HasButton(U32 hash);
 	static bool IsButtonActive(const char* name);
 	static bool IsButtonActive(U32 hash);
 	static U32 GetButtonCount();
@@ -96,9 +88,12 @@ public:
 	static void RemoveButton(const char* name);
 	static void RemoveButton(U32 hash);
 	static const EventButton& GetButton(U32 index);
+	static const std::vector<EventButton>& GetButtons();
 	static const EventButton& GetLastButton();
 
-	static U32 AddAxis(const char* name, EventAxis::Type type, U32 axisIdentifier = 0, U32 extraInfo = 0);
+	static U32 AddAxis(const char* name, EventAxis::Type type, U32 axisIdentifier = 0, U32 extraInfo = 0); 
+	static bool HasAxis(const char* name);
+	static bool HasAxis(U32 hash);
 	static bool IsAxisActive(const char* name);
 	static bool IsAxisActive(U32 hash);
 	static F32 GetAxisValue(const char* name);
@@ -108,6 +103,7 @@ public:
 	static void RemoveAxis(const char* name);
 	static void RemoveAxis(U32 hash);
 	static const EventAxis& GetAxis(U32 index);
+	static const std::vector<EventAxis>& GetAxes();
 
 private:
 	friend class Controller;

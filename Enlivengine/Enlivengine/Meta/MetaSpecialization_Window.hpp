@@ -35,28 +35,12 @@ ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventButton::ActionType)
 // en::EventSystem::EventButton
 //////////////////////////////////////////////////////////////////
 ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventButton)
+	ENLIVE_META_CLASS_MEMBER("name", &en::EventSystem::EventButton::name),
+	ENLIVE_META_CLASS_MEMBER("type", &en::EventSystem::EventButton::type),
+	ENLIVE_META_CLASS_MEMBER("action", &en::EventSystem::EventButton::action),
+	ENLIVE_META_CLASS_MEMBER("buttonIdentifier", &en::EventSystem::EventButton::buttonIdentifier),
+	ENLIVE_META_CLASS_MEMBER("extraInfo", &en::EventSystem::EventButton::extraInfo)
 ENLIVE_META_CLASS_END()
-
-// TODO : CustomSerialization for en::EventSystem::EventButton
-template <>
-struct HasCustomSerialization<en::EventSystem::EventButton>
-{
-	static constexpr bool value = true;
-	static bool Serialize(en::DataFile& dataFile, const en::EventSystem::EventButton& object, const char* name)
-	{
-		ENLIVE_UNUSED(dataFile);
-		ENLIVE_UNUSED(object);
-		ENLIVE_UNUSED(name);
-		return false;
-	}
-	static bool Deserialize(en::DataFile& dataFile, en::EventSystem::EventButton& object, const char* name)
-	{
-		ENLIVE_UNUSED(dataFile);
-		ENLIVE_UNUSED(object);
-		ENLIVE_UNUSED(name);
-		return false;
-	}
-};
 
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
@@ -69,6 +53,11 @@ struct HasCustomEditor<en::EventSystem::EventButton>
 		if (ImGui::CollapsingHeader(name))
 		{
 			ImGui::Indent();
+
+			if (en::EventSystem::HasButton(object.hash))
+			{
+				ImGui::Text("Active : %s", en::EventSystem::IsButtonActive(object.hash) ? ICON_FA_BELL : ICON_FA_BELL_SLASH);
+			}
 
 			if (en::ObjectEditor::ImGuiEditor(object.type, "Type"))
 			{
@@ -148,28 +137,11 @@ ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventAxis::Type)
 // en::EventSystem::EventAxis
 //////////////////////////////////////////////////////////////////
 ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventAxis)
+	ENLIVE_META_CLASS_MEMBER("name", &en::EventSystem::EventAxis::name),
+	ENLIVE_META_CLASS_MEMBER("type", &en::EventSystem::EventAxis::type),
+	ENLIVE_META_CLASS_MEMBER("axisIdentifier", &en::EventSystem::EventAxis::axisIdentifier),
+	ENLIVE_META_CLASS_MEMBER("extraInfo", &en::EventSystem::EventAxis::extraInfo)
 ENLIVE_META_CLASS_END()
-
-// TODO : CustomSerialization for en::EventSystem::EventButton
-template <>
-struct HasCustomSerialization<en::EventSystem::EventAxis>
-{
-	static constexpr bool value = true;
-	static bool Serialize(en::DataFile& dataFile, const en::EventSystem::EventAxis& object, const char* name)
-	{
-		ENLIVE_UNUSED(dataFile);
-		ENLIVE_UNUSED(object);
-		ENLIVE_UNUSED(name);
-		return false;
-	}
-	static bool Deserialize(en::DataFile& dataFile, en::EventSystem::EventAxis& object, const char* name)
-	{
-		ENLIVE_UNUSED(dataFile);
-		ENLIVE_UNUSED(object);
-		ENLIVE_UNUSED(name);
-		return false;
-	}
-};
 
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
@@ -183,11 +155,12 @@ struct HasCustomEditor<en::EventSystem::EventAxis>
 		{
 			ImGui::Indent();
 
-			if (en::ObjectEditor::ImGuiEditor(object.type, "Type"))
+			if (en::EventSystem::HasAxis(object.hash))
 			{
-				modified = true;
+				ImGui::Text("Value : %f", en::EventSystem::GetAxisValue(object.hash));
 			}
-			if (en::ObjectEditor::ImGuiEditor(object.axisIdentifier, "Axis"))
+
+			if (en::ObjectEditor::ImGuiEditor(object.type, "Type"))
 			{
 				modified = true;
 			}
@@ -196,6 +169,11 @@ struct HasCustomEditor<en::EventSystem::EventAxis>
 				|| object.type == en::EventSystem::EventAxis::Type::JoystickBallX
 				|| object.type == en::EventSystem::EventAxis::Type::JoystickBallY)
 			{
+				if (en::ObjectEditor::ImGuiEditor(object.axisIdentifier, "Axis"))
+				{
+					modified = true;
+				}
+
 				if (en::ObjectEditor::ImGuiEditor(object.extraInfo, "Controller"))
 				{
 					modified = true;

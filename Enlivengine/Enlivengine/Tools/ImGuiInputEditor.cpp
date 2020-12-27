@@ -5,9 +5,11 @@
 #include <imgui/imgui.h>
 
 #include <Enlivengine/Window/EventSystem.hpp>
+#include <Enlivengine/Resources/PathManager.hpp>
 
 #include <Enlivengine/Meta/MetaSpecialization.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
+#include <Enlivengine/Meta/DataFile.hpp>
 
 namespace en
 {
@@ -32,24 +34,44 @@ const char* ImGuiInputEditor::GetSaveName() const
 	return "InputEditor";
 }
 
+void ImGuiInputEditor::Initialize()
+{
+	LoadInputsFromFile();
+}
+
 void ImGuiInputEditor::Display()
 {
+	bool modified = false;
+
 	if (ImGui::CollapsingHeader("Buttons"))
 	{
 		ImGui::Indent();
-		Buttons();
+		if (Buttons())
+		{
+			modified = true;
+		}
 		ImGui::Unindent();
 	}
 	if (ImGui::CollapsingHeader("Axes"))
 	{
 		ImGui::Indent();
-		Axes();
+		if (Axes())
+		{
+			modified = true;
+		}
 		ImGui::Unindent();
+	}
+
+	if (modified)
+	{
+		SaveInputsToFile();
 	}
 }
 
-void ImGuiInputEditor::Buttons()
+bool ImGuiInputEditor::Buttons()
 {
+	bool modified = false;
+
 	static constexpr U32 kBufferSize{ 256 };
 	static char newButtonName[kBufferSize] = "";
 	static EventSystem::EventButton newButton;
@@ -57,6 +79,7 @@ void ImGuiInputEditor::Buttons()
 	ImGui::InputText("Name##NewButton", newButtonName, kBufferSize);
 	ObjectEditor::ImGuiEditor(newButton, "New button");
 
+	// Capturing system
 	{
 		static bool capturing = false;
 		static bool capturingFrameOne = false;
@@ -119,6 +142,10 @@ void ImGuiInputEditor::Buttons()
 	{
 		if (ImGui::Button("Create##NewButton"))
 		{
+			EventSystem::AddButton(newButtonName, newButton.type, newButton.buttonIdentifier, newButton.extraInfo, newButton.action);
+
+			modified = true;
+
 #ifdef ENLIVE_COMPILER_MSVC
 			strcpy_s(newButtonName, "");
 #else
@@ -134,17 +161,39 @@ void ImGuiInputEditor::Buttons()
 
 	ImGui::Separator();
 
-	const U32 eventButtonCount = EventSystem::GetButtonCount();
-	for (U32 i = 0; i < eventButtonCount; ++i)
+	for (U32 i = 0; i < EventSystem::GetButtonCount(); )
 	{
 		EventSystem::EventButton& button = const_cast<EventSystem::EventButton&>(EventSystem::GetButton(i));
 
-		ObjectEditor::ImGuiEditor(button, button.GetName().c_str());
+		ImGui::PushID(i);
+		bool queryRemoval = false;
+		if (ImGui::Button("-"))
+		{
+			queryRemoval = true;
+		}
+		ImGui::SameLine();
+
+		ObjectEditor::ImGuiEditor(button, button.name.c_str());
+
+		if (queryRemoval)
+		{
+			EventSystem::RemoveButtonAtIndex(i);
+			modified = true;
+		}
+		else
+		{
+			++i;
+		}
+		ImGui::PopID();
 	}
+
+	return modified;
 }
 
-void ImGuiInputEditor::Axes()
+bool ImGuiInputEditor::Axes()
 {
+	bool modified = false;
+
 	static constexpr U32 kBufferSize{ 256 };
 	static char newAxisName[kBufferSize] = "";
 	static EventSystem::EventAxis newAxis;
@@ -164,6 +213,10 @@ void ImGuiInputEditor::Axes()
 	{
 		if (ImGui::Button("Create##NewAxis"))
 		{
+			EventSystem::AddAxis(newAxisName, newAxis.type, newAxis.axisIdentifier, newAxis.extraInfo);
+
+			modified = true;
+
 #ifdef ENLIVE_COMPILER_MSVC
 			strcpy_s(newAxisName, "");
 #else
@@ -179,13 +232,71 @@ void ImGuiInputEditor::Axes()
 
 	ImGui::Separator();
 
-	const U32 eventAxisCount = EventSystem::GetAxisCount();
-	for (U32 i = 0; i < eventAxisCount; ++i)
+	for (U32 i = 0; i < EventSystem::GetAxisCount(); )
 	{
 		EventSystem::EventAxis& axis = const_cast<EventSystem::EventAxis&>(EventSystem::GetAxis(i));
 
-		ObjectEditor::ImGuiEditor(axis, axis.GetName().c_str());
+		ImGui::PushID(i);
+		bool queryRemoval = false;
+		if (ImGui::Button("-"))
+		{
+			queryRemoval = true;
+		}
+		ImGui::SameLine();
+
+		ObjectEditor::ImGuiEditor(axis, axis.name.c_str());
+
+		if (queryRemoval)
+		{
+			EventSystem::RemoveAxisAtIndex(i);
+			modified = true;
+		}
+		else
+		{
+			++i;
+		}
+		ImGui::PopID();
 	}
+
+	return modified;
+}
+
+bool ImGuiInputEditor::LoadInputsFromFile()
+{
+	const std::string& assetsPath = PathManager::GetAssetsPath();
+
+	DataFile xml;
+	if (xml.LoadFromFile(assetsPath + "inputs.data"))
+	{
+		Array<EventSystem::EventButton> buttons;
+		if (xml.Deserialize(buttons, "Buttons"))
+		{
+			for (const EventSystem::EventButton& button : buttons)
+			{
+				EventSystem::AddButton(button.name.c_str(), button.type, button.buttonIdentifier, button.extraInfo, button.action);
+			}
+		}
+
+		Array<EventSystem::EventAxis> axes;
+		if (xml.Deserialize(axes, "Axes"))
+		{
+			for (const EventSystem::EventAxis& axis : axes)
+			{
+				EventSystem::AddAxis(axis.name.c_str(), axis.type, axis.axisIdentifier, axis.extraInfo);
+			}
+		}
+	}
+
+	return true;
+}
+
+bool ImGuiInputEditor::SaveInputsToFile()
+{
+	DataFile xml;
+	xml.CreateEmptyFile();
+	xml.Serialize(EventSystem::GetButtons(), "Buttons");
+	xml.Serialize(EventSystem::GetAxes(), "Axes");
+	return xml.SaveToFile(PathManager::GetAssetsPath() + "inputs.data");
 }
 
 } // namespace en
