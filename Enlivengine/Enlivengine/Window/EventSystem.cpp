@@ -178,9 +178,9 @@ void EventSystem::Update()
 U32 EventSystem::AddButton(const char* name, EventButton::Type type, U32 buttonIdentifier, U32 extraInfo, EventButton::ActionType action)
 {
 	EventButton eventButton;
-#ifdef ENGINE_DEBUG
+#ifdef ENLIVE_DEBUG
 	eventButton.name = name;
-#endif // ENGINE_DEBUG
+#endif // ENLIVE_DEBUG
 	eventButton.hash = HashFct(name);
 	eventButton.active = false;
 	eventButton.action = action;
@@ -255,12 +255,18 @@ void EventSystem::RemoveButton(U32 hash)
 	}
 }
 
+const EventSystem::EventButton& EventSystem::GetButton(U32 index)
+{
+	enAssert(index < GetButtonCount());
+	return GetInstance().mButtons[index];
+}
+
 U32 EventSystem::AddAxis(const char* name, EventAxis::Type type, U32 axisIdentifier /*= 0*/, U32 extraInfo /*= 0*/)
 {
 	EventAxis eventAxis;
-#ifdef ENGINE_DEBUG
+#ifdef ENLIVE_DEBUG
 	eventAxis.name = name;
-#endif // ENGINE_DEBUG
+#endif // ENLIVE_DEBUG
 	eventAxis.hash = HashFct(name);
 	eventAxis.active = false;
 	eventAxis.value = 0.0f;
@@ -337,6 +343,12 @@ void EventSystem::RemoveAxis(U32 hash)
 			return;
 		}
 	}
+}
+
+const EventSystem::EventAxis& EventSystem::GetAxis(U32 index)
+{
+	enAssert(index < GetButtonCount());
+	return GetInstance().mAxes[index];
 }
 
 U32 EventSystem::HashFct(const char* name)

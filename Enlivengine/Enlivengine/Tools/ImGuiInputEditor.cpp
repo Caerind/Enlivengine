@@ -6,6 +6,9 @@
 
 #include <Enlivengine/Window/EventSystem.hpp>
 
+#include <Enlivengine/Meta/MetaSpecialization.hpp>
+#include <Enlivengine/Meta/ObjectEditor.hpp>
+
 namespace en
 {
 
@@ -31,11 +34,108 @@ const char* ImGuiInputEditor::GetSaveName() const
 
 void ImGuiInputEditor::Display()
 {
-	/*
-	
-	// TOOD : TOOLS UPDATE
+	if (ImGui::CollapsingHeader("Buttons"))
+	{
+		ImGui::Indent();
+		Buttons();
+		ImGui::Unindent();
+	}
+	if (ImGui::CollapsingHeader("Axes"))
+	{
+		ImGui::Indent();
+		Axes();
+		ImGui::Unindent();
+	}
+}
 
-	*/
+void ImGuiInputEditor::Buttons()
+{
+	static constexpr U32 kBufferSize{ 256 };
+	static char newButtonName[kBufferSize] = "";
+	static EventSystem::EventButton newButton;
+
+	ImGui::InputText("Name##NewButton", newButtonName, kBufferSize);
+	ObjectEditor::ImGuiEditor(newButton, "New button");
+
+	bool validNewInput = true;
+
+	const U32 nameLength = static_cast<U32>(strlen(newButtonName));
+	if (nameLength <= 0 || nameLength >= 255)
+	{
+		validNewInput = false;
+	}
+
+	if (validNewInput)
+	{
+		if (ImGui::Button("Create##NewButton"))
+		{
+#ifdef ENLIVE_COMPILER_MSVC
+			strcpy_s(newButtonName, "");
+#else
+			strcpy(newButtonName, "");
+#endif // ENLIVE_COMPILER_MSVC
+			newButton = EventSystem::EventButton();
+		}
+	}
+	else
+	{
+		ImGui::DisabledButton("Create##NewButton");
+	}
+
+	ImGui::Separator();
+
+	const U32 eventButtonCount = EventSystem::GetButtonCount();
+	for (U32 i = 0; i < eventButtonCount; ++i)
+	{
+		EventSystem::EventButton& button = const_cast<EventSystem::EventButton&>(EventSystem::GetButton(i));
+
+		ObjectEditor::ImGuiEditor(button, button.GetName().c_str());
+	}
+}
+
+void ImGuiInputEditor::Axes()
+{
+	static constexpr U32 kBufferSize{ 256 };
+	static char newAxisName[kBufferSize] = "";
+	static EventSystem::EventAxis newAxis;
+
+	ImGui::InputText("Name##NewAxis", newAxisName, kBufferSize);
+	ObjectEditor::ImGuiEditor(newAxis, "New axis");
+
+	bool validNewInput = true;
+
+	const U32 nameLength = static_cast<U32>(strlen(newAxisName));
+	if (nameLength <= 0 || nameLength >= 255)
+	{
+		validNewInput = false;
+	}
+
+	if (validNewInput)
+	{
+		if (ImGui::Button("Create##NewAxis"))
+		{
+#ifdef ENLIVE_COMPILER_MSVC
+			strcpy_s(newAxisName, "");
+#else
+			strcpy(newButtonName, "");
+#endif // ENLIVE_COMPILER_MSVC
+			newAxis = EventSystem::EventAxis();
+		}
+	}
+	else
+	{
+		ImGui::DisabledButton("Create##NewAxis");
+	}
+
+	ImGui::Separator();
+
+	const U32 eventAxisCount = EventSystem::GetAxisCount();
+	for (U32 i = 0; i < eventAxisCount; ++i)
+	{
+		EventSystem::EventAxis& axis = const_cast<EventSystem::EventAxis&>(EventSystem::GetAxis(i));
+
+		ObjectEditor::ImGuiEditor(axis, axis.GetName().c_str());
+	}
 }
 
 } // namespace en

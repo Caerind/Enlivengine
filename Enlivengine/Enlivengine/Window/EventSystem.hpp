@@ -16,9 +16,15 @@ class EventSystem
 public:
 	class EventBase
 	{
+	public:
+#ifdef ENLIVE_DEBUG
+		const std::string& GetName() const { return name; }
+#endif // ENLIVE_DEBUG
+		U32 GetHash() const { return hash; }
+		bool IsActive() const { return active; }
+
 	protected:
 		EventBase() = default;
-
 #ifdef ENLIVE_DEBUG
 		std::string name{};
 #endif // ENLIVE_DEBUG
@@ -48,6 +54,7 @@ public:
 		U32 extraInfo{ 0 };
 	private:
 		friend class EventSystem;
+		friend class ImGuiInputEditor;
 		EventButton() = default;
 	};
 
@@ -67,10 +74,12 @@ public:
 		Type type{ Type::JoystickAxis };
 		U32 axisIdentifier{ 0 };
 		U32 extraInfo{ 0 };
-		F32 value{ 0.0f };
+		F32 GetValue() const { return value; }
 	private:
 		friend class EventSystem;
+		friend class ImGuiInputEditor;
 		EventAxis() = default;
+		F32 value{ 0.0f };
 	};
 
 public:
@@ -86,6 +95,7 @@ public:
 	static void RemoveButtonAtIndex(U32 index);
 	static void RemoveButton(const char* name);
 	static void RemoveButton(U32 hash);
+	static const EventButton& GetButton(U32 index);
 
 	static U32 AddAxis(const char* name, EventAxis::Type type, U32 axisIdentifier = 0, U32 extraInfo = 0);
 	static bool IsAxisActive(const char* name);
@@ -96,6 +106,7 @@ public:
 	static void RemoveAxisAtIndex(U32 index);
 	static void RemoveAxis(const char* name);
 	static void RemoveAxis(U32 hash);
+	static const EventAxis& GetAxis(U32 index);
 
 private:
 	static U32 HashFct(const char* name);

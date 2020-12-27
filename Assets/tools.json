@@ -3,7 +3,7 @@
     "Console": true,
     "Editor": true,
     "EntityBrowser": true,
-    "Game": true,
+    "Game": false,
     "ImGuiDemo": false,
     "InputEditor": false,
     "Logs": true,

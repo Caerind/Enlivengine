@@ -19,6 +19,10 @@ public:
 	const char* GetSaveName() const override;
 
     void Display() override;
+
+private:
+	void Buttons();
+	void Axes();
 };
 
 } // namespace en
