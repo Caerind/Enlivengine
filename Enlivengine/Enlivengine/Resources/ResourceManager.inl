@@ -245,7 +245,7 @@ U32 ResourceManager::Count() const
 	}
 	else
 	{
-		const U32 resourceType = T::GetStaticResourceType<T>();
+		const U32 resourceType = T::GetStaticResourceType();
 		U32 count = 0;
 		for (auto itr = mResources.begin(); itr != mResources.end(); ++itr)
 		{
