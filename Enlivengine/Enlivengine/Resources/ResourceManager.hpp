@@ -103,9 +103,9 @@ public:
 	const ResourceLoadInfo& GetLoadInfo() const;
 	void SetLoadInfo(const ResourceLoadInfo& info);
 
+#ifdef ENLIVE_DEBUG
 	virtual ResourceInfo GetResourceInfo() const;
 
-#ifdef ENLIVE_DEBUG
 	const std::string& GetIdentifier() const;
 #endif // ENLIVE_DEBUG
 

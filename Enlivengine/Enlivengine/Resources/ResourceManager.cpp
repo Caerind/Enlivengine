@@ -53,6 +53,7 @@ void BaseResource::SetLoadInfo(const ResourceLoadInfo& info)
 	mLoadInfo = info;
 }
 
+#ifdef ENLIVE_DEBUG
 ResourceInfo BaseResource::GetResourceInfo() const
 {
 	ResourceInfo ri;
@@ -64,7 +65,6 @@ ResourceInfo BaseResource::GetResourceInfo() const
 	return ri;
 }
 
-#ifdef ENLIVE_DEBUG
 const std::string& BaseResource::GetIdentifier() const
 {
 	return mIdentifier;
