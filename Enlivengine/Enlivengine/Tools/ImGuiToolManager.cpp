@@ -9,6 +9,10 @@
 #include <Enlivengine/Utils/Profiler.hpp>
 #include <Enlivengine/Graphics/ImGuiWrapper.hpp>
 
+#if defined(ENLIVE_RELEASE) && defined(ENLIVE_DEBUG)
+#include <Enlivengine/Window/Keyboard.hpp>
+#endif // ENLIVE_RELEASE && ENLIVE_DEBUG
+
 // Tools
 #include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
 #include <Enlivengine/Tools/ImGuiConsole.hpp>
