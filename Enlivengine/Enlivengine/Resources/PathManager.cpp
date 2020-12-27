@@ -179,6 +179,18 @@ const std::string& PathManager::GetScreenshotPath()
 	return GetInstance().mScreenshotPath;
 }
 
+std::string PathManager::GetAbsolutePath(const std::string& path)
+{
+	std::filesystem::path p = path;
+	if (!p.is_absolute())
+	{
+		p = std::filesystem::absolute(p);
+	}
+	std::string result = p.string();
+	std::replace(result.begin(), result.end(), '\\', '/');
+	return result;
+}
+
 PathManager& PathManager::GetInstance()
 {
 	static PathManager instance;

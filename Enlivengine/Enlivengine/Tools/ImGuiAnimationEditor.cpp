@@ -216,10 +216,13 @@ void ImGuiAnimationEditor::StateMachine(AnimationStateMachine& stateMachine)
 {
     if (ImGui::Button("Save"))
     {
-        if (!stateMachine.SaveToFile(stateMachine.GetFilename()))
+		ENLIVE_UNUSED(stateMachine);
+		/*
+		if (!stateMachine.SaveToFile(stateMachine.GetFilename()))
         {
             enLogError(en::LogChannel::Animation, "Can't save file {}", stateMachine.GetFilename().c_str());
         }
+		*/
     }
 
     ImGui::Checkbox("Show clips", &mDisplayPreviews);

@@ -9,6 +9,35 @@
 
 #include <Enlivengine/Resources/ResourceManager.hpp>
 
+//////////////////////////////////////////////////////////////////
+// en::ResourceLoadInfo::Method
+//////////////////////////////////////////////////////////////////
+ENLIVE_DEFINE_TYPE_INFO(en::ResourceLoadInfo::Method)
+
+//////////////////////////////////////////////////////////////////
+// en::ResourceLoadInfo
+//////////////////////////////////////////////////////////////////
+ENLIVE_META_CLASS_BEGIN(en::ResourceLoadInfo)
+	ENLIVE_META_CLASS_MEMBER("method", &en::ResourceLoadInfo::method),
+	ENLIVE_META_CLASS_MEMBER("infoString", &en::ResourceLoadInfo::infoString)
+ENLIVE_META_CLASS_END()
+
+//////////////////////////////////////////////////////////////////
+// en::ResourceInfo
+//////////////////////////////////////////////////////////////////
+#ifdef ENLIVE_DEBUG
+ENLIVE_META_CLASS_BEGIN(en::ResourceInfo)
+	ENLIVE_META_CLASS_MEMBER("id", &en::ResourceInfo::id),
+	ENLIVE_META_CLASS_MEMBER("type", &en::ResourceInfo::type),
+	ENLIVE_META_CLASS_MEMBER("identifier", &en::ResourceInfo::identifier),
+	ENLIVE_META_CLASS_MEMBER("loadInfo", &en::ResourceInfo::loadInfo),
+	ENLIVE_META_CLASS_MEMBER("loaded", &en::ResourceInfo::loaded)
+ENLIVE_META_CLASS_END()
+#endif // ENLIVE_DEBUG
+
+//////////////////////////////////////////////////////////////////
+// en::ResourcePtr<T>
+//////////////////////////////////////////////////////////////////
 ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::ResourcePtr)
 
 template <typename T>
