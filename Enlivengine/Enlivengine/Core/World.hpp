@@ -14,7 +14,7 @@ namespace en
 class World
 {
 public:
-	World();
+	World(const std::string& name);
 	~World();
 
 	EntityManager& GetEntityManager();
@@ -41,6 +41,12 @@ public:
 	void Update(Time dt);
 	void Render();
 
+	const std::string& GetName() const;
+	std::string GetFilename() const;
+
+	bool LoadFromFile();
+	bool SaveToFile() const;
+
 #ifdef ENLIVE_DEBUG
 	DebugDraw& GetDebugDraw();
 
@@ -56,6 +62,8 @@ private:
 
 	std::vector<System*> mSystems;
 	PhysicSystem* mPhysicSystem;
+
+	std::string mName;
 
 	bool mPlaying;
 

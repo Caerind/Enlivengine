@@ -23,12 +23,13 @@
 
 using namespace en;
 
-void FPSCamera(Camera& camera, F32 dtSeconds, F32 forwardMvt, F32 leftMvt, F32 deltaYaw, F32 deltaPitch);
-
 class RenderSystem : public System
 {
 public:
 	RenderSystem(World& world) : System(world) {}
+
+	static const char* GetStaticName() { return "RenderSystem"; }
+	const char* GetName() const override { return GetStaticName(); }
 
 	void Render() override
 	{
@@ -62,265 +63,313 @@ public:
 	}
 };
 
+class DebugSystem : public System
+{
+public:
+	DebugSystem(World& world) : System(world) {}
+
+	static const char* GetStaticName() { return "DebugSystem"; }
+	const char* GetName() const override { return GetStaticName(); }
+
+	void Render() override
+	{
+#ifdef ENLIVE_DEBUG
+		mWorld.GetDebugDraw().DrawCross(Vector3f(-1.0f));
+		mWorld.GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
+		mWorld.GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
+		mWorld.GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
+
+		if (Camera* mainCamera = Camera::GetMainCamera())
+		{
+			mWorld.GetDebugDraw().DrawFrustum(mainCamera->CreateFrustum(), Colors::Blue);
+			//mWorld.GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
+
+#ifdef ENLIVE_TOOL
+			if (ImGuiGame::IsMouseInView())
+			{
+				Vector3f mouseDir;
+				const Vector3f mousePos = mainCamera->ScreenToWorldPoint(ImGuiGame::GetMouseScreenCoordinates(), &mouseDir);
+				const Plane p(ENLIVE_DEFAULT_UP, 0.0f);
+				const Ray r(mousePos, mouseDir);
+				F32 t;
+				if (r.Intersects(p, &t))
+				{
+					const Vector3f point = r.GetPoint(t);
+					mWorld.GetDebugDraw().DrawLine(mousePos, point, Colors::Green);
+					mWorld.GetDebugDraw().DrawSphere(point, 0.05f, Colors::Green);
+				}
+				else
+				{
+					mWorld.GetDebugDraw().DrawLine(mousePos, r.GetPoint(100.0f), Colors::Red);
+				}
+			}
+#endif // ENLIVE_TOOL
+		}
+#endif // ENLIVE_DEBUG
+	}
+};
+
+struct StupidShipComponent {};
+ENLIVE_META_CLASS_BEGIN(StupidShipComponent)
+ENLIVE_META_CLASS_END()
+
+class StupidShipSystem : public System
+{
+public:
+	StupidShipSystem(World& world) : System(world) {}
+
+	static const char* GetStaticName() { return "StupidShipSystem"; }
+	const char* GetName() const override { return GetStaticName(); }
+
+	void Update(Time dt) override
+	{
+		auto& entityManager = mWorld.GetEntityManager();
+		auto view = entityManager.View<TransformComponent, StupidShipComponent>();
+		for (auto entt : view)
+		{
+			Entity entity(entityManager, entt);
+			if (entity.IsValid())
+			{
+				entity.Get<TransformComponent>().Rotate(Matrix3f::RotationY(180.0f * dt.AsSeconds()));
+			}
+		}
+	}
+};
+
+struct PlayerComponent {};
+ENLIVE_META_CLASS_BEGIN(PlayerComponent)
+ENLIVE_META_CLASS_END()
+
+class PlayerSystem : public System
+{
+public:
+	PlayerSystem(World& world) : System(world) {}
+
+	static const char* GetStaticName() { return "PlayerSystem"; }
+	const char* GetName() const override { return GetStaticName(); }
+
+	void Update(Time dt) override
+	{
+		if (EventSystem::IsButtonActive("action") || EventSystem::IsButtonActive("jactionP1"))
+		{
+			printf("Action!\n");
+			Controller::Rumble(0, 0.25f, 100);
+		}
+
+		auto& entityManager = mWorld.GetEntityManager();
+		auto view = entityManager.View<TransformComponent, PlayerComponent>();
+		for (auto entt : view)
+		{
+			Entity entity(entityManager, entt);
+			if (entity.IsValid())
+			{
+				const F32 forwardMvt = -Controller::GetAxis(0, 1);
+				const F32 leftMvt = -Controller::GetAxis(0, 0);
+				const F32 deltaYaw = Controller::GetAxis(0, 3);
+				const F32 deltaPitch = Controller::GetAxis(0, 4);
+				const F32 dtSeconds = dt.AsSeconds();
+
+				TransformComponent& playerTransform = entity.Get<TransformComponent>();
+
+				Vector3f direction = playerTransform.GetRotation().GetForward();
+
+				// Movement
+				if (forwardMvt != 0.0f || leftMvt != 0.0f)
+				{
+					Vector3f mvtUnit = direction;
+					mvtUnit.y = 0.0f;
+					mvtUnit.Normalize();
+
+					Vector3f movement;
+					movement += 3.0f * forwardMvt * mvtUnit * dtSeconds;
+					movement -= 3.0f * leftMvt * mvtUnit.CrossProduct(ENLIVE_DEFAULT_UP) * dtSeconds;
+					playerTransform.Move(movement);
+				}
+
+				// Rotation
+				if (deltaYaw != 0.0f || deltaPitch != 0.0f)
+				{
+					if (!Math::Equals(deltaYaw, 0.0f))
+					{
+						playerTransform.SetRotation(playerTransform.GetRotation() * Matrix3f::RotationY(100.0f * dtSeconds * deltaYaw));
+					}
+					if (!Math::Equals(deltaPitch, 0.0f))
+					{
+						//playerTransform.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
+					}
+				}
+			}
+		}
+	}
+};
+
 
 int main(int argc, char** argv)
 {
+	// Engine components
+	ComponentManager::Register<NameComponent>();
+	ComponentManager::Register<UIDComponent>();
+	ComponentManager::Register<RenderableComponent>();
+	ComponentManager::Register<SpriteComponent>();
+	ComponentManager::Register<TilemapComponent>();
+	ComponentManager::Register<CameraComponent>();
+	ComponentManager::Register<TransformComponent>();
+
+	// Own components
+	ComponentManager::Register<StupidShipComponent>();
+	ComponentManager::Register<PlayerComponent>();
+
 	if (Engine::Init(argc, argv))
 	{
-		ComponentManager::Register<NameComponent>();
-		ComponentManager::Register<UIDComponent>();
-		ComponentManager::Register<RenderableComponent>();
-		ComponentManager::Register<SpriteComponent>();
-		ComponentManager::Register<TilemapComponent>();
-		ComponentManager::Register<CameraComponent>();
-		ComponentManager::Register<TransformComponent>();
-
-		printf("%d joysticks, %d haptics\n", Controller::GetJoystickCount(), Controller::GetHapticCount());
-		for (U32 i = 0; i < Controller::GetJoystickCount(); ++i)
-		{
-			Controller::Rumble(i, 0.25f, 100); // Ensure the controller is working when debugging
-			printf("%s name\n%d axes, %d balls, %d buttons, %d hats\n", Controller::GetName(i), Controller::GetAxisCount(i), Controller::GetBallCount(i), Controller::GetButtonCount(i), Controller::GetHatCount(i));
-			printf("%d haptic\n", Controller::IsHaptic(i));
-			printf("\n");
-		}
-
-		const char* textureAFilename = "fieldstone-rgba.dds";
-		TexturePtr textureA = ResourceManager::GetInstance().Create<Texture>("textureA", TextureLoader::FromFile(PathManager::GetAssetsPath() + textureAFilename));
-		if (!textureA.IsValid())
-		{
-			enAssert(false);
-		}
-
-		const char* textureBFilename = "ship_default.png";
-		TexturePtr textureB = ResourceManager::GetInstance().Create<Texture>("textureB", TextureLoader::FromFile(PathManager::GetAssetsPath() + textureBFilename));
-		if (!textureB.IsValid())
-		{
-			enAssert(false);
-		}
-
-		Tileset tileset;
-		tileset.SetGridSize({ 2,2 });
-		tileset.SetTileSize({ 256, 256 });
-		tileset.SetTexture(textureA);
-
-#ifdef ENLIVE_TOOL
-		ImGuiEditor::GetCamera().InitializePerspective(80.0f);
-		ImGuiEditor::GetCamera().InitializeView(Vector3f(0.0f, 0.8f, 0.0f), Matrix3f::Identity());
-#endif // ENLIVE_TOOL
-
-
-		World world;
+		World world("TestWorld");
 		world.CreateSystem<RenderSystem>();
+		world.CreateSystem<StupidShipSystem>();
+		world.CreateSystem<PlayerSystem>();
+		world.CreateSystem<DebugSystem>();
 		Engine::SetCurrentWorld(&world);
 
 #ifdef ENLIVE_RELEASE
 		world.Play();
 #endif // ENLIVE_RELEASE
 
-		Entity playerEntity = world.GetEntityManager().CreateEntity();
 		{
-			playerEntity.Add<NameComponent>().name = "Player";
-			TransformComponent& playerTransform = playerEntity.Add<TransformComponent>();
-			playerTransform.SetPosition(Vector3f(0.0f, 0.0f, 2.0f));
-			playerTransform.SetRotation(Matrix3f::RotationY(0.0f));
-		}
+			TexturePtr textureA = ResourceManager::GetInstance().Create<Texture>("textureA", TextureLoader::FromFile(PathManager::GetAssetsPath() + "fieldstone-rgba.dds"));
+			if (!textureA.IsValid())
+			{
+				enAssert(false);
+			}
+			TexturePtr textureB = ResourceManager::GetInstance().Create<Texture>("textureB", TextureLoader::FromFile(PathManager::GetAssetsPath() + "ship_default.png"));
+			if (!textureB.IsValid())
+			{
+				enAssert(false);
+			}
 
-		Entity playerCamEntity = world.GetEntityManager().CreateEntity();
-		{
-			playerCamEntity.Add<NameComponent>().name = "PlayerCam";
-			TransformComponent& playerCamTransform = playerCamEntity.Add<TransformComponent>();
-			playerCamTransform.AttachToParent(playerEntity); // Attach this entity to player entity
-			playerCamTransform.SetPosition(Vector3f(0.0f, 0.8f, 0.0f));
-			CameraComponent& playerCam = playerCamEntity.Add<CameraComponent>();
-			playerCam.InitializePerspective(80.0f);
+			Tileset tileset;
+			tileset.SetGridSize({ 2,2 });
+			tileset.SetTileSize({ 256, 256 });
+			tileset.SetTexture(textureA);
+
+			Entity playerEntity = world.GetEntityManager().CreateEntity();
+			{
+				playerEntity.Add<NameComponent>().name = "Player";
+				TransformComponent& playerTransform = playerEntity.Add<TransformComponent>();
+				playerTransform.SetPosition(Vector3f(0.0f, 0.0f, 2.0f));
+				playerTransform.SetRotation(Matrix3f::RotationY(0.0f));
+				playerEntity.Add<PlayerComponent>();
+			}
+
+			Entity playerCamEntity = world.GetEntityManager().CreateEntity();
+			{
+				playerCamEntity.Add<NameComponent>().name = "PlayerCam";
+				TransformComponent& playerCamTransform = playerCamEntity.Add<TransformComponent>();
+				playerCamTransform.AttachToParent(playerEntity); // Attach this entity to player entity
+				playerCamTransform.SetPosition(Vector3f(0.0f, 0.8f, 0.0f));
+				CameraComponent& playerCam = playerCamEntity.Add<CameraComponent>();
+				playerCam.InitializePerspective(80.0f);
 #if defined(ENLIVE_TOOL)
-			playerCam.SetFramebuffer(ImGuiGame::GetFramebuffer());
+				playerCam.SetFramebuffer(ImGuiGame::GetFramebuffer());
 #elif defined(ENLIVE_RELEASE)
-			playerCam.SetFramebuffer(&Framebuffer::GetDefaultFramebuffer());
+				playerCam.SetFramebuffer(&Framebuffer::GetDefaultFramebuffer());
 #endif // ENLIVE_TOOL
-			playerCam.SetClearColor(Colors::LightBlue);
-		}
+				Camera::SetMainCamera(&playerCam);
+				playerCam.SetClearColor(Colors::LightBlue);
+			}
 
-		Entity a1 = world.GetEntityManager().CreateEntity();
-		{
-			a1.Add<NameComponent>().name = "Wall1";
-			a1.Add<TransformComponent>().SetPosition(Vector3f(0.0f, 1.0f, 0.0f));
-			a1.Add<RenderableComponent>();
-			a1.Add<SpriteComponent>().sprite.SetTexture(textureA);
-		}
-		Entity a2 = world.GetEntityManager().CreateEntity();
-		{
-			a2.Add<NameComponent>().name = "Wall2";
-			a2.Add<TransformComponent>().SetPosition(Vector3f(1.0f, 1.0f, 0.0f));;
-			a2.Add<RenderableComponent>();
-			a2.Add<SpriteComponent>().sprite.SetTexture(textureA);
-		}
-		Entity b1 = world.GetEntityManager().CreateEntity();
-		{
-			b1.Add<NameComponent>().name = "Ship";
-			TransformComponent& b1Transform = b1.Add<TransformComponent>();
-			b1Transform.SetPosition(Vector3f(2.0f, 2.0f, 0.0f));
-			b1.Add<RenderableComponent>();
-			b1.Add<SpriteComponent>().sprite.SetTexture(textureB);
-		}
-		Entity c1 = world.GetEntityManager().CreateEntity();
-		{
-			c1.Add<NameComponent>().name = "Ground1";
-			c1.Add<TransformComponent>().SetRotation(Matrix3f::RotationX(90.0f));
-			c1.Add<RenderableComponent>();
-			TilemapComponent& tilemapComponent = c1.Add<TilemapComponent>();
-			tilemapComponent.tilemap.SetTileset(tileset);
-			tilemapComponent.tilemap.SetSize({ 4,4 });
-			tilemapComponent.tilemap.SetTile({ 1,1 }, 0);
-			tilemapComponent.tilemap.SetTile({ 2,1 }, 1);
-			tilemapComponent.tilemap.SetTile({ 2,2 }, 2);
-			tilemapComponent.tilemap.SetTile({ 1,2 }, 3);
-		}
+			Entity a1 = world.GetEntityManager().CreateEntity();
+			{
+				a1.Add<NameComponent>().name = "Wall1";
+				a1.Add<TransformComponent>().SetPosition(Vector3f(0.0f, 1.0f, 0.0f));
+				a1.Add<RenderableComponent>();
+				a1.Add<SpriteComponent>().sprite.SetTexture(textureA);
+			}
+			Entity a2 = world.GetEntityManager().CreateEntity();
+			{
+				a2.Add<NameComponent>().name = "Wall2";
+				a2.Add<TransformComponent>().SetPosition(Vector3f(1.0f, 1.0f, 0.0f));;
+				a2.Add<RenderableComponent>();
+				a2.Add<SpriteComponent>().sprite.SetTexture(textureA);
+			}
+			Entity b1 = world.GetEntityManager().CreateEntity();
+			{
+				b1.Add<NameComponent>().name = "Ship";
+				TransformComponent& b1Transform = b1.Add<TransformComponent>();
+				b1Transform.SetPosition(Vector3f(2.0f, 2.0f, 0.0f));
+				b1.Add<RenderableComponent>();
+				b1.Add<SpriteComponent>().sprite.SetTexture(textureB);
+				b1.Add<StupidShipComponent>();
+			}
+			Entity c1 = world.GetEntityManager().CreateEntity();
+			{
+				c1.Add<NameComponent>().name = "Ground1";
+				c1.Add<TransformComponent>().SetRotation(Matrix3f::RotationX(90.0f));
+				c1.Add<RenderableComponent>();
+				TilemapComponent& tilemapComponent = c1.Add<TilemapComponent>();
+				tilemapComponent.tilemap.SetTileset(tileset);
+				tilemapComponent.tilemap.SetSize({ 4,4 });
+				tilemapComponent.tilemap.SetTile({ 1,1 }, 0);
+				tilemapComponent.tilemap.SetTile({ 2,1 }, 1);
+				tilemapComponent.tilemap.SetTile({ 2,2 }, 2);
+				tilemapComponent.tilemap.SetTile({ 1,2 }, 3);
+			}
 
-		// Create button event using generic way 
-		EventSystem::AddButton("moveForward", EventSystem::EventButton::Type::KeyboardKey, static_cast<U32>(Keyboard::Key::W), static_cast<U32>(Keyboard::Modifier::None), EventSystem::EventButton::ActionType::Hold);
-		// Create button event using specific helpers
-		EventSystem::AddKeyButton("moveLeft", Keyboard::Key::A, EventSystem::EventButton::ActionType::Hold);
-		EventSystem::AddKeyButton("moveBackward", Keyboard::Key::S, EventSystem::EventButton::ActionType::Hold);
-		EventSystem::AddKeyButton("moveRight", Keyboard::Key::D, EventSystem::EventButton::ActionType::Hold);
-		EventSystem::AddKeyButton("action", Keyboard::Key::E, EventSystem::EventButton::ActionType::Pressed);
-		EventSystem::AddJoystickButton("jactionP1", 0, 0, EventSystem::EventButton::ActionType::Pressed);
-		EventSystem::AddJoystickButton("jactionP2", 1, 0, EventSystem::EventButton::ActionType::Pressed);
+			// Create button event using generic way 
+			EventSystem::AddButton("moveForward", EventSystem::EventButton::Type::KeyboardKey, static_cast<U32>(Keyboard::Key::W), static_cast<U32>(Keyboard::Modifier::None), EventSystem::EventButton::ActionType::Hold);
+			// Create button event using specific helpers
+			EventSystem::AddKeyButton("moveLeft", Keyboard::Key::A, EventSystem::EventButton::ActionType::Hold);
+			EventSystem::AddKeyButton("moveBackward", Keyboard::Key::S, EventSystem::EventButton::ActionType::Hold);
+			EventSystem::AddKeyButton("moveRight", Keyboard::Key::D, EventSystem::EventButton::ActionType::Hold);
+			EventSystem::AddKeyButton("action", Keyboard::Key::E, EventSystem::EventButton::ActionType::Pressed);
+			EventSystem::AddJoystickButton("jactionP1", 0, 0, EventSystem::EventButton::ActionType::Pressed);
+			EventSystem::AddJoystickButton("jactionP2", 1, 0, EventSystem::EventButton::ActionType::Pressed);
+		}
 
 		Time dt;
 		while (Engine::Update(dt))
 		{
-			world.Update(dt);
-
-			if (world.IsPlaying())
+			// Update
 			{
-				if (EventSystem::IsButtonActive("action") || EventSystem::IsButtonActive("jactionP1"))
-				{
-					printf("Action!\n");
-					Controller::Rumble(0, 0.25f, 100);
-				}
-
-				if (b1.IsValid() && b1.Has<TransformComponent>())
-				{
-					b1.Get<TransformComponent>().Rotate(Matrix3f::RotationY(180.0f * dt.AsSeconds()));
-				}
-
-				// Move player using controller
-				{
-					const F32 forwardMvt = -Controller::GetAxis(0, 1);
-					const F32 leftMvt = -Controller::GetAxis(0, 0);
-					const F32 deltaYaw = Controller::GetAxis(0, 3);
-					const F32 deltaPitch = Controller::GetAxis(0, 4);
-					const F32 dtSeconds = dt.AsSeconds();
-
-					TransformComponent& playerTransform = playerEntity.Get<TransformComponent>();
-
-					Vector3f direction = playerTransform.GetRotation().GetForward();
-
-					// Movement
-					if (forwardMvt != 0.0f || leftMvt != 0.0f)
-					{
-						Vector3f mvtUnit = direction;
-						mvtUnit.y = 0.0f;
-						mvtUnit.Normalize();
-
-						Vector3f movement;
-						movement += 3.0f * forwardMvt * mvtUnit * dtSeconds;
-						movement -= 3.0f * leftMvt * mvtUnit.CrossProduct(ENLIVE_DEFAULT_UP) * dtSeconds;
-						playerTransform.Move(movement);
-					}
-
-					// Rotation
-					if (deltaYaw != 0.0f || deltaPitch != 0.0f)
-					{
-						if (!Math::Equals(deltaYaw, 0.0f))
-						{
-							playerTransform.SetRotation(playerTransform.GetRotation() * Matrix3f::RotationY(100.0f * dtSeconds * deltaYaw));
-						}
-						if (!Math::Equals(deltaPitch, 0.0f))
-						{
-							//playerTransform.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
-						}
-					}
-				}
-			}
-
-#ifdef ENLIVE_DEBUG
-			{
-				world.GetDebugDraw().DrawCross(Vector3f(-1.0f));
-				world.GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
-				world.GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
-				world.GetDebugDraw().DrawFrustum(playerCamEntity.Get<CameraComponent>().CreateFrustum(), Colors::Blue);
-				world.GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
-				world.GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
+				world.Update(dt);
 
 #ifdef ENLIVE_TOOL
-				if (ImGuiGame::IsMouseInView())
+				if (ImGuiEditor::IsViewVisible())
 				{
-					Vector3f mouseDir;
-					const Vector3f mousePos = playerCamEntity.Get<CameraComponent>().ScreenToWorldPoint(ImGuiGame::GetMouseScreenCoordinates(), &mouseDir);
-					const Plane p(ENLIVE_DEFAULT_UP, 0.0f);
-					const Ray r(mousePos, mouseDir);
-					F32 t;
-					if (r.Intersects(p, &t))
-					{
-						const Vector3f point = r.GetPoint(t);
-						world.GetDebugDraw().DrawLine(mousePos, point, Colors::Green);
-						world.GetDebugDraw().DrawSphere(point, 0.05f, Colors::Green);
-					}
-					else
-					{
-						world.GetDebugDraw().DrawLine(mousePos, r.GetPoint(100.0f), Colors::Red);
-					}
+					ImGuiEditor::UpdateCamera(dt);
 				}
 #endif // ENLIVE_TOOL
 			}
-#endif // ENLIVE_DEBUG
 
 			// Render
 			{
 #ifdef ENLIVE_TOOL
 				if (ImGuiGame::IsViewVisible())
 				{
-					playerCamEntity.Get<CameraComponent>().Apply();
-					world.Render();
+					if (Camera* mainCamera = Camera::GetMainCamera())
+					{
+						mainCamera->Apply();
+						world.Render();
+						world.GetDebugDraw().Render();
+					}
 				}
 
 				if (ImGuiEditor::IsViewVisible())
 				{
-					if (Keyboard::IsAltHold())
-					{
-						Mouse::SetRelativeMode(true);
-
-						F32 forward = 0.0f;
-						F32 left = 0.0;
-						if (Keyboard::IsHold(Keyboard::Key::W)) forward += 1.0f;
-						if (Keyboard::IsHold(Keyboard::Key::S)) forward -= 1.0f;
-						if (Keyboard::IsHold(Keyboard::Key::A)) left += 1.0f;
-						if (Keyboard::IsHold(Keyboard::Key::D)) left -= 1.0f;
-						const F32 deltaYaw = Mouse::GetMouseMovement().x * 0.25f;
-						const F32 deltaPitch = Mouse::GetMouseMovement().y * 0.15f;
-						FPSCamera(ImGuiEditor::GetCamera(), dt.AsSeconds(), forward, left, deltaYaw, deltaPitch);
-					}
-					else
-					{
-						Mouse::SetRelativeMode(false);
-					}
-
 					ImGuiEditor::GetCamera().Apply();
 					world.Render();
 					world.GetDebugDraw().Render();
-					world.GetDebugDraw().Clear();
 				}
+				world.GetDebugDraw().Clear();
 #endif // ENLIVE_TOOL
 
 #ifdef ENLIVE_RELEASE
-				playerCamEntity.Get<CameraComponent>().Apply();
-				world.Render();
+				if (Camera* mainCamera = Camera::GetMainCamera())
+				{
+					mainCamera->Apply();
+					world.Render();
 #ifdef ENLIVE_DEBUG
-				world.GetDebugDraw().Render();
-				world.GetDebugDraw().Clear();
+					world.GetDebugDraw().Render();
+					world.GetDebugDraw().Clear();
 #endif // ENLIVE_DEBUG
+				}
 #endif // ENLIVE_RELEASE
 
 				bgfx::frame();
@@ -329,40 +378,8 @@ int main(int argc, char** argv)
 
 		world.GetEntityManager().ClearEntities();
 
-		textureA.ReleaseFromManager();
-		textureB.ReleaseFromManager();
+		ResourceManager::GetInstance().ReleaseAll();
 	}
 	Engine::Release();
 	return 0;
-}
-
-void FPSCamera(Camera& camera, F32 dtSeconds, F32 forwardMvt, F32 leftMvt, F32 deltaYaw, F32 deltaPitch)
-{
-	Vector3f direction = camera.GetRotation().GetForward();
-
-	// Movement
-	if (forwardMvt != 0.0f || leftMvt != 0.0f)
-	{
-		Vector3f mvtUnit = direction;
-		mvtUnit.y = 0.0f;
-		mvtUnit.Normalize();
-
-		Vector3f movement;
-		movement += 3.0f * forwardMvt * mvtUnit * dtSeconds;
-		movement -= 3.0f * leftMvt * mvtUnit.CrossProduct(ENLIVE_DEFAULT_UP) * dtSeconds;
-		camera.Move(movement);
-	}
-
-	// Rotation
-	if (deltaYaw != 0.0f || deltaPitch != 0.0f)
-	{
-		if (!Math::Equals(deltaYaw, 0.0f))
-		{
-			camera.Rotate(Matrix3f::RotationY(100.0f * dtSeconds * deltaYaw));
-		}
-		if (!Math::Equals(deltaPitch, 0.0f))
-		{
-			//camera.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
-		}
-	}
 }

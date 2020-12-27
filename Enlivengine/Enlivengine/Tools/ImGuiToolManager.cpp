@@ -26,45 +26,47 @@
 namespace en
 {
 
-ImGuiToolManager::ImGuiToolManager()
-	: mRunning(false)
+bool ImGuiToolManager::Initialize()
 {
+	ImGuiToolManager& imgui = GetInstance();
+	enAssert(!imgui.mInitialized);
+
+	imgui.mInitialized = true;
+
+#ifdef ENLIVE_TOOL
+	imgui.mRunning = true;
+#endif // ENLIVE_TOOL
+
+	imgui.RegisterTools();
+
+	return true;
 }
 
-void ImGuiToolManager::Initialize()
+bool ImGuiToolManager::IsInitialized()
 {
-	enAssert(!mRunning);
+	return GetInstance().mInitialized;
+}
 
-	RegisterTools();
+bool ImGuiToolManager::Release()
+{
+	ImGuiToolManager& imgui = GetInstance();
+	enAssert(imgui.mInitialized);
 
-	mRunning = true;
+	imgui.mRunning = false;
 
 	constexpr size_t tabs = static_cast<size_t>(Enum::GetCount<ImGuiToolTab>());
 	for (size_t i = 0; i < tabs; ++i)
 	{
-		const size_t size = mTools[i].size();
+		const size_t size = imgui.mTools[i].size();
 		for (size_t j = 0; j < size; ++j)
 		{
-			mTools[i][j]->Initialize();
-		}
-	}
-}
-
-void ImGuiToolManager::Release()
-{
-	enAssert(mRunning);
-
-	constexpr size_t tabs = static_cast<size_t>(Enum::GetCount<ImGuiToolTab>());
-	for (size_t i = 0; i < tabs; ++i)
-	{
-		const size_t size = mTools[i].size();
-		for (size_t j = 0; j < size; ++j)
-		{
-			mTools[i][j]->Release();
+			imgui.mTools[i][j]->Release();
 		}
 	}
 
-	mRunning = false;
+	imgui.mInitialized = false;
+
+	return true;
 }
 
 bool ImGuiToolManager::LoadFromFile(const std::string& filename)
@@ -82,13 +84,16 @@ bool ImGuiToolManager::LoadFromFile(const std::string& filename)
 		file.close();
 	}
 
+	ImGuiToolManager& imgui = GetInstance();
+	enAssert(imgui.mInitialized);
+
 	constexpr size_t tabs = static_cast<size_t>(Enum::GetCount<ImGuiToolTab>());
 	for (size_t i = 0; i < tabs; ++i)
 	{
-		const size_t size = mTools[i].size();
+		const size_t size = imgui.mTools[i].size();
 		for (size_t j = 0; j < size; ++j)
 		{
-			if (ImGuiTool* tool = mTools[i][j])
+			if (ImGuiTool* tool = imgui.mTools[i][j])
 			{
 				auto itr = jsonInput.find(tool->GetSaveName());
 				if (itr != jsonInput.end() && itr->is_boolean())
@@ -106,13 +111,16 @@ bool ImGuiToolManager::SaveToFile(const std::string& filename)
 {
 	nlohmann::json jsonInput;
 
+	ImGuiToolManager& imgui = GetInstance();
+	enAssert(imgui.mInitialized);
+
 	constexpr size_t tabs = static_cast<size_t>(Enum::GetCount<ImGuiToolTab>());
 	for (size_t i = 0; i < tabs; ++i)
 	{
-		const size_t size = mTools[i].size();
+		const size_t size = imgui.mTools[i].size();
 		for (size_t j = 0; j < size; ++j)
 		{
-			if (ImGuiTool* tool = mTools[i][j])
+			if (ImGuiTool* tool = imgui.mTools[i][j])
 			{
 				jsonInput[tool->GetSaveName()] = tool->mVisible;
 			}
@@ -138,20 +146,51 @@ void ImGuiToolManager::Update(Window& window, const Time& dt)
 {
 	ENLIVE_PROFILE_FUNCTION();
 
-	if (mRunning)
+	ImGuiToolManager& imgui = GetInstance();
+	enAssert(imgui.mInitialized);
+
+#if defined(ENLIVE_RELEASE) && defined(ENLIVE_DEBUG)
+	if (Keyboard::IsPressed(Keyboard::Key::F1) && Keyboard::IsControlHold())
+	{
+		imgui.mRunning = !imgui.mRunning;
+	}
+#endif // ENLIVE_RELEASE && ENLIVE_DEBUG
+
+	if (imgui.mRunning)
 	{
 		const Vector2u windowSize = window.GetSize();
 		ImGuiWrapper::BeginFrame(250, windowSize.x, windowSize.y, dt.AsSeconds());
-		ImGuiMain();
-		ImGuiTools();
+		imgui.ImGuiMain();
+		imgui.ImGuiTools();
 		ImGuiWrapper::EndFrame();
 	}
 }
 
+void ImGuiToolManager::RegisterTool(ImGuiTool& tool)
+{
+	ImGuiToolManager& imgui = GetInstance();
+	enAssert(imgui.mInitialized);
+
+	const U32 tab = static_cast<U32>(tool.GetTab());
+
+	std::vector<ImGuiTool*>& tools = imgui.mTools[tab];
+
+#ifdef ENLIVE_ENABLE_ASSERT
+	const U32 toolHash = Hash::SlowHash(tool.GetName());
+	const size_t size = tools.size();
+	for (size_t i = 0; i < size; ++i)
+	{
+		enAssert(Hash::SlowHash(tools[i]->GetName()) != toolHash);
+	}
+#endif // ENLIVE_ENABLE_ASSERT
+
+	tool.Initialize();
+
+	tools.push_back(&tool);
+}
+
 void ImGuiToolManager::RegisterTools()
 {
-	enAssert(!mRunning);
-
 #ifdef ENLIVE_TOOL
 	RegisterTool(ImGuiEditor::GetInstance());
 	RegisterTool(ImGuiGame::GetInstance());
@@ -167,24 +206,6 @@ void ImGuiToolManager::RegisterTools()
 	RegisterTool(ImGuiPhysic::GetInstance());
 	RegisterTool(ImGuiProfiler::GetInstance());
 	RegisterTool(ImGuiResourceBrowser::GetInstance());
-}
-
-void ImGuiToolManager::RegisterTool(ImGuiTool& tool)
-{
-	const U32 tab = static_cast<U32>(tool.GetTab());
-
-	std::vector<ImGuiTool*>& tools = mTools[tab];
-
-#ifdef ENLIVE_ENABLE_ASSERT
-	const U32 toolHash = Hash::SlowHash(tool.GetName());
-	const size_t size = tools.size();
-	for (size_t i = 0; i < size; ++i)
-	{
-		enAssert(Hash::SlowHash(tools[i]->GetName()) != toolHash);
-	}
-#endif // ENLIVE_ENABLE_ASSERT
-
-	tools.push_back(&tool);
 }
 
 void ImGuiToolManager::ImGuiMain()
@@ -243,6 +264,23 @@ void ImGuiToolManager::ImGuiTools()
 			}
 		}
 	}
+}
+
+ImGuiToolManager& ImGuiToolManager::GetInstance()
+{
+	static ImGuiToolManager instance;
+	return instance;
+}
+
+ImGuiToolManager::ImGuiToolManager()
+	: mTools()
+	, mRunning(false)
+{
+}
+
+ImGuiToolManager::~ImGuiToolManager()
+{
+	enAssert(!mRunning);
 }
 
 } // namespace en

@@ -107,7 +107,7 @@ Vector2i ImGuiGame::GetMouseScreenCoordinates()
 
 bool ImGuiGame::IsMouseInView()
 {
-	return GetInstance().mViewRect.Contains(Vector2f(Mouse::GetPositionCurrentWindow()));
+	return IsViewVisible() && GetInstance().mViewRect.Contains(Vector2f(Mouse::GetPositionCurrentWindow()));
 }
 
 bool ImGuiGame::IsViewVisible()

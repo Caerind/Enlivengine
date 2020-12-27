@@ -1,6 +1,7 @@
 #include <Enlivengine/Core/Engine.hpp>
 
 #include <Enlivengine/Utils/Assert.hpp>
+#include <Enlivengine/Utils/Profiler.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
 #include <Enlivengine/SDL/SDLWrapper.hpp>
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
@@ -76,10 +77,24 @@ bool Engine::Init(int argc, char** argv)
 #ifdef ENLIVE_ENABLE_IMGUI
 	if (ImGuiWrapper::Init(PathManager::GetAssetsPath() + "imgui.ini"))
 	{
-		ImGuiToolManager::GetInstance().Initialize();
+		if (ImGuiToolManager::Initialize())
+		{
 #ifdef ENLIVE_TOOL
-		ImGuiToolManager::GetInstance().LoadFromFile(PathManager::GetAssetsPath() + "tools.json");
+			if (!ImGuiToolManager::LoadFromFile(PathManager::GetAssetsPath() + "tools.json"))
+			{
+				enLogWarning(LogChannel::Core, "Can't load ImGui opened tools");
+			}
 #endif // ENLIVE_TOOL
+		}
+		else
+		{
+#ifdef ENLIVE_TOOL
+			enLogError(LogChannel::Core, "Can't initialize ImGuiToolManager");
+			return false;
+#else
+			enLogWarning(LogChannel::Core, "Can't initialize ImGuiToolManager");
+#endif // ENLIVE_TOOL
+		}
 	}
 #endif // ENLIVE_ENABLE_IMGUI
 
@@ -102,10 +117,13 @@ bool Engine::Release()
 #ifdef ENLIVE_ENABLE_IMGUI
 	if (ImGuiWrapper::IsInitialized())
 	{
+		if (ImGuiToolManager::IsInitialized())
+		{
 #ifdef ENLIVE_TOOL
-		ImGuiToolManager::GetInstance().SaveToFile(PathManager::GetAssetsPath() + "tools.json");
+			ImGuiToolManager::SaveToFile(PathManager::GetAssetsPath() + "tools.json");
 #endif // ENLIVE_TOOL
-		ImGuiToolManager::GetInstance().Release();
+			ImGuiToolManager::Release();
+		}
 
 		ImGuiWrapper::Release();
 	}
@@ -141,6 +159,20 @@ bool Engine::Update(Time& dt)
 	Engine& engine = GetInstance();
 	enAssert(engine.mInitialized);
 
+#ifdef ENLIVE_ENABLE_PROFILE
+	static U32 frameNumber = 0;
+
+	static bool firstTime = true;
+	if (!firstTime)
+	{
+		Profiler::GetInstance().EndFrame();
+		frameNumber++;
+	}
+	firstTime = false;
+
+	Profiler::GetInstance().StartFrame(frameNumber);
+#endif // ENLIVE_ENABLE_PROFILE
+
 	if (!engine.mWindow.ShouldClose())
 	{
 		dt = engine.mDTClock.Restart();
@@ -148,7 +180,7 @@ bool Engine::Update(Time& dt)
 		EventSystem::Update();
 
 #ifdef ENLIVE_ENABLE_IMGUI
-		ImGuiToolManager::GetInstance().Update(engine.mWindow, dt);
+		ImGuiToolManager::Update(engine.mWindow, dt);
 #endif // ENLIVE_ENABLE_IMGUI
 
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG

@@ -24,6 +24,8 @@ public:
 
 	void Display() override;
 
+	static void UpdateCamera(Time dt);
+
 	static Framebuffer* GetFramebuffer();
 	static Vector2i GetMouseScreenCoordinates();
 	static bool IsMouseInView();

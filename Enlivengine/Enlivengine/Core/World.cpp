@@ -1,12 +1,20 @@
 #include <Enlivengine/Core/World.hpp>
 
+#include <Enlivengine/Utils/Profiler.hpp>
+
+#include <Enlivengine/Resources/PathManager.hpp>
+
+#include <Enlivengine/Meta/MetaSpecialization.hpp>
+#include <Enlivengine/Meta/DataFile.hpp>
+
 namespace en
 {
 
-World::World()
+World::World(const std::string& name)
 	: mEntityManager(*this)
 	, mSystems()
 	, mPhysicSystem(nullptr)
+	, mName(name)
 	, mPlaying(false)
 #ifdef ENLIVE_DEBUG
 	, mDebugDraw()
@@ -65,18 +73,73 @@ bool World::IsPlaying() const
 
 void World::Update(Time dt)
 {
-	for (System* system : mSystems)
+	ENLIVE_PROFILE_FUNCTION();
+	if (mPlaying)
 	{
-		system->Update(dt);
+		for (System* system : mSystems)
+		{
+			ENLIVE_PROFILE_SCOPE(system->GetName());
+			system->Update(dt);
+		}
 	}
 }
 
 void World::Render()
 {
+	ENLIVE_PROFILE_FUNCTION();
 	for (System* system : mSystems)
 	{
+		ENLIVE_PROFILE_SCOPE(system->GetName());
 		system->Render();
 	}
+}
+
+const std::string& World::GetName() const
+{
+	return mName;
+}
+
+std::string World::GetFilename() const
+{
+	return PathManager::GetAssetsPath() + mName + ".world";
+}
+
+bool World::LoadFromFile()
+{
+	DataFile dataFile;
+	const std::string filename = GetFilename();
+	if (!dataFile.LoadFromFile(filename))
+	{
+		enLogWarning(LogChannel::Core, "Can't load world {} from {}", mName, filename);
+		return false;
+	}
+	if (!dataFile.Deserialize(mEntityManager, "EntityManager"))
+	{
+		enLogWarning(LogChannel::Core, "Can't deserialize EntityManager for world {}", mName);
+		return false;
+	}
+	return true;
+}
+
+bool World::SaveToFile() const
+{
+	DataFile dataFile;
+	if (!dataFile.CreateEmptyFile())
+	{
+		enLogWarning(LogChannel::Core, "Can't create empty datafile for world {}", mName);
+		return false;
+	}
+	if (!dataFile.Serialize(mEntityManager, "EntityManager"))
+	{
+		enLogWarning(LogChannel::Core, "Can't serialize EntityManager for world {}", mName);
+		return false;
+	}
+	const std::string filename = GetFilename();
+	if (!dataFile.SaveToFile(filename))
+	{
+		enLogWarning(LogChannel::Core, "Can't save world {} to {}", mName, filename);
+	}
+	return true;
 }
 
 #ifdef ENLIVE_DEBUG

@@ -10,6 +10,7 @@ namespace en
 bgfx::ViewId Camera::sViewIdCounter = 0;
 U32 Camera::sCameraCount = 0;
 Camera* Camera::sCameras[kMaxCameras];
+Camera* Camera::sMainCamera = nullptr;
 
 Camera::Camera()
 	: mViewMatrix()
@@ -343,6 +344,16 @@ Framebuffer* Camera::GetFramebuffer() const
 bgfx::ViewId Camera::GetViewID() const
 {
 	return mViewId;
+}
+
+void Camera::SetMainCamera(Camera* camera)
+{
+	sMainCamera = camera;
+}
+
+Camera* Camera::GetMainCamera()
+{
+	return sMainCamera;
 }
 
 void Camera::UpdateProjectionMatrix() const
