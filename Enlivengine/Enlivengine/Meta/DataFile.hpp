@@ -133,13 +133,13 @@ bool DataFile::Serialize_Registered(const T& object, const char* name)
 				using MemberType = typename Traits::Decay<decltype(member)>::type::Type;
 				if (member.CanGetConstRef())
 				{
-					Serialize_Common(member.GetConstRef(object), member.GetName());
+					this->Serialize_Common(member.GetConstRef(object), member.GetName());
 				}
 				else if (member.CanGetCopy())
 				{
 					if constexpr (Traits::IsCopyAssignable<MemberType>::value)
 					{
-						Serialize_Common(member.GetCopy(object), member.GetName());
+						this->Serialize_Common(member.GetCopy(object), member.GetName());
 					}
 					else
 					{
@@ -193,7 +193,7 @@ bool DataFile::Deserialize_Registered(T& object, const char* name)
 				{
 					if (member.CanGetRef())
 					{
-						Deserialize_Common(member.GetRef(object), member.GetName());
+						this->Deserialize_Common(member.GetRef(object), member.GetName());
 					}
 					else if (member.CanGetCopy())
 					{
@@ -201,7 +201,7 @@ bool DataFile::Deserialize_Registered(T& object, const char* name)
 						if constexpr (Traits::IsCopyAssignable<MemberType>::value)
 						{
 							MemberType memberCopy = member.GetCopy(object);
-							if (Deserialize_Common(memberCopy, member.GetName()))
+							if (this->Deserialize_Common(memberCopy, member.GetName()))
 							{
 								if (member.CanSet())
 								{
