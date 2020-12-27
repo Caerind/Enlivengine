@@ -5,7 +5,7 @@
     "EntityBrowser": true,
     "Game": false,
     "ImGuiDemo": false,
-    "InputEditor": false,
+    "InputEditor": true,
     "Logs": true,
     "MemoryDebugger": false,
     "Physic": false,

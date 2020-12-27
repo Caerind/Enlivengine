@@ -96,6 +96,7 @@ public:
 	static void RemoveButton(const char* name);
 	static void RemoveButton(U32 hash);
 	static const EventButton& GetButton(U32 index);
+	static const EventButton& GetLastButton();
 
 	static U32 AddAxis(const char* name, EventAxis::Type type, U32 axisIdentifier = 0, U32 extraInfo = 0);
 	static bool IsAxisActive(const char* name);
@@ -109,6 +110,11 @@ public:
 	static const EventAxis& GetAxis(U32 index);
 
 private:
+	friend class Controller;
+	friend class Keyboard;
+	friend class Mouse;
+	static void SetLastButton(EventButton::Type type, U32 buttonIdentifier, U32 extraInfo = 0);
+	
 	static U32 HashFct(const char* name);
 
 	static EventSystem& GetInstance();
@@ -124,6 +130,8 @@ private:
 
 	std::vector<EventButton> mButtons;
 	std::vector<EventAxis> mAxes;
+
+	EventButton mLastButton;
 };
 
 } // namespace en

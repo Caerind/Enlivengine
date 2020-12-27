@@ -90,11 +90,24 @@ struct HasCustomEditor<en::EventSystem::EventButton>
 					modified = true;
 				}
 
-				// TODO : Modifiers (Ctrl/Alt/Shift)
-				if (en::ObjectEditor::ImGuiEditor(object.extraInfo, "Extra"))
-				{
-					modified = true;
-				}
+				bool alt = (object.extraInfo & en::Keyboard::Modifier::Alt) > 0;
+				bool control = (object.extraInfo & en::Keyboard::Modifier::Control) > 0;
+				bool shift = (object.extraInfo & en::Keyboard::Modifier::Shift) > 0;
+				bool system = (object.extraInfo & en::Keyboard::Modifier::System) > 0;
+
+				en::ObjectEditor::ImGuiEditor(alt, "Alt");
+				ImGui::SameLine(); 
+				en::ObjectEditor::ImGuiEditor(control, "Ctrl");
+
+				en::ObjectEditor::ImGuiEditor(shift, "Shift");
+				ImGui::SameLine();
+				en::ObjectEditor::ImGuiEditor(system, "System");
+
+				object.extraInfo = 0 |
+					((alt) ? static_cast<en::U32>(en::Keyboard::Modifier::Alt) : 0) |
+					((control) ? static_cast<en::U32>(en::Keyboard::Modifier::Control) : 0) |
+					((shift) ? static_cast<en::U32>(en::Keyboard::Modifier::Shift) : 0) |
+					((system) ? static_cast<en::U32>(en::Keyboard::Modifier::System) : 0);
 
 			} break;
 			case en::EventSystem::EventButton::Type::MouseButton:

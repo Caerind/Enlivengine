@@ -261,6 +261,11 @@ const EventSystem::EventButton& EventSystem::GetButton(U32 index)
 	return GetInstance().mButtons[index];
 }
 
+const EventSystem::EventButton& EventSystem::GetLastButton()
+{
+	return GetInstance().mLastButton;
+}
+
 U32 EventSystem::AddAxis(const char* name, EventAxis::Type type, U32 axisIdentifier /*= 0*/, U32 extraInfo /*= 0*/)
 {
 	EventAxis eventAxis;
@@ -349,6 +354,15 @@ const EventSystem::EventAxis& EventSystem::GetAxis(U32 index)
 {
 	enAssert(index < GetButtonCount());
 	return GetInstance().mAxes[index];
+}
+
+void EventSystem::SetLastButton(EventButton::Type type, U32 buttonIdentifier, U32 extraInfo /*= 0*/)
+{
+	auto& system = GetInstance();
+	system.mLastButton.type = type;
+	system.mLastButton.action = EventButton::ActionType::Pressed;
+	system.mLastButton.buttonIdentifier = buttonIdentifier;
+	system.mLastButton.extraInfo = extraInfo;
 }
 
 U32 EventSystem::HashFct(const char* name)

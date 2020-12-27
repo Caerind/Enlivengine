@@ -57,6 +57,56 @@ void ImGuiInputEditor::Buttons()
 	ImGui::InputText("Name##NewButton", newButtonName, kBufferSize);
 	ObjectEditor::ImGuiEditor(newButton, "New button");
 
+	{
+		static bool capturing = false;
+		static bool capturingFrameOne = false;
+		if (capturing && !capturingFrameOne)
+		{
+			ImGui::DisabledButton("Capturing...");
+
+			const EventSystem::EventButton& buttonCapture = EventSystem::GetLastButton();
+			switch (buttonCapture.type)
+			{
+				case EventSystem::EventButton::Type::KeyboardKey:
+				{
+					if (Keyboard::IsPressed(static_cast<Keyboard::Key>(buttonCapture.buttonIdentifier)) && Keyboard::AreModifiersHold(buttonCapture.extraInfo))
+					{
+						newButton = buttonCapture;
+						capturing = false;
+					}
+				} break;
+				case EventSystem::EventButton::Type::MouseButton:
+				{
+					if (Mouse::IsPressed(static_cast<Mouse::Button>(buttonCapture.buttonIdentifier)))
+					{
+						newButton = buttonCapture;
+						capturing = false;
+					}
+				} break;
+				case EventSystem::EventButton::Type::JoystickButton:
+				{
+					if (Controller::IsButtonPressed(buttonCapture.extraInfo, buttonCapture.buttonIdentifier))
+					{
+						newButton = buttonCapture;
+						capturing = false;
+					}
+				} break;
+			}
+		}
+		else
+		{
+			if (ImGui::Button("Capture"))
+			{
+				capturing = true;
+				capturingFrameOne = true;
+			}
+		}
+		if (capturingFrameOne)
+		{
+			capturingFrameOne = false;
+		}
+	}
+
 	bool validNewInput = true;
 
 	const U32 nameLength = static_cast<U32>(strlen(newButtonName));

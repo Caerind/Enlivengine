@@ -4,6 +4,8 @@
 
 #include <Enlivengine/Utils/Assert.hpp>
 
+#include <Enlivengine/Window/EventSystem.hpp>
+
 namespace en
 {
 
@@ -44,6 +46,12 @@ void Mouse::HandleEvent(const SDL_Event& event)
 	else if (event.type == SDL_MOUSEBUTTONDOWN)
 	{
 		mouse.mButtonMask |= event.button.button;
+
+		if ((SDL_BUTTON_LMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Left), 0);
+		if ((SDL_BUTTON_MMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Middle), 0);
+		if ((SDL_BUTTON_RMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Right), 0);
+		if ((SDL_BUTTON_X1MASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::X1), 0);
+		if ((SDL_BUTTON_X2MASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::X2), 0);
 	}
 	else if (event.type == SDL_MOUSEBUTTONUP)
 	{

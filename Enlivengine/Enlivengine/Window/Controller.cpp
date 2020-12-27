@@ -1,5 +1,7 @@
 #include <Enlivengine/Window/Controller.hpp>
 
+#include <Enlivengine/Window/EventSystem.hpp>
+
 namespace en
 {
 
@@ -79,6 +81,8 @@ void Controller::HandleEvent(const SDL_Event& event)
 				if (buttonDown)
 				{
 					joystick->buttons[event.jbutton.button] = static_cast<U8>(Joystick::State::Pressed) | static_cast<U8>(Joystick::State::Hold);
+
+					EventSystem::SetLastButton(EventSystem::EventButton::Type::JoystickButton, static_cast<U32>(event.jbutton.button), static_cast<U32>(event.jbutton.which));
 				}
 				else
 				{
