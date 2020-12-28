@@ -2,11 +2,16 @@
 
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Utils/Array.hpp>
-#include <Enlivengine/Graphics/Camera.hpp>
-#include <Enlivengine/Graphics/DebugDraw.hpp>
+#include <Enlivengine/Utils/TypeTraits.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
+
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/System.hpp>
 #include <Enlivengine/Core/PhysicSystem.hpp>
+
+#ifdef ENLIVE_DEBUG
+#include <Enlivengine/Graphics/DebugDraw.hpp>
+#endif // ENLIVE_DEBUG
 
 namespace en
 {

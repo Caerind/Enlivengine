@@ -59,14 +59,18 @@ bool World::HasPhysicSystem() const
 void World::Update(Time dt)
 {
 	ENLIVE_PROFILE_FUNCTION();
+#ifdef ENLIVE_DEBUG
 	if (mPlaying)
 	{
+#endif // ENLIVE_DEBUG
 		for (System* system : mSystems)
 		{
 			ENLIVE_PROFILE_SCOPE(system->GetName());
 			system->Update(dt);
 		}
+#ifdef ENLIVE_DEBUG
 	}
+#endif // ENLIVE_DEBUG
 }
 
 void World::Render()

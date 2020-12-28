@@ -3,6 +3,7 @@
 #include <entt/entt.hpp>
 
 #include <Enlivengine/Utils/Assert.hpp>
+#include <Enlivengine/Utils/TypeTraits.hpp>
 
 #include <Enlivengine/Math/Vector3.hpp>
 
