@@ -178,6 +178,11 @@ bool BgfxWrapper::Release()
     return true;
 }
 
+void BgfxWrapper::Frame()
+{
+	bgfx::frame();
+}
+
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
 void BgfxWrapper::ToggleDisplayStats()
 {

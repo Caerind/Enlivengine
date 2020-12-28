@@ -757,20 +757,28 @@ bool DataFile::Deserialize_Basic(std::vector<T*>& object, const char* name)
 				const U32 childTypeHash = ReadCurrentType();
 				mParserXml.CloseNode();
 
-				// TODO : Check inheritance childTypeHash is child of typeHash
-				T* childObject = (T*)ClassManager::CreateClassFromHash(childTypeHash);
-				if (childObject != nullptr)
+				if (ClassManager::IsRegistered(childTypeHash))
 				{
-					const bool thisResult = Deserialize_Common(*childObject, childName.c_str());
-					if (thisResult)
+					// TODO : Check inheritance childTypeHash is child of typeHash
+					T* childObject = (T*)ClassManager::CreateClassFromHash(childTypeHash);
+					if (childObject != nullptr)
 					{
-						object[i] = childObject;
+						const bool thisResult = Deserialize_Common(*childObject, childName.c_str());
+						if (thisResult)
+						{
+							object[i] = childObject;
+						}
+						result = thisResult && result;
 					}
-					result = thisResult && result;
+					else
+					{
+						enLogError(LogChannel::Core, "Can't create object of type {} for {}", ClassManager::GetClassNameFromHash(childTypeHash), name);
+						result = false;
+					}
 				}
 				else
 				{
-					enLogError(LogChannel::Core, "Can't create object of type {} for {}", ClassManager::GetClassNameFromHash(childTypeHash), name);
+					enLogError(LogChannel::Core, "The type with hash {} is not registered into the ClassManager for {}", childTypeHash, name);
 					result = false;
 				}
 			}

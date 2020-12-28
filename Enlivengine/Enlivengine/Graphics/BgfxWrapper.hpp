@@ -13,6 +13,8 @@ public:
     static bool IsInitialized();
     static bool Release();
 
+    static void Frame();
+
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
     static void ToggleDisplayStats();
     static void SetDisplayStats(bool display);

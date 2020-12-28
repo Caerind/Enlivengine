@@ -16,8 +16,85 @@
 #include <Enlivengine/Window/Keyboard.hpp>
 #endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
 
+#ifdef ENLIVE_TOOL
+#include <Enlivengine/Tools/ImGuiEditor.hpp>
+#include <Enlivengine/Tools/ImGuiGame.hpp>
+#endif // ENLIVE_TOOL
+
 namespace en
 {
+
+int Engine::Main(int argc, char** argv)
+{
+	if (Engine::Init(argc, argv))
+	{
+		Time dt;
+		while (Engine::Update(dt))
+		{
+			if (World* world = Engine::GetCurrentWorld())
+			{
+				// Update
+				{
+					world->Update(dt);
+
+#ifdef ENLIVE_TOOL
+					if (ImGuiEditor::IsViewVisible())
+					{
+						ImGuiEditor::UpdateCamera(dt);
+					}
+#endif // ENLIVE_TOOL
+				}
+
+
+				// Render
+				{
+#ifdef ENLIVE_TOOL
+					if (ImGuiGame::IsViewVisible())
+					{
+						if (Camera* mainCamera = Camera::GetMainCamera())
+						{
+							mainCamera->Apply();
+							world->Render();
+							world->GetDebugDraw().Render();
+						}
+					}
+
+					if (ImGuiEditor::IsViewVisible())
+					{
+						ImGuiEditor::GetCamera().Apply();
+						world->Render();
+						world->GetDebugDraw().Render();
+					}
+					world->GetDebugDraw().Clear();
+#endif // ENLIVE_TOOL
+
+#ifdef ENLIVE_RELEASE
+					if (Camera* mainCamera = Camera::GetMainCamera())
+					{
+						mainCamera->Apply();
+						world->Render();
+#ifdef ENLIVE_DEBUG
+						world->GetDebugDraw().Render();
+						world->GetDebugDraw().Clear();
+#endif // ENLIVE_DEBUG
+					}
+#endif // ENLIVE_RELEASE
+				}
+			}
+
+			BgfxWrapper::Frame();
+		}
+
+		if (World* world = Engine::GetCurrentWorld())
+		{
+			world->GetEntityManager().ClearEntities();
+		}
+
+		ResourceManager::GetInstance().ReleaseAll();
+	}
+	Engine::Release();
+	return 0;
+}
 
 bool Engine::Init(int argc, char** argv)
 {
@@ -198,9 +275,57 @@ bool Engine::Update(Time& dt)
 	}
 }
 
-void Engine::SetCurrentWorld(World* world)
+bool Engine::CreateWorld(const std::string& worldName)
 {
-	GetInstance().mCurrentWorld = world;
+	auto& engine = GetInstance();
+
+	if (engine.mCurrentWorld != nullptr)
+	{
+		UnloadCurrentWorld();
+	}
+
+	enAssert(engine.mCurrentWorld == nullptr);
+
+	engine.mCurrentWorld = new World(worldName);
+	return engine.mCurrentWorld->SaveToFile();
+}
+
+bool Engine::RemoveWorld(const std::string& worldName)
+{
+	auto& engine = GetInstance();
+
+	if (engine.mCurrentWorld != nullptr && engine.mCurrentWorld->GetName() == worldName)
+	{
+		enLogError(LogChannel::Core, "Can't remove the currently loaded world {}", engine.mCurrentWorld->GetName());
+		return false;
+	}
+
+	return std::filesystem::remove(std::filesystem::path(World::GetWorldFilename(worldName)));
+}
+
+bool Engine::LoadWorld(const std::string& worldName)
+{
+	auto& engine = GetInstance();
+
+	if (engine.mCurrentWorld != nullptr)
+	{
+		UnloadCurrentWorld();
+	}
+
+	enAssert(engine.mCurrentWorld == nullptr);
+
+	engine.mCurrentWorld = new World(worldName);
+	return engine.mCurrentWorld->LoadFromFile();
+}
+
+void Engine::UnloadCurrentWorld()
+{
+	auto& engine = GetInstance();
+
+	enAssert(engine.mCurrentWorld != nullptr);
+
+	delete engine.mCurrentWorld;
+	engine.mCurrentWorld = nullptr;
 }
 
 World* Engine::GetCurrentWorld()

@@ -26,6 +26,7 @@
 #include <Enlivengine/Tools/ImGuiPhysic.hpp>
 #include <Enlivengine/Tools/ImGuiProfiler.hpp>
 #include <Enlivengine/Tools/ImGuiResourceBrowser.hpp>
+#include <Enlivengine/Tools/ImGuiWorlds.hpp>
 
 namespace en
 {
@@ -200,6 +201,7 @@ void ImGuiToolManager::RegisterTools()
 	RegisterTool(ImGuiGame::GetInstance());
 #endif // ENLIVE_TOOL
 
+	RegisterTool(ImGuiWorlds::GetInstance());
 	RegisterTool(ImGuiAnimationEditor::GetInstance());
 	RegisterTool(ImGuiConsole::GetInstance());
 	RegisterTool(ImGuiDemoWindow::GetInstance());

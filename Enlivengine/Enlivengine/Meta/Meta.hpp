@@ -104,6 +104,14 @@ public:
 
 	constexpr const char* GetName() const { return mName; }
 	constexpr U32 GetHash() const { return Hash::SlowHash(mName); }
+	constexpr const char* GetClassName() const { return TypeInfo<Class>::GetName(); }
+	constexpr const char* GetTypeName() const { return TypeInfo<T>::GetName(); }
+	constexpr U32 GetTotalHash() const
+	{
+		static_assert(TypeInfo<Class>::IsKnown());
+		static_assert(TypeInfo<T>::IsKnown());
+		return Hash::Combine32(TypeInfo<Class>::GetHash(), Hash::Combine32(TypeInfo<T>::GetHash(), GetHash()));
+	}
 
 	constexpr U32 GetAttributes() const { return mAttributes; }
 	constexpr bool HasEditor() const { return (mAttributes & en::Meta::Attribute_NoEditor) == 0; }
@@ -120,13 +128,6 @@ public:
 	constexpr bool CanGetConstRef() const { return HasMemberPtr() || HasNonConstRefGetter() || HasConstRefGetter(); }
 	constexpr bool CanGetCopy() const { return HasMemberPtr() || HasNonConstRefGetter() || HasConstRefGetter() || HasCopyGetter(); }
 	constexpr bool CanSet() const { return HasMemberPtr() || HasNonConstRefGetter() || HasConstRefSetter() || HasCopySetter(); }
-
-	constexpr U32 GetTotalHash() const
-	{
-		static_assert(TypeInfo<Class>::IsKnown());
-		static_assert(TypeInfo<T>::IsKnown());
-		return Hash::Combine32(TypeInfo<Class>::GetHash(), Hash::Combine32(TypeInfo<T>::GetHash(), GetHash()));
-	}
 
 	constexpr T& GetRef(Class& obj) const
 	{
@@ -377,46 +378,70 @@ constexpr U32 GetClassVersion()
 	return hash;
 }
 
-// TODO : Move to ObjectEditor ?
-// Custom ImGui Editor
-#define ENLIVE_META_CLASS_DEFAULT_TRAITS_VIRTUAL_IMGUI_EDITOR(className) \
-	template <> \
-	struct CustomObjectEditor<className> \
+#ifdef ENLIVE_DEBUG
+template <typename T>
+void DebugMetaClass()
+{
+	printf("ClassName: %s\n\n", TypeInfo<T>::GetName());
+	Meta::ForEachMember<T>([](const auto& member)
+		{
+			printf("- Name: %s\n", member.GetName());
+			printf("    Hash: %d\n", member.GetHash());
+			printf("    ClassName: %s\n", member.GetClassName());
+			printf("    TypeName: %s\n", member.GetTypeName());
+			printf("    TotalHash: %d\n", member.GetTotalHash());
+			printf("\n");
+			printf("    Attributes: %d\n", member.GetAttributes());
+			printf("    HasEditor: %s\n", member.HasEditor() ? "true" : "false");
+			printf("    HasSerialization: %s\n", member.HasSerialization() ? "true" : "false");
+			printf("\n");
+			printf("    HasMemberPtr: %s\n", member.HasMemberPtr() ? "true" : "false");
+			printf("    HasConstRefGetter: %s\n", member.HasConstRefGetter() ? "true" : "false");
+			printf("    HasNonConstRefGetter: %s\n", member.HasNonConstRefGetter() ? "true" : "false");
+			printf("    HasCopyGetter: %s\n", member.HasCopyGetter() ? "true" : "false");
+			printf("    HasConstRefSetter: %s\n", member.HasConstRefSetter() ? "true" : "false");
+			printf("    HasCopySetter: %s\n", member.HasCopySetter() ? "true" : "false");
+			printf("\n");
+			printf("    CanGetRef: %s\n", member.CanGetRef() ? "true" : "false");
+			printf("    CanGetConstRef: %s\n", member.CanGetConstRef() ? "true" : "false");
+			printf("    CanGetCopy: %s\n", member.CanGetCopy() ? "true" : "false");
+			printf("    CanSet: %s\n", member.CanSet() ? "true" : "false");
+			printf("\n\n");
+		});
+}
+#endif // ENLIVE_DEBUG
+
+// GetName
+#define ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION() \
+	virtual const char* GetName() const;
+
+#define ENLIVE_META_CLASS_VIRTUAL_NAME_DECLARATION(className) \
+	const char* className::GetName() const \
 	{ \
-		static constexpr bool value = true; \
-		static bool ImGuiEditor(className& object, const char* name) \
-		{ \
-			return object.ImGuiEditor(name); \
-		} \
-	};
-#define ENLIVE_META_CLASS_DEFAULT_VIRTUAL_IMGUI_EDITOR() \
-	virtual bool ImGuiEditor(const char* name) \
+		 return TypeInfo<className>::GetName(); \
+	}
+
+// Custom ImGui Editor
+#define ENLIVE_META_CLASS_VIRTUAL_IMGUI_EDITOR_DEFINITION() \
+	virtual bool ImGuiEditor(const char* name);
+
+#define ENLIVE_META_CLASS_VIRTUAL_IMGUI_EDITOR_DECLARATION(className) \
+	bool className::ImGuiEditor(const char* name) \
 	{ \
 		 return en::ObjectEditor::ImGuiEditor_Registered(*this, name); \
 	}
 
-// TODO : Move to DataFile ?
 // Custom Serialization
-#define ENLIVE_META_CLASS_DEFAULT_TRAITS_VIRTUAL_SERIALIZATION(className) \
-	template <> \
-	struct CustomXmlSerialization<className> \
-	{ \
-		static constexpr bool value = true; \
-		static bool Serialize(en::DataFile& dataFile, const className& object, const char* name) \
-		{ \
-			return object.Serialize(dataFile, name); \
-		} \
-		static bool Deserialize(en::DataFile& dataFile, className& object, const char* name) \
-		{ \
-			return object.Deserialize(dataFile, name); \
-		} \
-	};
-#define ENLIVE_META_CLASS_DEFAULT_VIRTUAL_SERIALIZATION() \
-	virtual bool Serialize(en::DataFile& dataFile, const char* name) const \
+#define ENLIVE_META_CLASS_VIRTUAL_SERIALIZATION_DEFINITION() \
+	virtual bool Serialize(en::DataFile& dataFile, const char* name) const; \
+	virtual bool Deserialize(en::DataFile& dataFile, const char* name); \
+
+#define ENLIVE_META_CLASS_VIRTUAL_SERIALIZATION_DECLARATION(className) \
+	bool className::Serialize(en::DataFile& dataFile, const char* name) const \
 	{ \
 		 return dataFile.Serialize_Registered(*this, name); \
 	} \
-	virtual bool Deserialize(en::DataFile& dataFile, const char* name) \
+	bool className::Deserialize(en::DataFile& dataFile, const char* name) \
 	{ \
 		 return dataFile.Deserialize_Registered(*this, name); \
 	}

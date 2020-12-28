@@ -15,8 +15,8 @@ World::World(const std::string& name)
 	, mSystems()
 	, mPhysicSystem(nullptr)
 	, mName(name)
-	, mPlaying(false)
 #ifdef ENLIVE_DEBUG
+	, mPlaying(false)
 	, mDebugDraw()
 	, mSelectedEntities()
 #endif // ENLIVE_DEBUG
@@ -27,7 +27,7 @@ World::~World()
 {
 	for (System* system : mSystems)
 	{
-		delete system;
+		enDelete(System, system);
 	}
 }
 
@@ -54,21 +54,6 @@ const PhysicSystem* World::GetPhysicSystem() const
 bool World::HasPhysicSystem() const
 {
 	return mPhysicSystem != nullptr;
-}
-
-void World::Play()
-{
-	mPlaying = true;
-}
-
-void World::Pause()
-{
-	mPlaying = false;
-}
-
-bool World::IsPlaying() const
-{
-	return mPlaying;
 }
 
 void World::Update(Time dt)
@@ -104,6 +89,11 @@ std::string World::GetFilename() const
 	return PathManager::GetAssetsPath() + mName + ".world";
 }
 
+std::string World::GetWorldFilename(const std::string& worldName)
+{
+	return PathManager::GetAssetsPath() + worldName + ".world";
+}
+
 bool World::LoadFromFile()
 {
 	DataFile dataFile;
@@ -117,6 +107,16 @@ bool World::LoadFromFile()
 	{
 		enLogWarning(LogChannel::Core, "Can't deserialize EntityManager for world {}", mName);
 		return false;
+	}
+	if (!dataFile.Deserialize(mSystems, "Systems"))
+	{
+		enLogWarning(LogChannel::Core, "Can't deserialize Systems for world {}", mName);
+		mSystems.clear(); // TODO : REMOVE
+		return false;
+	}
+	for (auto& system : mSystems)
+	{
+		system->SetWorld(this);
 	}
 	return true;
 }
@@ -134,6 +134,11 @@ bool World::SaveToFile() const
 		enLogWarning(LogChannel::Core, "Can't serialize EntityManager for world {}", mName);
 		return false;
 	}
+	if (!dataFile.Serialize(mSystems, "Systems"))
+	{
+		enLogWarning(LogChannel::Core, "Can't serialize Systems for world {}", mName);
+		return false;
+	}
 	const std::string filename = GetFilename();
 	if (!dataFile.SaveToFile(filename))
 	{
@@ -143,6 +148,21 @@ bool World::SaveToFile() const
 }
 
 #ifdef ENLIVE_DEBUG
+void World::Play()
+{
+	mPlaying = true;
+}
+
+void World::Pause()
+{
+	mPlaying = false;
+}
+
+bool World::IsPlaying() const
+{
+	return mPlaying;
+}
+
 DebugDraw& World::GetDebugDraw()
 {
 	return mDebugDraw;

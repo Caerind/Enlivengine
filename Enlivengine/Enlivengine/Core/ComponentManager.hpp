@@ -14,8 +14,6 @@ namespace en
 class ComponentManager
 {
 public:
-	using ComponentTypeID = ENTT_ID_TYPE;
-
 	ComponentManager() = delete;
 
 	static bool IsRegistered(U32 componentHash)
@@ -36,7 +34,6 @@ public:
 		static_assert(TypeInfo<T>::IsKnown());
 		constexpr U32 hash = TypeInfo<T>::GetHash();
 		mComponents[hash].name = TypeInfo<T>::GetName();
-		mComponents[hash].enttID = entt::type_info<T>::id();
 #ifdef ENLIVE_ENABLE_IMGUI
 		mComponents[hash].editor = [](Entity& entity)
 		{
@@ -55,6 +52,11 @@ public:
 		mComponents[hash].add = [](Entity& entity)
 		{
 			entity.Add<T>();
+		};
+		mComponents[hash].has = [](const Entity& entity)
+		{
+			const ENTT_ID_TYPE type[] = { entt::type_info<T>::id() };
+			return entity.GetRegistry().runtime_view(std::cbegin(type), std::cend(type)).contains(entity.GetEntity());
 		};
 		mComponents[hash].remove = [](Entity& entity)
 		{
@@ -90,6 +92,7 @@ public:
 	using EditorCallback = std::function<bool(Entity&)>;
 #endif // ENLIVE_ENABLE_IMGUI
 	using AddCallback = std::function<void(Entity&)>;
+	using HasCallback = std::function<bool(const Entity&)>;
 	using RemoveCallback = std::function<void(Entity&)>;
 	using SerializeCallback = std::function<bool(DataFile&, const Entity&)>;
 	using DeserializeCallback = std::function<bool(DataFile&, Entity&)>;
@@ -97,11 +100,11 @@ public:
 	struct ComponentInfo
 	{
 		const char* name;
-		ComponentTypeID enttID;
 #ifdef ENLIVE_ENABLE_IMGUI
 		EditorCallback editor;
 #endif // ENLIVE_ENABLE_IMGUI
 		AddCallback add;
+		HasCallback has;
 		RemoveCallback remove;
 		SerializeCallback serialize;
 		DeserializeCallback deserialize;

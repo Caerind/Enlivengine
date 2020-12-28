@@ -11,12 +11,19 @@
 #include <Enlivengine/Core/ComponentManager.hpp>
 #include <Enlivengine/Core/Engine.hpp>
 
+#include <Enlivengine/Core/PhysicSystem.hpp>
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/PhysicComponent.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
+
+//////////////////////////////////////////////////////////////////
+// en::System
+//////////////////////////////////////////////////////////////////
+ENLIVE_META_CLASS_BEGIN(en::System)
+ENLIVE_META_CLASS_END()
 
 //////////////////////////////////////////////////////////////////
 // en::NameComponent
@@ -126,7 +133,7 @@ struct HasCustomSerialization<en::Entity>
 			for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
 			{
 				const auto& ci = itr->second;
-				if (HasComponent(object, ci.enttID))
+				if (ci.has(object))
 				{
 					ci.serialize(dataFile, object);
 				}
@@ -150,7 +157,12 @@ struct HasCustomSerialization<en::Entity>
 			enAssert(dataFile.ReadCurrentType() == en::TypeInfo<en::Entity>::GetHash());
 			if (parser.ReadFirstNode())
 			{
-				static std::vector<DeserializationComponentNode> componentNodes; // TODO : Move to Array
+				struct DeserializationComponentNode
+				{
+					std::string name;
+					en::U32 hash;
+				};
+				static std::vector<DeserializationComponentNode> componentNodes;
 				componentNodes.clear();
 				do
 				{
@@ -197,21 +209,6 @@ struct HasCustomSerialization<en::Entity>
 			return false;
 		}
 	}
-
-private:
-	struct DeserializationComponentNode
-	{
-		std::string name;
-		en::U32 hash;
-	};
-
-	using ComponentTypeID = ENTT_ID_TYPE;
-	static bool HasComponent(const en::Entity& entity, ComponentTypeID enttComponentID)
-	{
-		// TODO : Factorize with CustomObjectEditor<en::Entity>
-		const ComponentTypeID type[] = { enttComponentID };
-		return entity.GetRegistry().runtime_view(std::cbegin(type), std::cend(type)).contains(entity.GetEntity());
-	}
 };
 
 #ifdef ENLIVE_ENABLE_IMGUI
@@ -256,9 +253,9 @@ struct HasCustomEditor<en::Entity>
 				for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
 				{
 					const auto& ci = itr->second;
-					if (HasComponent(object, ci.enttID))
+					if (ci.has(object))
 					{
-						ImGui::PushID(ci.enttID);
+						ImGui::PushID(itr->first);
 						if (ImGui::Button("-"))
 						{
 							ci.remove(object);
@@ -325,15 +322,6 @@ struct HasCustomEditor<en::Entity>
 			}
 		}
 		return modified;
-	}
-
-private:
-	using ComponentTypeID = ENTT_ID_TYPE;
-	static bool HasComponent(const en::Entity& entity, ComponentTypeID enttComponentID)
-	{
-		// TODO : Factorize with CustomXmlSerialization<en::Entity>
-		const ComponentTypeID type[] = { enttComponentID };
-		return entity.GetRegistry().runtime_view(std::cbegin(type), std::cend(type)).contains(entity.GetEntity());
 	}
 };
 #endif // ENLIVE_ENABLE_IMGUI
@@ -450,6 +438,15 @@ struct HasCustomEditor<en::EntityManager>
 	}
 };
 #endif // ENLIVE_ENABLE_IMGUI
+
+//////////////////////////////////////////////////////////////////
+// en::PhysicSystem
+//////////////////////////////////////////////////////////////////
+ENLIVE_META_CLASS_BEGIN(en::PhysicSystem)
+	ENLIVE_META_CLASS_MEMBER("gravity", &en::PhysicSystem::GetGravity, &en::PhysicSystem::SetGravity),
+	ENLIVE_META_CLASS_MEMBER("positionIterations", &en::PhysicSystem::GetPositionIterations, &en::PhysicSystem::SetPositionIterations),
+	ENLIVE_META_CLASS_MEMBER("velocityIterations", &en::PhysicSystem::GetVelocityIterations, &en::PhysicSystem::SetVelocityIterations)
+ENLIVE_META_CLASS_END()
 
 //////////////////////////////////////////////////////////////////
 // en::PhysicComponent
@@ -902,3 +899,7 @@ struct HasCustomEditor<en::PhysicComponent>
 	}
 };
 #endif // ENLIVE_ENABLE_IMGUI
+
+//////////////////////////////////////////////////////////////////
+// en::World
+//////////////////////////////////////////////////////////////////

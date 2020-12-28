@@ -10,5 +10,6 @@
     "MemoryDebugger": false,
     "Physic": true,
     "Profiler": false,
-    "ResourceBrowser": true
+    "ResourceBrowser": true,
+    "Worlds": true
 }

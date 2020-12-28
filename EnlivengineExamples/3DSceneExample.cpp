@@ -1,41 +1,25 @@
-#include <Enlivengine/Platform/PrimitiveTypes.hpp>
-#include <Enlivengine/Utils/Assert.hpp>
-#include <Enlivengine/Window/Controller.hpp>
-#include <Enlivengine/Window/EventSystem.hpp>
-#include <Enlivengine/Window/Mouse.hpp>
-#include <Enlivengine/Window/Keyboard.hpp>
-#include <Enlivengine/Graphics/Framebuffer.hpp>
-#include <Enlivengine/Resources/PathManager.hpp>
-#include <Enlivengine/Core/Engine.hpp>
-#include <Enlivengine/Core/World.hpp>
-#include <Enlivengine/Core/Entity.hpp>
-#include <Enlivengine/Core/TraceryGenerator.hpp>
-#include <Enlivengine/Core/PhysicSystem.hpp>
-#include <Enlivengine/Tools/ImGuiEditor.hpp>
-#include <Enlivengine/Tools/ImGuiGame.hpp>
-
 #include <Enlivengine/Core/Engine.hpp>
 #include <Enlivengine/Meta/MetaSpecialization.hpp>
+
+#include <Enlivengine/Tools/ImGuiGame.hpp>
 
 #include <Enlivengine/Core/ComponentManager.hpp>
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
 #include <Enlivengine/Core/PhysicComponent.hpp>
+#include <Enlivengine/Core/PhysicSystem.hpp>
 
 using namespace en;
 
 class RenderSystem : public System
 {
 public:
-	RenderSystem(World& world) : System(world) {}
-
-	static const char* GetStaticName() { return "RenderSystem"; }
-	const char* GetName() const override { return GetStaticName(); }
+	ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION();
 
 	void Render() override
 	{
-		auto& entityManager = mWorld.GetEntityManager();
+		auto& entityManager = mWorld->GetEntityManager();
 		auto view = entityManager.View<TransformComponent>();
 		for (auto entt : view)
 		{
@@ -64,27 +48,27 @@ public:
 		}
 	}
 };
+ENLIVE_META_CLASS_BEGIN(RenderSystem)
+ENLIVE_META_CLASS_END()
+ENLIVE_META_CLASS_VIRTUAL_NAME_DECLARATION(RenderSystem);
 
 class DebugSystem : public System
 {
 public:
-	DebugSystem(World& world) : System(world) {}
-
-	static const char* GetStaticName() { return "DebugSystem"; }
-	const char* GetName() const override { return GetStaticName(); }
+	ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION();
 
 	void Render() override
 	{
 #ifdef ENLIVE_DEBUG
-		mWorld.GetDebugDraw().DrawCross(Vector3f(-1.0f));
-		mWorld.GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
-		mWorld.GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
-		mWorld.GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
+		mWorld->GetDebugDraw().DrawCross(Vector3f(-1.0f));
+		mWorld->GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
+		mWorld->GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
+		mWorld->GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
 
 		if (Camera* mainCamera = Camera::GetMainCamera())
 		{
-			mWorld.GetDebugDraw().DrawFrustum(mainCamera->CreateFrustum(), Colors::Blue);
-			//mWorld.GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
+			mWorld->GetDebugDraw().DrawFrustum(mainCamera->CreateFrustum(), Colors::Blue);
+			//mWorld->GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
 
 #ifdef ENLIVE_TOOL
 			if (ImGuiGame::IsMouseInView())
@@ -97,12 +81,12 @@ public:
 				if (r.Intersects(p, &t))
 				{
 					const Vector3f point = r.GetPoint(t);
-					mWorld.GetDebugDraw().DrawLine(mousePos, point, Colors::Green);
-					mWorld.GetDebugDraw().DrawSphere(point, 0.05f, Colors::Green);
+					mWorld->GetDebugDraw().DrawLine(mousePos, point, Colors::Green);
+					mWorld->GetDebugDraw().DrawSphere(point, 0.05f, Colors::Green);
 				}
 				else
 				{
-					mWorld.GetDebugDraw().DrawLine(mousePos, r.GetPoint(100.0f), Colors::Red);
+					mWorld->GetDebugDraw().DrawLine(mousePos, r.GetPoint(100.0f), Colors::Red);
 				}
 			}
 #endif // ENLIVE_TOOL
@@ -110,6 +94,9 @@ public:
 #endif // ENLIVE_DEBUG
 	}
 };
+ENLIVE_META_CLASS_BEGIN(DebugSystem)
+ENLIVE_META_CLASS_END()
+ENLIVE_META_CLASS_VIRTUAL_NAME_DECLARATION(DebugSystem);
 
 struct StupidShipComponent {};
 ENLIVE_META_CLASS_BEGIN(StupidShipComponent)
@@ -118,14 +105,11 @@ ENLIVE_META_CLASS_END()
 class StupidShipSystem : public System
 {
 public:
-	StupidShipSystem(World& world) : System(world) {}
-
-	static const char* GetStaticName() { return "StupidShipSystem"; }
-	const char* GetName() const override { return GetStaticName(); }
+	ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION();
 
 	void Update(Time dt) override
 	{
-		auto& entityManager = mWorld.GetEntityManager();
+		auto& entityManager = mWorld->GetEntityManager();
 		auto view = entityManager.View<TransformComponent, StupidShipComponent>();
 		for (auto entt : view)
 		{
@@ -137,6 +121,9 @@ public:
 		}
 	}
 };
+ENLIVE_META_CLASS_BEGIN(StupidShipSystem)
+ENLIVE_META_CLASS_END()
+ENLIVE_META_CLASS_VIRTUAL_NAME_DECLARATION(StupidShipSystem);
 
 struct PlayerComponent {};
 ENLIVE_META_CLASS_BEGIN(PlayerComponent)
@@ -145,10 +132,7 @@ ENLIVE_META_CLASS_END()
 class PlayerSystem : public System
 {
 public:
-	PlayerSystem(World& world) : System(world) {}
-
-	static const char* GetStaticName() { return "PlayerSystem"; }
-	const char* GetName() const override { return GetStaticName(); }
+	ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION();
 
 	void Update(Time dt) override
 	{
@@ -158,7 +142,7 @@ public:
 			Controller::Rumble(0, 0.25f, 100);
 		}
 
-		auto& entityManager = mWorld.GetEntityManager();
+		auto& entityManager = mWorld->GetEntityManager();
 		auto view = entityManager.View<TransformComponent, PlayerComponent>();
 		for (auto entt : view)
 		{
@@ -204,185 +188,34 @@ public:
 		}
 	}
 };
+ENLIVE_META_CLASS_BEGIN(PlayerSystem)
+ENLIVE_META_CLASS_END()
+ENLIVE_META_CLASS_VIRTUAL_NAME_DECLARATION(PlayerSystem);
 
 
 int main(int argc, char** argv)
 {
-	// Engine components
-	ComponentManager::Register<NameComponent>();
-	ComponentManager::Register<UIDComponent>();
-	ComponentManager::Register<RenderableComponent>();
-	ComponentManager::Register<SpriteComponent>();
-	ComponentManager::Register<TilemapComponent>();
-	ComponentManager::Register<CameraComponent>();
-	ComponentManager::Register<TransformComponent>();
-	ComponentManager::Register<PhysicComponent>();
+	// TODO : This is buggy
+	Meta::DebugMetaClass<PhysicSystem>();
 
-	// Own components
-	ComponentManager::Register<StupidShipComponent>();
-	ComponentManager::Register<PlayerComponent>();
+	// Engine components/systems
+	Engine::RegisterComponent<NameComponent>();
+	Engine::RegisterComponent<UIDComponent>();
+	Engine::RegisterComponent<RenderableComponent>();
+	Engine::RegisterComponent<SpriteComponent>();
+	Engine::RegisterComponent<TilemapComponent>();
+	Engine::RegisterComponent<CameraComponent>();
+	Engine::RegisterComponent<TransformComponent>();
+	Engine::RegisterComponent<PhysicComponent>();
+	Engine::RegisterSystem<PhysicSystem>();
 
-	if (Engine::Init(argc, argv))
-	{
-		World world("TestWorld");
-		world.CreateSystem<RenderSystem>();
-		world.CreateSystem<StupidShipSystem>();
-		world.CreateSystem<PlayerSystem>();
-		world.CreateSystem<DebugSystem>();
-		PhysicSystem* physicSystem = world.CreateSystem<PhysicSystem>();
-		physicSystem->SetGravity(Vector2f(0.0f, -1.0f));
-		Engine::SetCurrentWorld(&world);
+	// Own components/systems
+	Engine::RegisterComponent<StupidShipComponent>();
+	Engine::RegisterComponent<PlayerComponent>();
+	Engine::RegisterSystem<RenderSystem>();
+	Engine::RegisterSystem<DebugSystem>();
+	Engine::RegisterSystem<StupidShipSystem>();
+	Engine::RegisterSystem<PlayerSystem>();
 
-#ifdef ENLIVE_RELEASE
-		world.Play();
-#endif // ENLIVE_RELEASE
-
-		{
-			TexturePtr textureA = ResourceManager::GetInstance().Create<Texture>("textureA", TextureLoader::FromFile(PathManager::GetAssetsPath() + "fieldstone-rgba.dds"));
-			if (!textureA.IsValid())
-			{
-				enAssert(false);
-			}
-			TexturePtr textureB = ResourceManager::GetInstance().Create<Texture>("textureB", TextureLoader::FromFile(PathManager::GetAssetsPath() + "ship_default.png"));
-			if (!textureB.IsValid())
-			{
-				enAssert(false);
-			}
-
-			Tileset tileset;
-			tileset.SetGridSize({ 2,2 });
-			tileset.SetTileSize({ 256, 256 });
-			tileset.SetTexture(textureA);
-
-			Entity playerEntity = world.GetEntityManager().CreateEntity();
-			{
-				playerEntity.Add<NameComponent>().name = "Player";
-				TransformComponent& playerTransform = playerEntity.Add<TransformComponent>();
-				playerTransform.SetPosition(Vector3f(0.0f, 0.0f, 2.0f));
-				playerTransform.SetRotation(Matrix3f::RotationY(0.0f));
-				playerEntity.Add<PlayerComponent>();
-			}
-
-			Entity playerCamEntity = world.GetEntityManager().CreateEntity();
-			{
-				playerCamEntity.Add<NameComponent>().name = "PlayerCam";
-				TransformComponent& playerCamTransform = playerCamEntity.Add<TransformComponent>();
-				playerCamTransform.AttachToParent(playerEntity); // Attach this entity to player entity
-				playerCamTransform.SetPosition(Vector3f(0.0f, 0.8f, 0.0f));
-				CameraComponent& playerCam = playerCamEntity.Add<CameraComponent>();
-				playerCam.InitializePerspective(80.0f);
-#if defined(ENLIVE_TOOL)
-				playerCam.SetFramebuffer(ImGuiGame::GetFramebuffer());
-#elif defined(ENLIVE_RELEASE)
-				playerCam.SetFramebuffer(&Framebuffer::GetDefaultFramebuffer());
-#endif // ENLIVE_TOOL
-				Camera::SetMainCamera(&playerCam);
-				playerCam.SetClearColor(Colors::LightBlue);
-			}
-
-			Entity a1 = world.GetEntityManager().CreateEntity();
-			{
-				a1.Add<NameComponent>().name = "Wall1";
-				a1.Add<TransformComponent>().SetPosition(Vector3f(0.0f, 1.0f, 0.0f));
-				a1.Add<RenderableComponent>();
-				a1.Add<SpriteComponent>().sprite.SetTexture(textureA);
-			}
-			Entity a2 = world.GetEntityManager().CreateEntity();
-			{
-				a2.Add<NameComponent>().name = "Wall2";
-				a2.Add<TransformComponent>().SetPosition(Vector3f(1.0f, 1.0f, 0.0f));;
-				a2.Add<RenderableComponent>();
-				a2.Add<SpriteComponent>().sprite.SetTexture(textureA);
-			}
-			Entity b1 = world.GetEntityManager().CreateEntity();
-			{
-				b1.Add<NameComponent>().name = "Ship";
-				b1.Add<TransformComponent>().SetPosition(Vector3f(2.0f, 2.0f, 0.0f));
-				b1.Add<RenderableComponent>();
-				b1.Add<SpriteComponent>().sprite.SetTexture(textureB);
-				b1.Add<StupidShipComponent>();
-			}
-			Entity c1 = world.GetEntityManager().CreateEntity();
-			{
-				c1.Add<NameComponent>().name = "Ground1";
-				c1.Add<TransformComponent>().SetRotation(Matrix3f::RotationX(90.0f));
-				c1.Add<RenderableComponent>();
-				TilemapComponent& tilemapComponent = c1.Add<TilemapComponent>();
-				tilemapComponent.tilemap.SetTileset(tileset);
-				tilemapComponent.tilemap.SetSize({ 4,4 });
-				tilemapComponent.tilemap.SetTile({ 1,1 }, 0);
-				tilemapComponent.tilemap.SetTile({ 2,1 }, 1);
-				tilemapComponent.tilemap.SetTile({ 2,2 }, 2);
-				tilemapComponent.tilemap.SetTile({ 1,2 }, 3);
-			}
-			Entity az = world.GetEntityManager().CreateEntity();
-			{
-				az.Add<NameComponent>().name = "Ship2";
-				az.Add<TransformComponent>().SetPosition(Vector3f(1.0f, 3.0f, 4.0f));
-				az.Add<RenderableComponent>();
-				az.Add<SpriteComponent>().sprite.SetTexture(textureB);
-				auto& phys = az.Add<PhysicComponent>();
-				phys.SetBodyType(PhysicBodyType::Dynamic);
-			}
-		}
-
-		Time dt;
-		while (Engine::Update(dt))
-		{
-			// Update
-			{
-				world.Update(dt);
-
-#ifdef ENLIVE_TOOL
-				if (ImGuiEditor::IsViewVisible())
-				{
-					ImGuiEditor::UpdateCamera(dt);
-				}
-#endif // ENLIVE_TOOL
-			}
-
-			// Render
-			{
-#ifdef ENLIVE_TOOL
-				if (ImGuiGame::IsViewVisible())
-				{
-					if (Camera* mainCamera = Camera::GetMainCamera())
-					{
-						mainCamera->Apply();
-						world.Render();
-						world.GetDebugDraw().Render();
-					}
-				}
-
-				if (ImGuiEditor::IsViewVisible())
-				{
-					ImGuiEditor::GetCamera().Apply();
-					world.Render();
-					world.GetDebugDraw().Render();
-				}
-				world.GetDebugDraw().Clear();
-#endif // ENLIVE_TOOL
-
-#ifdef ENLIVE_RELEASE
-				if (Camera* mainCamera = Camera::GetMainCamera())
-				{
-					mainCamera->Apply();
-					world.Render();
-#ifdef ENLIVE_DEBUG
-					world.GetDebugDraw().Render();
-					world.GetDebugDraw().Clear();
-#endif // ENLIVE_DEBUG
-				}
-#endif // ENLIVE_RELEASE
-
-				bgfx::frame();
-			}
-		}
-
-		world.GetEntityManager().ClearEntities();
-
-		ResourceManager::GetInstance().ReleaseAll();
-	}
-	Engine::Release();
-	return 0;
+	return Engine::Main(argc, argv);
 }

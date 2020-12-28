@@ -10,8 +10,8 @@
 namespace en
 {
 
-PhysicSystem::PhysicSystem(World& world)
-	: System(world)
+PhysicSystem::PhysicSystem()
+	: System()
 	, mPhysicWorld(nullptr)
 	, mVelocityIterations(8)
 	, mPositionIterations(3)
@@ -103,7 +103,7 @@ void PhysicSystem::Update(Time dt)
 void PhysicSystem::BeforeUpdate()
 {
 	ENLIVE_PROFILE_FUNCTION();
-	auto& entityManager = mWorld.GetEntityManager();
+	auto& entityManager = mWorld->GetEntityManager();
 	auto view = entityManager.View<TransformComponent, PhysicComponent>();
 	for (auto entt : view)
 	{
@@ -125,7 +125,7 @@ void PhysicSystem::BeforeUpdate()
 void PhysicSystem::AfterUpdate()
 {
 	ENLIVE_PROFILE_FUNCTION();
-	auto& entityManager = mWorld.GetEntityManager();
+	auto& entityManager = mWorld->GetEntityManager();
 	auto view = entityManager.View<TransformComponent, PhysicComponent>();
 	for (auto entt : view)
 	{
@@ -267,10 +267,6 @@ U32 PhysicSystem::GetDebugRenderFlags() const
 
 void PhysicSystem::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-	ENLIVE_UNUSED(vertices);
-	ENLIVE_UNUSED(vertexCount);
-	ENLIVE_UNUSED(color);
-
 	Color c;
 	c.FromBox2DColor(color);
 	for (int32 i = 0; i < vertexCount; ++i)
@@ -285,7 +281,7 @@ void PhysicSystem::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const 
 		{
 			pos2.Set(vertices[0].x, vertices[0].y, 0.0f);
 		}
-		mWorld.GetDebugDraw().DrawLine(pos1, pos2, c);
+		mWorld->GetDebugDraw().DrawLine(pos1, pos2, c);
 	}
 }
 
@@ -330,7 +326,7 @@ void PhysicSystem::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color
 	const Vector3f pos2(p2.x, p2.y, 0.0f);
 	Color c;
 	c.FromBox2DColor(color);
-	mWorld.GetDebugDraw().DrawLine(pos1, pos2, c);
+	mWorld->GetDebugDraw().DrawLine(pos1, pos2, c);
 }
 
 void PhysicSystem::DrawTransform(const b2Transform& xf)
@@ -347,7 +343,7 @@ void PhysicSystem::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color
 	const Vector3f pos(p.x, p.y, 0.0f);
 	Color c;
 	c.FromBox2DColor(color);
-	mWorld.GetDebugDraw().DrawPoint(pos, c);
+	mWorld->GetDebugDraw().DrawPoint(pos, c);
 }
 
 b2Body* PhysicSystem::GetComponentBody(const PhysicComponent& component)

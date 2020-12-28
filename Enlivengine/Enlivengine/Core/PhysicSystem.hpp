@@ -20,11 +20,14 @@ class PhysicComponent;
 class PhysicSystem : public System, public b2ContactListener, public b2Draw
 {
     public:
-        PhysicSystem(World& world);
-		~PhysicSystem();
+        PhysicSystem();
+		~PhysicSystem(); 
 
-		static const char* GetStaticName() { return "PhysicSystem"; }
-		const char* GetName() const override { return GetStaticName(); }
+		// Special case here, you should use ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION()
+		const char* GetName() const override
+		{
+			return "en::PhysicSystem";
+		}
 
 		void Update(Time dt) override;
 		virtual void BeforeUpdate();

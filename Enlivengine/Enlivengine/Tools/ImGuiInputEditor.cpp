@@ -133,7 +133,7 @@ bool ImGuiInputEditor::Buttons()
 	bool validNewInput = true;
 
 	const U32 nameLength = static_cast<U32>(strlen(newButtonName));
-	if (nameLength <= 0 || nameLength >= 255)
+	if (nameLength <= 0 || nameLength > kBufferSize)
 	{
 		validNewInput = false;
 	}

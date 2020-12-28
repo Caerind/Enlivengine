@@ -10,17 +10,20 @@ class World;
 class System
 {
     public:
-        System(World& world);
+        System();
         virtual ~System();
-
-		static const char* GetStaticName() { return "System"; }
-		virtual const char* GetName() const = 0;
 		
         virtual void Update(Time dt);
 		virtual void Render();
+
+		virtual const char* GetName() const = 0;
 		
 	protected:
-		World& mWorld;
+		World* mWorld;
+
+	private:
+		friend class World;
+		void SetWorld(World* world);
 };
         
 } // namespace en

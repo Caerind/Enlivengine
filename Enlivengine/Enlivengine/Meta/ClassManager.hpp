@@ -57,7 +57,7 @@ public:
 		}
 		else
 		{
-			return nullptr;
+			return "<Unknown>";
 		}
 	}
 
