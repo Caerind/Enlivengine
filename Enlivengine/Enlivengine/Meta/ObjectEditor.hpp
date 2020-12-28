@@ -9,8 +9,8 @@
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Utils/TypeTraits.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
+#include <Enlivengine/Utils/ClassFactory.hpp>
 
-#include <Enlivengine/Meta/ClassFactory.hpp>
 #include <Enlivengine/Meta/Meta.hpp>
 #include <Enlivengine/Meta/MetaTraits.hpp>
 
