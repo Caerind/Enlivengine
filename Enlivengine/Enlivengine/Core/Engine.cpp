@@ -21,6 +21,8 @@
 #include <Enlivengine/Tools/ImGuiGame.hpp>
 #endif // ENLIVE_TOOL
 
+#include <filesystem>
+
 namespace en
 {
 

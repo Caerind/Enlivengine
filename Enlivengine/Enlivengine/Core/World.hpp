@@ -89,7 +89,7 @@ T* World::CreateSystem(Args&& ... args)
 	}
 	else
 	{
-		system = enNew(T, TypeInfo<T>::GetName());
+		system = enNew(T, "System");
 		if (system != nullptr)
 		{
 			mSystems.push_back(system);

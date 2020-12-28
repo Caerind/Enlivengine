@@ -3,11 +3,12 @@
 #include <Enlivengine/Graphics/Camera.hpp>
 
 #include <Enlivengine/Core/ComponentTraits.hpp>
-#include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
 namespace en
 {
+
+class World;
 
 class CameraComponent : public Camera
 {
@@ -26,10 +27,6 @@ public:
 	virtual Frustum CreateFrustum() const override;
 
 	virtual const Matrix4f& GetViewMatrix() const override;
-
-	Entity GetEntity() const;
-	World* GetWorld();
-	const World* GetWorld() const;
 
 private:
 	// Hide camera view transform, use entity transform

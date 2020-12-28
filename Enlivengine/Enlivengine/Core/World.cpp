@@ -86,7 +86,7 @@ const std::string& World::GetName() const
 
 std::string World::GetFilename() const
 {
-	return PathManager::GetAssetsPath() + mName + ".world";
+	return GetWorldFilename(mName);
 }
 
 std::string World::GetWorldFilename(const std::string& worldName)

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <DataFile>
 	<Worlds type="std::string" size="0" />
-	<CurrentWorld type="char"></CurrentWorld>
+	<CurrentWorld type="std::string"></CurrentWorld>
 </DataFile>
