@@ -5,6 +5,7 @@
 #include <Enlivengine/Resources/PathManager.hpp>
 #include <Enlivengine/SDL/SDLWrapper.hpp>
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
+#include <Enlivengine/Graphics/Camera.hpp>
 #include <Enlivengine/Tools/ImGuiToolManager.hpp>
 #include <Enlivengine/Window/EventSystem.hpp>
 
