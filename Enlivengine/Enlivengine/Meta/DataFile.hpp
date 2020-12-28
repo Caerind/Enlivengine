@@ -4,9 +4,9 @@
 #include <Enlivengine/Utils/Enums.hpp>
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Utils/TypeTraits.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
 
-#include <Enlivengine/Meta/TypeInfo.hpp>
-#include <Enlivengine/Meta/ClassManager.hpp>
+#include <Enlivengine/Meta/ClassFactory.hpp>
 #include <Enlivengine/Meta/Meta.hpp>
 #include <Enlivengine/Meta/MetaTraits.hpp>
 
@@ -694,7 +694,7 @@ bool DataFile::Deserialize_Basic(Array<T*>& object, const char* name)
 				mParserXml.CloseNode();
 
 				// TODO : Check inheritance childTypeHash is child of typeHash
-				T* childObject = (T*)ClassManager::CreateClassFromHash(childTypeHash);
+				T* childObject = (T*)ClassFactory::CreateClassFromHash(childTypeHash);
 				if (childObject != nullptr)
 				{
 					const bool thisResult = Deserialize_Common(*childObject, childName.c_str());
@@ -706,7 +706,7 @@ bool DataFile::Deserialize_Basic(Array<T*>& object, const char* name)
 				}
 				else
 				{
-					enLogError(LogChannel::Core, "Can't create object of type {} for {}", ClassManager::GetClassNameFromHash(childTypeHash), name);
+					enLogError(LogChannel::Core, "Can't create object of type {} for {}", ClassFactory::GetClassNameFromHash(childTypeHash), name);
 					result = false;
 				}
 			}
@@ -757,10 +757,10 @@ bool DataFile::Deserialize_Basic(std::vector<T*>& object, const char* name)
 				const U32 childTypeHash = ReadCurrentType();
 				mParserXml.CloseNode();
 
-				if (ClassManager::IsRegistered(childTypeHash))
+				if (ClassFactory::IsRegistered(childTypeHash))
 				{
 					// TODO : Check inheritance childTypeHash is child of typeHash
-					T* childObject = (T*)ClassManager::CreateClassFromHash(childTypeHash);
+					T* childObject = (T*)ClassFactory::CreateClassFromHash(childTypeHash);
 					if (childObject != nullptr)
 					{
 						const bool thisResult = Deserialize_Common(*childObject, childName.c_str());
@@ -772,13 +772,13 @@ bool DataFile::Deserialize_Basic(std::vector<T*>& object, const char* name)
 					}
 					else
 					{
-						enLogError(LogChannel::Core, "Can't create object of type {} for {}", ClassManager::GetClassNameFromHash(childTypeHash), name);
+						enLogError(LogChannel::Core, "Can't create object of type {} for {}", ClassFactory::GetClassNameFromHash(childTypeHash), name);
 						result = false;
 					}
 				}
 				else
 				{
-					enLogError(LogChannel::Core, "The type with hash {} is not registered into the ClassManager for {}", childTypeHash, name);
+					enLogError(LogChannel::Core, "The type with hash {} is not registered into the ClassFactory for {}", childTypeHash, name);
 					result = false;
 				}
 			}
@@ -833,20 +833,28 @@ bool DataFile::Deserialize_Basic(std::array<T*, N>& object, const char* name)
 				const U32 childTypeHash = ReadCurrentType();
 				mParserXml.CloseNode();
 
-				// TODO : Check inheritance childTypeHash is child of typeHash
-				T* childObject = (T*)ClassManager::CreateClassFromHash(childTypeHash);
-				if (childObject != nullptr)
+				if (ClassFactory::IsRegistered(childTypeHash))
 				{
-					const bool thisResult = Deserialize_Common(*childObject, childName.c_str());
-					if (thisResult)
+					// TODO : Check inheritance childTypeHash is child of typeHash
+					T* childObject = (T*)ClassFactory::CreateClassFromHash(childTypeHash);
+					if (childObject != nullptr)
 					{
-						object[i] = childObject;
+						const bool thisResult = Deserialize_Common(*childObject, childName.c_str());
+						if (thisResult)
+						{
+							object[i] = childObject;
+						}
+						result = thisResult && result;
 					}
-					result = thisResult && result;
+					else
+					{
+						enLogError(LogChannel::Core, "Can't create object of type {} for {}", ClassFactory::GetClassNameFromHash(childTypeHash), name);
+						result = false;
+					}
 				}
 				else
 				{
-					enLogError(LogChannel::Core, "Can't create object of type {} for {}", ClassManager::GetClassNameFromHash(childTypeHash), name);
+					enLogError(LogChannel::Core, "The type with hash {} is not registered into the ClassFactory for {}", childTypeHash, name);
 					result = false;
 				}
 			}

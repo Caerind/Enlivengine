@@ -3,7 +3,7 @@
 #include <Enlivengine/Application/Application.hpp>
 #include <Enlivengine/Application/Window.hpp>
 #include <Enlivengine/Graphics/View.hpp>
-#include <Enlivengine/System/ClassManager.hpp>
+#include <Enlivengine/System/ClassFactory.hpp>
 #include <Enlivengine/Core/ComponentManager.hpp>
 #include <Enlivengine/Core/Engine.hpp>
 #include <Enlivengine/Core/World.hpp>

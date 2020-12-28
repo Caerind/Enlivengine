@@ -22,16 +22,16 @@ struct TypeInfo
 
 } // namespace en
 
-#define ENLIVE_DEFINE_TYPE_INFO(templateType) namespace en { \
+#define ENLIVE_DEFINE_TYPE_INFO(type) namespace en { \
 	template <> \
-	struct TypeInfo<templateType> \
+	struct TypeInfo<type> \
 	{ \
-		using type = templateType; \
+		using Type = type; \
 		static constexpr bool IsKnown() { return true; } \
-		static constexpr const char* GetName() { return #templateType; } \
+		static constexpr const char* GetName() { return #type; } \
 		static constexpr U32 GetHash() { return Hash::SlowHash(GetName()); } \
-		static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(type); } \
-		static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(type); } \
+		static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(Type); } \
+		static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(Type); } \
 	}; } // namespace en
 
 #define ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(templateType) namespace en { \
@@ -42,8 +42,8 @@ struct TypeInfo
 		static constexpr U32 s_stringStorageSize = StringLength(#templateType) + StringLength(TypeInfo<T>::GetName()) + StringLength("<>") + 1; \
 		static constexpr ConstexprStringStorage s_stringStorage = ConstexprStringStorage<s_stringStorageSize>(#templateType, "<", TypeInfo<T>::GetName(), ">"); \
 	public: \
-		using type = templateType<T>; \
-		using elementType = T; \
+		using Type = templateType<T>; \
+		using ElementType = T; \
 		static constexpr bool IsKnown() { return true; } \
 		static constexpr const char* GetName() { return s_stringStorage.GetData(); } \
 		static constexpr U32 GetHash() { return Hash::SlowHash(GetName()); } \

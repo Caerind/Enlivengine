@@ -8,9 +8,9 @@
 #include <Enlivengine/Utils/Enums.hpp>
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Utils/TypeTraits.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
 
-#include <Enlivengine/Meta/TypeInfo.hpp>
-#include <Enlivengine/Meta/ClassManager.hpp>
+#include <Enlivengine/Meta/ClassFactory.hpp>
 #include <Enlivengine/Meta/Meta.hpp>
 #include <Enlivengine/Meta/MetaTraits.hpp>
 

@@ -56,7 +56,7 @@ void Engine::RegisterComponent()
 template <typename T>
 void Engine::RegisterSystem()
 {
-	ClassManager::Register<T>();
+	ClassFactory::Register<T>();
 	SystemManager::Register<T>();
 }
 

@@ -3,7 +3,7 @@
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Hash.hpp>
 #include <Enlivengine/Utils/TypeTraits.hpp>
-#include <Enlivengine/Meta/TypeInfo.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
 
 namespace en::Meta
 {

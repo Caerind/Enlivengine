@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Enlivengine/Utils/String.hpp>
-#include <Enlivengine/Meta/TypeInfo.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
 #include <Enlivengine/Meta/Meta.hpp>
 #include <Enlivengine/Meta/MetaTraits.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
