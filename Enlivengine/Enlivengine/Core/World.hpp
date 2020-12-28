@@ -25,8 +25,8 @@ public:
 	EntityManager& GetEntityManager();
 	const EntityManager& GetEntityManager() const;
 
-	template <typename T, typename ... Args>
-	T* CreateSystem(Args&& ... args);
+	template <typename T>
+	T* CreateSystem();
 	template <typename T>
 	void RemoveSystem();
 
@@ -82,8 +82,8 @@ private:
 #endif // ENLIVE_DEBUG
 };
 
-template <typename T, typename ... Args>
-T* World::CreateSystem(Args&& ... args)
+template <typename T>
+T* World::CreateSystem()
 {
 	static_assert(Traits::IsBaseOf<System, T>::value);
 
