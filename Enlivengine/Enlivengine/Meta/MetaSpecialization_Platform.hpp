@@ -55,24 +55,9 @@ public:
 	static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(T); }
 };
 
-// std::vector
-template <class T>
-struct TypeInfo<std::vector<T>>
-{
-private:
-	static constexpr U32 s_stringStorageSize = StringLength("std::vector") + StringLength(TypeInfo<T>::GetName()) + StringLength("<>") + 1;
-	static constexpr ConstexprStringStorage s_stringStorage = ConstexprStringStorage<s_stringStorageSize>("std::vector<", TypeInfo<T>::GetName(), ">");
-public:
-	using type = std::vector<T>;
-	using elementType = T;
-	static constexpr bool IsKnown() { return true; }
-	static constexpr const char* GetName() { return s_stringStorage.GetData(); }
-	static constexpr U32 GetHash() { return Hash::SlowHash(GetName()); }
-	static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(std::vector<T>); }
-	static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(std::vector<T>); }
-};
-
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(std::vector)
 
 //////////////////////////////////////////////////////////////////
 // en::Time
