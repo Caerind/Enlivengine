@@ -17,9 +17,7 @@ public:
 	class EventBase
 	{
 	public:
-#ifdef ENLIVE_DEBUG
 		std::string name{};
-#endif // ENLIVE_DEBUG
 		U32 hash{ 0 };
 	protected:
 		friend class EventSystem;

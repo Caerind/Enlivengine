@@ -184,9 +184,7 @@ U32 EventSystem::AddButton(const char* name, EventButton::Type type, U32 buttonI
 	}
 
 	EventButton eventButton;
-#ifdef ENLIVE_DEBUG
 	eventButton.name = name;
-#endif // ENLIVE_DEBUG
 	eventButton.hash = hash;
 	eventButton.active = false;
 	eventButton.action = action;
@@ -305,9 +303,7 @@ U32 EventSystem::AddAxis(const char* name, EventAxis::Type type, U32 axisIdentif
 	}
 
 	EventAxis eventAxis;
-#ifdef ENLIVE_DEBUG
 	eventAxis.name = name;
-#endif // ENLIVE_DEBUG
 	eventAxis.hash = hash;
 	eventAxis.active = false;
 	eventAxis.value = 0.0f;
