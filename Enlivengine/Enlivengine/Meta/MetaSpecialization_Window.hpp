@@ -7,6 +7,8 @@
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
+#include <Enlivengine/Meta/MetaSpecialization_Platform.hpp>
+
 #include <Enlivengine/Window/Keyboard.hpp>
 #include <Enlivengine/Window/Mouse.hpp>
 #include <Enlivengine/Window/EventSystem.hpp>

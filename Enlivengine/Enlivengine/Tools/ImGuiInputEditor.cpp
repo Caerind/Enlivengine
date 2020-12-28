@@ -2,12 +2,10 @@
 
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <imgui/imgui.h>
-
 #include <Enlivengine/Window/EventSystem.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization.hpp>
+#include <Enlivengine/Meta/MetaSpecialization_Window.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 

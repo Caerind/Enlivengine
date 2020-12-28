@@ -7,6 +7,8 @@
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
+#include <Enlivengine/Meta/MetaSpecialization_Utils.hpp>
+
 #include <Enlivengine/Math/AABB.hpp>
 #include <Enlivengine/Math/Color.hpp>
 #include <Enlivengine/Math/Matrix3.hpp>

@@ -7,7 +7,7 @@
 #include <imgui/imgui.h>
 #include <ImGuiFileDialog/ImGuiFileDialog.h>
 
-#include <Enlivengine/Meta/MetaSpecialization.hpp>
+#include <Enlivengine/Meta/MetaSpecialization_Resources.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Math/Color.hpp>
 #include <Enlivengine/Resources/ResourceManager.hpp>

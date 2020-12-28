@@ -7,6 +7,8 @@
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
+#include <Enlivengine/Meta/MetaSpecialization_Math.hpp>
+
 #include <Enlivengine/Graphics/Sprite.hpp>
 #include <Enlivengine/Graphics/Tilemap.hpp>
 #include <Enlivengine/Graphics/Camera.hpp>

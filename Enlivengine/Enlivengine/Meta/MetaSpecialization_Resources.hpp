@@ -7,6 +7,8 @@
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
+#include <Enlivengine/Meta/MetaSpecialization_Platform.hpp>
+
 #include <Enlivengine/Resources/ResourceManager.hpp>
 
 //////////////////////////////////////////////////////////////////

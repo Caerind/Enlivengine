@@ -9,8 +9,7 @@
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Engine.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization.hpp>
-#include <Enlivengine/Meta/ObjectEditor.hpp>
+#include <Enlivengine/Meta/MetaSpecialization_Platform.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 
 namespace en
@@ -263,9 +262,9 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 {
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
 
-	DataFile xml; 
 	if (std::filesystem::exists(path))
 	{
+		DataFile xml;
 		if (!xml.LoadFromFile(path.string()))
 		{
 			return false;
@@ -305,7 +304,8 @@ bool ImGuiWorlds::SaveWorldsToFile()
 	}
 	else
 	{
-		xml.Serialize("", "CurrentWorld");
+		std::string emptyString = "";
+		xml.Serialize(emptyString, "CurrentWorld");
 	}
 	return xml.SaveToFile(path.string());
 }
