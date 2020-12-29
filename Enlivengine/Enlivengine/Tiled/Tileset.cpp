@@ -1,7 +1,6 @@
 #include <Enlivengine/Tiled/Tileset.hpp>
 
-#include <filesystem>
-
+#include <Enlivengine/Platform/Filesystem.hpp>
 #include <Enlivengine/Utils/ParserXml.hpp>
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Utils/Log.hpp>
@@ -45,7 +44,7 @@ bool Tileset::LoadFromFile(const std::string& filename)
 		xml.GetAttribute("spacing", mSpacing);
 		xml.GetAttribute("margin", mMargin);
 
-		mPath = std::filesystem::path(filename).remove_filename().string();
+		mPath = Path(filename).remove_filename().string();
 
 		if (xml.ReadNode("image"))
 		{

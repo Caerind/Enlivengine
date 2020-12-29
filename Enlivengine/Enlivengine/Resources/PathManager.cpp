@@ -1,7 +1,6 @@
 #include <Enlivengine/Resources/PathManager.hpp>
 
-#include <filesystem>
-
+#include <Enlivengine/Platform/Filesystem.hpp>
 #include <Enlivengine/Utils/Assert.hpp>
 
 namespace en
@@ -13,7 +12,7 @@ void PathManager::SetExecutablePath(const char* executablePath)
 	if (executablePath != nullptr)
 	{
 		instance.mExecutablePath = executablePath;
-		const std::filesystem::path cleanExePath = instance.mExecutablePath;
+		const Path cleanExePath = instance.mExecutablePath;
 		instance.mExecutablePath = cleanExePath.parent_path().generic_string();
 	}
 	else
@@ -38,8 +37,8 @@ bool PathManager::AutoDetectAssetsPath()
 		{
 			backfolder += "/..";
 		}
-		std::filesystem::path tempAssetsPath = std::filesystem::path(instance.mExecutablePath + backfolder + "/Assets");
-		if (std::filesystem::exists(tempAssetsPath))
+		Path tempAssetsPath = Path(instance.mExecutablePath + backfolder + "/Assets");
+		if (Exists(tempAssetsPath))
 		{
 			if (i == 0)
 			{
@@ -54,8 +53,8 @@ bool PathManager::AutoDetectAssetsPath()
 	}
 
 #if defined(ENLIVE_RELEASE)
-	std::filesystem::path tempAssetsPath = std::filesystem::path(instance.mExecutablePath + "/Assets");
-	if (std::filesystem::exists(tempAssetsPath))
+	Path tempAssetsPath = Path(instance.mExecutablePath + "/Assets");
+	if (Exists(tempAssetsPath))
 	{
 		SetAssetsPath("Assets/");
 		return true;
@@ -86,8 +85,8 @@ bool PathManager::AutoDetectShadersPath()
 		{
 			backfolder += "/..";
 		}
-		std::filesystem::path tempShadersPath = std::filesystem::path(instance.mExecutablePath + backfolder + "/Shaders");
-		if (std::filesystem::exists(tempShadersPath))
+		Path tempShadersPath = Path(instance.mExecutablePath + backfolder + "/Shaders");
+		if (Exists(tempShadersPath))
 		{
 			if (i == 0)
 			{
@@ -103,8 +102,8 @@ bool PathManager::AutoDetectShadersPath()
 	}
 
 #if defined(ENLIVE_RELEASE)
-	std::filesystem::path tempAssetsPath = std::filesystem::path(instance.mExecutablePath + "/Assets/Shaders");
-	if (std::filesystem::exists(tempAssetsPath))
+	Path tempAssetsPath = Path(instance.mExecutablePath + "/Assets/Shaders");
+	if (Exists(tempAssetsPath))
 	{
 		SetShadersPath("Assets/Shaders/");
 		return true;
@@ -181,10 +180,10 @@ const std::string& PathManager::GetScreenshotPath()
 
 std::string PathManager::GetAbsolutePath(const std::string& path)
 {
-	std::filesystem::path p = path;
+	Path p = path;
 	if (!p.is_absolute())
 	{
-		p = std::filesystem::absolute(p);
+		p = Absolute(p);
 	}
 	std::string result = p.string();
 	std::replace(result.begin(), result.end(), '\\', '/');

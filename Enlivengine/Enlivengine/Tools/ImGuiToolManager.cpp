@@ -2,6 +2,8 @@
 
 #ifdef ENLIVE_ENABLE_IMGUI
 
+#include <iomanip>
+
 #include <json/json.hpp>
 
 #include <Enlivengine/Utils/Hash.hpp>

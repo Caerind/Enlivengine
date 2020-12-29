@@ -4,6 +4,8 @@
 
 #include <imgui/imgui.h>
 
+#include <Enlivengine/Platform/Filesystem.hpp>
+
 #include <Enlivengine/Resources/PathManager.hpp>
 
 #include <Enlivengine/Core/World.hpp>
@@ -260,9 +262,9 @@ void ImGuiWorlds::AllWorlds()
 
 bool ImGuiWorlds::LoadWorldsFromFile()
 {
-	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
+	const Path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
 
-	if (std::filesystem::exists(path))
+	if (Exists(path))
 	{
 		DataFile xml;
 		if (!xml.LoadFromFile(path.string()))
@@ -293,7 +295,7 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 
 bool ImGuiWorlds::SaveWorldsToFile()
 {
-	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
+	const Path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
 
 	DataFile xml;
 	xml.CreateEmptyFile();

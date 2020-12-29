@@ -1,5 +1,6 @@
 #include <Enlivengine/Core/Engine.hpp>
 
+#include <Enlivengine/Platform/Filesystem.hpp>
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Utils/Profiler.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
@@ -21,8 +22,6 @@
 #include <Enlivengine/Tools/ImGuiEditor.hpp>
 #include <Enlivengine/Tools/ImGuiGame.hpp>
 #endif // ENLIVE_TOOL
-
-#include <filesystem>
 
 namespace en
 {
@@ -303,7 +302,7 @@ bool Engine::RemoveWorld(const std::string& worldName)
 		return false;
 	}
 
-	return std::filesystem::remove(std::filesystem::path(World::GetWorldFilename(worldName)));
+	return Remove(Path(World::GetWorldFilename(worldName)));
 }
 
 bool Engine::LoadWorld(const std::string& worldName)

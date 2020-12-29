@@ -17,6 +17,12 @@ jobs:
             cxx: cl
           }
         - {
+            name: "Windows MinGW",
+            os: windows-latest,
+            cc: gcc,
+            cxx: g++
+          }
+        - {
             name: "Ubuntu GCC",
             os: ubuntu-latest,
             cc: gcc-9,

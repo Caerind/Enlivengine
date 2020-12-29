@@ -1,5 +1,9 @@
 #include <Enlivengine/Utils/MemoryAllocator.hpp>
 
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+#include <Enlivengine/Platform/Filesystem.hpp>
+#endif // ENLIVE_ENABLE_DEBUG_MEMORY
+
 namespace en
 {
 
@@ -39,6 +43,11 @@ bool MemoryAllocator::InitializeEngineAllocator(dyma::Allocator* allocator)
 }
 
 #ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+std::string MemoryAllocator::DebugAllocator::DebugMemoryBlock::GetFile() const
+{
+	return Path(file).filename().string();
+}
+
 MemoryAllocator::DebugAllocator::DebugAllocator()
 	: mAllocator(nullptr)
 	, mContext(nullptr)

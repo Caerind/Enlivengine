@@ -45,5 +45,14 @@ fi
 compilerFlags="$temp1 $temp2"
 echo "CompilerFlags : $compilerFlags"
 
-cmake ${compilerFlags} ..
-
+# For MinGW, we need to define the -G, elsewhere the default value is fine
+generated=false
+if [[ "$platform" == "windows" ]]; then
+	if [[ "$1" == "gcc" ]]; then
+		cmake $compilerFlags -G "MinGW Makefiles" ..
+		generated=true
+	fi
+fi
+if [ "$generated" = false ] ; then
+	cmake $compilerFlags ..
+fi
