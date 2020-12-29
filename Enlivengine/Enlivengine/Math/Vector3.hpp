@@ -138,3 +138,5 @@ static_assert((ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Right && ENLIV
 static_assert((ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Right && ENLIVE_DEFAULT_FORWARD.CrossProduct(ENLIVE_DEFAULT_LEFT) == ENLIVE_DEFAULT_UP) || (ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Left && ENLIVE_DEFAULT_FORWARD.CrossProduct(ENLIVE_DEFAULT_RIGHT) == ENLIVE_DEFAULT_UP));
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector3)

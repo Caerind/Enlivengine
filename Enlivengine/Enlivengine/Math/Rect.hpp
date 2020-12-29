@@ -136,3 +136,5 @@ typedef Rect<I32> Recti;
 typedef Rect<U32> Rectu;
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Rect)

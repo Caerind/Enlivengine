@@ -24,23 +24,8 @@
 #include <Enlivengine/Math/Vector4.hpp>
 
 //////////////////////////////////////////////////////////////////
-// en::AABB
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::AABB)
-	ENLIVE_META_CLASS_MEMBER("min", &en::AABB::GetMin, &en::AABB::SetMin),
-	ENLIVE_META_CLASS_MEMBER("max", &en::AABB::GetMax, &en::AABB::SetMax)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
 // en::Color
 //////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::Color)
-	ENLIVE_META_CLASS_MEMBER("r", &en::Color::r),
-	ENLIVE_META_CLASS_MEMBER("g", &en::Color::g),
-	ENLIVE_META_CLASS_MEMBER("b", &en::Color::b),
-	ENLIVE_META_CLASS_MEMBER("a", &en::Color::a)
-ENLIVE_META_CLASS_END()
-
 template <>
 struct HasCustomSerialization<en::Color>
 {
@@ -100,8 +85,6 @@ struct HasCustomEditor<en::Color>
 //////////////////////////////////////////////////////////////////
 // en::Matrix3
 //////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Matrix3)
-
 template <typename T>
 struct HasCustomSerialization<en::Matrix3<T>>
 {
@@ -179,8 +162,6 @@ struct HasCustomEditor<en::Matrix3<T>>
 //////////////////////////////////////////////////////////////////
 // en::Matrix4
 //////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Matrix4)
-
 template <typename T>
 struct HasCustomSerialization<en::Matrix4<T>>
 {
@@ -254,18 +235,8 @@ struct HasCustomEditor<en::Matrix4<T>>
 #endif // ENLIVE_ENABLE_IMGUI
 
 //////////////////////////////////////////////////////////////////
-// en::Plane
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::Plane)
-	ENLIVE_META_CLASS_MEMBER("normal", &en::Plane::GetNormal, &en::Plane::SetNormal),
-	ENLIVE_META_CLASS_MEMBER("constant", &en::Plane::GetConstant, &en::Plane::SetConstant)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
 // en::Quaternion
 //////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Quaternion)
-
 template <typename T>
 struct HasCustomSerialization<en::Quaternion<T>>
 {
@@ -328,18 +299,8 @@ struct HasCustomEditor<en::Quaternion<T>>
 #endif // ENLIVE_ENABLE_IMGUI
 
 //////////////////////////////////////////////////////////////////
-// en::Ray
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::Ray)
-	ENLIVE_META_CLASS_MEMBER("origin", &en::Ray::GetOrigin, &en::Ray::SetOrigin),
-	ENLIVE_META_CLASS_MEMBER("direction", &en::Ray::GetDirection, &en::Ray::SetDirection)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
 // en::Rect
 //////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Rect)
-
 template <typename T>
 struct HasCustomSerialization<en::Rect<T>>
 {
@@ -413,22 +374,8 @@ struct HasCustomEditor<en::Rect<T>>
 #endif // ENLIVE_ENABLE_IMGUI
 
 //////////////////////////////////////////////////////////////////
-// en::Sphere
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::Sphere)
-	ENLIVE_META_CLASS_MEMBER("center", &en::Sphere::GetCenter, &en::Sphere::SetCenter),
-	ENLIVE_META_CLASS_MEMBER("radius", &en::Sphere::GetRadius, &en::Sphere::SetRadius)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
 // en::Transform
 //////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::Transform)
-	ENLIVE_META_CLASS_MEMBER("position", &en::Transform::GetPosition, &en::Transform::SetPosition),
-	ENLIVE_META_CLASS_MEMBER("rotation", &en::Transform::GetRotation, &en::Transform::SetRotation),
-	ENLIVE_META_CLASS_MEMBER("scale", &en::Transform::GetScale, &en::Transform::SetScale)
-ENLIVE_META_CLASS_END()
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
 struct HasCustomEditor<en::Transform>
@@ -482,8 +429,6 @@ struct HasCustomEditor<en::Transform>
 //////////////////////////////////////////////////////////////////
 // en::Vector2
 //////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector2)
-
 template <typename T>
 struct HasCustomSerialization<en::Vector2<T>>
 {
@@ -576,8 +521,6 @@ struct HasCustomEditor<en::Vector2<T>>
 //////////////////////////////////////////////////////////////////
 // en::Vector3
 //////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector3)
-
 template <typename T>
 struct HasCustomSerialization<en::Vector3<T>>
 {
@@ -677,8 +620,6 @@ struct HasCustomEditor<en::Vector3<T>>
 //////////////////////////////////////////////////////////////////
 // en::Vector4
 //////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector4)
-
 template <typename T>
 struct HasCustomSerialization<en::Vector4<T>>
 {

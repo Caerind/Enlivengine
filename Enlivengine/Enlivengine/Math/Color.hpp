@@ -157,3 +157,10 @@ namespace Colors
 } // namespace Colors
 
 } // namespace en
+
+ENLIVE_META_CLASS_BEGIN(en::Color)
+	ENLIVE_META_CLASS_MEMBER("r", &en::Color::r),
+	ENLIVE_META_CLASS_MEMBER("g", &en::Color::g),
+	ENLIVE_META_CLASS_MEMBER("b", &en::Color::b),
+	ENLIVE_META_CLASS_MEMBER("a", &en::Color::a)
+ENLIVE_META_CLASS_END()
