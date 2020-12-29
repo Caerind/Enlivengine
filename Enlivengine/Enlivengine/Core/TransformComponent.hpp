@@ -87,6 +87,9 @@ private:
 
 } // namespace en
 
+ENLIVE_META_CLASS_BEGIN(en::TransformComponent)
+ENLIVE_META_CLASS_END()
+
 template <>
 struct ComponentHasCustomInitialization<en::TransformComponent>
 {

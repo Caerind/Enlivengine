@@ -153,3 +153,6 @@ const T& Entity::Get() const
 }
 
 } // namespace en
+
+ENLIVE_META_CLASS_BEGIN(en::Entity)
+ENLIVE_META_CLASS_END()

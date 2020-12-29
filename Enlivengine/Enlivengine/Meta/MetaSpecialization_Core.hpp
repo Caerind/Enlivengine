@@ -19,37 +19,8 @@
 #include <Enlivengine/Core/TransformComponent.hpp>
 
 //////////////////////////////////////////////////////////////////
-// en::System
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::System)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
-// en::NameComponent
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::NameComponent)
-	ENLIVE_META_CLASS_MEMBER("name", &en::NameComponent::name)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
-// en::UIDComponent
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::UIDComponent)
-	ENLIVE_META_CLASS_MEMBER("id", &en::UIDComponent::id)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
-// en::RenderableComponent
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::RenderableComponent)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
 // en::TransformComponent
 //////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::TransformComponent)
-ENLIVE_META_CLASS_END()
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
 struct HasCustomEditor<en::TransformComponent>
@@ -69,25 +40,8 @@ struct HasCustomEditor<en::TransformComponent>
 #endif // ENLIVE_ENABLE_IMGUI
 
 //////////////////////////////////////////////////////////////////
-// en::SpriteComponent
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::SpriteComponent)
-	ENLIVE_META_CLASS_MEMBER("sprite", &en::SpriteComponent::sprite)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
-// en::TilemapComponent
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::TilemapComponent)
-	ENLIVE_META_CLASS_MEMBER("tilemap", &en::TilemapComponent::tilemap)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
 // en::CameraComponent
 //////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::CameraComponent)
-ENLIVE_META_CLASS_END()
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
 struct HasCustomEditor<en::CameraComponent>
@@ -114,9 +68,6 @@ struct HasCustomEditor<en::CameraComponent>
 //////////////////////////////////////////////////////////////////
 // en::Entity
 //////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::Entity)
-ENLIVE_META_CLASS_END()
-
 template <>
 struct HasCustomSerialization<en::Entity>
 {
@@ -328,9 +279,6 @@ struct HasCustomEditor<en::Entity>
 //////////////////////////////////////////////////////////////////
 // en::EntityManager
 //////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::EntityManager)
-ENLIVE_META_CLASS_END()
-
 template <>
 struct HasCustomSerialization<en::EntityManager>
 {
@@ -439,31 +387,8 @@ struct HasCustomEditor<en::EntityManager>
 #endif // ENLIVE_ENABLE_IMGUI
 
 //////////////////////////////////////////////////////////////////
-// en::PhysicSystem
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::PhysicSystem)
-	ENLIVE_META_CLASS_MEMBER("gravity", &en::PhysicSystem::GetGravity, &en::PhysicSystem::SetGravity),
-	ENLIVE_META_CLASS_MEMBER("positionIterations", &en::PhysicSystem::GetPositionIterations, &en::PhysicSystem::SetPositionIterations),
-	ENLIVE_META_CLASS_MEMBER("velocityIterations", &en::PhysicSystem::GetVelocityIterations, &en::PhysicSystem::SetVelocityIterations)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
 // en::PhysicComponent
 //////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO(en::PhysicBodyType)
-ENLIVE_DEFINE_TYPE_INFO(en::PhysicShapeType)
-
-ENLIVE_META_CLASS_BEGIN(en::PhysicComponent)
-	ENLIVE_META_CLASS_MEMBER("type", &en::PhysicComponent::GetBodyType, &en::PhysicComponent::SetBodyType),
-	ENLIVE_META_CLASS_MEMBER("linearVelocity", &en::PhysicComponent::GetLinearVelocity, &en::PhysicComponent::SetLinearVelocity),
-	ENLIVE_META_CLASS_MEMBER("angularVelocity", &en::PhysicComponent::GetAngularVelocity, &en::PhysicComponent::SetAngularVelocity),
-	ENLIVE_META_CLASS_MEMBER("gravityScale", &en::PhysicComponent::GetGravityScale, &en::PhysicComponent::SetGravityScale),
-	ENLIVE_META_CLASS_MEMBER("linearDamping", &en::PhysicComponent::GetLinearDamping, &en::PhysicComponent::SetLinearDamping),
-	ENLIVE_META_CLASS_MEMBER("angularDamping", &en::PhysicComponent::GetAngularDamping, &en::PhysicComponent::SetAngularDamping),
-	ENLIVE_META_CLASS_MEMBER("fixedRotation", &en::PhysicComponent::IsFixedRotation, &en::PhysicComponent::SetFixedRotation),
-	ENLIVE_META_CLASS_MEMBER("bullet", &en::PhysicComponent::IsBullet, &en::PhysicComponent::SetBullet)
-ENLIVE_META_CLASS_END()
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
 struct HasCustomEditor<en::PhysicComponent>
@@ -898,7 +823,3 @@ struct HasCustomEditor<en::PhysicComponent>
 	}
 };
 #endif // ENLIVE_ENABLE_IMGUI
-
-//////////////////////////////////////////////////////////////////
-// en::World
-//////////////////////////////////////////////////////////////////

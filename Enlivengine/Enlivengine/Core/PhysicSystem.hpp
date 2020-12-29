@@ -134,3 +134,9 @@ bool PhysicSystem::AddEndContactSlot(EndContactSlotType& slot, const PhysicCompo
 }
 
 } // namespace en
+
+ENLIVE_META_CLASS_BEGIN(en::PhysicSystem)
+	ENLIVE_META_CLASS_MEMBER("gravity", &en::PhysicSystem::GetGravity, &en::PhysicSystem::SetGravity),
+	ENLIVE_META_CLASS_MEMBER("positionIterations", &en::PhysicSystem::GetPositionIterations, &en::PhysicSystem::SetPositionIterations),
+	ENLIVE_META_CLASS_MEMBER("velocityIterations", &en::PhysicSystem::GetVelocityIterations, &en::PhysicSystem::SetVelocityIterations)
+ENLIVE_META_CLASS_END()

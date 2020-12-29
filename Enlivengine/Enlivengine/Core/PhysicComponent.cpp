@@ -2,6 +2,7 @@
 
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
+
 namespace en
 {
 
