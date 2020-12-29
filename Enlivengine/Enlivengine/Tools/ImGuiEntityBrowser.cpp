@@ -9,8 +9,6 @@
 
 #include <Enlivengine/Window/Keyboard.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Core.hpp>
-
 #include <imgui/imgui_internal.h>
 
 namespace en

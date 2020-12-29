@@ -142,4 +142,14 @@ bool LimitSize(const std::string& string, std::string& result, U32 size)
 	}
 }
 
+std::string ToBoolString(bool value)
+{
+	return (value) ? "true" : "false";
+}
+
+bool FromBoolString(const std::string& string)
+{
+	return (string == "true") ? true : false;
+}
+
 } // namespace en

@@ -9,7 +9,6 @@
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Engine.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Platform.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 
 namespace en

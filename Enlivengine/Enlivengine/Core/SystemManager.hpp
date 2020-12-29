@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Enlivengine/Meta/Meta.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 

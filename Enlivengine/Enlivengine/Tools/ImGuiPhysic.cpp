@@ -7,7 +7,6 @@
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/Engine.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Core.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
 namespace en

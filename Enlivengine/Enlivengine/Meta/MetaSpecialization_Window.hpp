@@ -7,43 +7,11 @@
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Platform.hpp>
-
-#include <Enlivengine/Window/Keyboard.hpp>
-#include <Enlivengine/Window/Mouse.hpp>
 #include <Enlivengine/Window/EventSystem.hpp>
-
-//////////////////////////////////////////////////////////////////
-// en::Keyboard::Key
-//////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO(en::Keyboard::Key)
-
-//////////////////////////////////////////////////////////////////
-// en::Mouse::Button
-//////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO(en::Mouse::Button)
-
-//////////////////////////////////////////////////////////////////
-// en::EventSystem::EventButton::Type
-//////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventButton::Type)
-
-//////////////////////////////////////////////////////////////////
-// en::EventSystem::EventButton::ActionType
-//////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventButton::ActionType)
 
 //////////////////////////////////////////////////////////////////
 // en::EventSystem::EventButton
 //////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventButton)
-	ENLIVE_META_CLASS_MEMBER("name", &en::EventSystem::EventButton::name),
-	ENLIVE_META_CLASS_MEMBER("type", &en::EventSystem::EventButton::type),
-	ENLIVE_META_CLASS_MEMBER("action", &en::EventSystem::EventButton::action),
-	ENLIVE_META_CLASS_MEMBER("buttonIdentifier", &en::EventSystem::EventButton::buttonIdentifier),
-	ENLIVE_META_CLASS_MEMBER("extraInfo", &en::EventSystem::EventButton::extraInfo)
-ENLIVE_META_CLASS_END()
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
 struct HasCustomEditor<en::EventSystem::EventButton>
@@ -131,20 +99,8 @@ struct HasCustomEditor<en::EventSystem::EventButton>
 #endif // ENLIVE_ENABLE_IMGUI
 
 //////////////////////////////////////////////////////////////////
-// en::EventSystem::EventAxis::Type
-//////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventAxis::Type)
-
-//////////////////////////////////////////////////////////////////
 // en::EventSystem::EventAxis
 //////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventAxis)
-	ENLIVE_META_CLASS_MEMBER("name", &en::EventSystem::EventAxis::name),
-	ENLIVE_META_CLASS_MEMBER("type", &en::EventSystem::EventAxis::type),
-	ENLIVE_META_CLASS_MEMBER("axisIdentifier", &en::EventSystem::EventAxis::axisIdentifier),
-	ENLIVE_META_CLASS_MEMBER("extraInfo", &en::EventSystem::EventAxis::extraInfo)
-ENLIVE_META_CLASS_END()
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
 struct HasCustomEditor<en::EventSystem::EventAxis>

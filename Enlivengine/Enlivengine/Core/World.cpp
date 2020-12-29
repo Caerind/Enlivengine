@@ -4,7 +4,6 @@
 
 #include <Enlivengine/Resources/PathManager.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Core.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 
 namespace en
@@ -59,7 +58,9 @@ bool World::HasPhysicSystem() const
 void World::Update(Time dt)
 {
 	ENLIVE_PROFILE_FUNCTION();
+#ifdef ENLIVE_DEBUG
 	if (mPlaying)
+#endif // ENLIVE_DEBUG
 	{
 		for (System* system : mSystems)
 		{
