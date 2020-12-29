@@ -1,5 +1,7 @@
 #include <Enlivengine/Core/Engine.hpp>
 
+#include <filesystem>
+
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Utils/Profiler.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
@@ -7,10 +9,6 @@
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
 #include <Enlivengine/Tools/ImGuiToolManager.hpp>
 #include <Enlivengine/Window/EventSystem.hpp>
-
-#include <Enlivengine/Graphics/DebugDraw.hpp>
-#include <Enlivengine/Graphics/Sprite.hpp>
-#include <Enlivengine/Graphics/Tilemap.hpp>
 
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
 #include <Enlivengine/Window/Keyboard.hpp>
@@ -21,13 +19,32 @@
 #include <Enlivengine/Tools/ImGuiGame.hpp>
 #endif // ENLIVE_TOOL
 
-#include <filesystem>
+#include <Enlivengine/Graphics/DebugDraw.hpp>
+#include <Enlivengine/Graphics/Sprite.hpp>
+#include <Enlivengine/Graphics/Tilemap.hpp>
+
+#include <Enlivengine/Core/Components.hpp>
+#include <Enlivengine/Core/CameraComponent.hpp>
+#include <Enlivengine/Core/TransformComponent.hpp>
+#include <Enlivengine/Core/PhysicComponent.hpp>
+#include <Enlivengine/Core/PhysicSystem.hpp>
 
 namespace en
 {
 
 int Engine::Main(int argc, char** argv)
 {
+	RegisterComponent<NameComponent>();
+	RegisterComponent<UIDComponent>();
+	RegisterComponent<RenderableComponent>();
+	RegisterComponent<SpriteComponent>();
+	RegisterComponent<TilemapComponent>();
+	RegisterComponent<CameraComponent>();
+	RegisterComponent<TransformComponent>();
+	RegisterComponent<PhysicComponent>();
+
+	RegisterSystem<PhysicSystem>();
+
 	if (Engine::Init(argc, argv))
 	{
 		Time dt;

@@ -1,14 +1,14 @@
 #include <Enlivengine/Core/Engine.hpp>
-#include <Enlivengine/Meta/MetaSpecialization.hpp>
-
-#include <Enlivengine/Tools/ImGuiGame.hpp>
-
 #include <Enlivengine/Core/ComponentManager.hpp>
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
 #include <Enlivengine/Core/PhysicComponent.hpp>
 #include <Enlivengine/Core/PhysicSystem.hpp>
+
+#include <Enlivengine/Tools/ImGuiGame.hpp>
+
+#include <Enlivengine/Window/EventSystem.hpp>
 
 using namespace en;
 
@@ -198,20 +198,9 @@ int main(int argc, char** argv)
 	// TODO : This is buggy
 	Meta::DebugMetaClass<PhysicSystem>();
 
-	// Engine components/systems
-	Engine::RegisterComponent<NameComponent>();
-	Engine::RegisterComponent<UIDComponent>();
-	Engine::RegisterComponent<RenderableComponent>();
-	Engine::RegisterComponent<SpriteComponent>();
-	Engine::RegisterComponent<TilemapComponent>();
-	Engine::RegisterComponent<CameraComponent>();
-	Engine::RegisterComponent<TransformComponent>();
-	Engine::RegisterComponent<PhysicComponent>();
-	Engine::RegisterSystem<PhysicSystem>();
-
-	// Own components/systems
 	Engine::RegisterComponent<StupidShipComponent>();
 	Engine::RegisterComponent<PlayerComponent>();
+
 	Engine::RegisterSystem<RenderSystem>();
 	Engine::RegisterSystem<DebugSystem>();
 	Engine::RegisterSystem<StupidShipSystem>();

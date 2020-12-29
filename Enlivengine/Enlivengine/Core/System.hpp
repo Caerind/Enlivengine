@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Enlivengine/Platform/Time.hpp>
-#include <Enlivengine/Utils/TypeInfo.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
 
 namespace en
 {
@@ -29,4 +29,5 @@ class System
         
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO(en::System)
+ENLIVE_META_CLASS_BEGIN(en::System)
+ENLIVE_META_CLASS_END()

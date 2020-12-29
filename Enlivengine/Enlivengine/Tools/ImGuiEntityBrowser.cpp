@@ -2,14 +2,15 @@
 
 #ifdef ENLIVE_ENABLE_IMGUI
 
+#include <imgui/imgui_internal.h>
+
 #include <Enlivengine/Core/Components.hpp>
+#include <Enlivengine/Core/TransformComponent.hpp>
 #include <Enlivengine/Core/Engine.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
 #include <Enlivengine/Window/Keyboard.hpp>
-
-#include <imgui/imgui_internal.h>
 
 namespace en
 {
