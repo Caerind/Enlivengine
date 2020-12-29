@@ -1,7 +1,6 @@
 #include <Enlivengine/Tiled/Map.hpp>
 
-#include <filesystem>
-
+#include <Enlivengine/Platform/Filesystem.hpp>
 #include <Enlivengine/Utils/ParserXml.hpp>
 #include <Enlivengine/Utils/String.hpp>
 
@@ -188,7 +187,7 @@ bool Map::LoadFromFile(const std::string& filename)
 					xml.GetAttribute("source", source);
 					if (source.size() > 0)
 					{
-						const std::string currentPath = std::filesystem::path(filename).remove_filename().string();
+						const std::string currentPath = Path(filename).remove_filename().string();
 						source = currentPath + source;
 
 						tilesetData.tileset = ResourceManager::GetInstance().GetFromFilename<Tileset>(source);

@@ -9,7 +9,6 @@
 
 #ifdef ENLIVE_ENABLE_DEBUG_MEMORY
 #include <vector> // Store MemoryBlock infos when debugging memory
-#include <filesystem>
 #endif // ENLIVE_ENABLE_DEBUG_MEMORY
 
 namespace en
@@ -112,10 +111,7 @@ public:
 			const char* file;
 			U32 line;
 
-			std::string GetFile() const
-			{
-				return std::filesystem::path(file).filename().string();
-			}
+			std::string GetFile() const;
 		};
 
 		DebugAllocator();

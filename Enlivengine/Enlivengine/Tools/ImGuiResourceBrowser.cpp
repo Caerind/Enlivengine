@@ -2,10 +2,10 @@
 
 #ifdef ENLIVE_ENABLE_IMGUI
 
-#include <filesystem>
-
 #include <imgui/imgui.h>
 #include <ImGuiFileDialog/ImGuiFileDialog.h>
+
+#include <Enlivengine/Platform/Filesystem.hpp>
 
 #include <Enlivengine/Meta/MetaSpecialization_Resources.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
@@ -141,7 +141,7 @@ void ImGuiResourceBrowser::AddNewResource()
 	static const std::string key = "ResourceBrowserFileDialogKey";
 	static const char* dialogTitle = "ResourceBrowser: Choose File";
 
-	const std::filesystem::path assetsPath = PathManager::GetAbsolutePath(PathManager::GetAssetsPath());
+	const Path assetsPath = PathManager::GetAbsolutePath(PathManager::GetAssetsPath());
 
 	ImGui::Text("Add New Resource");
 	ImGui::Indent();
@@ -177,7 +177,7 @@ void ImGuiResourceBrowser::AddNewResource()
 	{
 		if (igfd::ImGuiFileDialog::Instance()->IsOk)
 		{
-			std::filesystem::path filename = igfd::ImGuiFileDialog::Instance()->GetFirstSelected();
+			Path filename = igfd::ImGuiFileDialog::Instance()->GetFirstSelected();
 			std::string relativeResult = filename.lexically_relative(assetsPath).string();
 			std::replace(relativeResult.begin(), relativeResult.end(), '\\', '/');
 

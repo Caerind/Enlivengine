@@ -1,9 +1,10 @@
 #include <Enlivengine/Animation/Animation.hpp>
 
+#include <fstream>
+
 #include <json/json.hpp>
 
-#include <fstream>
-#include <filesystem>
+#include <Enlivengine/Platform/Filesystem.hpp>
 
 namespace en
 {
@@ -132,7 +133,7 @@ bool Animation::LoadFromFile(const std::string& filename)
 					AddClip(name, from, to, direction);
 				}
 
-				std::string path = std::filesystem::path(filename).remove_filename().string();
+				std::string path = Path(filename).remove_filename().string();
 				const std::string filepath = path + meta["image"].get<std::string>();
 				/*
 				// TODO : ANIMATION UPDATE
