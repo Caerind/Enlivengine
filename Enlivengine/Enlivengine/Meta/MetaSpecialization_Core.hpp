@@ -2,15 +2,14 @@
 
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
-#include <Enlivengine/Meta/Meta.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
+
 #include <Enlivengine/Meta/MetaTraits.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Graphics.hpp>
 #include <Enlivengine/Core/ComponentManager.hpp>
 #include <Enlivengine/Core/Engine.hpp>
-
 #include <Enlivengine/Core/PhysicSystem.hpp>
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/Entity.hpp>

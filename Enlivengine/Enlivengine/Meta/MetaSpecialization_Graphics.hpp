@@ -2,38 +2,17 @@
 
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
-#include <Enlivengine/Meta/Meta.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
+
 #include <Enlivengine/Meta/MetaTraits.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Math.hpp>
-
-#include <Enlivengine/Graphics/Sprite.hpp>
-#include <Enlivengine/Graphics/Tilemap.hpp>
 #include <Enlivengine/Graphics/Camera.hpp>
-
-//////////////////////////////////////////////////////////////////
-// en::Sprite
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::Sprite)
-	ENLIVE_META_CLASS_MEMBER("texture", &en::Sprite::GetTexture, &en::Sprite::SetTexture),
-	ENLIVE_META_CLASS_MEMBER("textureRect", &en::Sprite::GetTextureRect, &en::Sprite::SetTextureRect)
-ENLIVE_META_CLASS_END()
-
-//////////////////////////////////////////////////////////////////
-// en::Tilemap
-//////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::Tilemap)
-	ENLIVE_META_CLASS_MEMBER("size", &en::Tilemap::GetSize, &en::Tilemap::SetSize)
-ENLIVE_META_CLASS_END()
 
 //////////////////////////////////////////////////////////////////
 // en::Camera
 //////////////////////////////////////////////////////////////////
-ENLIVE_META_CLASS_BEGIN(en::Camera)
-ENLIVE_META_CLASS_END()
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
 struct HasCustomEditor<en::Camera>
