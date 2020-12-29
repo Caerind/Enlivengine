@@ -9,92 +9,6 @@
 namespace en
 {
 
-void Keyboard::Refresh()
-{
-	Keyboard& keyboard = GetInstance();
-
-	const U8 clearEvents = static_cast<U8>(KeyState::Pressed) | static_cast<U8>(KeyState::Released);
-	for (U32 i = 0; i < kKeyCount; ++i)
-	{
-		keyboard.mKeyStates[i] &= ~clearEvents;
-	}
-	keyboard.mInputCharacters[0] = '\0';
-	keyboard.mInputCharacterCount = 0;
-}
-
-void Keyboard::HandleEvent(const SDL_Event& event)
-{
-	Keyboard& keyboard = GetInstance();
-	const bool keyDown = event.type == SDL_KEYDOWN;
-	const bool keyUp = event.type == SDL_KEYUP;
-	if (keyDown || keyUp)
-	{
-		const Key key = GetKeyFromSDLKey(event.key.keysym.scancode);
-		if (keyDown)
-		{
-			keyboard.mKeyStates[static_cast<U32>(key)] = (static_cast<U8>(KeyState::Hold) | static_cast<U8>(KeyState::Pressed));
-		}
-		else
-		{
-			keyboard.mKeyStates[static_cast<U32>(key)] = static_cast<U8>(KeyState::Released);
-		}
-
-		U8 modifier = 0;
-		if (key == Key::LAlt || key == Key::RAlt)
-		{
-			modifier = static_cast<U8>(Modifier::Alt);
-		}
-		else if (key == Key::LCtrl || key == Key::RCtrl)
-		{
-			modifier = static_cast<U8>(Modifier::Control);
-		}
-		else if (key == Key::LShift || key == Key::RShift)
-		{
-			modifier = static_cast<U8>(Modifier::Shift);
-		}
-		else if (key == Key::LSystem || key == Key::RSystem)
-		{
-			modifier = static_cast<U8>(Modifier::System);
-		}
-
-		if (modifier > 0)
-		{
-			if (keyDown)
-			{
-				keyboard.mModifiers |= modifier;
-			}
-			else // keyUp
-			{
-				keyboard.mModifiers &= ~modifier;
-			}
-		}
-
-		if (keyDown)
-		{
-			EventSystem::SetLastButton(EventSystem::EventButton::Type::KeyboardKey, static_cast<U32>(key), keyboard.mModifiers);
-		}
-	}
-	else if (event.type == SDL_TEXTINPUT)
-	{
-		const U32 inputLength = static_cast<U32>(strlen(event.text.text));
-		if (keyboard.mInputCharacterCount + inputLength < kMaxInputCharacters)
-		{
-#ifdef ENLIVE_COMPILER_MSVC
-			strcat_s(keyboard.mInputCharacters, event.text.text);
-#else
-			strcat(keyboard.mInputCharacters, event.text.text);
-#endif // ENLIVE_COMPILER_MSVC
-			keyboard.mInputCharacterCount += inputLength;
-		}
-		else
-		{
-			// Maximum amount of input characters reached
-			// Increase Keyboard::kMaxInputCharacters or use less input characters
-			enAssert(false);
-		}
-	}
-}
-
 bool Keyboard::IsHold(Key key)
 {
 	return (GetInstance().mKeyStates[static_cast<U32>(key)] & static_cast<U8>(KeyState::Hold)) > 0;
@@ -237,6 +151,92 @@ const char* Keyboard::GetKeyName(Key key)
 	}
 #undef KeyValueToKeyName
 	return "Unknown";
+}
+
+void Keyboard::Refresh()
+{
+	Keyboard& keyboard = GetInstance();
+
+	const U8 clearEvents = static_cast<U8>(KeyState::Pressed) | static_cast<U8>(KeyState::Released);
+	for (U32 i = 0; i < kKeyCount; ++i)
+	{
+		keyboard.mKeyStates[i] &= ~clearEvents;
+	}
+	keyboard.mInputCharacters[0] = '\0';
+	keyboard.mInputCharacterCount = 0;
+}
+
+void Keyboard::HandleEvent(const SDL_Event& event)
+{
+	Keyboard& keyboard = GetInstance();
+	const bool keyDown = event.type == SDL_KEYDOWN;
+	const bool keyUp = event.type == SDL_KEYUP;
+	if (keyDown || keyUp)
+	{
+		const Key key = GetKeyFromSDLKey(event.key.keysym.scancode);
+		if (keyDown)
+		{
+			keyboard.mKeyStates[static_cast<U32>(key)] = (static_cast<U8>(KeyState::Hold) | static_cast<U8>(KeyState::Pressed));
+		}
+		else
+		{
+			keyboard.mKeyStates[static_cast<U32>(key)] = static_cast<U8>(KeyState::Released);
+		}
+
+		U8 modifier = 0;
+		if (key == Key::LAlt || key == Key::RAlt)
+		{
+			modifier = static_cast<U8>(Modifier::Alt);
+		}
+		else if (key == Key::LCtrl || key == Key::RCtrl)
+		{
+			modifier = static_cast<U8>(Modifier::Control);
+		}
+		else if (key == Key::LShift || key == Key::RShift)
+		{
+			modifier = static_cast<U8>(Modifier::Shift);
+		}
+		else if (key == Key::LSystem || key == Key::RSystem)
+		{
+			modifier = static_cast<U8>(Modifier::System);
+		}
+
+		if (modifier > 0)
+		{
+			if (keyDown)
+			{
+				keyboard.mModifiers |= modifier;
+			}
+			else // keyUp
+			{
+				keyboard.mModifiers &= ~modifier;
+			}
+		}
+
+		if (keyDown)
+		{
+			EventSystem::SetLastButton(EventSystem::EventButton::Type::KeyboardKey, static_cast<U32>(key), keyboard.mModifiers);
+		}
+	}
+	else if (event.type == SDL_TEXTINPUT)
+	{
+		const U32 inputLength = static_cast<U32>(strlen(event.text.text));
+		if (keyboard.mInputCharacterCount + inputLength < kMaxInputCharacters)
+		{
+#ifdef ENLIVE_COMPILER_MSVC
+			strcat_s(keyboard.mInputCharacters, event.text.text);
+#else
+			strcat(keyboard.mInputCharacters, event.text.text);
+#endif // ENLIVE_COMPILER_MSVC
+			keyboard.mInputCharacterCount += inputLength;
+		}
+		else
+		{
+			// Maximum amount of input characters reached
+			// Increase Keyboard::kMaxInputCharacters or use less input characters
+			enAssert(false);
+		}
+	}
 }
 
 Keyboard::Key Keyboard::GetKeyFromSDLKey(SDL_Scancode scancode)

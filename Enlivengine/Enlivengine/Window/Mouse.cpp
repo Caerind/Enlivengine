@@ -5,66 +5,10 @@
 #include <Enlivengine/Utils/Assert.hpp>
 
 #include <Enlivengine/Window/EventSystem.hpp>
+#include <Enlivengine/Window/Window.hpp>
 
 namespace en
 {
-
-void Mouse::Refresh()
-{
-	Mouse& mouse = GetInstance();
-
-	int pX, pY;
-	mouse.mPreviousButtonMask = mouse.mButtonMask;
-	if (IsRelativeMode())
-	{
-		mouse.mButtonMask = SDL_GetRelativeMouseState(&pX, &pY);
-		const I32 x = static_cast<I32>(pX);
-		const I32 y = static_cast<I32>(pY);
-		mouse.mMouseMovement.x = x;
-		mouse.mMouseMovement.y = y;
-	}
-	else
-	{
-		mouse.mButtonMask = SDL_GetMouseState(&pX, &pY);
-		const I32 x = static_cast<I32>(pX);
-		const I32 y = static_cast<I32>(pY);
-		mouse.mMouseMovement.x = x - mouse.mPosition.x;
-		mouse.mMouseMovement.y = y - mouse.mPosition.y;
-		mouse.mPosition.x = x;
-		mouse.mPosition.y = y;
-	}
-	mouse.mWheel = 0;
-	mouse.mHorizontalWheel = 0;
-}
-
-void Mouse::HandleEvent(const SDL_Event& event)
-{
-	Mouse& mouse = GetInstance();
-	if (event.type == SDL_MOUSEMOTION)
-	{
-	}
-	else if (event.type == SDL_MOUSEBUTTONDOWN)
-	{
-		mouse.mButtonMask |= event.button.button;
-
-		if ((SDL_BUTTON_LMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Left), 0);
-		if ((SDL_BUTTON_MMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Middle), 0);
-		if ((SDL_BUTTON_RMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Right), 0);
-		if ((SDL_BUTTON_X1MASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::X1), 0);
-		if ((SDL_BUTTON_X2MASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::X2), 0);
-	}
-	else if (event.type == SDL_MOUSEBUTTONUP)
-	{
-		mouse.mButtonMask &= ~(event.button.button);
-	}
-	else if (event.type == SDL_MOUSEWHEEL)
-	{
-		if (event.wheel.x > 0) mouse.mHorizontalWheel += 1;
-		if (event.wheel.x < 0) mouse.mHorizontalWheel -= 1;
-		if (event.wheel.y > 0) mouse.mWheel += 1;
-		if (event.wheel.y < 0) mouse.mWheel -= 1;
-	}
-}
 
 void Mouse::SetPositionGlobal(const Vector2i& mousePos)
 {
@@ -235,6 +179,63 @@ void Mouse::ShowCursor()
 void Mouse::HideCursor()
 {
 	SDL_ShowCursor(SDL_DISABLE);
+}
+
+void Mouse::Refresh()
+{
+	Mouse& mouse = GetInstance();
+
+	int pX, pY;
+	mouse.mPreviousButtonMask = mouse.mButtonMask;
+	if (IsRelativeMode())
+	{
+		mouse.mButtonMask = SDL_GetRelativeMouseState(&pX, &pY);
+		const I32 x = static_cast<I32>(pX);
+		const I32 y = static_cast<I32>(pY);
+		mouse.mMouseMovement.x = x;
+		mouse.mMouseMovement.y = y;
+	}
+	else
+	{
+		mouse.mButtonMask = SDL_GetMouseState(&pX, &pY);
+		const I32 x = static_cast<I32>(pX);
+		const I32 y = static_cast<I32>(pY);
+		mouse.mMouseMovement.x = x - mouse.mPosition.x;
+		mouse.mMouseMovement.y = y - mouse.mPosition.y;
+		mouse.mPosition.x = x;
+		mouse.mPosition.y = y;
+	}
+	mouse.mWheel = 0;
+	mouse.mHorizontalWheel = 0;
+}
+
+void Mouse::HandleEvent(const SDL_Event& event)
+{
+	Mouse& mouse = GetInstance();
+	if (event.type == SDL_MOUSEMOTION)
+	{
+	}
+	else if (event.type == SDL_MOUSEBUTTONDOWN)
+	{
+		mouse.mButtonMask |= event.button.button;
+
+		if ((SDL_BUTTON_LMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Left), 0);
+		if ((SDL_BUTTON_MMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Middle), 0);
+		if ((SDL_BUTTON_RMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Right), 0);
+		if ((SDL_BUTTON_X1MASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::X1), 0);
+		if ((SDL_BUTTON_X2MASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::X2), 0);
+	}
+	else if (event.type == SDL_MOUSEBUTTONUP)
+	{
+		mouse.mButtonMask &= ~(event.button.button);
+	}
+	else if (event.type == SDL_MOUSEWHEEL)
+	{
+		if (event.wheel.x > 0) mouse.mHorizontalWheel += 1;
+		if (event.wheel.x < 0) mouse.mHorizontalWheel -= 1;
+		if (event.wheel.y > 0) mouse.mWheel += 1;
+		if (event.wheel.y < 0) mouse.mWheel -= 1;
+	}
 }
 
 Mouse& Mouse::GetInstance()

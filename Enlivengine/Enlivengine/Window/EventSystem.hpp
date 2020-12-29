@@ -4,6 +4,8 @@
 #include <string>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Window/Keyboard.hpp>
 #include <Enlivengine/Window/Mouse.hpp>
 #include <Enlivengine/Window/Controller.hpp>
@@ -129,3 +131,24 @@ private:
 };
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventButton::Type)
+
+ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventButton::ActionType)
+
+ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventButton)
+	ENLIVE_META_CLASS_MEMBER("name", &en::EventSystem::EventButton::name),
+	ENLIVE_META_CLASS_MEMBER("type", &en::EventSystem::EventButton::type),
+	ENLIVE_META_CLASS_MEMBER("action", &en::EventSystem::EventButton::action),
+	ENLIVE_META_CLASS_MEMBER("buttonIdentifier", &en::EventSystem::EventButton::buttonIdentifier),
+	ENLIVE_META_CLASS_MEMBER("extraInfo", &en::EventSystem::EventButton::extraInfo)
+ENLIVE_META_CLASS_END()
+
+ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventAxis::Type)
+
+ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventAxis)
+	ENLIVE_META_CLASS_MEMBER("name", &en::EventSystem::EventAxis::name),
+	ENLIVE_META_CLASS_MEMBER("type", &en::EventSystem::EventAxis::type),
+	ENLIVE_META_CLASS_MEMBER("axisIdentifier", &en::EventSystem::EventAxis::axisIdentifier),
+	ENLIVE_META_CLASS_MEMBER("extraInfo", &en::EventSystem::EventAxis::extraInfo)
+ENLIVE_META_CLASS_END()
