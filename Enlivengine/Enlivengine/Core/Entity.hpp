@@ -3,9 +3,8 @@
 #include <entt/entt.hpp>
 
 #include <Enlivengine/Utils/Assert.hpp>
-#include <Enlivengine/Meta/Meta.hpp>
+#include <Enlivengine/Utils/TypeTraits.hpp>
 
-#include <Enlivengine/Math/Vector2.hpp>
 #include <Enlivengine/Math/Vector3.hpp>
 
 #include <Enlivengine/Core/ComponentTraits.hpp>

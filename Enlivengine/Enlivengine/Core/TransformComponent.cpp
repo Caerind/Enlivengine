@@ -30,6 +30,7 @@ TransformComponent::TransformComponent(TransformComponent&& other) noexcept
 {
 	other.mEntity = Entity();
 	other.mParent = Entity();
+	other.mChildren.clear();
 }
 
 TransformComponent& TransformComponent::operator=(TransformComponent&& other) noexcept
@@ -37,11 +38,14 @@ TransformComponent& TransformComponent::operator=(TransformComponent&& other) no
 	if (&other != this)
 	{
 		Transform::operator=(other);
+		mGlobalMatrix = other.mGlobalMatrix;
 		mEntity = other.mEntity;
 		mParent = other.mParent;
 		mChildren = std::move(other.mChildren);
+		mGlobalMatrixDirty = other.mGlobalMatrixDirty;
 		other.mEntity = Entity();
 		other.mParent = Entity();
+		other.mChildren.clear();
 	}
 	return *this;
 }

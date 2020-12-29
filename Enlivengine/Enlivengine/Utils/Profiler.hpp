@@ -36,11 +36,11 @@ struct ProfilerFrame
 	U32 GetMaxDepth() const;
 };
 
-class Profile
+class ProfileScope
 {
 public:
-	Profile(const char* functionName);
-	~Profile();
+	ProfileScope(const char* functionName);
+	~ProfileScope();
 };
 
 class Profiler
@@ -63,11 +63,11 @@ public:
 	const std::vector<ProfilerFrame>& GetProfilerFrames() const;
 
 private:
-	friend class Application;
+	friend class Engine;
 	void StartFrame(U32 frameNumber);
 	void EndFrame();
 
-	friend class Profile;
+	friend class ProfileScope;
 	void StartFunction(const char* name);
 	void EndFunction();
 
@@ -88,8 +88,9 @@ private:
 	std::vector<ProfilerFrame> mProfilerFrames;
 };
 
-#define ENLIVE_PROFILE_FUNCTION() en::Profile functionProfile(ENLIVE_FUNCTION);
-#define ENLIVE_PROFILE_SCOPE(name) en::Profile scope##name(#name);
+#define ENLIVE_PROFILE_FUNCTION() en::ProfileScope functionProfile(ENLIVE_FUNCTION);
+#define ENLIVE_PROFILE_SCOPE(name) en::ProfileScope scope(name);
+#define ENLIVE_PROFILE_SCOPE_EX(name) en::ProfileScope scope##name(#name);
 
 } // namespace en
 

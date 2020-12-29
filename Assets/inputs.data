@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<DataFile>
+	<Buttons type="en::EventSystem::EventButton" size="7">
+		<Buttons_0 type="en::EventSystem::EventButton">
+			<name type="std::string">moveForward</name>
+			<type type="en::EventSystem::EventButton::Type">KeyboardKey</type>
+			<action type="en::EventSystem::EventButton::ActionType">Hold</action>
+			<buttonIdentifier type="en::U32">23</buttonIdentifier>
+			<extraInfo type="en::U32">0</extraInfo>
+		</Buttons_0>
+		<Buttons_1 type="en::EventSystem::EventButton">
+			<name type="std::string">moveLeft</name>
+			<type type="en::EventSystem::EventButton::Type">KeyboardKey</type>
+			<action type="en::EventSystem::EventButton::ActionType">Hold</action>
+			<buttonIdentifier type="en::U32">1</buttonIdentifier>
+			<extraInfo type="en::U32">0</extraInfo>
+		</Buttons_1>
+		<Buttons_2 type="en::EventSystem::EventButton">
+			<name type="std::string">moveBackward</name>
+			<type type="en::EventSystem::EventButton::Type">KeyboardKey</type>
+			<action type="en::EventSystem::EventButton::ActionType">Hold</action>
+			<buttonIdentifier type="en::U32">19</buttonIdentifier>
+			<extraInfo type="en::U32">0</extraInfo>
+		</Buttons_2>
+		<Buttons_3 type="en::EventSystem::EventButton">
+			<name type="std::string">moveRight</name>
+			<type type="en::EventSystem::EventButton::Type">KeyboardKey</type>
+			<action type="en::EventSystem::EventButton::ActionType">Hold</action>
+			<buttonIdentifier type="en::U32">4</buttonIdentifier>
+			<extraInfo type="en::U32">0</extraInfo>
+		</Buttons_3>
+		<Buttons_4 type="en::EventSystem::EventButton">
+			<name type="std::string">action</name>
+			<type type="en::EventSystem::EventButton::Type">KeyboardKey</type>
+			<action type="en::EventSystem::EventButton::ActionType">Pressed</action>
+			<buttonIdentifier type="en::U32">5</buttonIdentifier>
+			<extraInfo type="en::U32">0</extraInfo>
+		</Buttons_4>
+		<Buttons_5 type="en::EventSystem::EventButton">
+			<name type="std::string">jactionP1</name>
+			<type type="en::EventSystem::EventButton::Type">JoystickButton</type>
+			<action type="en::EventSystem::EventButton::ActionType">Pressed</action>
+			<buttonIdentifier type="en::U32">0</buttonIdentifier>
+			<extraInfo type="en::U32">0</extraInfo>
+		</Buttons_5>
+		<Buttons_6 type="en::EventSystem::EventButton">
+			<name type="std::string">jactionP2</name>
+			<type type="en::EventSystem::EventButton::Type">JoystickButton</type>
+			<action type="en::EventSystem::EventButton::ActionType">Pressed</action>
+			<buttonIdentifier type="en::U32">0</buttonIdentifier>
+			<extraInfo type="en::U32">1</extraInfo>
+		</Buttons_6>
+	</Buttons>
+	<Axes type="en::EventSystem::EventAxis" size="2">
+		<Axes_0 type="en::EventSystem::EventAxis">
+			<name type="std::string">mouseX</name>
+			<type type="en::EventSystem::EventAxis::Type">MouseMovementX</type>
+			<axisIdentifier type="en::U32">0</axisIdentifier>
+			<extraInfo type="en::U32">0</extraInfo>
+		</Axes_0>
+		<Axes_1 type="en::EventSystem::EventAxis">
+			<name type="std::string">mouseY</name>
+			<type type="en::EventSystem::EventAxis::Type">MouseMovementY</type>
+			<axisIdentifier type="en::U32">0</axisIdentifier>
+			<extraInfo type="en::U32">0</extraInfo>
+		</Axes_1>
+	</Axes>
+</DataFile>

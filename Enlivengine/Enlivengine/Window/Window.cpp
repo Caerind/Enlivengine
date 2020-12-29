@@ -21,9 +21,29 @@ Window::~Window()
     UnregisterWindow(this);
 }
 
+bool Window::Create(const char* name, U32 displayIndex /*= 0*/)
+{
+	SDL_Rect r;
+	SDL_GetDisplayUsableBounds(displayIndex, &r);
+
+#ifdef ENLIVE_PLATFORM_WINDOWS
+	r.y += 23;
+	r.h -= 23;
+#endif // ENLIVE_PLATFORM_WINDOWS
+
+	return Create(name, r.x, r.y, r.w, r.h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
+}
+
 bool Window::Create(const char* name, U32 width, U32 height, U32 flags /*= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE*/)
 {
-    mWindow = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, static_cast<I32>(width), static_cast<I32>(height), flags);
+	mWindow = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, static_cast<I32>(width), static_cast<I32>(height), flags);
+	ResetShouldClose();
+	return mWindow != nullptr;
+}
+
+bool Window::Create(const char* name, U32 x, U32 y, U32 width, U32 height, U32 flags /*= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE*/)
+{
+    mWindow = SDL_CreateWindow(name, static_cast<I32>(x), static_cast<I32>(y), static_cast<I32>(width), static_cast<I32>(height), flags);
     ResetShouldClose();
     return mWindow != nullptr;
 }

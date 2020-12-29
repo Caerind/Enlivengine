@@ -5,10 +5,11 @@
     "EntityBrowser": true,
     "Game": true,
     "ImGuiDemo": false,
-    "InputEditor": false,
+    "InputEditor": true,
     "Logs": true,
     "MemoryDebugger": false,
-    "Physic": false,
+    "Physic": true,
     "Profiler": false,
-    "ResourceBrowser": false
+    "ResourceBrowser": true,
+    "Worlds": true
 }

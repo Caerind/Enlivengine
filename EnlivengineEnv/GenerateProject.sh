@@ -56,4 +56,3 @@ fi
 if [ "$generated" = false ] ; then
 	cmake $compilerFlags ..
 fi
-

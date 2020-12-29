@@ -1,11 +1,13 @@
 #pragma once
 
 #include <Enlivengine/Utils/String.hpp>
-#include <Enlivengine/Meta/TypeInfo.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
 #include <Enlivengine/Meta/Meta.hpp>
 #include <Enlivengine/Meta/MetaTraits.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
+
+#include <Enlivengine/Meta/MetaSpecialization_Math.hpp>
 
 #include <Enlivengine/Graphics/Sprite.hpp>
 #include <Enlivengine/Graphics/Tilemap.hpp>
@@ -27,7 +29,7 @@ ENLIVE_META_CLASS_BEGIN(en::Tilemap)
 ENLIVE_META_CLASS_END()
 
 //////////////////////////////////////////////////////////////////
-// en::AABB
+// en::Camera
 //////////////////////////////////////////////////////////////////
 ENLIVE_META_CLASS_BEGIN(en::Camera)
 ENLIVE_META_CLASS_END()

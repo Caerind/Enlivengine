@@ -53,23 +53,25 @@ void BaseResource::SetLoadInfo(const ResourceLoadInfo& info)
 	mLoadInfo = info;
 }
 
-bool BaseResource::IsFromFile() const
-{
-	return mLoadInfo.isFromFile;
-}
-
-const std::string& BaseResource::GetFilename() const
-{
-	enAssert(mLoadInfo.isFromFile);
-	return mLoadInfo.infoString;
-}
-
 #ifdef ENLIVE_DEBUG
+ResourceInfo BaseResource::GetResourceInfo() const
+{
+	ResourceInfo ri;
+	ri.id = GetID();
+	ri.type = GetResourceType();
+	ri.identifier = GetIdentifier();
+	ri.loaded = IsLoaded();
+	ri.loadInfo = GetLoadInfo();
+	return ri;
+}
+
 const std::string& BaseResource::GetIdentifier() const
 {
 	return mIdentifier;
 }
+#endif // ENLIVE_DEBUG
 
+#ifdef ENLIVE_DEBUG
 void BaseResource::InitFromResourceManager(ResourceID id, const std::string& identifier)
 {
 	mID = id;
@@ -111,22 +113,15 @@ void ResourceManager::ReleaseAll()
 
 U32 ResourceManager::Count(U32 resourceType) const
 {
-	if (resourceType == static_cast<U32>(ResourceType::Invalid))
+	U32 count = 0;
+	for (auto itr = mResources.begin(); itr != mResources.end(); ++itr)
 	{
-		return static_cast<U32>(mResources.size());
-	}
-	else
-	{
-		U32 count = 0;
-		for (auto itr = mResources.begin(); itr != mResources.end(); ++itr)
+		if (itr->second->GetResourceType() == resourceType)
 		{
-			if (itr->second->GetResourceType() == resourceType)
-			{
-				count++;
-			}
+			count++;
 		}
-		return count;
 	}
+	return count;
 }
 
 #ifdef ENLIVE_DEBUG
@@ -139,13 +134,7 @@ void ResourceManager::GetResourceInfosOfType(Array<ResourceInfo>& resourceInfos,
 		{
 			if (r->GetResourceType() == resourceType)
 			{
-				ResourceInfo ri;
-				ri.id = r->GetID();
-				ri.type = r->GetResourceType();
-				ri.identifier = r->GetIdentifier();
-				ri.loaded = r->IsLoaded();
-				ri.info = r->GetLoadInfo();
-				resourceInfos.Add(ri);
+				resourceInfos.Add(r->GetResourceInfo());
 			}
 		}
 		else
@@ -162,13 +151,7 @@ void ResourceManager::GetResourceInfos(Array<ResourceInfo>& resourceInfos)
 	{
 		if (priv::BaseResource* r = itr->second.get())
 		{
-			ResourceInfo ri;
-			ri.id = r->GetID();
-			ri.type = r->GetResourceType();
-			ri.identifier = r->GetIdentifier();
-			ri.loaded = r->IsLoaded();
-			ri.info = r->GetLoadInfo();
-			resourceInfos.Add(ri);
+			resourceInfos.Add(r->GetResourceInfo());
 		}
 		else
 		{
@@ -201,6 +184,12 @@ std::string_view ResourceManager::GetResourceTypeName(U32 resourceType) const
 		return Enum::GetValueName(static_cast<ResourceType>(resourceType));
 	}
 }
+
+U32 ResourceManager::GetResourceTypeCount() const
+{
+	return static_cast<U32>(ResourceType::Max) - 1 + static_cast<U32>(mClientResourceTypeNames.size());
+}
+
 #endif // ENLIVE_DEBUG
 
 ResourceID ResourceManager::StringToResourceID(const std::string& str)
@@ -208,9 +197,9 @@ ResourceID ResourceManager::StringToResourceID(const std::string& str)
 	return Hash::SlowHash(str);
 }
 
-ResourceIDType ResourceManager::CreateResourceIDTypeFromResourceIDAndType(ResourceID id, U32 type)
+priv::ResourceIDType ResourceManager::CreateResourceIDTypeFromResourceIDAndType(ResourceID id, U32 type)
 {
-	ResourceIDType resourceIdType;
+	priv::ResourceIDType resourceIdType;
 	resourceIdType.id = id;
 	resourceIdType.type = type;
 	return resourceIdType;

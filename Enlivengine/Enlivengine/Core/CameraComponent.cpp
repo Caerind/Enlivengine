@@ -60,35 +60,6 @@ const Matrix4f& CameraComponent::GetViewMatrix() const
 	return mViewMatrix;
 }
 
-Entity CameraComponent::GetEntity() const
-{
-	return mEntity;
-}
-
-World* CameraComponent::GetWorld()
-{
-	if (mEntity.IsValid())
-	{
-		return &mEntity.GetWorld();
-	}
-	else
-	{
-		return nullptr;
-	}
-}
-
-const World* CameraComponent::GetWorld() const
-{
-	if (mEntity.IsValid())
-	{
-		return &mEntity.GetWorld();
-	}
-	else
-	{
-		return nullptr;
-	}
-}
-
 void CameraComponent::InitializeView(const Vector3f& position, const Matrix3f& rotation)
 {
 	Camera::InitializeView(position, rotation);

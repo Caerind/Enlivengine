@@ -29,6 +29,8 @@ public:
 	static void SetScreenshotPath(const std::string& screenshotPath);
 	static const std::string& GetScreenshotPath();
 
+	static std::string GetAbsolutePath(const std::string& path);
+
 private:
 	static PathManager& GetInstance();
 

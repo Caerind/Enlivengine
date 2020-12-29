@@ -46,6 +46,10 @@ source_group("imgui" FILES ${SRC_IMGUI})
 file(GLOB_RECURSE SRC_IMGUIZMO "ImGuizmo/*")
 source_group("ImGuizmo" FILES ${SRC_IMGUIZMO})
 
+# ImGuiFileDialog
+file(GLOB_RECURSE SRC_IMGUIFILEDIALOG "ImGuiFileDialog/*")
+source_group("ImGuiFileDialog" FILES ${SRC_IMGUIFILEDIALOG})
+
 # json
 file(GLOB_RECURSE SRC_JSON "json/*")
 source_group("json" FILES ${SRC_JSON})
@@ -77,6 +81,7 @@ add_library(EnlivengineThirdParty STATIC
 	${SRC_ICONFONTCPPHEADERS}
 	${SRC_IMGUI}
 	${SRC_IMGUIZMO}
+	${SRC_IMGUIFILEDIALOG}
 	${SRC_JSON}
 	${SRC_MAGICENUM}
 	${SRC_MINIZ}

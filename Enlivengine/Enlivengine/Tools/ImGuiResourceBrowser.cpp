@@ -5,15 +5,18 @@
 #include <filesystem>
 
 #include <imgui/imgui.h>
-//#include <ImGuiFileDialog/ImGuiFileDialog.h> // TODO : TOOLS UPDATE
+#include <ImGuiFileDialog/ImGuiFileDialog.h>
 
-#include <Enlivengine/Utils/ParserXml.hpp>
+#include <Enlivengine/Meta/MetaSpecialization_Resources.hpp>
+#include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Math/Color.hpp>
 #include <Enlivengine/Resources/ResourceManager.hpp>
+#include <Enlivengine/Resources/PathManager.hpp>
 
 #include <Enlivengine/Tools/ImGuiHelper.hpp>
 #include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
 
+#include <Enlivengine/Graphics/Texture.hpp>
 #include <Enlivengine/Audio/AudioManager.hpp>
 #include <Enlivengine/Tiled/Tileset.hpp>
 #include <Enlivengine/Tiled/Map.hpp>
@@ -26,35 +29,32 @@ namespace en
 ImGuiResourceBrowser::ImGuiResourceBrowser()
 	: ImGuiTool()
 {
-	/*
-	
-	// TODO : TOOLS UPDATE
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".png", Colors::Cyan.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_IMAGE);
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".jpg", Colors::Cyan.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_IMAGE);
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".dds", Colors::Cyan.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_IMAGE);
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".png", Colors::Cyan.WithAlpha(200).ToImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".jpg", Colors::Cyan.WithAlpha(200).ToImGuiColor());
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".ttf", Colors::Orange.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_SIGNATURE);
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".ttf", Colors::Orange.WithAlpha(200).ToImGuiColor());
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".tmx", Colors::Lime.WithAlpha(200).ToImGuiColor());
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".tsx", Colors::Peach.WithAlpha(200).ToImGuiColor());
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".tmx", Colors::Lime.WithAlpha(200).ToImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".tsx", Colors::Peach.WithAlpha(200).ToImGuiColor());
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".ogg", Colors::BabyPink.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_AUDIO);
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".ogg", Colors::BabyPink.WithAlpha(200).ToImGuiColor());
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".wav", Colors::HotPink.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_AUDIO);
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".wav", Colors::HotPink.WithAlpha(200).ToImGuiColor());
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".astm", Colors::DarkYellow.WithAlpha(200).ToImGuiColor());
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".astm", Colors::DarkYellow.WithAlpha(200).ToImGuiColor());
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".c", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".cpp", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".h", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".hpp", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".inl", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".sh", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
 
-	ImGuiFileDialog::Instance()->SetFilterColor(".cpp", Colors::Yellow.WithAlpha(200).ToImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".h", Colors::Yellow.WithAlpha(200).ToImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".hpp", Colors::Yellow.WithAlpha(200).ToImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".inl", Colors::Yellow.WithAlpha(200).ToImGuiColor());
-
-	ImGuiFileDialog::Instance()->SetFilterColor(".json", Colors::LightGreen.WithAlpha(200).ToImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".xml", Colors::LightBlue.WithAlpha(200).ToImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".txt", Colors::Magenta.WithAlpha(200).ToImGuiColor());
-	ImGuiFileDialog::Instance()->SetFilterColor(".md", Colors::Mint.WithAlpha(200).ToImGuiColor());
-
-	*/
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".json", Colors::LightGreen.WithAlpha(200).ToImGuiColor());
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".xml", Colors::LightBlue.WithAlpha(200).ToImGuiColor());
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".txt", Colors::Magenta.WithAlpha(200).ToImGuiColor());
+	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".md", Colors::Mint.WithAlpha(200).ToImGuiColor());
 }
 
 ImGuiToolTab ImGuiResourceBrowser::GetTab() const
@@ -72,32 +72,113 @@ const char* ImGuiResourceBrowser::GetSaveName() const
 	return "ResourceBrowser";
 }
 
+void ImGuiResourceBrowser::Initialize()
+{
+	RegisterResourceSpecifics();
+
+	LoadResourceInfosFromFile();
+}
+
 void ImGuiResourceBrowser::Display()
 {
-	/*
+	AddNewResource();
+	
+	DisplayResources();
+}
 
-	// TODO : TOOLS UPDATE
+bool ImGuiResourceBrowser::LoadResourceInfosFromFile()
+{
+	const std::string& assetsPath = PathManager::GetAssetsPath();
 
+	DataFile xml;
+	if (xml.LoadFromFile(assetsPath + "resources.data"))
+	{
+		Array<ResourceInfo> resourceInfos;
+		if (xml.Deserialize(mResourceInfos, "Resources"))
+		{
+			for (const ResourceInfo& resourceInfo : mResourceInfos)
+			{
+				const auto itr = mResourceSpecifics.find(resourceInfo.type);
+				if (resourceInfo.loadInfo.IsFromFile())
+				{
+					if (itr != mResourceSpecifics.end())
+					{
+						if (!itr->second.loader(resourceInfo.identifier, resourceInfo.loadInfo.infoString))
+						{
+							enLogWarning(LogChannel::Core, "Can't load {}-{}", resourceInfo.identifier, resourceInfo.loadInfo.infoString);
+						}
+					}
+					else
+					{
+						enLogError(LogChannel::Core, "The resource type {} is not registered to the ResourceBrowser", resourceInfo.type);
+					}
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+bool ImGuiResourceBrowser::SaveResourceInfosToFile()
+{
+	DataFile xml;
+	xml.CreateEmptyFile();
+	xml.Serialize(mResourceInfos, "Resources");
+	return xml.SaveToFile(PathManager::GetAssetsPath() + "resources.data");
+}
+
+void ImGuiResourceBrowser::RegisterResourceSpecific(U32 resourceType, ResourceSpecificFileLoader loader, ResourceSpecificPreview preview)
+{
+	auto& instance = GetInstance();
+	instance.mResourceSpecifics[resourceType].name = std::string(ResourceManager::GetInstance().GetResourceTypeName(resourceType));
+	instance.mResourceSpecifics[resourceType].loader = loader;
+	instance.mResourceSpecifics[resourceType].preview = preview;
+}
+
+void ImGuiResourceBrowser::AddNewResource()
+{
 	static const std::string key = "ResourceBrowserFileDialogKey";
 	static const char* dialogTitle = "ResourceBrowser: Choose File";
 
-	const std::filesystem::path assetsPath = PathManager::GetInstance().GetAssetsPathAbsolute();
+	const std::filesystem::path assetsPath = PathManager::GetAbsolutePath(PathManager::GetAssetsPath());
 
 	ImGui::Text("Add New Resource");
-	ImGui::Indent(); 
+	ImGui::Indent();
+
+	const std::string currentLabel = std::string(ResourceManager::GetInstance().GetResourceTypeName(mResourceType));
+	if (ImGui::BeginCombo("Type", currentLabel.c_str()))
+	{
+		const U32 resourceTypeCount = ResourceManager::GetInstance().GetResourceTypeCount();
+		for (U32 i = 1; i < resourceTypeCount; ++i)
+		{
+			const std::string label = std::string(ResourceManager::GetInstance().GetResourceTypeName(i));
+			bool selected = (i == mResourceType);
+			if (ImGui::Selectable(label.c_str(), selected))
+			{
+				mResourceType = i;
+				selected = true;
+			}
+			if (selected)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
 	ImGui::InputText("Identitifer", mIdentifierBuffer, kBufferSize);
 	if (ImGui::Button("..."))
 	{
-		ImGuiFileDialog::Instance()->OpenDialog(key, dialogTitle, nullptr, assetsPath.string());
+		igfd::ImGuiFileDialog::Instance()->OpenDialog(key, dialogTitle, ".*", assetsPath.string());
 	}
 	ImGui::SameLine();
 	ImGui::InputText("Filename", mFilenameBuffer, kBufferSize);
-	if (ImGuiFileDialog::Instance()->FileDialog(key))
+	if (igfd::ImGuiFileDialog::Instance()->FileDialog(key))
 	{
-		if (ImGuiFileDialog::Instance()->IsOk)
+		if (igfd::ImGuiFileDialog::Instance()->IsOk)
 		{
-			std::filesystem::path filepath = ImGuiFileDialog::Instance()->GetFilepathName();
-			std::string relativeResult = filepath.lexically_relative(assetsPath).string();
+			std::filesystem::path filename = igfd::ImGuiFileDialog::Instance()->GetFirstSelected();
+			std::string relativeResult = filename.lexically_relative(assetsPath).string();
 			std::replace(relativeResult.begin(), relativeResult.end(), '\\', '/');
 
 #ifdef ENLIVE_COMPILER_MSVC
@@ -106,40 +187,66 @@ void ImGuiResourceBrowser::Display()
 			strcpy(mFilenameBuffer, relativeResult.c_str());
 #endif // ENLIVE_COMPILER_MSVC
 		}
-		ImGuiFileDialog::Instance()->CloseDialog(key);
+		igfd::ImGuiFileDialog::Instance()->CloseDialog(key);
 	}
-	if (strlen(mIdentifierBuffer) > 0 && strlen(mFilenameBuffer) > 0)
+	if (mResourceType != 0 && strlen(mIdentifierBuffer) > 0 && strlen(mFilenameBuffer) > 0)
 	{
-		if (ImGui::Button("Add"))
+		const auto itr = mResourceSpecifics.find(mResourceType);
+		const bool registeredResourceType = itr != mResourceSpecifics.end();
+		const bool resourceTypeCompatibleExtension = true; // TODO : Check that ResourceType is compatible with the extension of the file
+
+		if (registeredResourceType && resourceTypeCompatibleExtension)
 		{
-			std::string resourceIdentifier(mIdentifierBuffer);
-			std::string resourceFilename(mFilenameBuffer);
-			ResourceID resourceID = ResourceManager::GetInstance().StringToResourceID(resourceIdentifier);
-			U32 resourceType = GetResourceTypeFromFilename(resourceFilename);
-			Application::GetInstance().LoadResource(resourceID, resourceType, PathManager::GetInstance().GetAssetsPath() + resourceFilename, resourceIdentifier);
+			if (ImGui::Button("Add"))
+			{
+				std::string resourceIdentifier(mIdentifierBuffer);
+				std::string resourceFilename(PathManager::GetAssetsPath() + mFilenameBuffer);
+				itr->second.loader(resourceIdentifier, resourceFilename);
 
-			ResourceManager::GetInstance().GetResourceInfos(mResourceInfos);
-			SaveResourceInfosToFile(PathManager::GetInstance().GetAssetsPath() + "resources.xml");
-
-			AskForResize();
+				ResourceManager::GetInstance().GetResourceInfos(mResourceInfos);
+				SaveResourceInfosToFile();
 
 #ifdef ENLIVE_COMPILER_MSVC
-			strcpy_s(mIdentifierBuffer, "");
-			strcpy_s(mFilenameBuffer, "");
+				strcpy_s(mIdentifierBuffer, "");
+				strcpy_s(mFilenameBuffer, "");
 #else
-			strcpy(mIdentifierBuffer, "");
-			strcpy(mFilenameBuffer, "");
+				strcpy(mIdentifierBuffer, "");
+				strcpy(mFilenameBuffer, "");
 #endif // ENLIVE_COMPILER_MSVC
+			}
+		}
+		else
+		{
+			ImGui::DisabledButton("Add");
+			if (ImGui::IsItemHovered())
+			{
+				if (!registeredResourceType)
+				{
+					ImGui::SetTooltip("This resource type is not registered to the ResourceBrowser");
+				}
+				else if (!resourceTypeCompatibleExtension)
+				{
+					ImGui::SetTooltip("Type and extension are not compatible");
+				}
+			}
 		}
 	}
 	else
 	{
 		ImGui::DisabledButton("Add");
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Invalid input");
+		}
 	}
 	ImGui::Unindent();
+}
 
+void ImGuiResourceBrowser::DisplayResources()
+{
 	ResourceManager::GetInstance().GetResourceInfos(mResourceInfos);
 
+	bool deletedSome = false;
 	U32 size = static_cast<U32>(mResourceInfos.Size());
 	if (size > 0)
 	{
@@ -186,62 +293,58 @@ void ImGuiResourceBrowser::Display()
 					ImGui::SameLine();
 				}
 
-				if (!resourceInfo.loaded && resourceInfo.type != static_cast<U32>(ResourceType::Music))
+				if (!resourceInfo.loaded && resourceInfo.type != static_cast<U32>(ResourceType::Music)) // TODO : Remove special case for Music
 				{
 					ImGui::Text(ICON_FA_EXCLAMATION);
 					if (ImGui::IsItemHovered())
 					{
 						ImGui::SetTooltip("This resource is not loaded");
 						//ImGui::SetTooltip("This resource is not loaded yet. Click to load");
+						/*
+						if (ImGui::IsItemClicked())
+						{
+							// TODO : Reload ?
+						}
+						*/
 					}
-					*/
 
-					/*
-					if (ImGui::IsItemClicked())
-					{
-						// TODO : Reload ?
-					}
-					*/
-					
-					/*
 					ImGui::SameLine();
 				}
 
 				//ImVec4 color = ResourceInfo::ResourceInfoTypeToColor(resourceInfo.type).toImGuiColor();
 				//ImGui::TextColored(color, "%s", resourceInfo.identifier.c_str());
-
 				ImGui::Text("%s", resourceInfo.identifier.c_str());
 
 				if (ImGui::IsItemHovered())
 				{
-					ImGui::SetTooltip("ID: %d", resourceInfo.id);
-				}
-				ImGui::SameLine();
-
-				if (resourceInfo.loaded || resourceInfo.type == static_cast<U32>(ResourceType::Music))
-				{
-					switch (resourceInfo.type)
+					const std::string loadMethodString = std::string(Enum::GetValueName(resourceInfo.loadInfo.method));
+					if (resourceInfo.loadInfo.method == ResourceLoadInfo::File || resourceInfo.loadInfo.method == ResourceLoadInfo::Download)
 					{
-						case static_cast<U32>(ResourceType::Font): FontPreview(resourceInfo); break;
-						case static_cast<U32>(ResourceType::Image): ImagePreview(resourceInfo); break;
-						case static_cast<U32>(ResourceType::Texture): TexturePreview(resourceInfo); break;
-						case static_cast<U32>(ResourceType::Tileset): TilesetPreview(resourceInfo); break;
-						case static_cast<U32>(ResourceType::Map): MapPreview(resourceInfo); break;
-						case static_cast<U32>(ResourceType::Animation): AnimationPreview(resourceInfo); break;
-						case static_cast<U32>(ResourceType::AnimationStateMachine): AnimationStateMachinePreview(resourceInfo); break;
-						case static_cast<U32>(ResourceType::Music): MusicPreview(resourceInfo); break;
-						case static_cast<U32>(ResourceType::Sound): SoundPreview(resourceInfo); break;
-						default: break;
+						ImGui::SetTooltip("ID: %d\n%s (%s)", resourceInfo.id, loadMethodString.c_str(), resourceInfo.loadInfo.infoString.c_str());
+					}
+					else
+					{
+						ImGui::SetTooltip("ID: %d\n%s", resourceInfo.id, loadMethodString.c_str());
 					}
 				}
-
-				ImGui::Text(" : %s", resourceInfo.info.infoString.c_str());
 				ImGui::SameLine();
+
+				if (resourceInfo.loaded || resourceInfo.type == static_cast<U32>(ResourceType::Music)) // TODO : Remove special case for Music
+				{
+					const auto itr = mResourceSpecifics.find(resourceInfo.type);
+					if (itr != mResourceSpecifics.end())
+					{
+						itr->second.preview(resourceInfo);
+					}
+				}
 
 				if (ImGui::Button("Remove"))
 				{
 					if (resourceInfo.id != InvalidResourceID)
 					{
+						deletedSome = true;
+
+						// TODO : Remove special case for Sound
 						if (resourceInfo.type == static_cast<U32>(ResourceType::Sound))
 						{
 							AudioManager::GetInstance().ReleaseSound(resourceInfo.id);
@@ -276,441 +379,62 @@ void ImGuiResourceBrowser::Display()
 		ImGui::EndChild();
 	}
 
-	*/
+	if (deletedSome)
+	{
+		SaveResourceInfosToFile();
+	}
 }
 
-bool ImGuiResourceBrowser::LoadResourceInfosFromFile(const std::string& filename)
+void ImGuiResourceBrowser::RegisterResourceSpecifics()
 {
-	ENLIVE_UNUSED(filename);
-	/*
+	// Image
+	// TODO : Image Preview
 
-	// TODO : TOOLS UPDATE
-
-	ParserXml xml;
-	if (!xml.LoadFromFile(filename))
-	{
-		enLogError(en::LogChannel::Application, "Can't open resources file at {}", filename.c_str());
-		return false;
-	}
-
-	if (xml.ReadNode("Resources"))
-	{
-		if (xml.ReadNode("Resource"))
+	// Texture
+	RegisterResourceSpecific<Texture>(
+		[](const std::string& identifier, const std::string& filename)
 		{
-			do
+			return ResourceManager::GetInstance().Create(identifier, TextureLoader::FromFile(filename)).IsValid();
+		},
+		[](const ResourceInfo& resourceInfo)
+		{
+			ImGui::Text(ICON_FA_SEARCH);
+			if (ImGui::IsItemHovered())
 			{
-				U32 resourceIDu32;
-				xml.GetAttribute("id", resourceIDu32);
-				ResourceID resourceID = static_cast<ResourceID>(resourceIDu32);
-
-				U32 resourceType;
-				xml.GetAttribute("type", resourceType);
-
-				std::string resourceIdentifer;
-				bool resourceHasIdentifier = xml.GetAttribute("identifier", resourceIdentifer);
-
-				std::string resourceFilename;
-				bool resourceHasFilename = xml.GetAttribute("filename", resourceFilename);
-
-				if (resourceHasFilename)
-				{
-					if (resourceHasIdentifier)
-					{
-						Application::GetInstance().LoadResource(resourceID, resourceType, PathManager::GetInstance().GetAssetsPath() + resourceFilename, resourceIdentifer);
-					}
-					else
-					{
-						enAssert(false); // Mandatory (for now)
-					}
-				}
-				else
-				{
-					enAssert(false); // Mandatory (for now)
-				}
-				
-			} while (xml.NextSibling("Resource"));
-			xml.CloseNode();
-		}
-		xml.CloseNode();
-	}
-	else
-	{
-		enLogError(en::LogChannel::Application, "Invalid resources file at {}", filename.c_str());
-		return false;
-	}
-
-	AskForResize();
-
-	*/
-
-	return true;
-}
-
-bool ImGuiResourceBrowser::SaveResourceInfosToFile(const std::string& filename)
-{
-	ENLIVE_UNUSED(filename);
-	/*
-
-	// TODO : TOOLS UPDATE
-
-	const std::string assetsPath = PathManager::GetInstance().GetAssetsPath();
-
-	ParserXml xml;
-	xml.NewFile();
-
-	if (!xml.CreateNode("Resources"))
-	{
-		return false;
-	}
-
-	for (const ResourceInfo& resourceInfo : mResourceInfos)
-	{
-		if (!xml.CreateNode("Resource"))
-		{
-			continue;
-		}
-
-		xml.SetAttribute("identifier", resourceInfo.identifier);
-		xml.SetAttribute("id", resourceInfo.id);
-		xml.SetAttribute("type", resourceInfo.type);
-
-		if (resourceInfo.IsFromFile())
-		{
-			std::string filepath = resourceInfo.GetFilename();
-			filepath = filepath.substr(assetsPath.size());
-			xml.SetAttribute("filename", filepath);
-		}
-
-		xml.CloseNode();
-	}
-
-	if (!xml.SaveToFile(filename))
-	{
-		return false;
-	}
-
-	*/
-
-	return true;
-}
-
-U32 ImGuiResourceBrowser::GetResourceTypeFromFilename(const std::string& filename)
-{
-	ENLIVE_UNUSED(filename);
-	/*
-
-	// TODO : TOOLS UPDATE
-
-	std::string ext = std::filesystem::path(filename).extension().string();
-	if (ext == ".ttf")
-	{
-		return static_cast<U32>(ResourceType::Font);
-	}
-	if (ext == ".bmp")
-	{
-		return static_cast<U32>(ResourceType::Image);
-	}
-	if (ext == ".png" || ext == ".jpg")
-	{
-		return static_cast<U32>(ResourceType::Texture);
-	}
-	if (ext == ".ogg")
-	{
-		return static_cast<U32>(ResourceType::Music);
-	}
-	if (ext == ".wav")
-	{
-		return static_cast<U32>(ResourceType::Sound);
-	}
-	if (ext == ".tsx")
-	{
-		return static_cast<U32>(ResourceType::Tileset);
-	}
-	if (ext == ".tmx")
-	{
-		return static_cast<U32>(ResourceType::Map);
-	}
-	if (ext == ".json")
-	{
-		return static_cast<U32>(ResourceType::Animation);
-	}
-	if (ext == ".astm")
-	{
-		return static_cast<U32>(ResourceType::AnimationStateMachine);
-	}
-	*/
-
-	return static_cast<U32>(ResourceType::Invalid);
-}
-
-void ImGuiResourceBrowser::FontPreview(ResourceInfo& resourceInfo)
-{
-	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Font));
-
-	/*
-
-	// TODO : TOOLS UPDATE
-
-	*/
-}
-
-void ImGuiResourceBrowser::ImagePreview(ResourceInfo& resourceInfo)
-{
-	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Image));
-
-	/*
-
-	// TODO : TOOLS UPDATE
-
-	ImGui::Text(ICON_FA_SEARCH);
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::BeginTooltip();
-
-		//const Image& image = ResourceManager::GetInstance().Get<Image>(resourceInfo.id).Get();
-		//ImGui::PreviewTexture(image, 150.0f);
-
-		ImGui::EndTooltip();
-	}
-	ImGui::SameLine();
-
-	*/
-}
-
-void ImGuiResourceBrowser::TexturePreview(ResourceInfo& resourceInfo)
-{
-	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Texture));
-
-	/*
-
-	// TODO : TOOLS UPDATE
-
-	ImGui::Text(ICON_FA_SEARCH);
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::BeginTooltip();
-
-		const Texture& texture = ResourceManager::GetInstance().Get<Texture>(resourceInfo.id).Get();
-		ImGui::PreviewTexture(texture, 150.0f);
-
-		ImGui::EndTooltip();
-	}
-	ImGui::SameLine();
-
-	*/
-}
-
-void ImGuiResourceBrowser::TilesetPreview(ResourceInfo& resourceInfo)
-{
-	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Tileset));
-
-	/*
-
-	// TODO : TOOLS UPDATE
-
-	ImGui::Text(ICON_FA_SEARCH);
-	if (ImGui::IsItemHovered())
-	{
-		tmx::TilesetPtr tileset = ResourceManager::GetInstance().Get<tmx::Tileset>(resourceInfo.id);
-		if (tileset.IsValid() && tileset.Get().GetTexture().IsValid())
-		{
-			ImGui::BeginTooltip();
-
-			const Texture& texture = tileset.Get().GetTexture().Get();
-			ImGui::PreviewTexture(texture, 150.0f);
-
-			ImGui::EndTooltip();
-		}
-
-	}
-	ImGui::SameLine();
-
-	*/
-}
-
-void ImGuiResourceBrowser::MapPreview(ResourceInfo& resourceInfo)
-{
-	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Map));
-
-	/*
-
-	// TODO : TOOLS UPDATE
-
-	ImGui::Text(ICON_FA_SEARCH);
-	if (ImGui::IsItemHovered())
-	{
-		tmx::MapPtr mapPtr = ResourceManager::GetInstance().Get<tmx::Map>(resourceInfo.id);
-		if (mapPtr.IsValid())
-		{
-			ImGui::BeginTooltip();
-
-			const tmx::Map& map = mapPtr.Get();
-
-			const U32 sizeX = map.GetSize().x * map.GetTileSize().x;
-			const U32 sizeY = map.GetSize().y * map.GetTileSize().y;
-			sf::RenderTexture renderTexture;
-			renderTexture.create(sizeX, sizeY);
-			renderTexture.clear(sf::Color::Transparent);
-			map.Render(renderTexture, true);
-			renderTexture.display();
-
-			constexpr F32 maxPreviewSize = 150.0f;
-			sf::Sprite previewSprite;
-			previewSprite.setTexture(renderTexture.getTexture());
-			Vector2f textureSize;
-			textureSize.x = static_cast<F32>(renderTexture.getSize().x);
-			textureSize.y = static_cast<F32>(renderTexture.getSize().y);
-			if (textureSize.x > maxPreviewSize || textureSize.y > maxPreviewSize)
-			{
-				const F32 larger = (textureSize.x > textureSize.y) ? textureSize.x : textureSize.y;
-				const F32 scale = maxPreviewSize / larger;
-				previewSprite.setScale(scale, scale);
-			}
-			ImGui::Image(previewSprite);
-
-			ImGui::EndTooltip();
-		}
-	}
-	ImGui::SameLine();
-
-	*/
-}
-
-void ImGuiResourceBrowser::AnimationPreview(ResourceInfo& resourceInfo)
-{
-	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Animation));
-
-	/*
-
-	// TODO : TOOLS UPDATE
-
-	ImGui::Text(ICON_FA_SEARCH);
-	if (ImGui::IsItemHovered())
-	{
-		AnimationPtr animation = ResourceManager::GetInstance().Get<Animation>(resourceInfo.id);
-		if (animation.IsValid() && animation.Get().GetTexture().IsValid())
-		{
-			static ResourceID lastResourceID = 654321;
-			static U32 animationClipIndex;
-			static U32 animationClipFrameIndex;
-			static Time animationAcc;
-			if (lastResourceID != resourceInfo.id)
-			{
-				lastResourceID = resourceInfo.id;
-				animationClipIndex = 0;
-				animationClipFrameIndex = 0;
-				animationAcc = Time::Zero();
-			}
-
-			ImGui::BeginTooltip();
-
-            const Animation& anim = animation.Get();
-			ImGui::PreviewAnimation(anim, 100.0f, animationClipIndex, animationClipFrameIndex, animationAcc);
-
-			ImGui::EndTooltip();
-		}
-	}
-	ImGui::SameLine();
-
-	*/
-}
-
-void ImGuiResourceBrowser::AnimationStateMachinePreview(ResourceInfo& resourceInfo)
-{
-	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::AnimationStateMachine));
-
-	/*
-
-	// TODO : TOOLS UPDATE
-
-	AnimationStateMachinePtr ptr = ResourceManager::GetInstance().Get<AnimationStateMachine>(resourceInfo.id);
-	if (ptr.IsValid())
-	{
-		ImGui::Text(ICON_FA_DIRECTIONS);
-		if (ImGui::IsItemHovered())
-		{
-			const AnimationPtr& animPtr = ptr.Get().GetAnimation();
-			if (animPtr.IsValid() && animPtr.Get().GetTexture().IsValid())
-			{
-				static ResourceID lastResourceID = 654321;
-				static U32 animationClipIndex;
-				static U32 animationClipFrameIndex;
-				static Time animationAcc;
-				if (lastResourceID != resourceInfo.id)
-				{
-					lastResourceID = resourceInfo.id;
-					animationClipIndex = 0;
-					animationClipFrameIndex = 0;
-					animationAcc = Time::Zero();
-				}
-
 				ImGui::BeginTooltip();
 
-				const Animation& anim = animPtr.Get();
-				ImGui::PreviewAnimation(anim, 100.0f, animationClipIndex, animationClipFrameIndex, animationAcc);
+				const Texture& texture = ResourceManager::GetInstance().Get<Texture>(resourceInfo.id).Get();
+				ImGui::Image(texture.GetHandle(), ImVec2(100.0f, 100.0f));
 
 				ImGui::EndTooltip();
 			}
+			ImGui::SameLine();
 		}
-		if (ImGui::IsItemClicked())
-		{
-			ImGuiAnimationEditor::GetInstance().Initialize(ptr);
-		}
-		ImGui::SameLine();
-	}
+		);
 
-	*/
-}
+	// Font
+	// TODO : Font Preview
 
-void ImGuiResourceBrowser::MusicPreview(ResourceInfo& resourceInfo)
-{
-	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Music));
+	// Music
+	// TODO : Music Preview
 
-	/*
+	// Sound
+	// TODO : Sound Preview
 
-	// TODO : TOOLS UPDATE
+	// Tileset
+	// TODO : Tileset Preview
 
-	static MusicPtr music;
-	if (music.IsValid() && music.GetMusicID() == resourceInfo.id)
-	{
-		//ImGui::Text(ICON_FA_STOP_CIRCLE); // TODO : Restore FontAwesome
-		if (ImGui::IsItemClicked())
-		{
-			music.Stop();
-			AudioManager::GetInstance().PlayMusics();
-		}
-		ImGui::SameLine();
-	}
-	else
-	{
-		ImGui::Text(ICON_FA_PLAY_CIRCLE); // TODO : Restore FontAwesome
-		if (ImGui::IsItemClicked())
-		{
-			AudioManager::GetInstance().PauseMusics();
-			music = AudioManager::GetInstance().PlayMusic(resourceInfo.id, false);
-		}
-		ImGui::SameLine();
-	}
+	// Map
+	// TODO : Map Preview
 
-	*/
-}
+	// Animation
+	// TODO : Animation Preview
 
-void ImGuiResourceBrowser::SoundPreview(ResourceInfo& resourceInfo)
-{
-	enAssert(resourceInfo.type == static_cast<U32>(ResourceType::Sound));
+	// AnimationStateMachine
+	// TODO : AnimationStateMachine Preview
 
-	/*
-
-	// TODO : TOOLS UPDATE
-
-	ImGui::Text(ICON_FA_PLAY_CIRCLE); // TODO : Restore FontAwesome
-	if (ImGui::IsItemClicked())
-	{
-		AudioManager::GetInstance().PlaySound(resourceInfo.id);
-	}
-	ImGui::SameLine();
-
-	*/
+	// Shader
+	// TODO : Shader Preview
 }
 
 } // namespace en

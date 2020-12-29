@@ -9,3 +9,4 @@
 #include <Enlivengine/Meta/MetaSpecialization_Resources.hpp>
 #include <Enlivengine/Meta/MetaSpecialization_Tiled.hpp>
 #include <Enlivengine/Meta/MetaSpecialization_Utils.hpp>
+#include <Enlivengine/Meta/MetaSpecialization_Window.hpp>

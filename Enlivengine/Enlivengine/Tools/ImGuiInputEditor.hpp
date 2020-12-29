@@ -18,7 +18,16 @@ public:
 	const char* GetName() const override;
 	const char* GetSaveName() const override;
 
+	void Initialize() override;
+
     void Display() override;
+
+private:
+	bool Buttons();
+	bool Axes();
+
+	bool LoadInputsFromFile();
+	bool SaveInputsToFile();
 };
 
 } // namespace en

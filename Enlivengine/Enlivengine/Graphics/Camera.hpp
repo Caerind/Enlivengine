@@ -87,6 +87,10 @@ public:
 
 	bgfx::ViewId GetViewID() const;
 
+	// Camera
+	static void SetMainCamera(Camera* camera);
+	static Camera* GetMainCamera();
+
 protected:
 	void UpdateProjectionMatrix() const;
 	void UpdateViewMatrix() const;
@@ -131,6 +135,7 @@ protected:
 	static Camera* sCameras[kMaxCameras];
 	static void RegisterCamera(Camera* camera);
 	static void UnregisterCamera(Camera* camera);
+	static Camera* sMainCamera;
 };
 
 } // namespace en

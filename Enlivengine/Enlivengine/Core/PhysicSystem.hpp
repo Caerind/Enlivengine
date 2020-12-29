@@ -10,10 +10,6 @@
 
 #include <Enlivengine/Core/System.hpp>
 
-#if defined(ENLIVE_DEBUG)
-#include <Enlivengine/Graphics/DebugDraw.hpp>
-#endif // ENLIVE_DEBUG
-
 namespace en
 {
 
@@ -24,17 +20,21 @@ class PhysicComponent;
 class PhysicSystem : public System, public b2ContactListener, public b2Draw
 {
     public:
-        PhysicSystem(World& world);
-		~PhysicSystem();
+        PhysicSystem();
+		~PhysicSystem(); 
+
+		// Special case here, you should use ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION()
+		const char* GetName() const override
+		{
+			return "en::PhysicSystem";
+		}
 
 		void Update(Time dt) override;
+		virtual void BeforeUpdate();
+		virtual void AfterUpdate();
 
 		bool Initialize(const Entity& entity, PhysicComponent& component);
 		bool Deinitialize(const Entity& entity, PhysicComponent& component);
-        
-		void Play();
-		void Pause();
-		bool IsPlaying() const;
         
         void DisableGravity();
         void SetGravity(const Vector2f& gravity);
@@ -81,7 +81,6 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 		b2World* mPhysicWorld;
         U32 mVelocityIterations;
 		U32 mPositionIterations;
-		bool mPlaying;
 
 		struct ContactSignals
 		{
@@ -91,7 +90,6 @@ class PhysicSystem : public System, public b2ContactListener, public b2Draw
 		std::unordered_map<b2Body*, ContactSignals> mContactSignals;
 
 #if defined(ENLIVE_DEBUG)
-		DebugDraw mDebugDraw;
 		U32 mDebugRenderFlags;
         bool mDebugRender;
 #endif // ENLIVE_DEBUG

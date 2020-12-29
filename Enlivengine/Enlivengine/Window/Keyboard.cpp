@@ -4,6 +4,8 @@
 
 #include <Enlivengine/Utils/Assert.hpp>
 
+#include <Enlivengine/Window/EventSystem.hpp>
+
 namespace en
 {
 
@@ -66,6 +68,11 @@ void Keyboard::HandleEvent(const SDL_Event& event)
 				keyboard.mModifiers &= ~modifier;
 			}
 		}
+
+		if (keyDown)
+		{
+			EventSystem::SetLastButton(EventSystem::EventButton::Type::KeyboardKey, static_cast<U32>(key), keyboard.mModifiers);
+		}
 	}
 	else if (event.type == SDL_TEXTINPUT)
 	{
@@ -105,7 +112,7 @@ bool Keyboard::IsReleased(Key key)
 
 bool Keyboard::AreModifiersHold(U32 modifiers)
 {
-	return (GetInstance().mModifiers & modifiers) > 0;
+	return (GetInstance().mModifiers & modifiers) > 0 || (GetInstance().mModifiers == 0 && modifiers == 0);
 }
 
 bool Keyboard::IsAltHold()

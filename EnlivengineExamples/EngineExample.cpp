@@ -3,9 +3,9 @@
 #include <Enlivengine/Application/Application.hpp>
 #include <Enlivengine/Application/Window.hpp>
 #include <Enlivengine/Graphics/View.hpp>
-#include <Enlivengine/System/ClassManager.hpp>
+#include <Enlivengine/Utils/ClassFactory.hpp>
 #include <Enlivengine/Core/ComponentManager.hpp>
-#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/Engine.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/PhysicSystem.hpp>
 #include <Enlivengine/Core/Components.hpp>
@@ -131,76 +131,6 @@ struct CustomComponentInitialization<ProjectileComponent>
 //////////////////////////////////
 // Systems
 //////////////////////////////////
-
-// Transform -> Physic
-class BeforePhysicSystem : public en::System
-{
-public:
-	BeforePhysicSystem(en::World& world) : en::System(world) {}
-
-	void Update(en::Time dt) override
-	{
-		ENLIVE_UNUSED(dt);
-		ENLIVE_PROFILE_FUNCTION();
-		if (const auto* physicSystem = mWorld.GetPhysicSystem())
-		{
-			const auto pixelsPerMeter = physicSystem->GetPixelsPerMeter();
-			auto& entityManager = mWorld.GetEntityManager();
-			auto view = entityManager.View<en::TransformComponent, en::PhysicComponent>();
-			for (auto entt : view)
-			{
-				en::Entity entity(entityManager, entt);
-				if (entity.IsValid())
-				{
-					auto& physicComponent = entity.Get<en::PhysicComponent>();
-					if (auto* body = physicComponent.GetBody())
-					{
-						const auto& transformComponent = entity.Get<en::TransformComponent>();
-						const auto position = transformComponent.transform.GetPosition2D();
-						body->SetTransform(b2Vec2(position.x / pixelsPerMeter, position.y / pixelsPerMeter), en::Math::DegToRad(transformComponent.transform.GetRotation2D()));
-					}
-				}
-			}
-		}
-	}
-};
-
-// Physic -> Transform
-class AfterPhysicSystem : public en::System
-{
-public:
-	AfterPhysicSystem(en::World& world) : en::System(world) {}
-	
-	void Update(en::Time dt) override
-	{
-		ENLIVE_UNUSED(dt);
-		ENLIVE_PROFILE_FUNCTION();
-		if (const auto* physicSystem = mWorld.GetPhysicSystem())
-		{
-			const auto pixelsPerMeter = physicSystem->GetPixelsPerMeter();
-			auto& entityManager = mWorld.GetEntityManager();
-			auto view = entityManager.View<en::TransformComponent, en::PhysicComponent>();
-			for (auto entt : view)
-			{
-				en::Entity entity(entityManager, entt);
-				if (entity.IsValid())
-				{
-					const auto& physicComponent = entity.Get<en::PhysicComponent>();
-					if (physicComponent.GetBodyType() != en::PhysicBodyType::Static)
-					{
-						if (const auto* body = physicComponent.GetBody())
-						{
-							const auto& position = body->GetPosition();
-							auto& transformComponent = entity.Get<en::TransformComponent>();
-							transformComponent.transform.SetPosition(position.x * pixelsPerMeter, position.y * pixelsPerMeter);
-							transformComponent.transform.SetRotation2D(en::Math::RadToDeg(body->GetAngle()));
-						}
-					}
-				}
-			}
-		}
-	}
-};
 
 class PlayerMovementSystem : public en::System
 {
@@ -429,7 +359,7 @@ public:
 		mWorld.CreateSystem<DestructionSystem>();
 		mWorld.CreateSystem<TransformRenderSystem>();
 
-		en::Universe::GetInstance().SetCurrentWorld(&mWorld);
+		en::Engine::SetCurrentWorld(&mWorld);
 		mWorld.GetFreeCamView() = getApplication().GetWindow().getMainView();
 		mWorld.GetGameView() = getApplication().GetWindow().getMainView();
 		auto* physSystem = mWorld.GetPhysicSystem();

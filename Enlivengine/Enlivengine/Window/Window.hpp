@@ -21,7 +21,9 @@ public:
     Window& operator=(Window&& other) = delete;
     Window& operator=(const Window& other) = delete;
 
+    bool Create(const char* name, U32 displayIndex = 0);
     bool Create(const char* name, U32 width, U32 height, U32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    bool Create(const char* name, U32 x, U32 y, U32 width, U32 height, U32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	void Destroy();
 	bool IsValid() const;
 

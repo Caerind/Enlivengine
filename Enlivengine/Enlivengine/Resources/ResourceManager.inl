@@ -70,6 +70,18 @@ void ResourcePtr<T>::ReleaseFromManager()
 }
 
 template <typename T>
+bool ResourcePtr<T>::operator==(const ResourcePtr<T>& other) const
+{
+	return mID == other.mID;
+}
+
+template <typename T>
+bool ResourcePtr<T>::operator!=(const ResourcePtr<T>& other) const
+{
+	return !operator==(other);
+}
+
+template <typename T>
 Resource<T>::Resource()
 	: priv::BaseResource()
 {
@@ -105,9 +117,9 @@ ResourcePtr<T> ResourceManager::Create(const std::string& str, const ResourceLoa
 			}
 
 #ifdef ENLIVE_DEBUG
-			resourcePtr->InitFromResourceManager(id, str);
+			static_cast<priv::BaseResource*>(resourcePtr)->InitFromResourceManager(id, str);
 #else
-			resourcePtr->InitFromResourceManager(id);
+			static_cast<priv::BaseResource*>(resourcePtr)->InitFromResourceManager(id);
 #endif // ENLIVE_DEBUG
 
 			mResources[resourceIdType] = std::move(resource);
@@ -179,13 +191,13 @@ ResourcePtr<T> ResourceManager::Get(ResourceID id)
 }
 
 template <typename T> 
-ResourcePtr<T> en::ResourceManager::GetFromFilename(const std::string& filename)
+ResourcePtr<T> ResourceManager::GetFromFilename(const std::string& filename)
 {
     for (auto itr = mResources.begin(); itr != mResources.end(); ++itr)
     {
 		if (T* resource = static_cast<T*>(itr->second.get()))
 		{
-			if (resource->IsFromFile() && resource->GetFilename() == filename)
+			if (resource->GetLoadInfo().IsFromFile() && resource->GetLoadInfo().infoString == filename)
 			{
 				return ResourcePtr<T>(itr->first.id);
 			}
@@ -233,7 +245,7 @@ U32 ResourceManager::Count() const
 	}
 	else
 	{
-		const U32 resourceType = GetResourceType<T>();
+		const U32 resourceType = T::GetStaticResourceType();
 		U32 count = 0;
 		for (auto itr = mResources.begin(); itr != mResources.end(); ++itr)
 		{
@@ -271,7 +283,14 @@ bool ResourceManager::InitializeClientResourceTypes()
 template <typename T>
 void ResourceManager::GetResourceInfosOfType(Array<ResourceInfo>& resourceInfos)
 {
-	GetResourceInfosOfType(resourceInfos, T::GetStaticResourceType());
+	if constexpr (Traits::IsVoid<T>::value)
+	{
+		GetResourceInfos(resourceInfos);
+	}
+	else
+	{
+		GetResourceInfosOfType(resourceInfos, T::GetStaticResourceType());
+	}
 }
 
 template <typename T>
@@ -280,12 +299,6 @@ std::string_view en::ResourceManager::GetResourceTypeName() const
 	return GetResourceTypeName(T::GetStaticResourceType());
 }
 #endif // ENLIVE_DEBUG
-
-template <typename T>
-U32 ResourceManager::GetResourceType()
-{
-	return T::GetStaticResourceType();
-}
 
 template <typename T> 
 T* ResourceManager::GetRawPtr(ResourceID id)
@@ -306,11 +319,11 @@ const T* ResourceManager::GetRawPtr(ResourceID id) const
 }
 
 template <typename T>
-ResourceIDType ResourceManager::CreateResourceIDTypeFromResourceID(ResourceID id)
+priv::ResourceIDType ResourceManager::CreateResourceIDTypeFromResourceID(ResourceID id)
 {
-	ResourceIDType resourceIdType;
+	priv::ResourceIDType resourceIdType;
 	resourceIdType.id = id;
-	resourceIdType.type = GetResourceType<T>();
+	resourceIdType.type = T::GetStaticResourceType();
 	return resourceIdType;
 }
 

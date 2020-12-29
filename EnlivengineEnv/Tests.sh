@@ -20,7 +20,13 @@ else
 fi
 
 if [[ "$platform" == "windows" ]]; then
-    ./build/EnlivengineTests/Debug/EnlivengineTests.exe # default path for Visual Studio users
+	config=""
+	if [ -z "$1" ]; then
+		config="Debug"
+	else
+		config="$1"
+	fi
+    ./build/EnlivengineTests/${config}/EnlivengineTests.exe # default path for Visual Studio users
 else
     ./build/EnlivengineTests/EnlivengineTests # for Linux/Unix GCC users
 fi

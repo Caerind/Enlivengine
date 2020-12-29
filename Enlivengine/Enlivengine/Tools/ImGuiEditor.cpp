@@ -4,13 +4,14 @@
 
 #include <ImGuizmo/ImGuizmo.h>
 
-#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/Engine.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
 
 #include <Enlivengine/Math/Math.hpp>
 #include <Enlivengine/Window/Mouse.hpp>
+#include <Enlivengine/Window/Keyboard.hpp>
 
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
@@ -27,6 +28,9 @@ ImGuiEditor::ImGuiEditor()
 	, mShowManipulator(true)
 	, mGizmoOperation(GizmoOperation::Translate)
 {
+	mCamera.InitializePerspective(80.0f);
+	mCamera.InitializeView(Vector3f(0.0f, 0.8f, 0.0f), Matrix3f::Identity());
+
 	mFramebuffer.Create(Vector2u(840, 600), true);
 	mCamera.SetFramebuffer(&mFramebuffer);
 }
@@ -63,7 +67,7 @@ void ImGuiEditor::Display()
 	ImGuizmo::SetRect(mViewRect.GetMin().x, mViewRect.GetMin().y, windowSize.x, windowSize.y);
 	ImGuizmo::SetOrthographic(mCamera.GetProjection() == Camera::ProjectionMode::Orthographic);
 
-	if (World* world = Universe::GetInstance().GetCurrentWorld())
+	if (World* world = Engine::GetCurrentWorld())
 	{
 		ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
 		switch (mGizmoOperation)
@@ -133,13 +137,20 @@ void ImGuiEditor::Display()
 	}
 	
 	const Vector2u uWindowSize = Vector2u(windowSize);
-	if (uWindowSize != mFramebuffer.GetSize())
+	if (uWindowSize != mFramebuffer.GetSize() && uWindowSize.x > 0 && uWindowSize.y > 0)
 	{
 		mFramebuffer.Resize(uWindowSize);
 	}
-	ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
+	if (uWindowSize.x > 0 && uWindowSize.y > 0)
+	{
+		ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
 
-	mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...
+		mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...
+	}
+	else
+	{
+		mViewVisible = false;
+	}
 
 	// ViewManipulator
 	if (mShowManipulator)
@@ -161,6 +172,58 @@ void ImGuiEditor::Display()
 	}
 }
 
+void ImGuiEditor::UpdateCamera(Time dt)
+{
+	ImGuiEditor& editor = GetInstance();
+
+	if (Keyboard::IsAltHold())
+	{
+		Mouse::SetRelativeMode(true);
+
+		F32 forward = 0.0f;
+		F32 left = 0.0;
+		if (Keyboard::IsHold(Keyboard::Key::W)) forward += 1.0f;
+		if (Keyboard::IsHold(Keyboard::Key::S)) forward -= 1.0f;
+		if (Keyboard::IsHold(Keyboard::Key::A)) left += 1.0f;
+		if (Keyboard::IsHold(Keyboard::Key::D)) left -= 1.0f;
+		const F32 deltaYaw = Mouse::GetMouseMovement().x * 0.25f;
+		const F32 deltaPitch = Mouse::GetMouseMovement().y * 0.15f;
+		const F32 dtSeconds = dt.AsSeconds();
+
+		Vector3f direction = editor.mCamera.GetRotation().GetForward();
+
+		// Movement
+		if (forward != 0.0f || left != 0.0f)
+		{
+			Vector3f mvtUnit = direction;
+			mvtUnit.y = 0.0f;
+			mvtUnit.Normalize();
+
+			Vector3f movement;
+			movement += 3.0f * forward * mvtUnit * dtSeconds;
+			movement -= 3.0f * left * mvtUnit.CrossProduct(ENLIVE_DEFAULT_UP) * dtSeconds;
+			editor.mCamera.Move(movement);
+		}
+
+		// Rotation
+		if (deltaYaw != 0.0f || deltaPitch != 0.0f)
+		{
+			if (!Math::Equals(deltaYaw, 0.0f))
+			{
+				editor.mCamera.Rotate(Matrix3f::RotationY(100.0f * dtSeconds * deltaYaw));
+			}
+			if (!Math::Equals(deltaPitch, 0.0f))
+			{
+				//editor.mCamera.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
+			}
+		}
+	}
+	else
+	{
+		Mouse::SetRelativeMode(false);
+	}
+}
+
 Framebuffer* ImGuiEditor::GetFramebuffer()
 {
 	return &GetInstance().mFramebuffer;
@@ -173,7 +236,7 @@ Vector2i ImGuiEditor::GetMouseScreenCoordinates()
 
 bool ImGuiEditor::IsMouseInView()
 {
-	return GetInstance().mViewRect.Contains(Vector2f(Mouse::GetPositionCurrentWindow()));
+	return IsViewVisible() && GetInstance().mViewRect.Contains(Vector2f(Mouse::GetPositionCurrentWindow()));
 }
 
 bool ImGuiEditor::IsViewVisible()

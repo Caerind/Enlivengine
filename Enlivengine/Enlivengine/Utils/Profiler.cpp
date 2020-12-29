@@ -51,12 +51,12 @@ U32 ProfilerFrame::GetMaxDepth() const
 	return maxDepth;
 }
 
-Profile::Profile(const char* functionName)
+ProfileScope::ProfileScope(const char* functionName)
 {
 	Profiler::GetInstance().StartFunction(functionName);
 }
 
-Profile::~Profile()
+ProfileScope::~ProfileScope()
 {
 	Profiler::GetInstance().EndFunction();
 }

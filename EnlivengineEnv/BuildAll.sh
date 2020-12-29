@@ -6,5 +6,12 @@ else
 	./EnlivengineEnv/GenerateProject.sh
 fi
 
-cmake --build build
+config=""
+if [ -z "$1" ]; then
+	config="Debug"
+else
+	config="$1"
+fi
+
+cmake --build build --config ${config}
 

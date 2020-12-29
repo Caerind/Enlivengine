@@ -2,11 +2,16 @@
 
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Utils/Array.hpp>
-#include <Enlivengine/Graphics/Camera.hpp>
-#include <Enlivengine/Graphics/DebugDraw.hpp>
+#include <Enlivengine/Utils/TypeTraits.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
+
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/System.hpp>
 #include <Enlivengine/Core/PhysicSystem.hpp>
+
+#ifdef ENLIVE_DEBUG
+#include <Enlivengine/Graphics/DebugDraw.hpp>
+#endif // ENLIVE_DEBUG
 
 namespace en
 {
@@ -14,14 +19,16 @@ namespace en
 class World
 {
 public:
-	World();
+	World(const std::string& name);
 	~World();
 
 	EntityManager& GetEntityManager();
 	const EntityManager& GetEntityManager() const;
 
-	template <typename T, typename ... Args>
-	T* CreateSystem(Args&& ... args);
+	template <typename T>
+	T* CreateSystem();
+	template <typename T>
+	void RemoveSystem();
 
 	template <typename T>
 	T* GetSystem();
@@ -33,15 +40,22 @@ public:
 	PhysicSystem* GetPhysicSystem();
 	const PhysicSystem* GetPhysicSystem() const;
 	bool HasPhysicSystem() const;
-
-	void Play();
-	void Pause();
-	bool IsPlaying() const;
 	
 	void Update(Time dt);
 	void Render();
 
+	const std::string& GetName() const;
+	std::string GetFilename() const;
+	static std::string GetWorldFilename(const std::string& worldName);
+
+	bool LoadFromFile();
+	bool SaveToFile() const;
+
 #ifdef ENLIVE_DEBUG
+	void Play();
+	void Pause();
+	bool IsPlaying() const;
+
 	DebugDraw& GetDebugDraw();
 
 	bool IsSelected(const Entity& entity) const;
@@ -57,17 +71,19 @@ private:
 	std::vector<System*> mSystems;
 	PhysicSystem* mPhysicSystem;
 
-	bool mPlaying;
+	std::string mName;
 
 #ifdef ENLIVE_DEBUG
+	bool mPlaying;
+
 	DebugDraw mDebugDraw;
 
 	std::vector<entt::entity> mSelectedEntities;
 #endif // ENLIVE_DEBUG
 };
 
-template <typename T, typename ... Args>
-T* World::CreateSystem(Args&& ... args)
+template <typename T>
+T* World::CreateSystem()
 {
 	static_assert(Traits::IsBaseOf<System, T>::value);
 
@@ -78,10 +94,12 @@ T* World::CreateSystem(Args&& ... args)
 	}
 	else
 	{
-		system = new T(*this, std::forward<Args>(args)...);
+		system = enNew(T, "System");
 		if (system != nullptr)
 		{
 			mSystems.push_back(system);
+
+			system->SetWorld(this);
 
 			if constexpr (Traits::IsBaseOf<PhysicSystem, T>::value)
 			{
@@ -89,6 +107,32 @@ T* World::CreateSystem(Args&& ... args)
 			}
 		}
 		return system;
+	}
+}
+
+template <typename T>
+void World::RemoveSystem()
+{
+	static_assert(Traits::IsBaseOf<System, T>::value);
+	const U32 systemCount = static_cast<U32>(mSystems.size());
+	for (U32 i = 0; i < systemCount; ++i)
+	{
+		if (const T* s = dynamic_cast<const T*>(mSystems[i])) // TODO : Find how to not use dynamic_cast
+		{
+			if constexpr (Traits::IsBaseOf<PhysicSystem, T>::value)
+			{
+				if (mPhysicSystem == mSystems[i])
+				{
+					mPhysicSystem = nullptr;
+				}
+			}
+
+			enDelete(System, mSystems[i]);
+
+			mSystems.erase(mSystems.begin() + i);
+
+			return;
+		}
 	}
 }
 

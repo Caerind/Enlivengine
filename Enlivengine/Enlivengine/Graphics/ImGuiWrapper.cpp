@@ -50,7 +50,7 @@ static FontRangeMerge s_fontRangeMerge[] =
 	{ s_fa_solid_900,		sizeof(s_fa_solid_900),	{ ICON_MIN_FA, ICON_MAX_FA, 0 } }
 };
 
-bool ImGuiWrapper::Init()
+bool ImGuiWrapper::Init(const std::string& iniFilename /*= ""*/)
 {
     ImGuiWrapper& imgui = GetInstance();
 
@@ -62,6 +62,7 @@ bool ImGuiWrapper::Init()
 
 	imgui.mLast = bx::getHPCounter();
 	imgui.mViewId = 255;
+	imgui.mIniFilename = (iniFilename.size() != 0) ? iniFilename : "imgui.ini";
 
 	ImGui::SetAllocatorFunctions(MemAlloc, MemFree, nullptr);
 	imgui.mContext = ImGui::CreateContext();
@@ -69,10 +70,8 @@ bool ImGuiWrapper::Init()
 	ImGuiIO& io = ImGui::GetIO();
 
 	io.DisplaySize = ImVec2(1280.0f, 720.0f);
-	io.DeltaTime = 1.0f / 60.0f;
-#ifndef ENLIVE_DEBUG
-	io.IniFilename = nullptr;
-#endif // ENLIVE_DEBUG
+	io.DeltaTime = 1.0f / 60.0f; 
+	io.IniFilename = imgui.mIniFilename.c_str();
 
 	// Style
 	const float fontSize = 18.0f;

@@ -16,7 +16,9 @@ namespace en
 using ResourceID = U32;
 constexpr ResourceID InvalidResourceID = U32_Max;
 
-enum class ResourceType
+// ResourceType is always used as U32 in order to allow user defined ResourceTypes
+// Have your own enum start as Max
+enum class ResourceType : U32
 {
 	Invalid = 0,
 	Image,
@@ -35,48 +37,50 @@ enum class ResourceType
 	Max
 };
 
-// FromFile resources need to know their filenames, since they might have dependencies
 struct ResourceLoadInfo
 {
-	ResourceLoadInfo()
-		: isFromFile(false)
-		, infoString("")
+	enum Method
 	{
-	}
+		Unknown,
+		File,
+		Download,
+		Memory,
+		Procedural
+	};
 
-	ResourceLoadInfo(bool pIsfromFile, const std::string& pInfoString)
-		: isFromFile(pIsfromFile)
+	ResourceLoadInfo(Method pMethod = Method::Unknown, const std::string& pInfoString = "")
+		: method(pMethod)
 		, infoString(pInfoString)
 	{
 	}
 
-	bool isFromFile;
+	bool IsFromFile() const { return method == Method::File; }
+
+	Method method;
 	std::string infoString;
 };
 
 #ifdef ENLIVE_DEBUG
-// Used for Serialization & ResourceBrowser
 struct ResourceInfo
 {
 	ResourceInfo()
-		: id(InvalidResourceID)
+		: loadInfo()
+		, id(InvalidResourceID)
 		, type(static_cast<U32>(ResourceType::Invalid))
 		, identifier("")
 		, loaded(false)
-		, info()
 	{
 	}
 
+	ResourceLoadInfo loadInfo;
 	ResourceID id;
 	U32 type;
 	std::string identifier;
 	bool loaded;
-	ResourceLoadInfo info;
-
-	bool IsFromFile() const { return info.isFromFile; }
-	const std::string& GetFilename() const { enAssert(info.isFromFile); return info.infoString; }
 };
 #endif // ENLIVE_DEBUG
+
+class ResourceManager;
 
 namespace priv
 {
@@ -98,18 +102,20 @@ public:
 
 	const ResourceLoadInfo& GetLoadInfo() const;
 	void SetLoadInfo(const ResourceLoadInfo& info);
-	bool IsFromFile() const;
-	const std::string& GetFilename() const;
 
 #ifdef ENLIVE_DEBUG
+	virtual ResourceInfo GetResourceInfo() const;
+
 	const std::string& GetIdentifier() const;
+#endif // ENLIVE_DEBUG
+
+private:
+	friend class ::en::ResourceManager;
+#ifdef ENLIVE_DEBUG
 	void InitFromResourceManager(ResourceID id, const std::string& identifier);
 #else
 	void InitFromResourceManager(ResourceID id);
 #endif // ENLIVE_DEBUG
-
-private:
-	friend class ResourceManager;
 
 	ResourceID mID;
 	ResourceLoadInfo mLoadInfo;
@@ -118,6 +124,23 @@ private:
 #ifdef ENLIVE_DEBUG
 	std::string mIdentifier;
 #endif // ENLIVE_DEBUG
+};
+
+// Only used internally by ResourceManager
+struct ResourceIDType
+{
+	ResourceID id;
+	U32 type;
+
+	bool operator==(const ResourceIDType& other) const
+	{
+		return id == other.id && type == other.type;
+	}
+
+	bool operator!=(const ResourceIDType& other) const
+	{
+		return !operator==(other);
+	}
 };
 
 } // namespace priv
@@ -140,15 +163,13 @@ public:
 	T& Get() const;
 
 	void ReleaseFromManager();
+	
+	bool operator==(const ResourcePtr<T>& other) const;
+	bool operator!=(const ResourcePtr<T>& other) const;
 
 private:
 	ResourceID mID;
 };
-
-} // namepsace en
-
-namespace en
-{
 
 template <typename T>
 class Resource : public priv::BaseResource
@@ -182,34 +203,17 @@ enum class ResourceKnownStrategy
 	Null
 };
 
-// Only used internally by ResourceManager
-struct ResourceIDType
-{
-	ResourceID id;
-	U32 type;
-
-	bool operator==(const ResourceIDType& other) const
-	{
-		return id == other.id && type == other.type;
-	}
-
-	bool operator!=(const ResourceIDType& other) const
-	{
-		return !operator==(other);
-	}
-};
-
 } // namespace en
 
 namespace std
 {
 	template <>
-	struct hash<en::ResourceIDType>
+	struct hash<en::priv::ResourceIDType>
 	{
 		static_assert(sizeof(std::size_t) == sizeof(en::U64));
-		static_assert(sizeof(en::ResourceIDType) == sizeof(en::U64));
+		static_assert(sizeof(en::priv::ResourceIDType) == sizeof(en::U64));
 
-		std::size_t operator()(const en::ResourceIDType& r) const
+		std::size_t operator()(const en::priv::ResourceIDType& r) const
 		{
 			return (static_cast<std::size_t>(r.type) << 32) + static_cast<std::size_t>(r.id);
 		}
@@ -249,14 +253,14 @@ public:
 	bool InitializeClientResourceTypes();
 
 #ifdef ENLIVE_DEBUG
+	template <typename T = void> void GetResourceInfosOfType(Array<ResourceInfo>& resourceInfos);
 	void GetResourceInfosOfType(Array<ResourceInfo>& resourceInfos, U32 resourceType);
-	template <typename T> void GetResourceInfosOfType(Array<ResourceInfo>& resourceInfos);
 	void GetResourceInfos(Array<ResourceInfo>& resourceInfos);
 	template <typename T> std::string_view GetResourceTypeName() const;
 	std::string_view GetResourceTypeName(U32 resourceType) const;
+	U32 GetResourceTypeCount() const;
 #endif // ENLIVE_DEBUG
 
-	template <typename T> static U32 GetResourceType();
 	static ResourceID StringToResourceID(const std::string& str);
 
 private:
@@ -266,11 +270,11 @@ private:
 
 private:
 	template <typename T>
-	static ResourceIDType CreateResourceIDTypeFromResourceID(ResourceID id);
-	static ResourceIDType CreateResourceIDTypeFromResourceIDAndType(ResourceID id, U32 type);
+	static priv::ResourceIDType CreateResourceIDTypeFromResourceID(ResourceID id);
+	static priv::ResourceIDType CreateResourceIDTypeFromResourceIDAndType(ResourceID id, U32 type);
 
 private:
-	std::unordered_map<ResourceIDType, std::unique_ptr<priv::BaseResource>> mResources;
+	std::unordered_map<priv::ResourceIDType, std::unique_ptr<priv::BaseResource>> mResources;
 
 #ifdef ENLIVE_DEBUG
 	std::vector<std::string_view> mClientResourceTypeNames;

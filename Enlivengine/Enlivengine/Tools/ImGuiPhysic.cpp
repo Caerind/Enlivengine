@@ -4,18 +4,11 @@
 
 #include <imgui/imgui.h>
 
-/*
-
-// TODO : TOOLS UPDATE
-
 #include <Enlivengine/Core/Components.hpp>
-#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/Engine.hpp>
 
-#include <Enlivengine/Core/EntitySpecialization.hpp>
-#include <Enlivengine/Core/EntityManagerSpecialization.hpp>
-#include <Enlivengine/Core/ObjectEditor.hpp>
-
-*/
+#include <Enlivengine/Meta/MetaSpecialization_Core.hpp>
+#include <Enlivengine/Meta/ObjectEditor.hpp>
 
 namespace en
 {
@@ -42,38 +35,15 @@ const char* ImGuiPhysic::GetSaveName() const
 
 void ImGuiPhysic::Display()
 {
-	/*
-	
-	// TODO : TOOLS UPDATE
-
-	if (World* world = Universe::GetInstance().GetCurrentWorld())
+	if (World* world = Engine::GetCurrentWorld())
 	{
 		if (world->HasPhysicSystem())
 		{
 			PhysicSystem* physicSystem = world->GetPhysicSystem();
-			if (physicSystem->IsPlaying())
-			{
-				if (ImGui::Button("Pause"))
-				{
-					physicSystem->Pause();
-				}
-			}
-			else
-			{
-				if (ImGui::Button("Play"))
-				{
-					physicSystem->Play();
-				}
-			}
 			auto gravity = physicSystem->GetGravity();
 			if (ObjectEditor::ImGuiEditor(gravity, "Gravity"))
 			{
 				physicSystem->SetGravity(gravity);
-			}
-			auto ppm = physicSystem->GetPixelsPerMeter();
-			if (ObjectEditor::ImGuiEditor(ppm, "PixelsPerMeter"))
-			{
-				physicSystem->SetPixelsPerMeter(ppm);
 			}
 			auto velocityIterations = physicSystem->GetVelocityIterations();
 			if (ObjectEditor::ImGuiEditor(velocityIterations, "VelocityIterations"))
@@ -119,8 +89,6 @@ void ImGuiPhysic::Display()
 	{
 		ImGui::Text("No CurrentWorld for Physic");
 	}
-
-	*/
 }
 
 } // namespace en

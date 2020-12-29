@@ -25,6 +25,7 @@
 - https://github.com/ocornut/imgui  
 - https://github.com/CedricGuillemet/ImGuizmo  
 - https://github.com/juliettef/IconFontCppHeaders  
+- https://github.com/aiekick/ImGuiFileDialog  
 
 # Tests
 - https://github.com/onqtam/doctest  

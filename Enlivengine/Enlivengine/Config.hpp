@@ -6,10 +6,15 @@
 
 //////////////////////////////////////////////////////////////////////////////////
 
-// You must define ENLIVE_TOOL or ENLIVE_RELEASE
 // ENLIVE_TOOL is the Editor with docked tools
 // ENLIVE_RELEASE is the MainGame
+
+// Compile Tool or Release depending on the target
+#ifndef NDEBUG
 #define ENLIVE_TOOL
+#else
+#define ENLIVE_RELEASE
+#endif
 
 #if !defined(ENLIVE_TOOL) && !defined(ENLIVE_RELEASE)
 #define ENLIVE_RELEASE

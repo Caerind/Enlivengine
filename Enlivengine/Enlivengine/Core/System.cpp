@@ -6,8 +6,8 @@
 namespace en
 {
 
-System::System(World& world)
-	: mWorld(world)
+System::System()
+	: mWorld(nullptr)
 {
 }
 
@@ -22,6 +22,12 @@ void System::Update(Time dt)
 
 void System::Render()
 {
+}
+
+void System::SetWorld(World* world)
+{
+	enAssert(world != nullptr);
+	mWorld = world;
 }
 
 } // namespace en

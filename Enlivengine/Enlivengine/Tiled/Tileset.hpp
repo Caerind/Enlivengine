@@ -68,7 +68,7 @@ public:
 		{
 			const bool result = r.LoadFromFile(filename);
 			r.SetLoaded(result);
-			r.SetLoadInfo(ResourceLoadInfo(true, filename));
+			r.SetLoadInfo(ResourceLoadInfo(ResourceLoadInfo::File, filename));
 			return result;
 		});
 	}
