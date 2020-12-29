@@ -7,179 +7,12 @@
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Singleton.hpp>
-#include <Enlivengine/Utils/NonCopyable.hpp>
 #include <Enlivengine/Utils/Array.hpp>
+
+#include <Enlivengine/Resources/Resource.hpp>
 
 namespace en
 {
-
-using ResourceID = U32;
-constexpr ResourceID InvalidResourceID = U32_Max;
-
-// ResourceType is always used as U32 in order to allow user defined ResourceTypes
-// Have your own enum start as Max
-enum class ResourceType : U32
-{
-	Invalid = 0,
-	Image,
-	Texture,
-	Font,
-	Music,
-	Sound,
-	Tileset,
-	Map,
-	Animation,
-	AnimationStateMachine,
-	Shader,
-
-	// TODO : Add others
-
-	Max
-};
-
-struct ResourceLoadInfo
-{
-	enum Method
-	{
-		Unknown,
-		File,
-		Download,
-		Memory,
-		Procedural
-	};
-
-	ResourceLoadInfo(Method pMethod = Method::Unknown, const std::string& pInfoString = "")
-		: method(pMethod)
-		, infoString(pInfoString)
-	{
-	}
-
-	bool IsFromFile() const { return method == Method::File; }
-
-	Method method;
-	std::string infoString;
-};
-
-#ifdef ENLIVE_DEBUG
-struct ResourceInfo
-{
-	ResourceInfo()
-		: loadInfo()
-		, id(InvalidResourceID)
-		, type(static_cast<U32>(ResourceType::Invalid))
-		, identifier("")
-		, loaded(false)
-	{
-	}
-
-	ResourceLoadInfo loadInfo;
-	ResourceID id;
-	U32 type;
-	std::string identifier;
-	bool loaded;
-};
-#endif // ENLIVE_DEBUG
-
-class ResourceManager;
-
-namespace priv
-{
-
-class BaseResource : private NonCopyable
-{
-public:
-	BaseResource();
-	virtual ~BaseResource() {};
-
-	static U32 GetStaticResourceType();
-	virtual U32 GetResourceType() const = 0;
-
-	ResourceID GetID() const;
-	bool IsLoaded() const;
-	bool IsManaged() const;
-
-	void SetLoaded(bool loaded);
-
-	const ResourceLoadInfo& GetLoadInfo() const;
-	void SetLoadInfo(const ResourceLoadInfo& info);
-
-#ifdef ENLIVE_DEBUG
-	virtual ResourceInfo GetResourceInfo() const;
-
-	const std::string& GetIdentifier() const;
-#endif // ENLIVE_DEBUG
-
-private:
-	friend class ::en::ResourceManager;
-#ifdef ENLIVE_DEBUG
-	void InitFromResourceManager(ResourceID id, const std::string& identifier);
-#else
-	void InitFromResourceManager(ResourceID id);
-#endif // ENLIVE_DEBUG
-
-	ResourceID mID;
-	ResourceLoadInfo mLoadInfo;
-	bool mLoaded;
-
-#ifdef ENLIVE_DEBUG
-	std::string mIdentifier;
-#endif // ENLIVE_DEBUG
-};
-
-// Only used internally by ResourceManager
-struct ResourceIDType
-{
-	ResourceID id;
-	U32 type;
-
-	bool operator==(const ResourceIDType& other) const
-	{
-		return id == other.id && type == other.type;
-	}
-
-	bool operator!=(const ResourceIDType& other) const
-	{
-		return !operator==(other);
-	}
-};
-
-} // namespace priv
-
-template <typename T>
-class ResourcePtr
-{
-public:
-	ResourcePtr(ResourceID id = InvalidResourceID);
-
-	ResourceID GetID() const;
-	U32 GetResourceType() const;
-
-	bool HasValidID() const;
-	bool IsValid() const;
-	operator bool() const;
-	void Release();
-
-	T* GetPtr() const;
-	T& Get() const;
-
-	void ReleaseFromManager();
-	
-	bool operator==(const ResourcePtr<T>& other) const;
-	bool operator!=(const ResourcePtr<T>& other) const;
-
-private:
-	ResourceID mID;
-};
-
-template <typename T>
-class Resource : public priv::BaseResource
-{
-public:
-	using Ptr = ResourcePtr<T>;
-
-public:
-	Resource();
-};
 
 template <typename T>
 class ResourceLoader
@@ -202,6 +35,28 @@ enum class ResourceKnownStrategy
 	Reload,
 	Null
 };
+
+namespace priv
+{
+
+	// Only used internally by ResourceManager
+	struct ResourceIDType
+	{
+		ResourceID id;
+		U32 type;
+
+		bool operator==(const ResourceIDType& other) const
+		{
+			return id == other.id && type == other.type;
+		}
+
+		bool operator!=(const ResourceIDType& other) const
+		{
+			return !operator==(other);
+		}
+	};
+
+} // namespace priv
 
 } // namespace en
 
