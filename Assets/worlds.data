@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<DataFile>
-	<Worlds type="std::string" size="1">
-		<Worlds_0 type="std::string">azer</Worlds_0>
-	</Worlds>
-	<CurrentWorld type="std::string">azer</CurrentWorld>
-</DataFile>
