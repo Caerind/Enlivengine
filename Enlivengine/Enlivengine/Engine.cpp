@@ -1,4 +1,4 @@
-#include <Enlivengine/Core/Engine.hpp>
+#include <Enlivengine/Engine.hpp>
 
 #include <filesystem>
 
@@ -9,6 +9,7 @@
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
 #include <Enlivengine/Tools/ImGuiToolManager.hpp>
 #include <Enlivengine/Window/EventSystem.hpp>
+#include <Enlivengine/Core/Universe.hpp>
 
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
 #include <Enlivengine/Window/Keyboard.hpp>
@@ -26,8 +27,8 @@
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
-#include <Enlivengine/Core/PhysicComponent.hpp>
-#include <Enlivengine/Core/PhysicSystem.hpp>
+#include <Enlivengine/Core/PhysicComponent2D.hpp>
+#include <Enlivengine/Core/PhysicSystem2D.hpp>
 
 namespace en
 {
@@ -41,16 +42,16 @@ int Engine::Main(int argc, char** argv)
 	RegisterComponent<TilemapComponent>();
 	RegisterComponent<CameraComponent>();
 	RegisterComponent<TransformComponent>();
-	RegisterComponent<PhysicComponent>();
+	RegisterComponent<PhysicComponent2D>();
 
-	RegisterSystem<PhysicSystem>();
+	RegisterSystem<PhysicSystem2D>();
 
 	if (Engine::Init(argc, argv))
 	{
 		Time dt;
 		while (Engine::Update(dt))
 		{
-			if (World* world = Engine::GetCurrentWorld())
+			if (World* world = Universe::GetCurrentWorld())
 			{
 				// Update
 				{
@@ -104,9 +105,10 @@ int Engine::Main(int argc, char** argv)
 			BgfxWrapper::Frame();
 		}
 
-		if (World* world = Engine::GetCurrentWorld())
+		if (World* world = Universe::GetCurrentWorld())
 		{
 			world->GetEntityManager().ClearEntities();
+			Universe::UnloadCurrentWorld();
 		}
 
 		ResourceManager::GetInstance().ReleaseAll();
@@ -292,64 +294,6 @@ bool Engine::Update(Time& dt)
 	{
 		return false;
 	}
-}
-
-bool Engine::CreateWorld(const std::string& worldName)
-{
-	auto& engine = GetInstance();
-
-	if (engine.mCurrentWorld != nullptr)
-	{
-		UnloadCurrentWorld();
-	}
-
-	enAssert(engine.mCurrentWorld == nullptr);
-
-	engine.mCurrentWorld = new World(worldName);
-	return engine.mCurrentWorld->SaveToFile();
-}
-
-bool Engine::RemoveWorld(const std::string& worldName)
-{
-	auto& engine = GetInstance();
-
-	if (engine.mCurrentWorld != nullptr && engine.mCurrentWorld->GetName() == worldName)
-	{
-		enLogError(LogChannel::Core, "Can't remove the currently loaded world {}", engine.mCurrentWorld->GetName());
-		return false;
-	}
-
-	return std::filesystem::remove(std::filesystem::path(World::GetWorldFilename(worldName)));
-}
-
-bool Engine::LoadWorld(const std::string& worldName)
-{
-	auto& engine = GetInstance();
-
-	if (engine.mCurrentWorld != nullptr)
-	{
-		UnloadCurrentWorld();
-	}
-
-	enAssert(engine.mCurrentWorld == nullptr);
-
-	engine.mCurrentWorld = new World(worldName);
-	return engine.mCurrentWorld->LoadFromFile();
-}
-
-void Engine::UnloadCurrentWorld()
-{
-	auto& engine = GetInstance();
-
-	enAssert(engine.mCurrentWorld != nullptr);
-
-	delete engine.mCurrentWorld;
-	engine.mCurrentWorld = nullptr;
-}
-
-World* Engine::GetCurrentWorld()
-{
-	return GetInstance().mCurrentWorld;
 }
 
 Engine& Engine::GetInstance()

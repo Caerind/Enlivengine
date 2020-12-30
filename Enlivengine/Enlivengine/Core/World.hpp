@@ -2,11 +2,11 @@
 
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Utils/Array.hpp>
-#include <Enlivengine/Graphics/Camera.hpp>
 #include <Enlivengine/Graphics/DebugDraw.hpp>
+
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/System.hpp>
-#include <Enlivengine/Core/PhysicSystem.hpp>
+#include <Enlivengine/Core/PhysicSystemBase.hpp>
 
 namespace en
 {
@@ -20,8 +20,8 @@ public:
 	EntityManager& GetEntityManager();
 	const EntityManager& GetEntityManager() const;
 
-	template <typename T, typename ... Args>
-	T* CreateSystem(Args&& ... args);
+	template <typename T>
+	T* CreateSystem();
 	template <typename T>
 	void RemoveSystem();
 
@@ -32,8 +32,8 @@ public:
 	template <typename T>
 	bool HasSystem() const;
 
-	PhysicSystem* GetPhysicSystem();
-	const PhysicSystem* GetPhysicSystem() const;
+	PhysicSystemBase* GetPhysicSystem();
+	const PhysicSystemBase* GetPhysicSystem() const;
 	bool HasPhysicSystem() const;
 	
 	void Update(Time dt);
@@ -42,9 +42,6 @@ public:
 	const std::string& GetName() const;
 	std::string GetFilename() const;
 	static std::string GetWorldFilename(const std::string& worldName);
-
-	bool LoadFromFile();
-	bool SaveToFile() const;
 
 #ifdef ENLIVE_DEBUG
 	void Play();
@@ -64,7 +61,7 @@ private:
 	EntityManager mEntityManager;
 
 	std::vector<System*> mSystems;
-	PhysicSystem* mPhysicSystem;
+	PhysicSystemBase* mPhysicSystem;
 
 	std::string mName;
 
@@ -77,8 +74,8 @@ private:
 #endif // ENLIVE_DEBUG
 };
 
-template <typename T, typename ... Args>
-T* World::CreateSystem(Args&& ... args)
+template <typename T>
+T* World::CreateSystem()
 {
 	static_assert(Traits::IsBaseOf<System, T>::value);
 
@@ -96,7 +93,7 @@ T* World::CreateSystem(Args&& ... args)
 
 			system->SetWorld(this);
 
-			if constexpr (Traits::IsBaseOf<PhysicSystem, T>::value)
+			if constexpr (Traits::IsBaseOf<PhysicSystemBase, T>::value)
 			{
 				mPhysicSystem = system;
 			}
@@ -114,7 +111,7 @@ void World::RemoveSystem()
 	{
 		if (const T* s = dynamic_cast<const T*>(mSystems[i])) // TODO : Find how to not use dynamic_cast
 		{
-			if constexpr (Traits::IsBaseOf<PhysicSystem, T>::value)
+			if constexpr (Traits::IsBaseOf<PhysicSystemBase, T>::value)
 			{
 				if (mPhysicSystem == mSystems[i])
 				{

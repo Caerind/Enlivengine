@@ -5,7 +5,6 @@
 #include <Enlivengine/Math/Transform.hpp>
 
 #include <Enlivengine/Core/ComponentTraits.hpp>
-#include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
 // TODO : Ensure children/parent/entity are from the same world
@@ -63,11 +62,6 @@ public:
 
 	// Local
 	const Matrix4f& GetLocalMatrix() const;
-
-	// Entity & World
-	Entity GetEntity() const;
-	World* GetWorld();
-	const World* GetWorld() const;
 
 	// TODO : Should hide this, but now it it used by ImGuizmo
 	void MarkGlobalMatrixAsDirty();

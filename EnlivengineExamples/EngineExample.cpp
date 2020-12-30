@@ -4,8 +4,8 @@
 #include <Enlivengine/Application/Window.hpp>
 #include <Enlivengine/Graphics/View.hpp>
 #include <Enlivengine/Utils/ClassFactory.hpp>
-#include <Enlivengine/Core/ComponentManager.hpp>
-#include <Enlivengine/Core/Engine.hpp>
+#include <Enlivengine/Meta/ComponentFactory.hpp>
+#include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/PhysicSystem.hpp>
 #include <Enlivengine/Core/Components.hpp>
@@ -359,7 +359,7 @@ public:
 		mWorld.CreateSystem<DestructionSystem>();
 		mWorld.CreateSystem<TransformRenderSystem>();
 
-		en::Engine::SetCurrentWorld(&mWorld);
+		en::Universe::SetCurrentWorld(&mWorld);
 		mWorld.GetFreeCamView() = getApplication().GetWindow().getMainView();
 		mWorld.GetGameView() = getApplication().GetWindow().getMainView();
 		auto* physSystem = mWorld.GetPhysicSystem();
@@ -455,21 +455,21 @@ private:
 int main(int argc, char** argv)
 {
 	/*
-	en::ClassManager::Register<en::NameComponent>();
-	en::ClassManager::Register<en::TransformComponent>();
-	en::ClassManager::Register<en::SpriteComponent>();
-	en::ClassManager::Register<en::TextComponent>();
-	en::ClassManager::Register<en::RenderableComponent>();
-	en::ClassManager::Register<en::UIDComponent>();
-	en::ClassManager::Register<en::PhysicComponent>();
+	en::ClassFactory::Register<en::NameComponent>();
+	en::ClassFactory::Register<en::TransformComponent>();
+	en::ClassFactory::Register<en::SpriteComponent>();
+	en::ClassFactory::Register<en::TextComponent>();
+	en::ClassFactory::Register<en::RenderableComponent>();
+	en::ClassFactory::Register<en::UIDComponent>();
+	en::ClassFactory::Register<en::PhysicComponent>();
 
-	en::ComponentManager::Register<en::NameComponent>();
-	en::ComponentManager::Register<en::TransformComponent>();
-	en::ComponentManager::Register<en::SpriteComponent>();
-	en::ComponentManager::Register<en::TextComponent>();
-	en::ComponentManager::Register<en::RenderableComponent>();
-	en::ComponentManager::Register<en::UIDComponent>();
-	en::ComponentManager::Register<en::PhysicComponent>();
+	en::ComponentFactory::Register<en::NameComponent>();
+	en::ComponentFactory::Register<en::TransformComponent>();
+	en::ComponentFactory::Register<en::SpriteComponent>();
+	en::ComponentFactory::Register<en::TextComponent>();
+	en::ComponentFactory::Register<en::RenderableComponent>();
+	en::ComponentFactory::Register<en::UIDComponent>();
+	en::ComponentFactory::Register<en::PhysicComponent>();
 
 	if (argc >= 1)
 	{

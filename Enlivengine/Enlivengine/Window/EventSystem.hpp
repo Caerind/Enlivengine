@@ -6,9 +6,9 @@
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
 #include <Enlivengine/Utils/Meta.hpp>
+
 #include <Enlivengine/Window/Keyboard.hpp>
 #include <Enlivengine/Window/Mouse.hpp>
-#include <Enlivengine/Window/Controller.hpp>
 
 namespace en
 {

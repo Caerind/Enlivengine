@@ -18,7 +18,7 @@
 #include <array>
 #include <vector>
 
-#include <Enlivengine/Tools/ImGuiHelper.hpp>
+#include <Enlivengine/Graphics/ImGuiHelper.hpp>
 
 // TODO : Factorise common code in Serialize/Deserialize (Array/vector/array)
 

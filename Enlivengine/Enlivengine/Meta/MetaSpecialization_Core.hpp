@@ -7,16 +7,19 @@
 #include <Enlivengine/Meta/MetaTraits.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
+#include <Enlivengine/Meta/ComponentFactory.hpp>
 
-#include <Enlivengine/Core/ComponentManager.hpp>
-#include <Enlivengine/Core/Engine.hpp>
-#include <Enlivengine/Core/PhysicSystem.hpp>
-#include <Enlivengine/Core/Components.hpp>
+#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/EntityManager.hpp>
-#include <Enlivengine/Core/PhysicComponent.hpp>
+#include <Enlivengine/Core/Components.hpp>
+#include <Enlivengine/Core/PhysicComponent2D.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
+#include <Enlivengine/Core/PhysicSystem2D.hpp>
+
+#include <Enlivengine/Meta/ComponentFactory.hpp>
 
 //////////////////////////////////////////////////////////////////
 // en::TransformComponent
@@ -51,7 +54,7 @@ struct HasCustomEditor<en::CameraComponent>
 	{
 		bool modified = false;
 #ifdef ENLIVE_DEBUG
-		if (en::World* world = en::Engine::GetCurrentWorld())
+		if (en::World* world = en::Universe::GetCurrentWorld())
 		{
 			world->GetDebugDraw().DrawFrustum(object.CreateFrustum());
 		}
@@ -78,7 +81,7 @@ struct HasCustomSerialization<en::Entity>
 		if (parser.CreateNode(name))
 		{
 			dataFile.WriteCurrentType<en::Entity>();
-			const auto& componentInfos = en::ComponentManager::GetComponentInfos();
+			const auto& componentInfos = en::ComponentFactory::GetComponentInfos();
 			const auto endItr = componentInfos.cend();
 			for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
 			{
@@ -119,7 +122,7 @@ struct HasCustomSerialization<en::Entity>
 					const std::string nodeName = parser.GetNodeName();
 					const en::U32 nodeNameHash = en::Hash::SlowHash(nodeName);
 					const en::U32 nodeType = dataFile.ReadCurrentType();
-					const bool registeredComponent = en::ComponentManager::IsRegistered(nodeNameHash);
+					const bool registeredComponent = en::ComponentFactory::IsRegistered(nodeNameHash);
 					if (nodeNameHash == nodeType && registeredComponent)
 					{
 						componentNodes.push_back({ nodeName, nodeNameHash });
@@ -142,7 +145,7 @@ struct HasCustomSerialization<en::Entity>
 				// Now, we are back at the entity level, parse components
 				for (const auto& componentNode : componentNodes)
 				{
-					const auto& componentInfos = en::ComponentManager::GetComponentInfos();
+					const auto& componentInfos = en::ComponentFactory::GetComponentInfos();
 					enAssert(componentInfos.find(componentNode.hash) != componentInfos.end());
 					if (!componentInfos.at(componentNode.hash).deserialize(dataFile, object))
 					{
@@ -196,7 +199,7 @@ struct HasCustomEditor<en::Entity>
 
 				ImGui::PushID(entityID);
 
-				const auto& componentInfos = en::ComponentManager::GetComponentInfos();
+				const auto& componentInfos = en::ComponentFactory::GetComponentInfos();
 				static std::vector<en::U32> hasNot;
 				hasNot.clear();
 				const auto endItr = componentInfos.cend();
@@ -387,14 +390,14 @@ struct HasCustomEditor<en::EntityManager>
 #endif // ENLIVE_ENABLE_IMGUI
 
 //////////////////////////////////////////////////////////////////
-// en::PhysicComponent
+// en::PhysicComponent2D
 //////////////////////////////////////////////////////////////////
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
-struct HasCustomEditor<en::PhysicComponent>
+struct HasCustomEditor<en::PhysicComponent2D>
 {
 	static constexpr bool value = true;
-	static bool ImGuiEditor(en::PhysicComponent& object, const char* name)
+	static bool ImGuiEditor(en::PhysicComponent2D& object, const char* name)
 	{
 		bool modified = false;
 		if (ImGui::CollapsingHeader(name))

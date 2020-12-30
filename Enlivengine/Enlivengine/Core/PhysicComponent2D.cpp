@@ -1,6 +1,7 @@
-#include <Enlivengine/Core/PhysicComponent.hpp>
+#include <Enlivengine/Core/PhysicComponent2D.hpp>
 
 #include <Enlivengine/Core/World.hpp>
+#include <Enlivengine/Core/PhysicSystem2D.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
 namespace en
@@ -56,13 +57,13 @@ PhysicShapeType FromB2ShapeType(b2Shape::Type type)
 	return PhysicShapeType::Circle;
 }
 
-PhysicComponent::PhysicComponent()
+PhysicComponent2D::PhysicComponent2D()
 	: mEntity()
 	, mBody(nullptr)
 {
 }
 
-PhysicComponent::PhysicComponent(PhysicComponent&& other) noexcept
+PhysicComponent2D::PhysicComponent2D(PhysicComponent2D&& other) noexcept
 	: mEntity(other.mEntity)
 	, mBody(other.mBody)
 {
@@ -70,19 +71,22 @@ PhysicComponent::PhysicComponent(PhysicComponent&& other) noexcept
 	other.mBody = nullptr;
 }
 
-PhysicComponent::~PhysicComponent()
+PhysicComponent2D::~PhysicComponent2D()
 {
 	if (mEntity.IsValid())
 	{
-		en::World& world = const_cast<en::World&>(mEntity.GetWorld());
+		World& world = const_cast<World&>(mEntity.GetWorld());
 		if (world.HasPhysicSystem())
 		{
-			world.GetPhysicSystem()->Deinitialize(mEntity, *this);
+			if (PhysicSystem2D* physicSystem = static_cast<PhysicSystem2D*>(world.GetPhysicSystem()))
+			{
+				physicSystem->Deinitialize(mEntity, *this);
+			}
 		}
 	}
 }
 
-PhysicComponent& PhysicComponent::operator=(PhysicComponent&& other) noexcept
+PhysicComponent2D& PhysicComponent2D::operator=(PhysicComponent2D&& other) noexcept
 {
 	mEntity = other.mEntity;
 	mBody = other.mBody;
@@ -91,12 +95,12 @@ PhysicComponent& PhysicComponent::operator=(PhysicComponent&& other) noexcept
 	return *this;
 }
 
-bool PhysicComponent::IsValid() const
+bool PhysicComponent2D::IsValid() const
 {
 	return mBody != nullptr;
 }
 
-void PhysicComponent::SetBodyType(PhysicBodyType type)
+void PhysicComponent2D::SetBodyType(PhysicBodyType type)
 {
 	if (IsValid())
 	{
@@ -104,7 +108,7 @@ void PhysicComponent::SetBodyType(PhysicBodyType type)
 	}
 }
 
-PhysicBodyType PhysicComponent::GetBodyType() const
+PhysicBodyType PhysicComponent2D::GetBodyType() const
 {
 	if (IsValid())
 	{
@@ -116,7 +120,7 @@ PhysicBodyType PhysicComponent::GetBodyType() const
 	}
 }
 
-void PhysicComponent::SetLinearVelocity(const Vector2f& velocity)
+void PhysicComponent2D::SetLinearVelocity(const Vector2f& velocity)
 {
 	if (IsValid())
 	{
@@ -124,7 +128,7 @@ void PhysicComponent::SetLinearVelocity(const Vector2f& velocity)
 	}
 }
 
-Vector2f PhysicComponent::GetLinearVelocity() const
+Vector2f PhysicComponent2D::GetLinearVelocity() const
 {
 	if (IsValid())
 	{
@@ -137,7 +141,7 @@ Vector2f PhysicComponent::GetLinearVelocity() const
 	}
 }
 
-void PhysicComponent::SetAngularVelocity(F32 velocity)
+void PhysicComponent2D::SetAngularVelocity(F32 velocity)
 {
 	if (IsValid())
 	{
@@ -145,7 +149,7 @@ void PhysicComponent::SetAngularVelocity(F32 velocity)
 	}
 }
 
-F32 PhysicComponent::GetAngularVelocity() const
+F32 PhysicComponent2D::GetAngularVelocity() const
 {
 	if (IsValid())
 	{
@@ -157,7 +161,7 @@ F32 PhysicComponent::GetAngularVelocity() const
 	}
 }
 
-void PhysicComponent::SetGravityScale(F32 scale)
+void PhysicComponent2D::SetGravityScale(F32 scale)
 {
 	if (IsValid())
 	{
@@ -165,7 +169,7 @@ void PhysicComponent::SetGravityScale(F32 scale)
 	}
 }
 
-F32 PhysicComponent::GetGravityScale() const
+F32 PhysicComponent2D::GetGravityScale() const
 {
 	if (IsValid())
 	{
@@ -177,7 +181,7 @@ F32 PhysicComponent::GetGravityScale() const
 	}
 }
 
-void PhysicComponent::SetLinearDamping(F32 value)
+void PhysicComponent2D::SetLinearDamping(F32 value)
 {
 	if (IsValid())
 	{
@@ -185,7 +189,7 @@ void PhysicComponent::SetLinearDamping(F32 value)
 	}
 }
 
-F32 PhysicComponent::GetLinearDamping() const
+F32 PhysicComponent2D::GetLinearDamping() const
 {
 	if (IsValid())
 	{
@@ -197,7 +201,7 @@ F32 PhysicComponent::GetLinearDamping() const
 	}
 }
 
-void PhysicComponent::SetAngularDamping(F32 value)
+void PhysicComponent2D::SetAngularDamping(F32 value)
 {
 	if (IsValid())
 	{
@@ -205,7 +209,7 @@ void PhysicComponent::SetAngularDamping(F32 value)
 	}
 }
 
-F32 PhysicComponent::GetAngularDamping() const
+F32 PhysicComponent2D::GetAngularDamping() const
 {
 	if (IsValid())
 	{
@@ -217,7 +221,7 @@ F32 PhysicComponent::GetAngularDamping() const
 	}
 }
 
-void PhysicComponent::SetFixedRotation(bool value)
+void PhysicComponent2D::SetFixedRotation(bool value)
 {
 	if (IsValid())
 	{
@@ -225,7 +229,7 @@ void PhysicComponent::SetFixedRotation(bool value)
 	}
 }
 
-bool PhysicComponent::IsFixedRotation() const
+bool PhysicComponent2D::IsFixedRotation() const
 {
 	if (IsValid())
 	{
@@ -237,7 +241,7 @@ bool PhysicComponent::IsFixedRotation() const
 	}
 }
 
-void PhysicComponent::SetBullet(bool value)
+void PhysicComponent2D::SetBullet(bool value)
 {
 	if (IsValid())
 	{
@@ -245,7 +249,7 @@ void PhysicComponent::SetBullet(bool value)
 	}
 }
 
-bool PhysicComponent::IsBullet() const
+bool PhysicComponent2D::IsBullet() const
 {
 	if (IsValid())
 	{
@@ -257,7 +261,7 @@ bool PhysicComponent::IsBullet() const
 	}
 }
 
-en::F32 PhysicComponent::GetMass() const
+F32 PhysicComponent2D::GetMass() const
 {
 	if (IsValid())
 	{
@@ -269,43 +273,28 @@ en::F32 PhysicComponent::GetMass() const
 	}
 }
 
-b2Body* PhysicComponent::GetBody()
+b2Body* PhysicComponent2D::GetBody()
 {
 	return mBody;
 }
 
-const b2Body* PhysicComponent::GetBody() const
+const b2Body* PhysicComponent2D::GetBody() const
 {
 	return mBody;
 }
 
-Entity PhysicComponent::GetEntity() const
+bool PhysicComponent2D::Initialize(const Entity& entity)
 {
-	return mEntity;
-}
-
-World* PhysicComponent::GetWorld()
-{
-	if (mEntity.IsValid())
+	enAssert(entity.IsValid());
+	World& world = const_cast<World&>(entity.GetWorld());
+	if (world.HasPhysicSystem())
 	{
-		return &mEntity.GetWorld();
+		if (PhysicSystem2D* physicSystem = static_cast<PhysicSystem2D*>(world.GetPhysicSystem()))
+		{
+			return physicSystem->Initialize(entity, *this);
+		}
 	}
-	else
-	{
-		return nullptr;
-	}
-}
-
-const World* PhysicComponent::GetWorld() const
-{
-	if (mEntity.IsValid())
-	{
-		return &mEntity.GetWorld();
-	}
-	else
-	{
-		return nullptr;
-	}
+	return false;
 }
 
 } // namespace en

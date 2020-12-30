@@ -105,25 +105,25 @@ struct ConstexprStringStorage
 		mData[0] = '\0';
 	}
 
-	constexpr ConstexprStringStorage(const char* s1) : ConstexprStringStorage()
+	constexpr ConstexprStringStorage(const char* s1)
 	{
 		Add(s1);
 	}
 
-	constexpr ConstexprStringStorage(const char* s1, const char* s2) : ConstexprStringStorage()
+	constexpr ConstexprStringStorage(const char* s1, const char* s2)
 	{
 		Add(s1);
 		Add(s2);
 	}
 
-	constexpr ConstexprStringStorage(const char* s1, const char* s2, const char* s3) : ConstexprStringStorage()
+	constexpr ConstexprStringStorage(const char* s1, const char* s2, const char* s3)
 	{
 		Add(s1);
 		Add(s2);
 		Add(s3);
 	}
 
-	constexpr ConstexprStringStorage(const char* s1, const char* s2, const char* s3, const char* s4) : ConstexprStringStorage()
+	constexpr ConstexprStringStorage(const char* s1, const char* s2, const char* s3, const char* s4)
 	{
 		Add(s1);
 		Add(s2);
@@ -131,7 +131,7 @@ struct ConstexprStringStorage
 		Add(s4);
 	}
 
-	constexpr ConstexprStringStorage(const char* s1, const char* s2, const char* s3, const char* s4, const char* s5) : ConstexprStringStorage()
+	constexpr ConstexprStringStorage(const char* s1, const char* s2, const char* s3, const char* s4, const char* s5)
 	{
 		Add(s1);
 		Add(s2);

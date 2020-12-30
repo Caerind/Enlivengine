@@ -5,7 +5,7 @@
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
-#include <Enlivengine/Tools/ImGuiHelper.hpp>
+#include <Enlivengine/Graphics/ImGuiHelper.hpp>
 
 namespace en
 {

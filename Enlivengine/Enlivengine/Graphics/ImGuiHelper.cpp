@@ -1,4 +1,4 @@
-#include <Enlivengine/Tools/ImGuiHelper.hpp>
+#include <Enlivengine/Graphics/ImGuiHelper.hpp>
 
 #ifdef ENLIVE_ENABLE_IMGUI
 
@@ -15,6 +15,65 @@ void DisabledButton(const char* text)
 	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 	ImGui::Button(text);
 	ImGui::PopStyleVar();
+}
+
+ImTextureID toId(bgfx::TextureHandle _handle, uint8_t _flags, uint8_t _mip)
+{
+	union { struct { bgfx::TextureHandle handle; uint8_t flags; uint8_t mip; } s; ImTextureID id; } tex;
+	tex.s.handle = _handle;
+	tex.s.flags = _flags;
+	tex.s.mip = _mip;
+	return tex.id;
+}
+
+void Image(bgfx::TextureHandle _handle
+	, uint8_t _flags
+	, uint8_t _mip
+	, const ImVec2& _size
+	, const ImVec2& _uv0
+	, const ImVec2& _uv1
+	, const ImVec4& _tintCol
+	, const ImVec4& _borderCol
+)
+{
+	Image(toId(_handle, _flags, _mip), _size, _uv0, _uv1, _tintCol, _borderCol);
+}
+
+void Image(bgfx::TextureHandle _handle
+	, const ImVec2& _size
+	, const ImVec2& _uv0
+	, const ImVec2& _uv1
+	, const ImVec4& _tintCol
+	, const ImVec4& _borderCol
+)
+{
+	Image(_handle, IMGUI_FLAGS_ALPHA_BLEND, 0, _size, _uv0, _uv1, _tintCol, _borderCol);
+}
+
+bool ImageButton(bgfx::TextureHandle _handle
+	, uint8_t _flags
+	, uint8_t _mip
+	, const ImVec2& _size
+	, const ImVec2& _uv0
+	, const ImVec2& _uv1
+	, int _framePadding
+	, const ImVec4& _bgCol
+	, const ImVec4& _tintCol
+)
+{
+	return ImageButton(toId(_handle, _flags, _mip), _size, _uv0, _uv1, _framePadding, _bgCol, _tintCol);
+}
+
+bool ImageButton(bgfx::TextureHandle _handle
+	, const ImVec2& _size
+	, const ImVec2& _uv0
+	, const ImVec2& _uv1
+	, int _framePadding
+	, const ImVec4& _bgCol
+	, const ImVec4& _tintCol
+)
+{
+	return ImageButton(_handle, IMGUI_FLAGS_ALPHA_BLEND, 0, _size, _uv0, _uv1, _framePadding, _bgCol, _tintCol);
 }
 
 /*

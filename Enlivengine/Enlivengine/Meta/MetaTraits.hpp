@@ -18,16 +18,6 @@ struct HasCustomEditor
 };
 #endif // ENLIVE_ENABLE_IMGUI
 
-// GetName
-#define ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION() \
-	virtual const char* GetName() const;
-
-#define ENLIVE_META_CLASS_VIRTUAL_NAME_DECLARATION(className) \
-	const char* className::GetName() const \
-	{ \
-		 return TypeInfo<className>::GetName(); \
-	}
-
 // Custom ImGui Editor
 #ifdef ENLIVE_ENABLE_IMGUI
 

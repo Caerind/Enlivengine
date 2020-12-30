@@ -296,7 +296,7 @@ namespace priv
 		template <> \
 		constexpr auto RegisterMembers<className>() { return std::make_tuple(
 #define ENLIVE_META_CLASS_MEMBER(name, ...) en::Meta::RegisterMember(name, __VA_ARGS__)
-#define ENLIVE_META_CLASS_END() ); } }
+#define ENLIVE_META_CLASS_END() ); } } // namespace en::Meta
 
 template <typename T>
 constexpr const auto& GetMembers()

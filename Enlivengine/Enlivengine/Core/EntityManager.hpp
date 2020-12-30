@@ -2,13 +2,13 @@
 
 #include <entt/entt.hpp>
 
-#include <Enlivengine/Core/Entity.hpp>
-#include <Enlivengine/Core/ComponentTraits.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
 
 namespace en
 {
 
 class World;
+class Entity;
 
 class EntityManager
 {
@@ -43,9 +43,6 @@ public:
 	// TODO : Try to remove/hide these
 	entt::registry& GetRegistry();
 	const entt::registry& GetRegistry() const;
-
-private:
-	friend class Entity;
 
 private:
 	World& mWorld;

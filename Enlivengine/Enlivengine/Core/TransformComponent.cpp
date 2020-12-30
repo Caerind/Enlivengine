@@ -239,35 +239,6 @@ const Matrix4f& TransformComponent::GetLocalMatrix() const
 	return mMatrix;
 }
 
-Entity TransformComponent::GetEntity() const
-{
-	return mEntity;
-}
-
-World* TransformComponent::GetWorld()
-{
-	if (mEntity.IsValid())
-	{
-		return &mEntity.GetWorld();
-	}
-	else
-	{
-		return nullptr;
-	}
-}
-
-const World* TransformComponent::GetWorld() const
-{
-	if (mEntity.IsValid())
-	{
-		return &mEntity.GetWorld();
-	}
-	else
-	{
-		return nullptr;
-	}
-}
-
 void TransformComponent::MarkGlobalMatrixAsDirty()
 {
 	mGlobalMatrixDirty = true;

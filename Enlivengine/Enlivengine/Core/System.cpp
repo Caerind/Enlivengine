@@ -1,6 +1,5 @@
 #include <Enlivengine/Core/System.hpp>
 
-
 #include <Enlivengine/Core/World.hpp>
 
 namespace en
