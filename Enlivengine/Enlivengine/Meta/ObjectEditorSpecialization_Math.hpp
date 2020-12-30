@@ -5,10 +5,8 @@
 #include <Enlivengine/Utils/Meta.hpp>
 
 #include <Enlivengine/Meta/MetaTraits.hpp>
-#include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
-#include <Enlivengine/Math/AABB.hpp>
 #include <Enlivengine/Math/Color.hpp>
 #include <Enlivengine/Math/Matrix3.hpp>
 #include <Enlivengine/Math/Matrix4.hpp>
@@ -22,47 +20,11 @@
 #include <Enlivengine/Math/Vector3.hpp>
 #include <Enlivengine/Math/Vector4.hpp>
 
+// TODO : Move declarations to .cpp
+
 //////////////////////////////////////////////////////////////////
 // en::Color
 //////////////////////////////////////////////////////////////////
-template <>
-struct HasCustomSerialization<en::Color>
-{
-	static constexpr bool value = true;
-	static bool Serialize(en::DataFile& dataFile, const en::Color& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.CreateNode(name))
-		{
-			dataFile.WriteCurrentType<en::Color>();
-			parser.SetValue(en::ToString(object.ToRGBA()));
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	static bool Deserialize(en::DataFile& dataFile, en::Color& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.ReadNode(name))
-		{
-			enAssert(dataFile.ReadCurrentType() == en::TypeInfo<en::Color>::GetHash());
-			std::string valueString;
-			parser.GetValue(valueString);
-			object.FromRGBA(en::FromString<en::U32>(valueString));
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-};
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <>
 struct HasCustomEditor<en::Color>
@@ -84,50 +46,6 @@ struct HasCustomEditor<en::Color>
 //////////////////////////////////////////////////////////////////
 // en::Matrix3
 //////////////////////////////////////////////////////////////////
-template <typename T>
-struct HasCustomSerialization<en::Matrix3<T>>
-{
-	static constexpr bool value = true;
-	static bool Serialize(en::DataFile& dataFile, const en::Matrix3<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.CreateNode(name))
-		{
-			dataFile.WriteCurrentType<en::Matrix3<T>>();
-			for (std::size_t i = 0; i < en::Matrix3<T>::Elements; ++i)
-			{
-				std::string childName(std::to_string(i));
-				dataFile.Serialize_Common(object[i], childName.c_str());
-			}
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	static bool Deserialize(en::DataFile& dataFile, en::Matrix3<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.ReadNode(name))
-		{
-			enAssert(dataFile.ReadCurrentType() == en::TypeInfo<en::Matrix3<T>>::GetHash());
-			for (std::size_t i = 0; i < en::Matrix3<T>::Elements; ++i)
-			{
-				std::string childName(std::to_string(i));
-				dataFile.Deserialize_Common(object[i], childName.c_str());
-			}
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-};
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <typename T>
 struct HasCustomEditor<en::Matrix3<T>>
@@ -161,50 +79,6 @@ struct HasCustomEditor<en::Matrix3<T>>
 //////////////////////////////////////////////////////////////////
 // en::Matrix4
 //////////////////////////////////////////////////////////////////
-template <typename T>
-struct HasCustomSerialization<en::Matrix4<T>>
-{
-	static constexpr bool value = true;
-	static bool Serialize(en::DataFile& dataFile, const en::Matrix4<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.CreateNode(name))
-		{
-			dataFile.WriteCurrentType<en::Matrix4<T>>();
-			for (std::size_t i = 0; i < en::Matrix4<T>::Elements; ++i)
-			{
-				std::string childName(std::to_string(i));
-				dataFile.Serialize_Common(object[i], childName.c_str());
-			}
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	static bool Deserialize(en::DataFile& dataFile, en::Matrix4<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.ReadNode(name))
-		{
-			enAssert(dataFile.ReadCurrentType() == en::TypeInfo<en::Matrix4<T>>::GetHash());
-			for (std::size_t i = 0; i < en::Matrix4<T>::Elements; ++i)
-			{
-				std::string childName(std::to_string(i));
-				dataFile.Deserialize_Common(object[i], childName.c_str());
-			}
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-};
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <typename T>
 struct HasCustomEditor<en::Matrix4<T>>
@@ -236,48 +110,6 @@ struct HasCustomEditor<en::Matrix4<T>>
 //////////////////////////////////////////////////////////////////
 // en::Quaternion
 //////////////////////////////////////////////////////////////////
-template <typename T>
-struct HasCustomSerialization<en::Quaternion<T>>
-{
-	static constexpr bool value = true;
-	static bool Serialize(en::DataFile& dataFile, const en::Quaternion<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.CreateNode(name))
-		{
-			dataFile.WriteCurrentType<en::Quaternion<T>>();
-			dataFile.Serialize_Common(object.v.x, "x");
-			dataFile.Serialize_Common(object.v.y, "y");
-			dataFile.Serialize_Common(object.v.z, "z");
-			dataFile.Serialize_Common(object.s, "s");
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	static bool Deserialize(en::DataFile& dataFile, en::Quaternion<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.ReadNode(name))
-		{
-			enAssert(dataFile.ReadCurrentType() == en::TypeInfo<en::Quaternion<T>>::GetHash());
-			dataFile.Deserialize_Common(object.v.x, "x");
-			dataFile.Deserialize_Common(object.v.y, "y");
-			dataFile.Deserialize_Common(object.v.z, "z");
-			dataFile.Deserialize_Common(object.s, "s");
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-};
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <typename T>
 struct HasCustomEditor<en::Quaternion<T>>
@@ -300,48 +132,6 @@ struct HasCustomEditor<en::Quaternion<T>>
 //////////////////////////////////////////////////////////////////
 // en::Rect
 //////////////////////////////////////////////////////////////////
-template <typename T>
-struct HasCustomSerialization<en::Rect<T>>
-{
-	static constexpr bool value = true;
-	static bool Serialize(en::DataFile& dataFile, const en::Rect<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.CreateNode(name))
-		{
-			dataFile.WriteCurrentType<en::Rect<T>>();
-			dataFile.Serialize_Common(object.GetMin(), "min");
-			dataFile.Serialize_Common(object.GetMax(), "max");
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	static bool Deserialize(en::DataFile& dataFile, en::Rect<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.ReadNode(name))
-		{
-			enAssert(dataFile.ReadCurrentType() == en::TypeInfo<en::Rect<T>>::GetHash());
-			en::Vector2<T> min;
-			dataFile.Deserialize_Common(min, "min");
-			object.SetMin(min);
-			en::Vector2<T> max;
-			dataFile.Deserialize_Common(max, "max");
-			object.SetMax(max);
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-};
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <typename T>
 struct HasCustomEditor<en::Rect<T>>
@@ -428,44 +218,6 @@ struct HasCustomEditor<en::Transform>
 //////////////////////////////////////////////////////////////////
 // en::Vector2
 //////////////////////////////////////////////////////////////////
-template <typename T>
-struct HasCustomSerialization<en::Vector2<T>>
-{
-	static constexpr bool value = true;
-	static bool Serialize(en::DataFile& dataFile, const en::Vector2<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.CreateNode(name))
-		{
-			dataFile.WriteCurrentType<en::Vector2<T>>();
-			dataFile.Serialize_Basic(object.x, "x");
-			dataFile.Serialize_Basic(object.y, "y");
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	static bool Deserialize(en::DataFile& dataFile, en::Vector2<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.ReadNode(name))
-		{
-			enAssert(dataFile.ReadCurrentType() == en::TypeInfo<en::Vector2<T>>::GetHash());
-			dataFile.Deserialize_Basic(object.x, "x");
-			dataFile.Deserialize_Basic(object.y, "y");
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-};
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <typename T>
 struct HasCustomEditor<en::Vector2<T>>
@@ -520,46 +272,6 @@ struct HasCustomEditor<en::Vector2<T>>
 //////////////////////////////////////////////////////////////////
 // en::Vector3
 //////////////////////////////////////////////////////////////////
-template <typename T>
-struct HasCustomSerialization<en::Vector3<T>>
-{
-	static constexpr bool value = true;
-	static bool Serialize(en::DataFile& dataFile, const en::Vector3<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.CreateNode(name))
-		{
-			dataFile.WriteCurrentType<en::Vector3<T>>();
-			dataFile.Serialize_Basic(object.x, "x");
-			dataFile.Serialize_Basic(object.y, "y");
-			dataFile.Serialize_Basic(object.z, "z");
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	static bool Deserialize(en::DataFile& dataFile, en::Vector3<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.ReadNode(name))
-		{
-			enAssert(dataFile.ReadCurrentType() == en::TypeInfo<en::Vector3<T>>::GetHash());
-			dataFile.Deserialize_Basic(object.x, "x");
-			dataFile.Deserialize_Basic(object.y, "y");
-			dataFile.Deserialize_Basic(object.z, "z");
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-};
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <typename T>
 struct HasCustomEditor<en::Vector3<T>>
@@ -619,48 +331,6 @@ struct HasCustomEditor<en::Vector3<T>>
 //////////////////////////////////////////////////////////////////
 // en::Vector4
 //////////////////////////////////////////////////////////////////
-template <typename T>
-struct HasCustomSerialization<en::Vector4<T>>
-{
-	static constexpr bool value = true;
-	static bool Serialize(en::DataFile& dataFile, const en::Vector4<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.CreateNode(name))
-		{
-			dataFile.WriteCurrentType<en::Vector4<T>>();
-			dataFile.Serialize_Basic(object.x, "x");
-			dataFile.Serialize_Basic(object.y, "y");
-			dataFile.Serialize_Basic(object.z, "z");
-			dataFile.Serialize_Basic(object.w, "w");
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	static bool Deserialize(en::DataFile& dataFile, en::Vector4<T>& object, const char* name)
-	{
-		auto& parser = dataFile.GetParser();
-		if (parser.ReadNode(name))
-		{
-			enAssert(dataFile.ReadCurrentType() == en::TypeInfo<en::Vector4<T>>::GetHash());
-			dataFile.Deserialize_Basic(object.x, "x");
-			dataFile.Deserialize_Basic(object.y, "y");
-			dataFile.Deserialize_Basic(object.z, "z");
-			dataFile.Deserialize_Basic(object.w, "w");
-			parser.CloseNode();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-};
-
 #ifdef ENLIVE_ENABLE_IMGUI
 template <typename T>
 struct HasCustomEditor<en::Vector4<T>>

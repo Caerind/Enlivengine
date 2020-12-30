@@ -9,8 +9,6 @@
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Tools/ImGuiGame.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization.hpp>
-
 using namespace en;
 
 class RenderSystem : public System

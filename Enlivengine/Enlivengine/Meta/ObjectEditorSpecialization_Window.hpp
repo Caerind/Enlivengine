@@ -5,10 +5,11 @@
 #include <Enlivengine/Utils/Meta.hpp>
 
 #include <Enlivengine/Meta/MetaTraits.hpp>
-#include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
 #include <Enlivengine/Window/EventSystem.hpp>
+
+// TODO : Move declarations to .cpp
 
 //////////////////////////////////////////////////////////////////
 // en::EventSystem::EventButton

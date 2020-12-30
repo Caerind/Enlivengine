@@ -1,7 +1,5 @@
 #include <Enlivengine/Engine.hpp>
 
-#include <filesystem>
-
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Utils/Profiler.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>

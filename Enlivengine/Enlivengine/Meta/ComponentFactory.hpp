@@ -5,6 +5,9 @@
 #include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
+#include <Enlivengine/Meta/ObjectEditorSpecialization.hpp>
+#include <Enlivengine/Meta/DataFileSpecialization.hpp>
+
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 

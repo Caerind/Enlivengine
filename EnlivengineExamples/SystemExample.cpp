@@ -19,8 +19,8 @@
 #include <Enlivengine/Utils/Enums.hpp>
 #include <Enlivengine/Utils/Assert.hpp>
 
-#include <Enlivengine/Meta/TypeInfo.hpp>
-#include <Enlivengine/Meta/Meta.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
 
 enum class SomeEnum
 {

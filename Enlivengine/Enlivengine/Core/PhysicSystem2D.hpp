@@ -68,7 +68,11 @@ private:
 	// Don't know why, but it seems Meta doesn't work well with multiple inheritance...
 	// So I will do the multiple inheritance here and compose
 	// (The bug doesn't seems to be on the MetaStuff from EliasDaler, so I should have made it in my version...)
+#ifdef ENLIVE_DEBUG
 	class InternalSystem : public b2ContactListener, public b2Draw
+#else
+	class InternalSystem : public b2ContactListener
+#endif //ENLIVE_DEBUG
 	{
 	public:
 		InternalSystem(PhysicSystem2D& system) : mSystem(system) {}

@@ -65,7 +65,9 @@ bool Universe::RemoveWorld(const std::string& worldName)
 		return false;
 	}
 
-	return std::filesystem::remove(std::filesystem::path(World::GetWorldFilename(worldName)));
+	// TODO : RemoveFile
+	//return std::filesystem::remove(std::filesystem::path(World::GetWorldFilename(worldName)));
+	return false;
 }
 
 Universe& Universe::GetInstance()
