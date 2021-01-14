@@ -2,7 +2,9 @@
 
 #include <vector>
 
-#include <SDL.h>
+#include <SDL_events.h>
+#include <SDL_joystick.h>
+#include <SDL_haptic.h>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Math/Vector2.hpp>
@@ -17,9 +19,6 @@ public:
 	static U32 GetHapticCount();
 	static void SetThreshold(U32 threshold);
 	static U32 GetThreshold();
-
-	static void Refresh();
-	static void HandleEvent(const SDL_Event& event);
 
 	static bool IsValid(U32 controllerId);
 	static const char* GetName(U32 controllerId);
@@ -62,6 +61,11 @@ public:
 	// Haptic
 	static bool IsHaptic(U32 controllerId);
 	static bool Rumble(U32 controllerId, F32 strength, U32 durationMs);
+
+private:
+	friend class EventSystem;
+	static void Refresh();
+	static void HandleEvent(const SDL_Event& event);
 
 private:
 	static Controller& GetInstance();

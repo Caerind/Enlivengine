@@ -1,5 +1,7 @@
 #include <Enlivengine/Window/Controller.hpp>
 
+#include <SDL.h>
+
 #include <Enlivengine/Window/EventSystem.hpp>
 
 namespace en
@@ -23,105 +25,6 @@ void Controller::SetThreshold(U32 threshold)
 U32 Controller::GetThreshold()
 {
 	return GetInstance().mThreshold;
-}
-
-void Controller::Refresh()
-{
-	Controller& controller = GetInstance();
-
-	static constexpr U8 clearEvents = static_cast<U8>(Joystick::State::Pressed) | static_cast<U8>(Joystick::State::Released);
-
-	const U32 joystickCount = static_cast<U32>(controller.mJoysticks.size());
-	for (U32 i = 0; i < joystickCount; ++i)
-	{
-		const U32 axisCount = static_cast<U32>(controller.mJoysticks[i].axes.size());
-		for (U32 j = 0; j < axisCount; ++j)
-		{
-			controller.mJoysticks[i].axes[j].moved = false;
-		}
-		const U32 ballCount = static_cast<U32>(controller.mJoysticks[i].balls.size());
-		for (U32 j = 0; j < ballCount; ++j)
-		{
-			controller.mJoysticks[i].balls[j].moved = false;
-		}
-		const U32 buttonCount = static_cast<U32>(controller.mJoysticks[i].buttons.size());
-		for (U32 j = 0; j < buttonCount; ++j)
-		{
-			controller.mJoysticks[i].buttons[j] &= ~clearEvents;
-		}
-		const U32 hatCount = static_cast<U32>(controller.mJoysticks[i].hats.size());
-		for (U32 j = 0; j < hatCount; ++j)
-		{
-			controller.mJoysticks[i].hats[j].state &= ~clearEvents;
-		}
-	}
-}
-
-void Controller::HandleEvent(const SDL_Event& event)
-{
-	const bool buttonUp = event.type == SDL_JOYBUTTONUP;
-	const bool buttonDown = event.type == SDL_JOYBUTTONDOWN;
-	if (event.type == SDL_JOYAXISMOTION)
-	{
-		if (Joystick* joystick = GetJoystickFromJoystickID(event.jaxis.which))
-		{
-			if (event.jaxis.axis < static_cast<U32>(joystick->axes.size()))
-			{
-				joystick->axes[event.jaxis.axis].value = event.jaxis.value;
-				joystick->axes[event.jaxis.axis].moved = true;
-			}
-		}
-	}
-	else if (buttonUp || buttonDown)
-	{
-		if (Joystick* joystick = GetJoystickFromJoystickID(event.jbutton.which))
-		{
-			if (event.jbutton.button < static_cast<U32>(joystick->buttons.size()))
-			{
-				if (buttonDown)
-				{
-					joystick->buttons[event.jbutton.button] = static_cast<U8>(Joystick::State::Pressed) | static_cast<U8>(Joystick::State::Hold);
-
-					EventSystem::SetLastButton(EventSystem::EventButton::Type::JoystickButton, static_cast<U32>(event.jbutton.button), static_cast<U32>(event.jbutton.which));
-				}
-				else
-				{
-					joystick->buttons[event.jbutton.button] = static_cast<U8>(Joystick::State::Released);
-				}
-			}
-		}
-	}
-	else if (event.type == SDL_JOYHATMOTION)
-	{
-		if (Joystick* joystick = GetJoystickFromJoystickID(event.jhat.which))
-		{
-			if (event.jhat.hat < static_cast<U32>(joystick->hats.size()))
-			{
-				joystick->hats[event.jhat.hat].previousValue = joystick->hats[event.jhat.hat].value;
-				joystick->hats[event.jhat.hat].value = static_cast<HatValue>(event.jhat.value);
-				if (event.jhat.value == 0)
-				{
-					joystick->hats[event.jhat.hat].state = static_cast<U8>(Joystick::State::Released);
-				}
-				else
-				{
-					joystick->hats[event.jhat.hat].state = static_cast<U8>(Joystick::State::Pressed) | static_cast<U8>(Joystick::State::Hold);
-				}
-			}
-		}
-	}
-	else if (event.type == SDL_JOYBALLMOTION)
-	{
-		if (Joystick* joystick = GetJoystickFromJoystickID(event.jball.which))
-		{
-			if (event.jball.ball < static_cast<U32>(joystick->balls.size()))
-			{
-				joystick->balls[event.jball.ball].deltaX = event.jball.xrel;
-				joystick->balls[event.jball.ball].deltaY = event.jball.yrel;
-				joystick->balls[event.jball.ball].moved = true;
-			}
-		}
-	}
 }
 
 bool Controller::IsValid(U32 controllerId)
@@ -376,6 +279,105 @@ bool Controller::Rumble(U32 controllerId, F32 strength, U32 durationMs)
 		}
 	}
 	return false;
+}
+
+void Controller::Refresh()
+{
+	Controller& controller = GetInstance();
+
+	static constexpr U8 clearEvents = static_cast<U8>(Joystick::State::Pressed) | static_cast<U8>(Joystick::State::Released);
+
+	const U32 joystickCount = static_cast<U32>(controller.mJoysticks.size());
+	for (U32 i = 0; i < joystickCount; ++i)
+	{
+		const U32 axisCount = static_cast<U32>(controller.mJoysticks[i].axes.size());
+		for (U32 j = 0; j < axisCount; ++j)
+		{
+			controller.mJoysticks[i].axes[j].moved = false;
+		}
+		const U32 ballCount = static_cast<U32>(controller.mJoysticks[i].balls.size());
+		for (U32 j = 0; j < ballCount; ++j)
+		{
+			controller.mJoysticks[i].balls[j].moved = false;
+		}
+		const U32 buttonCount = static_cast<U32>(controller.mJoysticks[i].buttons.size());
+		for (U32 j = 0; j < buttonCount; ++j)
+		{
+			controller.mJoysticks[i].buttons[j] &= ~clearEvents;
+		}
+		const U32 hatCount = static_cast<U32>(controller.mJoysticks[i].hats.size());
+		for (U32 j = 0; j < hatCount; ++j)
+		{
+			controller.mJoysticks[i].hats[j].state &= ~clearEvents;
+		}
+	}
+}
+
+void Controller::HandleEvent(const SDL_Event& event)
+{
+	const bool buttonUp = event.type == SDL_JOYBUTTONUP;
+	const bool buttonDown = event.type == SDL_JOYBUTTONDOWN;
+	if (event.type == SDL_JOYAXISMOTION)
+	{
+		if (Joystick* joystick = GetJoystickFromJoystickID(event.jaxis.which))
+		{
+			if (event.jaxis.axis < static_cast<U32>(joystick->axes.size()))
+			{
+				joystick->axes[event.jaxis.axis].value = event.jaxis.value;
+				joystick->axes[event.jaxis.axis].moved = true;
+			}
+		}
+	}
+	else if (buttonUp || buttonDown)
+	{
+		if (Joystick* joystick = GetJoystickFromJoystickID(event.jbutton.which))
+		{
+			if (event.jbutton.button < static_cast<U32>(joystick->buttons.size()))
+			{
+				if (buttonDown)
+				{
+					joystick->buttons[event.jbutton.button] = static_cast<U8>(Joystick::State::Pressed) | static_cast<U8>(Joystick::State::Hold);
+
+					EventSystem::SetLastButton(EventSystem::EventButton::Type::JoystickButton, static_cast<U32>(event.jbutton.button), static_cast<U32>(event.jbutton.which));
+				}
+				else
+				{
+					joystick->buttons[event.jbutton.button] = static_cast<U8>(Joystick::State::Released);
+				}
+			}
+		}
+	}
+	else if (event.type == SDL_JOYHATMOTION)
+	{
+		if (Joystick* joystick = GetJoystickFromJoystickID(event.jhat.which))
+		{
+			if (event.jhat.hat < static_cast<U32>(joystick->hats.size()))
+			{
+				joystick->hats[event.jhat.hat].previousValue = joystick->hats[event.jhat.hat].value;
+				joystick->hats[event.jhat.hat].value = static_cast<HatValue>(event.jhat.value);
+				if (event.jhat.value == 0)
+				{
+					joystick->hats[event.jhat.hat].state = static_cast<U8>(Joystick::State::Released);
+				}
+				else
+				{
+					joystick->hats[event.jhat.hat].state = static_cast<U8>(Joystick::State::Pressed) | static_cast<U8>(Joystick::State::Hold);
+				}
+			}
+		}
+	}
+	else if (event.type == SDL_JOYBALLMOTION)
+	{
+		if (Joystick* joystick = GetJoystickFromJoystickID(event.jball.which))
+		{
+			if (event.jball.ball < static_cast<U32>(joystick->balls.size()))
+			{
+				joystick->balls[event.jball.ball].deltaX = event.jball.xrel;
+				joystick->balls[event.jball.ball].deltaY = event.jball.yrel;
+				joystick->balls[event.jball.ball].moved = true;
+			}
+		}
+	}
 }
 
 Controller& Controller::GetInstance()

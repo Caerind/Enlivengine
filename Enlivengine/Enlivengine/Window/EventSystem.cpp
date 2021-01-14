@@ -3,6 +3,9 @@
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/SDL/SDLWrapper.hpp>
 
+#include <Enlivengine/Window/Window.hpp>
+#include <Enlivengine/Window/Controller.hpp>
+
 namespace en
 {
 

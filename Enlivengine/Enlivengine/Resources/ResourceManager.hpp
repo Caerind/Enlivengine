@@ -1,14 +1,16 @@
 #pragma once
 
-#include <functional>
 #include <memory>
 #include <unordered_map>
 #include <string>
+#include <functional>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
-#include <Enlivengine/Utils/Singleton.hpp>
 #include <Enlivengine/Utils/NonCopyable.hpp>
+#include <Enlivengine/Utils/Singleton.hpp>
 #include <Enlivengine/Utils/Array.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
 
 namespace en
 {
@@ -48,13 +50,9 @@ struct ResourceLoadInfo
 		Procedural
 	};
 
-	ResourceLoadInfo(Method pMethod = Method::Unknown, const std::string& pInfoString = "")
-		: method(pMethod)
-		, infoString(pInfoString)
-	{
-	}
+	ResourceLoadInfo(Method pMethod = Method::Unknown, const std::string& pInfoString = "");
 
-	bool IsFromFile() const { return method == Method::File; }
+	bool IsFromFile() const;
 
 	Method method;
 	std::string infoString;
@@ -63,14 +61,7 @@ struct ResourceLoadInfo
 #ifdef ENLIVE_DEBUG
 struct ResourceInfo
 {
-	ResourceInfo()
-		: loadInfo()
-		, id(InvalidResourceID)
-		, type(static_cast<U32>(ResourceType::Invalid))
-		, identifier("")
-		, loaded(false)
-	{
-	}
+	ResourceInfo();
 
 	ResourceLoadInfo loadInfo;
 	ResourceID id;
@@ -89,7 +80,7 @@ class BaseResource : private NonCopyable
 {
 public:
 	BaseResource();
-	virtual ~BaseResource() {};
+	virtual ~BaseResource();
 
 	static U32 GetStaticResourceType();
 	virtual U32 GetResourceType() const = 0;
@@ -126,23 +117,6 @@ private:
 #endif // ENLIVE_DEBUG
 };
 
-// Only used internally by ResourceManager
-struct ResourceIDType
-{
-	ResourceID id;
-	U32 type;
-
-	bool operator==(const ResourceIDType& other) const
-	{
-		return id == other.id && type == other.type;
-	}
-
-	bool operator!=(const ResourceIDType& other) const
-	{
-		return !operator==(other);
-	}
-};
-
 } // namespace priv
 
 template <typename T>
@@ -163,7 +137,7 @@ public:
 	T& Get() const;
 
 	void ReleaseFromManager();
-	
+
 	bool operator==(const ResourcePtr<T>& other) const;
 	bool operator!=(const ResourcePtr<T>& other) const;
 
@@ -202,6 +176,28 @@ enum class ResourceKnownStrategy
 	Reload,
 	Null
 };
+
+namespace priv
+{
+
+	// Only used internally by ResourceManager
+	struct ResourceIDType
+	{
+		ResourceID id;
+		U32 type;
+
+		bool operator==(const ResourceIDType& other) const
+		{
+			return id == other.id && type == other.type;
+		}
+
+		bool operator!=(const ResourceIDType& other) const
+		{
+			return !operator==(other);
+		}
+	};
+
+} // namespace priv
 
 } // namespace en
 
@@ -282,5 +278,24 @@ private:
 };
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO(en::ResourceLoadInfo::Method)
+
+ENLIVE_META_CLASS_BEGIN(en::ResourceLoadInfo)
+ENLIVE_META_CLASS_MEMBER("method", &en::ResourceLoadInfo::method),
+ENLIVE_META_CLASS_MEMBER("infoString", &en::ResourceLoadInfo::infoString)
+ENLIVE_META_CLASS_END()
+
+#ifdef ENLIVE_DEBUG
+ENLIVE_META_CLASS_BEGIN(en::ResourceInfo)
+ENLIVE_META_CLASS_MEMBER("id", &en::ResourceInfo::id),
+ENLIVE_META_CLASS_MEMBER("type", &en::ResourceInfo::type),
+ENLIVE_META_CLASS_MEMBER("identifier", &en::ResourceInfo::identifier),
+ENLIVE_META_CLASS_MEMBER("loadInfo", &en::ResourceInfo::loadInfo),
+ENLIVE_META_CLASS_MEMBER("loaded", &en::ResourceInfo::loaded)
+ENLIVE_META_CLASS_END()
+#endif // ENLIVE_DEBUG
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::ResourcePtr)
 
 #include "ResourceManager.inl"

@@ -3,9 +3,9 @@
 #ifdef ENLIVE_ENABLE_IMGUI
 
 #include <Enlivengine/Window/EventSystem.hpp>
+#include <Enlivengine/Window/Controller.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Window.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 

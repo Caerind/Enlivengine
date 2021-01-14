@@ -139,3 +139,7 @@ protected:
 };
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO(en::Camera::ProjectionMode)
+
+ENLIVE_DEFINE_TYPE_INFO(en::Camera)

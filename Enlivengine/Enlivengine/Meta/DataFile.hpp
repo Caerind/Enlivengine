@@ -5,9 +5,9 @@
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Utils/TypeTraits.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Utils/ClassFactory.hpp>
 
-#include <Enlivengine/Meta/Meta.hpp>
 #include <Enlivengine/Meta/MetaTraits.hpp>
 
 #include <Enlivengine/Utils/Array.hpp>
@@ -47,6 +47,16 @@ public:
 	template <typename T>
 	bool Deserialize_Registered(T& object, const char* name);
 
+	// TODO : Make this private
+	template <typename T>
+	void WriteCurrentType();
+	U32 ReadCurrentType() const;
+
+	// TODO : Make this private
+	template <typename T> friend struct ::HasCustomSerialization;
+	ParserXml& GetParser() { return mParserXml; }
+	const ParserXml& GetParser() const { return mParserXml; }
+
 private:
 	template <typename T>
 	bool Serialize_Common(const T& object, const char* name);
@@ -83,15 +93,6 @@ private:
 	bool Deserialize_Basic(std::vector<T*>& object, const char* name);
 	template <typename T, std::size_t N>
 	bool Deserialize_Basic(std::array<T*, N>& object, const char* name);
-
-private:
-	template <typename T>
-	void WriteCurrentType();
-	U32 ReadCurrentType() const;
-
-	template <typename T> friend struct ::HasCustomSerialization;
-	ParserXml& GetParser() { return mParserXml; }
-	const ParserXml& GetParser() const { return mParserXml; }
 
 private:
 	ParserXml mParserXml;

@@ -9,16 +9,16 @@
 #include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Utils/TypeTraits.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Utils/ClassFactory.hpp>
 
-#include <Enlivengine/Meta/Meta.hpp>
 #include <Enlivengine/Meta/MetaTraits.hpp>
 
 #include <Enlivengine/Utils/Array.hpp>
 #include <array>
 #include <vector>
 
-#include <Enlivengine/Tools/ImGuiHelper.hpp>
+#include <Enlivengine/Graphics/ImGuiHelper.hpp>
 
 // TODO : Factorise common code in Serialize/Deserialize (Array/vector/array)
 

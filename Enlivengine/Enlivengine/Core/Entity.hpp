@@ -76,7 +76,6 @@ private:
 template <typename T> 
 decltype(auto) Entity::Add()
 {
-	//enAssert(ComponentManager::IsRegistered<T>());
 	enAssert(IsValid());
 
 	if constexpr (Traits::IsEmpty<T>::value)
@@ -97,7 +96,6 @@ decltype(auto) Entity::Add()
 template <typename T, typename ...Args>
 decltype(auto) Entity::Add(Args&& ...args)
 {
-	//enAssert(ComponentManager::IsRegistered<T>());
 	enAssert(IsValid());
 
 	if constexpr (Traits::IsEmpty<T>::value)
@@ -126,7 +124,6 @@ bool Entity::Has() const
 template <typename T> 
 void Entity::Remove()
 {
-	//enAssert(ComponentManager::IsRegistered<T>());
 	enAssert(IsValid());
 	enAssert(Has<T>());
 	
@@ -136,7 +133,6 @@ void Entity::Remove()
 template <typename T> 
 T& Entity::Get()
 {
-	//enAssert(ComponentManager::IsRegistered<T>());
 	enAssert(IsValid());
 	enAssert(Has<T>());
 
@@ -146,7 +142,6 @@ T& Entity::Get()
 template <typename T> 
 const T& Entity::Get() const 
 {
-	//enAssert(ComponentManager::IsRegistered<T>());
 	enAssert(IsValid());
 	enAssert(Has<T>());
 
@@ -154,3 +149,6 @@ const T& Entity::Get() const
 }
 
 } // namespace en
+
+ENLIVE_META_CLASS_BEGIN(en::Entity)
+ENLIVE_META_CLASS_END()

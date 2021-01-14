@@ -7,10 +7,10 @@
 #include <Enlivengine/Resources/PathManager.hpp>
 
 #include <Enlivengine/Core/World.hpp>
-#include <Enlivengine/Core/Engine.hpp>
+#include <Enlivengine/Core/Universe.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Platform.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
+#include <Enlivengine/Meta/SystemFactory.hpp>
 
 namespace en
 {
@@ -55,7 +55,7 @@ void ImGuiWorlds::CurrentWorld()
 	if (ImGui::CollapsingHeader("Current World"))
 	{
 		ImGui::Indent();
-		if (World* worldPtr = Engine::GetCurrentWorld())
+		if (World* worldPtr = Universe::GetCurrentWorld())
 		{
 			bool worldModified = false;
 			World& world = *worldPtr;
@@ -65,7 +65,7 @@ void ImGuiWorlds::CurrentWorld()
 			ImGui::SameLine();
 			if (ImGui::Button(ICON_FA_UPLOAD))
 			{
-				Engine::UnloadCurrentWorld();
+				Universe::UnloadCurrentWorld();
 				ImGui::Unindent();
 				return;
 			}
@@ -78,7 +78,7 @@ void ImGuiWorlds::CurrentWorld()
 			{
 				ImGui::Indent();
 
-				const auto& systemInfos = SystemManager::GetSystemInfos();
+				const auto& systemInfos = SystemFactory::GetSystemInfos();
 				static std::vector<U32> hasNot;
 				hasNot.clear();
 				const auto endItr = systemInfos.cend();
@@ -138,7 +138,8 @@ void ImGuiWorlds::CurrentWorld()
 
 			if (worldModified)
 			{
-				world.SaveToFile();
+				// TODO : World Modified
+				//world.SaveToFile();
 			}
 		}
 		else
@@ -176,7 +177,7 @@ void ImGuiWorlds::AllWorlds()
 				const std::string worldName = std::string(newWorldName);
 				mWorlds.push_back(worldName);
 
-				Engine::CreateWorld(worldName);
+				Universe::CreateWorld(worldName);
 
 				modified = true;
 
@@ -208,7 +209,7 @@ void ImGuiWorlds::AllWorlds()
 			ImGui::Text("%s", mWorlds[i].c_str());
 
 			ImGui::SameLine();
-			if (Engine::GetCurrentWorld() != nullptr && Engine::GetCurrentWorld()->GetName() == mWorlds[i])
+			if (Universe::GetCurrentWorld() != nullptr && Universe::GetCurrentWorld()->GetName() == mWorlds[i])
 			{
 				ImGui::DisabledButton(ICON_FA_DOWNLOAD);
 				ImGui::SameLine();
@@ -218,7 +219,7 @@ void ImGuiWorlds::AllWorlds()
 			{
 				if (ImGui::Button(ICON_FA_DOWNLOAD))
 				{
-					Engine::LoadWorld(mWorlds[i]);
+					Universe::LoadWorld(mWorlds[i]);
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -229,7 +230,7 @@ void ImGuiWorlds::AllWorlds()
 
 				if (ImGui::Button(ICON_FA_TRASH))
 				{
-					Engine::RemoveWorld(mWorlds[i]);
+					Universe::RemoveWorld(mWorlds[i]);
 					remove = true;
 					modified = true;
 				}
@@ -279,7 +280,7 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 		{
 			if (currentWorldName != "")
 			{
-				Engine::LoadWorld(currentWorldName);
+				Universe::LoadWorld(currentWorldName);
 			}
 		}
 
@@ -298,7 +299,7 @@ bool ImGuiWorlds::SaveWorldsToFile()
 	DataFile xml;
 	xml.CreateEmptyFile();
 	xml.Serialize(mWorlds, "Worlds");
-	if (World* world = Engine::GetCurrentWorld())
+	if (World* world = Universe::GetCurrentWorld())
 	{
 		xml.Serialize(world->GetName(), "CurrentWorld");
 	}

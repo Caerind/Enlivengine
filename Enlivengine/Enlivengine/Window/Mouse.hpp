@@ -1,19 +1,19 @@
 #pragma once
 
+#include <SDL_events.h>
+
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
 #include <Enlivengine/Math/Vector2.hpp>
-#include <Enlivengine/Window/Window.hpp>
 
 namespace en
 {
 
+class Window;
+
 class Mouse
 {
 public:
-	// Call this at every frame beginning
-	static void Refresh();
-	static void HandleEvent(const SDL_Event& event);
-
 	static void SetPositionGlobal(const Vector2i& mousePos);
 	static Vector2i GetPositionGlobal();
 
@@ -55,6 +55,11 @@ public:
 	static void HideCursor();
 
 private:
+	friend class EventSystem;
+	static void Refresh();
+	static void HandleEvent(const SDL_Event& event);
+
+private:
 	static Mouse& GetInstance();
 
 	Mouse();
@@ -74,3 +79,5 @@ private:
 };
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO(en::Mouse::Button)

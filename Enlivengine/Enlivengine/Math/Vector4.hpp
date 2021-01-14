@@ -129,3 +129,5 @@ typedef Vector4<U32> Vector4u;
 typedef Vector4f vec4; // GLSL-like
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector4)

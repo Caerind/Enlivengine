@@ -5,7 +5,7 @@
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/MemoryAllocator.hpp>
-#include <Enlivengine/Utils/TypeInfo.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
 
 namespace en
 {
@@ -48,6 +48,7 @@ bool ClassFactory::IsRegistered()
 template <typename T>
 bool ClassFactory::Register()
 {
+	static_assert(Meta::IsRegistered<T>());
 	static_assert(TypeInfo<T>::IsKnown());
 	constexpr U32 hash = TypeInfo<T>::GetHash();
 	mClasses[hash].name = TypeInfo<T>::GetName();

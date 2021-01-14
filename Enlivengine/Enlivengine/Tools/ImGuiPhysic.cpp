@@ -4,10 +4,10 @@
 
 #include <imgui/imgui.h>
 
-#include <Enlivengine/Core/Components.hpp>
-#include <Enlivengine/Core/Engine.hpp>
+#include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/World.hpp>
+#include <Enlivengine/Core/PhysicSystem2D.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Core.hpp>
 #include <Enlivengine/Meta/ObjectEditor.hpp>
 
 namespace en
@@ -35,50 +35,52 @@ const char* ImGuiPhysic::GetSaveName() const
 
 void ImGuiPhysic::Display()
 {
-	if (World* world = Engine::GetCurrentWorld())
+	if (World* world = Universe::GetCurrentWorld())
 	{
 		if (world->HasPhysicSystem())
 		{
-			PhysicSystem* physicSystem = world->GetPhysicSystem();
-			auto gravity = physicSystem->GetGravity();
-			if (ObjectEditor::ImGuiEditor(gravity, "Gravity"))
+			if (PhysicSystem2D* physicSystem = dynamic_cast<PhysicSystem2D*>(world->GetPhysicSystem()))
 			{
-				physicSystem->SetGravity(gravity);
-			}
-			auto velocityIterations = physicSystem->GetVelocityIterations();
-			if (ObjectEditor::ImGuiEditor(velocityIterations, "VelocityIterations"))
-			{
-				physicSystem->SetVelocityIterations(velocityIterations);
-			}
-			auto positionIterations = physicSystem->GetPositionIterations();
-			if (ObjectEditor::ImGuiEditor(positionIterations, "PositionIterations"))
-			{
-				physicSystem->SetPositionIterations(positionIterations);
-			}
+				auto gravity = physicSystem->GetGravity();
+				if (ObjectEditor::ImGuiEditor(gravity, "Gravity"))
+				{
+					physicSystem->SetGravity(gravity);
+				}
+				auto velocityIterations = physicSystem->GetVelocityIterations();
+				if (ObjectEditor::ImGuiEditor(velocityIterations, "VelocityIterations"))
+				{
+					physicSystem->SetVelocityIterations(velocityIterations);
+				}
+				auto positionIterations = physicSystem->GetPositionIterations();
+				if (ObjectEditor::ImGuiEditor(positionIterations, "PositionIterations"))
+				{
+					physicSystem->SetPositionIterations(positionIterations);
+				}
 #ifdef ENLIVE_DEBUG
-			if (physicSystem->IsDebugRendering())
-			{
-				if (ImGui::Button("HideDebug"))
+				if (physicSystem->IsDebugRendering())
 				{
-					physicSystem->SetDebugRendering(false);
-				}	
-			}
-			else
-			{
-				if (ImGui::Button("ShowDebug"))
-				{
-					physicSystem->SetDebugRendering(true);
+					if (ImGui::Button("HideDebug"))
+					{
+						physicSystem->SetDebugRendering(false);
+					}
 				}
-			}
-			if (physicSystem->IsDebugRendering())
-			{
-				auto renderFlags = physicSystem->GetDebugRenderFlags();
-				// TODO : DebugRenderFlags
+				else
 				{
-					physicSystem->SetDebugRenderFlags(renderFlags);
+					if (ImGui::Button("ShowDebug"))
+					{
+						physicSystem->SetDebugRendering(true);
+					}
 				}
-			}
+				if (physicSystem->IsDebugRendering())
+				{
+					auto renderFlags = physicSystem->GetDebugRenderFlags();
+					// TODO : DebugRenderFlags
+					{
+						physicSystem->SetDebugRenderFlags(renderFlags);
+					}
+				}
 #endif // ENLIVE_DEBUG
+			}
 		}
 		else
 		{

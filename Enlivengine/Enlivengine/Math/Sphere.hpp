@@ -52,3 +52,8 @@ private:
 };
 
 } // namespace en
+
+ENLIVE_META_CLASS_BEGIN(en::Sphere)
+	ENLIVE_META_CLASS_MEMBER("center", &en::Sphere::GetCenter, &en::Sphere::SetCenter),
+	ENLIVE_META_CLASS_MEMBER("radius", &en::Sphere::GetRadius, &en::Sphere::SetRadius)
+ENLIVE_META_CLASS_END()

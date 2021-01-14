@@ -1,8 +1,10 @@
 #pragma once
 
-#include <SDL.h>
+#include <SDL_events.h>
+#include <SDL_scancode.h>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
 
 namespace en
 {
@@ -122,10 +124,6 @@ public:
 		System = 0x08
 	};
 
-	// Call this at every frame beginning
-	static void Refresh();
-	static void HandleEvent(const SDL_Event& event);
-
 	static bool IsHold(Key key);
 	static bool IsPressed(Key key);
 	static bool IsReleased(Key key);
@@ -143,6 +141,11 @@ public:
 
 private:
 	static Key GetKeyFromSDLKey(SDL_Scancode scancode);
+
+private:
+	friend class EventSystem;
+	static void Refresh();
+	static void HandleEvent(const SDL_Event& event);
 
 private:
 	static Keyboard& GetInstance();
@@ -172,3 +175,5 @@ private:
 };
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO(en::Keyboard::Key)

@@ -2,12 +2,16 @@
 
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Utils/Array.hpp>
+<<<<<<< HEAD
 #include <Enlivengine/Utils/TypeTraits.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
+=======
+#include <Enlivengine/Graphics/DebugDraw.hpp>
+>>>>>>> MetaUpdate
 
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/System.hpp>
-#include <Enlivengine/Core/PhysicSystem.hpp>
+#include <Enlivengine/Core/PhysicSystemBase.hpp>
 
 #ifdef ENLIVE_DEBUG
 #include <Enlivengine/Graphics/DebugDraw.hpp>
@@ -37,8 +41,8 @@ public:
 	template <typename T>
 	bool HasSystem() const;
 
-	PhysicSystem* GetPhysicSystem();
-	const PhysicSystem* GetPhysicSystem() const;
+	PhysicSystemBase* GetPhysicSystem();
+	const PhysicSystemBase* GetPhysicSystem() const;
 	bool HasPhysicSystem() const;
 	
 	void Update(Time dt);
@@ -47,9 +51,6 @@ public:
 	const std::string& GetName() const;
 	std::string GetFilename() const;
 	static std::string GetWorldFilename(const std::string& worldName);
-
-	bool LoadFromFile();
-	bool SaveToFile() const;
 
 #ifdef ENLIVE_DEBUG
 	void Play();
@@ -69,7 +70,7 @@ private:
 	EntityManager mEntityManager;
 
 	std::vector<System*> mSystems;
-	PhysicSystem* mPhysicSystem;
+	PhysicSystemBase* mPhysicSystem;
 
 	std::string mName;
 
@@ -101,7 +102,7 @@ T* World::CreateSystem()
 
 			system->SetWorld(this);
 
-			if constexpr (Traits::IsBaseOf<PhysicSystem, T>::value)
+			if constexpr (Traits::IsBaseOf<PhysicSystemBase, T>::value)
 			{
 				mPhysicSystem = system;
 			}
@@ -119,7 +120,7 @@ void World::RemoveSystem()
 	{
 		if (const T* s = dynamic_cast<const T*>(mSystems[i])) // TODO : Find how to not use dynamic_cast
 		{
-			if constexpr (Traits::IsBaseOf<PhysicSystem, T>::value)
+			if constexpr (Traits::IsBaseOf<PhysicSystemBase, T>::value)
 			{
 				if (mPhysicSystem == mSystems[i])
 				{

@@ -4,6 +4,7 @@
 
 #include <bgfx/bgfx.h>
 
+#include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Math/Rect.hpp>
 #include <Enlivengine/Graphics/Shader.hpp>
 #include <Enlivengine/Graphics/Tileset.hpp>
@@ -73,3 +74,7 @@ public:
 };
 
 } // namespace en
+
+ENLIVE_META_CLASS_BEGIN(en::Tilemap)
+	ENLIVE_META_CLASS_MEMBER("size", &en::Tilemap::GetSize, &en::Tilemap::SetSize)
+ENLIVE_META_CLASS_END()

@@ -1,21 +1,20 @@
-#include <Enlivengine/Core/Engine.hpp>
-#include <Enlivengine/Meta/MetaSpecialization.hpp>
+#include <Enlivengine/Engine.hpp>
 
-#include <Enlivengine/Tools/ImGuiGame.hpp>
-
-#include <Enlivengine/Core/ComponentManager.hpp>
-#include <Enlivengine/Core/Components.hpp>
-#include <Enlivengine/Core/CameraComponent.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
+#include <Enlivengine/Window/EventSystem.hpp>
+#include <Enlivengine/Window/Controller.hpp>
+#include <Enlivengine/Graphics/Camera.hpp>
+#include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
-#include <Enlivengine/Core/PhysicComponent.hpp>
-#include <Enlivengine/Core/PhysicSystem.hpp>
+#include <Enlivengine/Core/Components.hpp>
+#include <Enlivengine/Tools/ImGuiGame.hpp>
 
 using namespace en;
 
 class RenderSystem : public System
 {
 public:
-	ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION();
+	const char* GetName() const override;
 
 	void Render() override
 	{
@@ -50,12 +49,15 @@ public:
 };
 ENLIVE_META_CLASS_BEGIN(RenderSystem)
 ENLIVE_META_CLASS_END()
-ENLIVE_META_CLASS_VIRTUAL_NAME_DECLARATION(RenderSystem);
+const char* RenderSystem::GetName() const 
+{ 
+	return TypeInfo<RenderSystem>::GetName(); 
+}
 
 class DebugSystem : public System
 {
 public:
-	ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION();
+	const char* GetName() const override;
 
 	void Render() override
 	{
@@ -96,7 +98,10 @@ public:
 };
 ENLIVE_META_CLASS_BEGIN(DebugSystem)
 ENLIVE_META_CLASS_END()
-ENLIVE_META_CLASS_VIRTUAL_NAME_DECLARATION(DebugSystem);
+const char* DebugSystem::GetName() const
+{
+	return TypeInfo<DebugSystem>::GetName();
+}
 
 struct StupidShipComponent {};
 ENLIVE_META_CLASS_BEGIN(StupidShipComponent)
@@ -105,7 +110,7 @@ ENLIVE_META_CLASS_END()
 class StupidShipSystem : public System
 {
 public:
-	ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION();
+	const char* GetName() const override;
 
 	void Update(Time dt) override
 	{
@@ -123,7 +128,10 @@ public:
 };
 ENLIVE_META_CLASS_BEGIN(StupidShipSystem)
 ENLIVE_META_CLASS_END()
-ENLIVE_META_CLASS_VIRTUAL_NAME_DECLARATION(StupidShipSystem);
+const char* StupidShipSystem::GetName() const
+{
+	return TypeInfo<StupidShipSystem>::GetName();
+}
 
 struct PlayerComponent {};
 ENLIVE_META_CLASS_BEGIN(PlayerComponent)
@@ -132,7 +140,7 @@ ENLIVE_META_CLASS_END()
 class PlayerSystem : public System
 {
 public:
-	ENLIVE_META_CLASS_VIRTUAL_NAME_DEFINITION();
+	const char* GetName() const override;
 
 	void Update(Time dt) override
 	{
@@ -190,28 +198,16 @@ public:
 };
 ENLIVE_META_CLASS_BEGIN(PlayerSystem)
 ENLIVE_META_CLASS_END()
-ENLIVE_META_CLASS_VIRTUAL_NAME_DECLARATION(PlayerSystem);
-
+const char* PlayerSystem::GetName() const
+{
+	return TypeInfo<PlayerSystem>::GetName();
+}
 
 int main(int argc, char** argv)
 {
-	// TODO : This is buggy
-	Meta::DebugMetaClass<PhysicSystem>();
-
-	// Engine components/systems
-	Engine::RegisterComponent<NameComponent>();
-	Engine::RegisterComponent<UIDComponent>();
-	Engine::RegisterComponent<RenderableComponent>();
-	Engine::RegisterComponent<SpriteComponent>();
-	Engine::RegisterComponent<TilemapComponent>();
-	Engine::RegisterComponent<CameraComponent>();
-	Engine::RegisterComponent<TransformComponent>();
-	Engine::RegisterComponent<PhysicComponent>();
-	Engine::RegisterSystem<PhysicSystem>();
-
-	// Own components/systems
 	Engine::RegisterComponent<StupidShipComponent>();
 	Engine::RegisterComponent<PlayerComponent>();
+
 	Engine::RegisterSystem<RenderSystem>();
 	Engine::RegisterSystem<DebugSystem>();
 	Engine::RegisterSystem<StupidShipSystem>();

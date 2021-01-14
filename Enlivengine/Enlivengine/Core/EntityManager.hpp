@@ -2,13 +2,13 @@
 
 #include <entt/entt.hpp>
 
-#include <Enlivengine/Core/Entity.hpp>
-#include <Enlivengine/Core/ComponentTraits.hpp>
+#include <Enlivengine/Utils/Meta.hpp>
 
 namespace en
 {
 
 class World;
+class Entity;
 
 class EntityManager
 {
@@ -45,11 +45,11 @@ public:
 	const entt::registry& GetRegistry() const;
 
 private:
-	friend class Entity;
-
-private:
 	World& mWorld;
 	entt::registry mRegistry;
 };
 
 } // namespace en
+
+ENLIVE_META_CLASS_BEGIN(en::EntityManager)
+ENLIVE_META_CLASS_END()

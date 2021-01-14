@@ -2,16 +2,17 @@
 
 #ifdef ENLIVE_ENABLE_IMGUI
 
+#include <imgui/imgui_internal.h>
+
 #include <Enlivengine/Core/Components.hpp>
-#include <Enlivengine/Core/Engine.hpp>
+#include <Enlivengine/Core/TransformComponent.hpp>
+#include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
 #include <Enlivengine/Window/Keyboard.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Core.hpp>
-
-#include <imgui/imgui_internal.h>
+#include <Enlivengine/Meta/ObjectEditor.hpp>
 
 namespace en
 {
@@ -40,7 +41,7 @@ const char* ImGuiEntityBrowser::GetSaveName() const
 
 void ImGuiEntityBrowser::Display()
 {
-	if (World* world = Engine::GetCurrentWorld())
+	if (World* world = Universe::GetCurrentWorld())
 	{
 		static constexpr U32 entityNameMaxSize = 255;
 		static char entityNameInput[entityNameMaxSize] = "";
@@ -117,7 +118,7 @@ void ImGuiEntityBrowser::Display()
 							entityName = kUnknownEntityName;
 						}
 
-						HasCustomEditor<en::Entity>::ImGuiEditor(entity, entityName);
+						ObjectEditor::ImGuiEditor(entity, entityName);
 					}
 					else
 					{

@@ -5,6 +5,28 @@
 namespace en
 {
 
+ResourceLoadInfo::ResourceLoadInfo(Method pMethod, const std::string& pInfoString)
+	: method(pMethod)
+	, infoString(pInfoString)
+{
+}
+
+bool ResourceLoadInfo::IsFromFile() const
+{
+	return method == Method::File;
+}
+
+#ifdef ENLIVE_DEBUG
+ResourceInfo::ResourceInfo()
+	: loadInfo()
+	, id(InvalidResourceID)
+	, type(static_cast<U32>(ResourceType::Invalid))
+	, identifier("")
+	, loaded(false)
+{
+}
+#endif // ENLIVE_DEBUG
+
 namespace priv
 {
 
@@ -15,6 +37,10 @@ BaseResource::BaseResource()
 #ifdef ENLIVE_DEBUG
 	, mIdentifier()
 #endif // ENLIVE_DEBUG
+{
+}
+
+BaseResource::~BaseResource()
 {
 }
 
@@ -189,7 +215,6 @@ U32 ResourceManager::GetResourceTypeCount() const
 {
 	return static_cast<U32>(ResourceType::Max) - 1 + static_cast<U32>(mClientResourceTypeNames.size());
 }
-
 #endif // ENLIVE_DEBUG
 
 ResourceID ResourceManager::StringToResourceID(const std::string& str)

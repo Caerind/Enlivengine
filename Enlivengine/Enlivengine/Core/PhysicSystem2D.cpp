@@ -1,18 +1,19 @@
-#include <Enlivengine/Core/PhysicSystem.hpp>
+#include <Enlivengine/Core/PhysicSystem2D.hpp>
 
 #include <Enlivengine/Utils/Profiler.hpp>
 
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
-#include <Enlivengine/Core/PhysicComponent.hpp>
+#include <Enlivengine/Core/PhysicComponent2D.hpp>
 
 namespace en
 {
 
-PhysicSystem::PhysicSystem()
-	: System()
+PhysicSystem2D::PhysicSystem2D()
+	: PhysicSystemBase()
 	, mPhysicWorld(nullptr)
+	, mInternalSystem(*this)
 	, mVelocityIterations(8)
 	, mPositionIterations(3)
 #if defined(ENLIVE_DEBUG)
@@ -24,19 +25,19 @@ PhysicSystem::PhysicSystem()
 	enAssert(mPhysicWorld != nullptr);
 
 #if defined(ENLIVE_DEBUG)
-	mPhysicWorld->SetDebugDraw(static_cast<b2Draw*>(this));
-	SetFlags(mDebugRenderFlags);
+	mPhysicWorld->SetDebugDraw(static_cast<b2Draw*>(&mInternalSystem));
+	mInternalSystem.SetFlags(mDebugRenderFlags);
 #endif // ENLIVE_DEBUG
 
-	mPhysicWorld->SetContactListener(static_cast<b2ContactListener*>(this));
+	mPhysicWorld->SetContactListener(static_cast<b2ContactListener*>(&mInternalSystem));
 }
 
-PhysicSystem::~PhysicSystem()
+PhysicSystem2D::~PhysicSystem2D()
 {
 	delete mPhysicWorld;
 }
 
-bool PhysicSystem::Initialize(const Entity& entity, PhysicComponent& component)
+bool PhysicSystem2D::Initialize(const Entity& entity, PhysicComponent2D& component)
 {
 	enAssert(entity.IsValid());
 
@@ -64,7 +65,7 @@ bool PhysicSystem::Initialize(const Entity& entity, PhysicComponent& component)
 	return component.IsValid();
 }
 
-bool PhysicSystem::Deinitialize(const Entity& entity, PhysicComponent& component)
+bool PhysicSystem2D::Deinitialize(const Entity& entity, PhysicComponent2D& component)
 {
 	if (!entity.IsValid())
 	{
@@ -89,7 +90,7 @@ bool PhysicSystem::Deinitialize(const Entity& entity, PhysicComponent& component
 	return true;
 }
 
-void PhysicSystem::Update(Time dt)
+void PhysicSystem2D::Update(Time dt)
 {
 	ENLIVE_PROFILE_FUNCTION();
 	BeforeUpdate();
@@ -100,17 +101,17 @@ void PhysicSystem::Update(Time dt)
 	AfterUpdate();
 }
 
-void PhysicSystem::BeforeUpdate()
+void PhysicSystem2D::BeforeUpdate()
 {
 	ENLIVE_PROFILE_FUNCTION();
 	auto& entityManager = mWorld->GetEntityManager();
-	auto view = entityManager.View<TransformComponent, PhysicComponent>();
+	auto view = entityManager.View<TransformComponent, PhysicComponent2D>();
 	for (auto entt : view)
 	{
 		Entity entity(entityManager, entt);
 		if (entity.IsValid())
 		{
-			auto& physicComponent = entity.Get<PhysicComponent>();
+			auto& physicComponent = entity.Get<PhysicComponent2D>();
 			if (auto* body = physicComponent.GetBody())
 			{
 				const auto& transformComponent = entity.Get<TransformComponent>();
@@ -122,120 +123,70 @@ void PhysicSystem::BeforeUpdate()
 	}
 }
 
-void PhysicSystem::AfterUpdate()
+void PhysicSystem2D::AfterUpdate()
 {
 	ENLIVE_PROFILE_FUNCTION();
 	auto& entityManager = mWorld->GetEntityManager();
-	auto view = entityManager.View<TransformComponent, PhysicComponent>();
+	auto view = entityManager.View<TransformComponent, PhysicComponent2D>();
 	for (auto entt : view)
 	{
-		en::Entity entity(entityManager, entt);
+		Entity entity(entityManager, entt);
 		if (entity.IsValid())
 		{
-			const auto& physicComponent = entity.Get<en::PhysicComponent>();
-			if (physicComponent.GetBodyType() != en::PhysicBodyType::Static)
+			const auto& physicComponent = entity.Get<PhysicComponent2D>();
+			if (physicComponent.GetBodyType() != PhysicBodyType::Static)
 			{
 				if (const auto* body = physicComponent.GetBody())
 				{
 					const auto& position = body->GetPosition();
-					auto& transformComponent = entity.Get<en::TransformComponent>();
+					auto& transformComponent = entity.Get<TransformComponent>();
 					// TODO : Fix this
 					transformComponent.SetPosition(Vector3f(position.x, position.y, transformComponent.GetPosition().z));
-					//transformComponent.SetRotation(en::Math::RadToDeg(body->GetAngle()));
+					//transformComponent.SetRotation(Math::RadToDeg(body->GetAngle()));
 				}
 			}
 		}
 	}
 }
 
-void PhysicSystem::DisableGravity()
+void PhysicSystem2D::DisableGravity()
 {
 	SetGravity(Vector2f(0.0f, 0.0f));
 }
 
-void PhysicSystem::SetGravity(const Vector2f& gravity)
+void PhysicSystem2D::SetGravity(const Vector2f& gravity)
 {
 	mPhysicWorld->SetGravity(b2Vec2(gravity.x, gravity.y));
 }
 
-Vector2f PhysicSystem::GetGravity() const
+Vector2f PhysicSystem2D::GetGravity() const
 {
 	const b2Vec2 gravity = mPhysicWorld->GetGravity();
 	return Vector2f(gravity.x, gravity.y);
 }
 
-void PhysicSystem::SetVelocityIterations(U32 value)
+void PhysicSystem2D::SetVelocityIterations(U32 value)
 {
 	mVelocityIterations = value;
 }
 
-U32 PhysicSystem::GetVelocityIterations() const
+U32 PhysicSystem2D::GetVelocityIterations() const
 {
 	return mVelocityIterations;
 }
 
-void PhysicSystem::SetPositionIterations(U32 value)
+void PhysicSystem2D::SetPositionIterations(U32 value)
 {
 	mPositionIterations = value;
 }
 
-U32 PhysicSystem::GetPositionIterations() const
+U32 PhysicSystem2D::GetPositionIterations() const
 {
 	return mPositionIterations;
 }
 
-void PhysicSystem::BeginContact(b2Contact* contact)
-{
-	if (contact != nullptr)
-	{
-		b2Fixture* fA = contact->GetFixtureA();
-		b2Fixture* fB = contact->GetFixtureB();
-
-		if (fA != nullptr)
-		{
-			if (b2Body* bA = fA->GetBody())
-			{
-				mContactSignals[bA].BeginContact(contact, fA, fB);
-			}
-		}
-
-		if (fB != nullptr)
-		{
-			if (b2Body* bB = fB->GetBody())
-			{
-				mContactSignals[bB].BeginContact(contact, fB, fA);
-			}
-		}
-	}
-}
-
-void PhysicSystem::EndContact(b2Contact* contact)
-{
-	if (contact != nullptr)
-	{
-		b2Fixture* fA = contact->GetFixtureA();
-		b2Fixture* fB = contact->GetFixtureB();
-
-		if (fA != nullptr)
-		{
-			if (b2Body* bA = fA->GetBody())
-			{
-				mContactSignals[bA].EndContact(contact, fA, fB);
-			}
-		}
-
-		if (fB != nullptr)
-		{
-			if (b2Body* bB = fB->GetBody())
-			{
-				mContactSignals[bB].EndContact(contact, fB, fA);
-			}
-		}
-	}
-}
-
 #if defined(ENLIVE_DEBUG)
-void PhysicSystem::Render()
+void PhysicSystem2D::Render()
 {
 	ENLIVE_PROFILE_FUNCTION();
 	if (mDebugRender)
@@ -244,28 +195,85 @@ void PhysicSystem::Render()
 	}
 }
 
-void PhysicSystem::SetDebugRendering(bool value)
+void PhysicSystem2D::SetDebugRendering(bool value)
 {
 	mDebugRender = value;
 }
 
-bool PhysicSystem::IsDebugRendering() const
+bool PhysicSystem2D::IsDebugRendering() const
 {
 	return mDebugRender;
 }
 
-void PhysicSystem::SetDebugRenderFlags(U32 flags)
+void PhysicSystem2D::SetDebugRenderFlags(U32 flags)
 {
+	mInternalSystem.SetFlags(flags);
 	mDebugRenderFlags = flags;
-	SetFlags(mDebugRenderFlags);
 }
 
-U32 PhysicSystem::GetDebugRenderFlags() const
+U32 PhysicSystem2D::GetDebugRenderFlags() const
 {
 	return mDebugRenderFlags;
 }
+#endif // ENLIVE_DEBUG
 
-void PhysicSystem::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+b2Body* PhysicSystem2D::GetComponentBody(const PhysicComponent2D& component)
+{
+	return const_cast<b2Body*>(component.GetBody());
+}
+
+void PhysicSystem2D::InternalSystem::BeginContact(b2Contact* contact)
+{
+	if (contact != nullptr)
+	{
+		b2Fixture* fA = contact->GetFixtureA();
+		b2Fixture* fB = contact->GetFixtureB();
+
+		if (fA != nullptr)
+		{
+			if (b2Body* bA = fA->GetBody())
+			{
+				mSystem.mContactSignals[bA].BeginContact(contact, fA, fB);
+			}
+		}
+
+		if (fB != nullptr)
+		{
+			if (b2Body* bB = fB->GetBody())
+			{
+				mSystem.mContactSignals[bB].BeginContact(contact, fB, fA);
+			}
+		}
+	}
+}
+
+void PhysicSystem2D::InternalSystem::EndContact(b2Contact* contact)
+{
+	if (contact != nullptr)
+	{
+		b2Fixture* fA = contact->GetFixtureA();
+		b2Fixture* fB = contact->GetFixtureB();
+
+		if (fA != nullptr)
+		{
+			if (b2Body* bA = fA->GetBody())
+			{
+				mSystem.mContactSignals[bA].EndContact(contact, fA, fB);
+			}
+		}
+
+		if (fB != nullptr)
+		{
+			if (b2Body* bB = fB->GetBody())
+			{
+				mSystem.mContactSignals[bB].EndContact(contact, fB, fA);
+			}
+		}
+	}
+}
+
+#ifdef ENLIVE_DEBUG
+void PhysicSystem2D::InternalSystem::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
 	Color c;
 	c.FromBox2DColor(color);
@@ -281,17 +289,17 @@ void PhysicSystem::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const 
 		{
 			pos2.Set(vertices[0].x, vertices[0].y, 0.0f);
 		}
-		mWorld->GetDebugDraw().DrawLine(pos1, pos2, c);
+		mSystem.mWorld->GetDebugDraw().DrawLine(pos1, pos2, c);
 	}
 }
 
-void PhysicSystem::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void PhysicSystem2D::InternalSystem::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
 	// TODO : Fill draw
 	DrawPolygon(vertices, vertexCount, color);
 }
 
-void PhysicSystem::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
+void PhysicSystem2D::InternalSystem::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
 	ENLIVE_UNUSED(center);
 	ENLIVE_UNUSED(radius);
@@ -312,7 +320,7 @@ void PhysicSystem::DrawCircle(const b2Vec2& center, float32 radius, const b2Colo
 	*/
 }
 
-void PhysicSystem::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
+void PhysicSystem2D::InternalSystem::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
 	ENLIVE_UNUSED(axis);
 
@@ -320,37 +328,31 @@ void PhysicSystem::DrawSolidCircle(const b2Vec2& center, float32 radius, const b
 	DrawCircle(center, radius, color);
 }
 
-void PhysicSystem::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
+void PhysicSystem2D::InternalSystem::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
 	const Vector3f pos1(p1.x, p1.y, 0.0f);
 	const Vector3f pos2(p2.x, p2.y, 0.0f);
 	Color c;
 	c.FromBox2DColor(color);
-	mWorld->GetDebugDraw().DrawLine(pos1, pos2, c);
+	mSystem.mWorld->GetDebugDraw().DrawLine(pos1, pos2, c);
 }
 
-void PhysicSystem::DrawTransform(const b2Transform& xf)
+void PhysicSystem2D::InternalSystem::DrawTransform(const b2Transform& xf)
 {
 	constexpr F32 lineLength = 0.4f;
 	DrawSegment(xf.p, xf.p + lineLength * xf.q.GetXAxis(), Colors::Red.ToBox2DColor());
 	DrawSegment(xf.p, xf.p + lineLength * xf.q.GetYAxis(), Colors::Green.ToBox2DColor());
 }
 
-void PhysicSystem::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
+void PhysicSystem2D::InternalSystem::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
 {
 	ENLIVE_UNUSED(size);
 
 	const Vector3f pos(p.x, p.y, 0.0f);
 	Color c;
 	c.FromBox2DColor(color);
-	mWorld->GetDebugDraw().DrawPoint(pos, c);
+	mSystem.mWorld->GetDebugDraw().DrawPoint(pos, c);
 }
-
-b2Body* PhysicSystem::GetComponentBody(const PhysicComponent& component)
-{
-	return const_cast<b2Body*>(component.GetBody());
-}
-
 #endif // ENLIVE_DEBUG
 
 } // namespace en

@@ -34,8 +34,8 @@ bool Contains(const std::string& string, const std::string& c);
 bool LimitSize(std::string& string, U32 size);
 bool LimitSize(const std::string& string, std::string& result, U32 size);
 
-inline std::string ToBoolString(bool value) { return (value) ? "true" : "false"; }
-inline bool FromBoolString(const std::string& string) { return string == "true" ? true : false; }
+std::string ToBoolString(bool value);
+bool FromBoolString(const std::string& string);
 
 template <typename T>
 std::string ToString(const T& value)
@@ -45,17 +45,20 @@ std::string ToString(const T& value)
 	return oss.str();
 }
 
-template <> inline std::string ToString<std::string>(const std::string& value)
+template <> 
+inline std::string ToString<std::string>(const std::string& value)
 {
 	return value;
 }
 
-template <> inline std::string ToString<bool>(const bool& value)
+template <> 
+inline std::string ToString<bool>(const bool& value)
 {
 	return (value) ? "1" : "0";
 }
 
-template <> inline std::string ToString<char>(const char& value)
+template <> 
+inline std::string ToString<char>(const char& value)
 {
 	return std::string(1, value);
 }
@@ -69,22 +72,28 @@ T FromString(const std::string& string)
 	return value;
 }
 
-template <> inline std::string FromString<std::string>(const std::string& string)
+template <> 
+inline std::string FromString<std::string>(const std::string& string)
 {
 	return string;
 }
 
-template <> inline bool FromString<bool>(const std::string& string)
+template <> 
+inline bool FromString<bool>(const std::string& string)
 {
 	return (string == "1" || string == "true");
 }
 
-template <> inline char FromString<char>(const std::string& string)
+template <> 
+inline char FromString<char>(const std::string& string)
 {
 	return (string.size() >= 1) ? string[0] : '\0';
 }
 
-constexpr U32 StringLength(const char* const str) { return *str ? 1 + StringLength(str + 1) : 0; }
+constexpr U32 StringLength(const char* const str) 
+{ 
+	return *str ? 1 + StringLength(str + 1) : 0; 
+}
 
 template <U32 N>
 struct ConstexprStringStorage
@@ -152,21 +161,20 @@ struct ConstexprStringStorage
 namespace priv
 {
 	template <U8... digits> 
-	struct positive_to_chars 
+	struct PositiveToChars 
 	{ 
 		static constexpr const char value[] = { ('0' + digits)..., 0 }; 
 	};
 
 	template <U32 rem, U8... digits>
-	struct explode : explode<rem / 10, rem % 10, digits...> {};
+	struct Explode : Explode<rem / 10, rem % 10, digits...> {};
 
 	template <U8... digits>
-	struct explode<0, digits...> : positive_to_chars<digits...> {};
+	struct Explode<0, digits...> : PositiveToChars<digits...> {};
 
 } // namespace priv
 
 template <U32 number>
-struct ConstexprIntToString : priv::explode<number>{};
-
+struct ConstexprIntToString : priv::Explode<number>{};
 
 } // namespace en

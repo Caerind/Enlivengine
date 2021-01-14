@@ -4,6 +4,7 @@
 #include <cfloat>
 #include <cstddef>
 
+#include <Enlivengine/Config.hpp>
 #include <Enlivengine/Platform/CompilerTraits.hpp>
 #include <Enlivengine/Platform/PlatformTraits.hpp>
 

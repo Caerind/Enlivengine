@@ -7,14 +7,10 @@
 #include <imgui/imgui.h>
 #include <ImGuiFileDialog/ImGuiFileDialog.h>
 
-#include <Enlivengine/Meta/MetaSpecialization_Resources.hpp>
 #include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Math/Color.hpp>
 #include <Enlivengine/Resources/ResourceManager.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
-
-#include <Enlivengine/Tools/ImGuiHelper.hpp>
-#include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
 
 #include <Enlivengine/Graphics/Texture.hpp>
 #include <Enlivengine/Audio/AudioManager.hpp>
@@ -22,6 +18,8 @@
 #include <Enlivengine/Tiled/Map.hpp>
 #include <Enlivengine/Animation/Animation.hpp>
 #include <Enlivengine/Animation/AnimationStateMachine.hpp>
+
+#include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
 
 namespace en
 {

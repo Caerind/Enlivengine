@@ -7,8 +7,6 @@
 
 #include <Enlivengine/Math/Color.hpp>
 
-#include <Enlivengine/Tools/ImGuiHelper.hpp>
-
 namespace en
 {
 

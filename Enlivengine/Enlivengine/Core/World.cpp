@@ -4,8 +4,7 @@
 
 #include <Enlivengine/Resources/PathManager.hpp>
 
-#include <Enlivengine/Meta/MetaSpecialization_Core.hpp>
-#include <Enlivengine/Meta/DataFile.hpp>
+#include <Enlivengine/Core/Entity.hpp>
 
 namespace en
 {
@@ -41,12 +40,12 @@ const EntityManager& World::GetEntityManager() const
 	return mEntityManager;
 }
 
-PhysicSystem* World::GetPhysicSystem()
+PhysicSystemBase* World::GetPhysicSystem()
 {
 	return mPhysicSystem;
 }
 
-const PhysicSystem* World::GetPhysicSystem() const
+const PhysicSystemBase* World::GetPhysicSystem() const
 {
 	return mPhysicSystem;
 }
@@ -61,6 +60,7 @@ void World::Update(Time dt)
 	ENLIVE_PROFILE_FUNCTION();
 #ifdef ENLIVE_DEBUG
 	if (mPlaying)
+#endif // ENLIVE_DEBUG
 	{
 #endif // ENLIVE_DEBUG
 		for (System* system : mSystems)
@@ -96,59 +96,6 @@ std::string World::GetFilename() const
 std::string World::GetWorldFilename(const std::string& worldName)
 {
 	return PathManager::GetAssetsPath() + worldName + ".world";
-}
-
-bool World::LoadFromFile()
-{
-	DataFile dataFile;
-	const std::string filename = GetFilename();
-	if (!dataFile.LoadFromFile(filename))
-	{
-		enLogWarning(LogChannel::Core, "Can't load world {} from {}", mName, filename);
-		return false;
-	}
-	if (!dataFile.Deserialize(mEntityManager, "EntityManager"))
-	{
-		enLogWarning(LogChannel::Core, "Can't deserialize EntityManager for world {}", mName);
-		return false;
-	}
-	if (!dataFile.Deserialize(mSystems, "Systems"))
-	{
-		enLogWarning(LogChannel::Core, "Can't deserialize Systems for world {}", mName);
-		mSystems.clear(); // TODO : REMOVE
-		return false;
-	}
-	for (auto& system : mSystems)
-	{
-		system->SetWorld(this);
-	}
-	return true;
-}
-
-bool World::SaveToFile() const
-{
-	DataFile dataFile;
-	if (!dataFile.CreateEmptyFile())
-	{
-		enLogWarning(LogChannel::Core, "Can't create empty datafile for world {}", mName);
-		return false;
-	}
-	if (!dataFile.Serialize(mEntityManager, "EntityManager"))
-	{
-		enLogWarning(LogChannel::Core, "Can't serialize EntityManager for world {}", mName);
-		return false;
-	}
-	if (!dataFile.Serialize(mSystems, "Systems"))
-	{
-		enLogWarning(LogChannel::Core, "Can't serialize Systems for world {}", mName);
-		return false;
-	}
-	const std::string filename = GetFilename();
-	if (!dataFile.SaveToFile(filename))
-	{
-		enLogWarning(LogChannel::Core, "Can't save world {} to {}", mName, filename);
-	}
-	return true;
 }
 
 #ifdef ENLIVE_DEBUG
