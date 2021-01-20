@@ -9,6 +9,8 @@
 
 #include <Enlivengine/Core/Entity.hpp>
 #include <Enlivengine/Core/EntityManager.hpp>
+#include <Enlivengine/Core/World.hpp>
 
 ENLIVE_CUSTOM_DATAFILE_SPECIALIZATION_DEFINITION(en::Entity)
 ENLIVE_CUSTOM_DATAFILE_SPECIALIZATION_DEFINITION(en::EntityManager)
+ENLIVE_CUSTOM_DATAFILE_SPECIALIZATION_DEFINITION(en::World)

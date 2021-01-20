@@ -5,6 +5,14 @@
 #include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Core/World.hpp>
 
+#include <Enlivengine/Meta/ObjectEditorSpecialization.hpp>
+#include <Enlivengine/Meta/DataFileSpecialization.hpp>
+
+/*
+#include <Enlivengine/Meta/ObjectEditor.hpp>
+#include <Enlivengine/Meta/DataFile.hpp>
+*/
+
 namespace en
 {
 
@@ -23,6 +31,8 @@ public:
 	using AddCallback = std::function<void(World&)>;
 	using HasCallback = std::function<bool(World&)>;
 	using RemoveCallback = std::function<void(World&)>;
+	//using SerializeCallback = std::function<bool(DataFile&, const World&)>;
+	//using DeserializeCallback = std::function<bool(DataFile&, World&)>;
 
 	struct SystemInfo
 	{
@@ -30,6 +40,8 @@ public:
 		AddCallback add;
 		HasCallback has;
 		RemoveCallback remove;
+		//SerializeCallback serialize;
+		//DeserializeCallback deserialize;
 	};
 
 	static const std::unordered_map<U32, SystemInfo>& GetSystemInfos();
@@ -63,6 +75,16 @@ bool SystemFactory::Register()
 	{
 		world.RemoveSystem<T>();
 	};
+	/*
+	mSystems[hash].serialize = [](DataFile& dataFile, const World& world)
+	{
+		return dataFile.Serialize(world.GetSystem<T>(), TypeInfo<T>::GetName());
+	};
+	mSystems[hash].deserialize = [](DataFile& dataFile, const World& world)
+	{
+		return dataFile.Deserialize(world.GetSystem<T>(), TypeInfo<T>::GetName());
+	};
+	*/
 	return true;
 }
 

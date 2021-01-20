@@ -153,4 +153,40 @@ bool Deserialize(DataFile& dataFile, EntityManager& object, const char* name)
 	}
 }
 
+bool Serialize(DataFile& dataFile, const World& object, const char* name)
+{
+	auto& parser = dataFile.GetParser();
+	if (parser.CreateNode(name))
+	{
+		bool valid = true;
+		dataFile.WriteCurrentType<World>();
+		valid = dataFile.Serialize(object.GetEntityManager(), "EntityManager") && valid;
+		//valid = dataFile.Serialize(object.mSystems, "Systems") && valid;
+		parser.CloseNode();
+		return valid;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Deserialize(DataFile& dataFile, World& object, const char* name)
+{
+	auto& parser = dataFile.GetParser();
+	if (parser.ReadNode(name))
+	{
+		bool valid = true;
+		enAssert(dataFile.ReadCurrentType() == TypeInfo<EntityManager>::GetHash());
+		valid = dataFile.Deserialize(object.GetEntityManager(), "EntityManager") && valid;
+		//valid = dataFile.Deserialize(object.mSystems, "Systems") && valid;
+		parser.CloseNode();
+		return valid;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 } // namespace en::DataFileSpecialization

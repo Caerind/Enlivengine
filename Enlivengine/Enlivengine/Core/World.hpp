@@ -2,12 +2,8 @@
 
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Utils/Array.hpp>
-<<<<<<< HEAD
 #include <Enlivengine/Utils/TypeTraits.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
-=======
-#include <Enlivengine/Graphics/DebugDraw.hpp>
->>>>>>> MetaUpdate
 
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/System.hpp>
@@ -19,6 +15,11 @@
 
 namespace en
 {
+
+class DataFile;
+namespace DataFileSpecialization
+{
+}
 
 class World
 {
@@ -49,8 +50,6 @@ public:
 	void Render();
 
 	const std::string& GetName() const;
-	std::string GetFilename() const;
-	static std::string GetWorldFilename(const std::string& worldName);
 
 #ifdef ENLIVE_DEBUG
 	void Play();
@@ -172,3 +171,6 @@ bool World::HasSystem() const
 }
 
 } // namespace en
+
+ENLIVE_META_CLASS_BEGIN(en::World)
+ENLIVE_META_CLASS_END()
