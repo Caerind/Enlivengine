@@ -2,12 +2,8 @@
 
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Utils/Array.hpp>
-<<<<<<< HEAD
 #include <Enlivengine/Utils/TypeTraits.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
-=======
-#include <Enlivengine/Graphics/DebugDraw.hpp>
->>>>>>> MetaUpdate
 
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/System.hpp>
@@ -172,3 +168,6 @@ bool World::HasSystem() const
 }
 
 } // namespace en
+
+ENLIVE_META_CLASS_BEGIN(en::World, true, true)
+ENLIVE_META_CLASS_END()

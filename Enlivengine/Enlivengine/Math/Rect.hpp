@@ -137,4 +137,4 @@ typedef Rect<U32> Rectu;
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Rect)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Rect, true, true)

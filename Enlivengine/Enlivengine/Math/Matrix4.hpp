@@ -679,4 +679,4 @@ typedef Matrix4f mat4; // GLSL-like
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Matrix4)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Matrix4, false, true)

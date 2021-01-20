@@ -75,6 +75,6 @@ public:
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::Tilemap)
+ENLIVE_META_CLASS_BEGIN(en::Tilemap, true, true)
 	ENLIVE_META_CLASS_MEMBER("size", &en::Tilemap::GetSize, &en::Tilemap::SetSize)
 ENLIVE_META_CLASS_END()

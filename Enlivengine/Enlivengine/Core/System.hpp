@@ -29,5 +29,5 @@ class System
         
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::System)
+ENLIVE_META_CLASS_BEGIN(en::System, true, true)
 ENLIVE_META_CLASS_END()

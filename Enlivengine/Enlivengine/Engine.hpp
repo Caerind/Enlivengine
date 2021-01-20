@@ -2,8 +2,9 @@
 
 #include <Enlivengine/Window/Window.hpp>
 #include <Enlivengine/Platform/Time.hpp>
-#include <Enlivengine/Meta/ComponentFactory.hpp>
-#include <Enlivengine/Meta/SystemFactory.hpp>
+#include <Enlivengine/Utils/ClassFactory.hpp>
+#include <Enlivengine/Core/ComponentFactory.hpp>
+#include <Enlivengine/Core/SystemFactory.hpp>
 
 namespace en
 {

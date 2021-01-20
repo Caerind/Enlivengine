@@ -8,9 +8,9 @@
 
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/SystemFactory.hpp>
 
-#include <Enlivengine/Meta/DataFile.hpp>
-#include <Enlivengine/Meta/SystemFactory.hpp>
+#include <Enlivengine/Utils/XmlClassSerializer.hpp>
 
 namespace en
 {
@@ -265,18 +265,20 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 
 	if (std::filesystem::exists(path))
 	{
-		DataFile xml;
-		if (!xml.LoadFromFile(path.string()))
-		{
-			return false;
-		}
-		if (!xml.Deserialize(mWorlds, "Worlds"))
+		XmlClassSerializer xml;
+		if (!xml.Open(path.string(), Serializer::Mode::Read))
 		{
 			return false;
 		}
 
+		if (!GenericSerialization(xml, "Worlds", mWorlds))
+		{
+			enLogError(LogChannel::Tools, "Can't load Worlds");
+			return false;
+		}
+
 		std::string currentWorldName = "";
-		if (xml.Deserialize(currentWorldName, "CurrentWorld"))
+		if (GenericSerialization(xml, "CurrentWorld", currentWorldName))
 		{
 			if (currentWorldName != "")
 			{
@@ -296,19 +298,21 @@ bool ImGuiWorlds::SaveWorldsToFile()
 {
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
 
-	DataFile xml;
-	xml.CreateEmptyFile();
-	xml.Serialize(mWorlds, "Worlds");
-	if (World* world = Universe::GetCurrentWorld())
+	XmlClassSerializer xml;
+	if (xml.Open(path.string(), Serializer::Mode::Write))
 	{
-		xml.Serialize(world->GetName(), "CurrentWorld");
+		GenericSerialization(xml, "Worlds", mWorlds);
+
+		const World* world = Universe::GetCurrentWorld();
+		GenericSerialization(xml, "CurrentWorld", (world != nullptr) ? world->GetName() : "");
+
+		return xml.Close();
 	}
 	else
 	{
-		std::string emptyString = "";
-		xml.Serialize(emptyString, "CurrentWorld");
+		enLogError(LogChannel::Tools, "Can't save Worlds");
+		return false;
 	}
-	return xml.SaveToFile(path.string());
 }
 
 } // namespace en

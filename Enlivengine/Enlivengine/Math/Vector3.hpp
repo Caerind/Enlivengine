@@ -139,4 +139,4 @@ static_assert((ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Right && ENLIV
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector3)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector3, false, true)

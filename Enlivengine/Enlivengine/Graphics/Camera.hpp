@@ -140,6 +140,6 @@ protected:
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO(en::Camera::ProjectionMode)
+ENLIVE_DEFINE_ENUM_INFO(en::Camera::ProjectionMode)
 
-ENLIVE_DEFINE_TYPE_INFO(en::Camera)
+ENLIVE_DEFINE_TYPE_INFO(en::Camera, true, true)

@@ -343,4 +343,4 @@ typedef Matrix3f mat3; // GLSL-like
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Matrix3)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Matrix3, false, true)

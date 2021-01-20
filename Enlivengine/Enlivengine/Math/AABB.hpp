@@ -76,7 +76,7 @@ private:
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::AABB)
+ENLIVE_META_CLASS_BEGIN(en::AABB, true, true)
 	ENLIVE_META_CLASS_MEMBER("min", &en::AABB::GetMin, &en::AABB::SetMin),
 	ENLIVE_META_CLASS_MEMBER("max", &en::AABB::GetMax, &en::AABB::SetMax)
 ENLIVE_META_CLASS_END()

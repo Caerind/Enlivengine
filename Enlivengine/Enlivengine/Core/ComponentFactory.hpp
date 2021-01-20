@@ -5,12 +5,6 @@
 #include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
-#include <Enlivengine/Meta/ObjectEditorSpecialization.hpp>
-#include <Enlivengine/Meta/DataFileSpecialization.hpp>
-
-#include <Enlivengine/Meta/ObjectEditor.hpp>
-#include <Enlivengine/Meta/DataFile.hpp>
-
 namespace en
 {
 
@@ -32,8 +26,9 @@ public:
 	using AddCallback = std::function<void(Entity&)>;
 	using HasCallback = std::function<bool(const Entity&)>;
 	using RemoveCallback = std::function<void(Entity&)>;
-	using SerializeCallback = std::function<bool(DataFile&, const Entity&)>;
-	using DeserializeCallback = std::function<bool(DataFile&, Entity&)>;
+	// TODO : DataFile
+	//using SerializeCallback = std::function<bool(DataFile&, const Entity&)>;
+	//using DeserializeCallback = std::function<bool(DataFile&, Entity&)>;
 
 	struct ComponentInfo
 	{
@@ -44,8 +39,9 @@ public:
 		AddCallback add;
 		HasCallback has;
 		RemoveCallback remove;
-		SerializeCallback serialize;
-		DeserializeCallback deserialize;
+		// TODO : DataFile
+		//SerializeCallback serialize;
+		//DeserializeCallback deserialize;
 	};
 
 	static const std::unordered_map<U32, ComponentInfo>& GetComponentInfos();
@@ -77,8 +73,14 @@ bool ComponentFactory::Register()
 		}
 		else
 		{
+			ENLIVE_UNUSED(entity);
+			enAssert(false);
+			// TODO : ObjectEditor
+			/*
 			T& component = entity.Get<T>();
 			return ObjectEditor::ImGuiEditor(component, TypeInfo<T>::GetName());
+			*/
+			return false;
 		}
 	};
 #endif // ENLIVE_ENABLE_IMGUI
@@ -95,6 +97,8 @@ bool ComponentFactory::Register()
 	{
 		entity.Remove<T>();
 	};
+	// TODO : DataFile
+	/*
 	mComponents[hash].serialize = [](DataFile& dataFile, const Entity& entity)
 	{
 		if constexpr (Traits::IsEmpty<T>::value)
@@ -117,6 +121,7 @@ bool ComponentFactory::Register()
 			return dataFile.Deserialize(entity.Add<T>(), TypeInfo<T>::GetName());
 		}
 	};
+	*/
 	return true;
 }
 

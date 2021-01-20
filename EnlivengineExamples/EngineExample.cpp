@@ -4,7 +4,7 @@
 #include <Enlivengine/Application/Window.hpp>
 #include <Enlivengine/Graphics/View.hpp>
 #include <Enlivengine/Utils/ClassFactory.hpp>
-#include <Enlivengine/Meta/ComponentFactory.hpp>
+#include <Enlivengine/Core/ComponentFactory.hpp>
 #include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/PhysicSystem.hpp>

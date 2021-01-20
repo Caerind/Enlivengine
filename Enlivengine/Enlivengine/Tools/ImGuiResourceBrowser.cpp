@@ -7,7 +7,6 @@
 #include <imgui/imgui.h>
 #include <ImGuiFileDialog/ImGuiFileDialog.h>
 
-#include <Enlivengine/Meta/DataFile.hpp>
 #include <Enlivengine/Math/Color.hpp>
 #include <Enlivengine/Resources/ResourceManager.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
@@ -20,6 +19,8 @@
 #include <Enlivengine/Animation/AnimationStateMachine.hpp>
 
 #include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
+
+#include <Enlivengine/Utils/XmlClassSerializer.hpp>
 
 namespace en
 {
@@ -87,7 +88,11 @@ void ImGuiResourceBrowser::Display()
 bool ImGuiResourceBrowser::LoadResourceInfosFromFile()
 {
 	const std::string& assetsPath = PathManager::GetAssetsPath();
+	ENLIVE_UNUSED(assetsPath);
 
+	enAssert(false);
+	// TODO : DataFile
+	/*
 	DataFile xml;
 	if (xml.LoadFromFile(assetsPath + "resources.data"))
 	{
@@ -114,16 +119,26 @@ bool ImGuiResourceBrowser::LoadResourceInfosFromFile()
 			}
 		}
 	}
+	*/
 
 	return true;
 }
 
 bool ImGuiResourceBrowser::SaveResourceInfosToFile()
 {
-	DataFile xml;
-	xml.CreateEmptyFile();
-	xml.Serialize(mResourceInfos, "Resources");
-	return xml.SaveToFile(PathManager::GetAssetsPath() + "resources.data");
+	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "resources.data");
+
+	XmlClassSerializer xml;
+	if (xml.Open(path.string(), Serializer::Mode::Write))
+	{
+		GenericSerialization(xml, "Resources", mResourceInfos);
+		return xml.Close();
+	}
+	else
+	{
+		enLogError(LogChannel::Tools, "Can't save Worlds");
+		return false;
+	}
 }
 
 void ImGuiResourceBrowser::RegisterResourceSpecific(U32 resourceType, ResourceSpecificFileLoader loader, ResourceSpecificPreview preview)

@@ -51,5 +51,5 @@ private:
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::EntityManager)
+ENLIVE_META_CLASS_BEGIN(en::EntityManager, true, true)
 ENLIVE_META_CLASS_END()

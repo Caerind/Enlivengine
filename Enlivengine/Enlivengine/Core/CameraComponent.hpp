@@ -49,7 +49,7 @@ private:
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::CameraComponent)
+ENLIVE_META_CLASS_BEGIN(en::CameraComponent, true, true)
 ENLIVE_META_CLASS_END()
 
 template <>

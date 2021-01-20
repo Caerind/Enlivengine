@@ -45,21 +45,21 @@ struct TilemapComponent
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::NameComponent)
+ENLIVE_META_CLASS_BEGIN(en::NameComponent, true, true)
 	ENLIVE_META_CLASS_MEMBER("name", &en::NameComponent::name)
 ENLIVE_META_CLASS_END()
 
-ENLIVE_META_CLASS_BEGIN(en::UIDComponent)
+ENLIVE_META_CLASS_BEGIN(en::UIDComponent, true, true)
 	ENLIVE_META_CLASS_MEMBER("id", &en::UIDComponent::id)
 ENLIVE_META_CLASS_END()
 	
-ENLIVE_META_CLASS_BEGIN(en::RenderableComponent)
+ENLIVE_META_CLASS_BEGIN(en::RenderableComponent, true, true)
 ENLIVE_META_CLASS_END()
 
-ENLIVE_META_CLASS_BEGIN(en::SpriteComponent)
+ENLIVE_META_CLASS_BEGIN(en::SpriteComponent, true, true)
 	ENLIVE_META_CLASS_MEMBER("sprite", &en::SpriteComponent::sprite)
 ENLIVE_META_CLASS_END()
 
-ENLIVE_META_CLASS_BEGIN(en::TilemapComponent)
+ENLIVE_META_CLASS_BEGIN(en::TilemapComponent, true, true)
 	ENLIVE_META_CLASS_MEMBER("tilemap", &en::TilemapComponent::tilemap)
 ENLIVE_META_CLASS_END()

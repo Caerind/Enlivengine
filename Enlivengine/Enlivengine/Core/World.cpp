@@ -62,15 +62,12 @@ void World::Update(Time dt)
 	if (mPlaying)
 #endif // ENLIVE_DEBUG
 	{
-#endif // ENLIVE_DEBUG
 		for (System* system : mSystems)
 		{
 			ENLIVE_PROFILE_SCOPE(system->GetName());
 			system->Update(dt);
 		}
-#ifdef ENLIVE_DEBUG
 	}
-#endif // ENLIVE_DEBUG
 }
 
 void World::Render()

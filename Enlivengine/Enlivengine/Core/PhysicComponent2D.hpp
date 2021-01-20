@@ -89,11 +89,11 @@ private:
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO(en::PhysicBodyType)
+ENLIVE_DEFINE_ENUM_INFO(en::PhysicBodyType)
 
-ENLIVE_DEFINE_TYPE_INFO(en::PhysicShapeType)
+ENLIVE_DEFINE_ENUM_INFO(en::PhysicShapeType)
 
-ENLIVE_META_CLASS_BEGIN(en::PhysicComponent2D)
+ENLIVE_META_CLASS_BEGIN(en::PhysicComponent2D, true, true)
 	ENLIVE_META_CLASS_MEMBER("type", &en::PhysicComponent2D::GetBodyType, &en::PhysicComponent2D::SetBodyType),
 	ENLIVE_META_CLASS_MEMBER("linearVelocity", &en::PhysicComponent2D::GetLinearVelocity, &en::PhysicComponent2D::SetLinearVelocity),
 	ENLIVE_META_CLASS_MEMBER("angularVelocity", &en::PhysicComponent2D::GetAngularVelocity, &en::PhysicComponent2D::SetAngularVelocity),

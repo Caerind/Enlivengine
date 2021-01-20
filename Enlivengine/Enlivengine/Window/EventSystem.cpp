@@ -6,6 +6,8 @@
 #include <Enlivengine/Window/Window.hpp>
 #include <Enlivengine/Window/Controller.hpp>
 
+#include <Enlivengine/Utils/Serializer.hpp>
+
 namespace en
 {
 

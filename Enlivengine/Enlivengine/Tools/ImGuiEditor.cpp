@@ -13,8 +13,6 @@
 #include <Enlivengine/Window/Mouse.hpp>
 #include <Enlivengine/Window/Keyboard.hpp>
 
-#include <Enlivengine/Meta/ObjectEditor.hpp>
-
 namespace en
 {
 
@@ -113,11 +111,15 @@ void ImGuiEditor::Display()
 			mEditConfig = true;
 		}
 
+		enAssert(false);
+		// TODO : ObjectEditor
+		/*
 #ifdef ENLIVE_DEBUG
 		ImGui::PushItemWidth(130);
 		ObjectEditor::ImGuiEditor(mGizmoOperation, "");
 		ImGui::PopItemWidth();
 #endif // ENLIVE_DEBUG
+		*/
 
 		ImGui::EndMenuBar();
 	}
@@ -126,7 +128,11 @@ void ImGuiEditor::Display()
 	{
 		if (ImGui::Begin("Editor - Config", &mEditConfig))
 		{
+			enAssert(false);
+			// TODO : ObjectEditor
+			/*
 			ObjectEditor::ImGuiEditor(mCamera, "Camera Settings");
+			*/
 			ImGui::Checkbox("Show Manipulator", &mShowManipulator);
 			ImGui::End();
 		}

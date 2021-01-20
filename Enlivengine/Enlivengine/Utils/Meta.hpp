@@ -19,6 +19,7 @@ namespace en::Meta
 static constexpr en::U32 Attribute_None = 0;
 static constexpr en::U32 Attribute_NoEditor = 1 << 0;
 static constexpr en::U32 Attribute_NoSerialization = 1 << 1;
+static constexpr en::U32 Attribute_ToolOnly = 1 << 2;
 
 template <typename Class, typename T>
 using MemberTypeT = T Class::*;
@@ -120,6 +121,7 @@ public:
 	constexpr U32 GetAttributes() const { return mAttributes; }
 	constexpr bool HasEditor() const { return (mAttributes & en::Meta::Attribute_NoEditor) == 0; }
 	constexpr bool HasSerialization() const { return (mAttributes & en::Meta::Attribute_NoSerialization) == 0; }
+	constexpr bool IsToolOnly() const { return (mAttributes & en::Meta::Attribute_ToolOnly) != 0; }
 
 	constexpr bool HasMemberPtr() const { return mHasMemberPtr; }
 	constexpr bool HasConstRefGetter() const { return mConstRefGetter != nullptr; }
@@ -289,7 +291,7 @@ namespace priv
 // Used to access private members. Try to avoid using it if possible
 #define ENLIVE_META_CLASS() template <typename T> friend constexpr auto ::en::Meta::RegisterMembers();
 
-#define ENLIVE_META_CLASS_BEGIN(className) ENLIVE_DEFINE_TYPE_INFO(className) \
+#define ENLIVE_META_CLASS_BEGIN(className, customSerialization, customEditor) ENLIVE_DEFINE_TYPE_INFO(className, customSerialization, customEditor) \
 	namespace en::Meta { \
 		template <> \
 		constexpr bool IsRegistered<className>() { return true; } \
@@ -297,6 +299,11 @@ namespace priv
 		constexpr auto RegisterMembers<className>() { return std::make_tuple(
 #define ENLIVE_META_CLASS_MEMBER(name, ...) en::Meta::RegisterMember(name, __VA_ARGS__)
 #define ENLIVE_META_CLASS_END() ); } } // namespace en::Meta
+#ifdef ENLIVE_TOOL
+#define ENLIVE_META_CLASS_MEMBER_TOOL(name, ...) ENLIVE_META_CLASS_MEMBER(name, ...) // TODO : Would be so cool to automatically add the ToolOnly attribute
+#else
+#define ENLIVE_META_CLASS_MEMBER_TOOL(name, ...)
+#endif // ENLIVE_TOOL
 
 template <typename T>
 constexpr const auto& GetMembers()
@@ -377,7 +384,10 @@ constexpr U32 GetClassVersion()
 	U32 hash = TypeInfo<T>::GetHash();
 	ForEachMember<T>([&hash](const auto& member)
 	{
-		hash = Hash::Combine32(hash, member.GetTotalHash());
+		if (!member.IsToolOnly())
+		{
+			hash = Hash::Combine32(hash, member.GetTotalHash());
+		}
 	});
 	return hash;
 }
