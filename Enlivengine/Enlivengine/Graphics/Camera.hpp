@@ -19,7 +19,7 @@ class Camera
 {
 public:
 	Camera();
-	~Camera();
+	virtual ~Camera();
 
 	Camera(Camera&& other) noexcept;
 	Camera(const Camera& other) = delete;
