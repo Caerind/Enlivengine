@@ -126,10 +126,29 @@ public:
 	constexpr bool operator==(const Rect<T>& other) const { return mMin == other.mMin && mMax == other.mMax; }
 	constexpr bool operator!=(const Rect<T>& other) const { return !operator==(other); }
 
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 private:
 	Vector2<T> mMin;
 	Vector2<T> mMax;
 };
+
+template <typename T>
+bool Rect<T>::Serialize(ClassSerializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<Rect<T>>::GetHash()))
+	{
+		bool ret = true;
+		ret = GenericSerialization(serializer, "min", mMin) && ret;
+		ret = GenericSerialization(serializer, "max", mMax) && ret;
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 typedef Rect<F32> Rectf;
 typedef Rect<I32> Recti;
@@ -137,4 +156,5 @@ typedef Rect<U32> Rectu;
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Rect)
+// We can't register template class for now, so I use custom serialization/editor instead
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Rect, en::Type_CustomSerialization, en::Type_CustomEditor)

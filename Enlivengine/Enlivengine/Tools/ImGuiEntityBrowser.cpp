@@ -12,8 +12,6 @@
 
 #include <Enlivengine/Window/Keyboard.hpp>
 
-#include <Enlivengine/Meta/ObjectEditor.hpp>
-
 namespace en
 {
 
@@ -118,7 +116,11 @@ void ImGuiEntityBrowser::Display()
 							entityName = kUnknownEntityName;
 						}
 
+						enAssert(false);
+						// TODO : ObjectEditor
+						/*
 						ObjectEditor::ImGuiEditor(entity, entityName);
+						*/
 					}
 					else
 					{

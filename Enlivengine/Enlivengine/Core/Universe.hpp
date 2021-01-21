@@ -10,11 +10,11 @@ class World;
 class Universe
 {
 public:
-	static bool CreateWorld(const std::string& worldName);
-	static bool LoadWorld(const std::string& worldName);
 	static World* GetCurrentWorld();
-	static void UnloadCurrentWorld();
-	static bool RemoveWorld(const std::string& worldName);
+
+private:
+	friend class WorldFileManager;
+	static void SetCurrentWorld(World* world);
 
 private:
 	static Universe& GetInstance();

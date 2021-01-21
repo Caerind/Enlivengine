@@ -125,9 +125,28 @@ public:
 	static constexpr Vector2<T> UnitY() { return Vector2<T>(0, 1); }
 	static constexpr Vector2<T> Zero() { return Vector2<T>(0, 0); }
 
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 	T x;
 	T y;
 };
+
+template <typename T>
+bool Vector2<T>::Serialize(ClassSerializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<Vector2<T>>::GetHash()))
+	{
+		bool ret = true;
+		ret = GenericSerialization(serializer, "x", x) && ret;
+		ret = GenericSerialization(serializer, "y", y) && ret;
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 template <typename T> constexpr Vector2<T> operator+(const T& scalar, const Vector2<T>& vector) { return vector + scalar; }
 template <typename T> constexpr Vector2<T> operator-(const T& scalar, const Vector2<T>& vector) { return scalar + (-vector); }
@@ -143,4 +162,4 @@ typedef Vector2f vec2; // GLSL-like
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector2)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector2, en::Type_CustomSerialization, en::Type_CustomEditor)

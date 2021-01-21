@@ -11,6 +11,11 @@ Time Time::Now()
 	return Time(static_cast<I64>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 }
 
+bool Time::Serialize(ClassSerializer& serializer, const char* name)
+{
+	return serializer.Serialize(name, mTicks);
+}
+
 Clock::Clock()
 	: mStart(Time::Now())
 {
@@ -167,6 +172,12 @@ DateTime DateTime::Now()
 DateTime DateTime::Today()
 {
 	return Now().GetDate();
+}
+
+bool DateTime::Serialize(ClassSerializer& serializer, const char* name)
+{
+	// TODO : Improve ?
+	return serializer.Serialize(name, mTicks);
 }
 
 } // namespace en

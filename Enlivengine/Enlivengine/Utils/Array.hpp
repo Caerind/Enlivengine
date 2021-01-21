@@ -7,6 +7,7 @@
 #include <Enlivengine/Utils/Macros.hpp>
 #include <Enlivengine/Utils/MemoryAllocator.hpp>
 #include <Enlivengine/Utils/TypeTraits.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
 
 namespace en
 {
@@ -410,3 +411,6 @@ private:
 };
 
 } // namespace en
+
+// The Serialization will be done like std::vector/std::array, using the GenericSerialization specialization for Array<T>
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Array, false, true)

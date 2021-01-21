@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
+#include <Enlivengine/Utils/TypeInfo.hpp>
+#include <Enlivengine/Utils/Serializer.hpp>
 
 namespace en
 {
@@ -83,6 +85,8 @@ public:
 	static constexpr Time Second() { return Time(TicksPerSecond); }
 	static constexpr Time Millisecond() { return Time(TicksPerMillisecond); }
 	static constexpr Time Microsecond() { return Time(TicksPerMicrosecond); }
+
+	bool Serialize(ClassSerializer& serializer, const char* name);
 
 private:
 	I64 mTicks;
@@ -298,8 +302,13 @@ public:
 	static constexpr DateTime UnixDate() { return DateTime(1970, 1, 1); }
 	static const DateTime ProgramStart;
 
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 private:
 	I64 mTicks;
 };
 
 } // namespace en
+
+ENLIVE_DEFINE_TYPE_INFO(en::Time, en::Type_CustomSerialization, en::Type_CustomEditor)
+ENLIVE_DEFINE_TYPE_INFO(en::DateTime, en::Type_CustomSerialization, en::Type_CustomEditor)

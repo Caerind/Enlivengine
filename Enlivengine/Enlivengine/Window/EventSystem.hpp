@@ -16,17 +16,7 @@ namespace en
 class EventSystem
 {
 public:
-	class EventBase
-	{
-	public:
-		std::string name{};
-		U32 hash{ 0 };
-	protected:
-		friend class EventSystem;
-		bool active{ false };
-	};
-
-	class EventButton : public EventBase
+	class EventButton
 	{
 	public:
 		enum class Type
@@ -35,6 +25,7 @@ public:
 			MouseButton,
 			JoystickButton
 		};
+
 		enum class ActionType
 		{
 			None,
@@ -42,15 +33,20 @@ public:
 			Released,
 			Hold
 		};
+
+		std::string name{};
+		U32 hash{ 0 };
 		Type type{ Type::KeyboardKey };
 		ActionType action{ ActionType::None };
 		U32 buttonIdentifier{ 0 };
 		U32 extraInfo{ 0 };
+
 	private:
 		friend class EventSystem;
+		bool active{ false };
 	};
 
-	class EventAxis : public EventBase
+	class EventAxis
 	{
 	public:
 		enum class Type
@@ -63,12 +59,18 @@ public:
 			JoystickBallX,
 			JoystickBallY
 		};
+
+		std::string name{};
+		U32 hash{ 0 };
 		Type type{ Type::JoystickAxis };
 		U32 axisIdentifier{ 0 };
 		U32 extraInfo{ 0 };
+
 		F32 GetValue() const { return value; }
+
 	private:
 		friend class EventSystem;
+		bool active{ false };
 		F32 value{ 0.0f };
 	};
 
@@ -132,11 +134,11 @@ private:
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventButton::Type)
+ENLIVE_DEFINE_ENUM_INFO(en::EventSystem::EventButton::Type)
 
-ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventButton::ActionType)
+ENLIVE_DEFINE_ENUM_INFO(en::EventSystem::EventButton::ActionType)
 
-ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventButton)
+ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventButton, en::Type_ClassSerialization, en::Type_CustomEditor)
 	ENLIVE_META_CLASS_MEMBER("name", &en::EventSystem::EventButton::name),
 	ENLIVE_META_CLASS_MEMBER("type", &en::EventSystem::EventButton::type),
 	ENLIVE_META_CLASS_MEMBER("action", &en::EventSystem::EventButton::action),
@@ -144,9 +146,9 @@ ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventButton)
 	ENLIVE_META_CLASS_MEMBER("extraInfo", &en::EventSystem::EventButton::extraInfo)
 ENLIVE_META_CLASS_END()
 
-ENLIVE_DEFINE_TYPE_INFO(en::EventSystem::EventAxis::Type)
+ENLIVE_DEFINE_ENUM_INFO(en::EventSystem::EventAxis::Type)
 
-ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventAxis)
+ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventAxis, en::Type_ClassSerialization, en::Type_CustomEditor)
 	ENLIVE_META_CLASS_MEMBER("name", &en::EventSystem::EventAxis::name),
 	ENLIVE_META_CLASS_MEMBER("type", &en::EventSystem::EventAxis::type),
 	ENLIVE_META_CLASS_MEMBER("axisIdentifier", &en::EventSystem::EventAxis::axisIdentifier),

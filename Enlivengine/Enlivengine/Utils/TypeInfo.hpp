@@ -6,10 +6,8 @@
 #include <Enlivengine/Utils/Hash.hpp>
 #include <Enlivengine/Utils/Macros.hpp>
 #include <Enlivengine/Utils/String.hpp>
-
-// Included to define their TypeInfo
-#include <Enlivengine/Platform/Time.hpp>
 #include <string>
+
 #include <array>
 #include <vector>
 
@@ -25,11 +23,28 @@ struct TypeInfo
 	//static constexpr U32 GetHash() { return Hash::SlowHash(GetName()); } // This has been removed to explicit the fact that it is invalid
 	static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(T); }
 	static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(T); }
+	static constexpr bool IsPrimitive() { return false; }
+	static constexpr bool HasCustomSerialization() { return false; }
+	static constexpr bool HasCustomEditor() { return false; }
 };
 
 } // namespace en
 
-#define ENLIVE_DEFINE_TYPE_INFO(type) namespace en { \
+//////////////////////////////////////////////////////////////////
+// Define Helpers
+//////////////////////////////////////////////////////////////////
+
+namespace en
+{
+
+static constexpr bool Type_CustomSerialization = true;
+static constexpr bool Type_CustomEditor = true;
+static constexpr bool Type_ClassSerialization = false;
+static constexpr bool Type_ClassEditor = false;
+
+} // namespace en
+
+#define ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(type) namespace en { \
 	template <> \
 	struct TypeInfo<type> \
 	{ \
@@ -39,9 +54,42 @@ struct TypeInfo
 		static constexpr U32 GetHash() { return Hash::SlowHash(GetName()); } \
 		static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(type); } \
 		static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(type); } \
+		static constexpr bool IsPrimitive() { return true; } \
+		static constexpr bool HasCustomSerialization() { return false; } \
+		static constexpr bool HasCustomEditor() { return false; } \
 	}; } // namespace en
 
-#define ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(templateType) namespace en { \
+#define ENLIVE_DEFINE_ENUM_INFO(enumName) namespace en { \
+	template <> \
+	struct TypeInfo<enumName> \
+	{ \
+		using Type = enumName; \
+		static constexpr bool IsKnown() { return true; } \
+		static constexpr const char* GetName() { return #enumName; } \
+		static constexpr U32 GetHash() { return Hash::SlowHash(GetName()); } \
+		static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(enumName); } \
+		static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(enumName); } \
+		static constexpr bool IsPrimitive() { return false; } \
+		static constexpr bool HasCustomSerialization() { return false; } \
+		static constexpr bool HasCustomEditor() { return false; } \
+	}; } // namespace en
+
+#define ENLIVE_DEFINE_TYPE_INFO(type, customSerialization, customEditor) namespace en { \
+	template <> \
+	struct TypeInfo<type> \
+	{ \
+		using Type = type; \
+		static constexpr bool IsKnown() { return true; } \
+		static constexpr const char* GetName() { return #type; } \
+		static constexpr U32 GetHash() { return Hash::SlowHash(GetName()); } \
+		static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(type); } \
+		static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(type); } \
+		static constexpr bool IsPrimitive() { return false; } \
+		static constexpr bool HasCustomSerialization() { return customSerialization; } \
+		static constexpr bool HasCustomEditor() { return customEditor; } \
+	}; } // namespace en
+
+#define ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(templateType, customSerialization, customEditor) namespace en { \
 	template <typename T> \
 	struct TypeInfo<templateType<T>> \
 	{ \
@@ -56,29 +104,34 @@ struct TypeInfo
 		static constexpr U32 GetHash() { return Hash::SlowHash(GetName()); } \
 		static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(templateType<T>); } \
 		static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(templateType<T>); } \
+		static constexpr bool IsPrimitive() { return false; } \
+		static constexpr bool HasCustomSerialization() { return customSerialization; } \
+		static constexpr bool HasCustomEditor() { return customEditor; } \
 	}; } // namespace en
 
 
 //////////////////////////////////////////////////////////////////
 // Primitive types
 //////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO(bool)
-ENLIVE_DEFINE_TYPE_INFO(char)
-ENLIVE_DEFINE_TYPE_INFO(en::I8)
-ENLIVE_DEFINE_TYPE_INFO(en::U8)
-ENLIVE_DEFINE_TYPE_INFO(en::I16)
-ENLIVE_DEFINE_TYPE_INFO(en::U16)
-ENLIVE_DEFINE_TYPE_INFO(en::I32)
-ENLIVE_DEFINE_TYPE_INFO(en::U32)
-ENLIVE_DEFINE_TYPE_INFO(en::I64)
-ENLIVE_DEFINE_TYPE_INFO(en::U64)
-ENLIVE_DEFINE_TYPE_INFO(en::F32)
-ENLIVE_DEFINE_TYPE_INFO(en::F64)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(bool)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(char)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(en::I8)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(en::U8)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(en::I16)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(en::U16)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(en::I32)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(en::U32)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(en::I64)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(en::U64)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(en::F32)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(en::F64)
+ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(std::string) // Not technically Primitive but ok
 
 //////////////////////////////////////////////////////////////////
 // std
 //////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO(std::string)
+
+// TODO : Find how to handle the std::array & std::vector cases
 
 namespace en
 {
@@ -98,13 +151,11 @@ public:
 	static constexpr U32 GetHash() { return Hash::SlowHash(GetName()); }
 	static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(T) * N; }
 	static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(T); }
+	static constexpr bool IsPrimitive() { return false; }
+	static constexpr bool HasCustomSerialization() { return false; }
+	static constexpr bool HasCustomEditor() { return false; }
 };
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(std::vector)
-
-//////////////////////////////////////////////////////////////////
-// en::Time
-//////////////////////////////////////////////////////////////////
-ENLIVE_DEFINE_TYPE_INFO(en::Time)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(std::vector, false, false)

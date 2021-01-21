@@ -112,10 +112,30 @@ public:
 	static constexpr Vector3<T> UnitZ() { return Vector3<T>(0, 0, 1); }
 	static constexpr Vector3<T> Zero() { return Vector3<T>(0, 0, 0); }
 
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 	T x;
 	T y;
 	T z;
 };
+
+template <typename T>
+bool Vector3<T>::Serialize(ClassSerializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<Vector3<T>>::GetHash()))
+	{
+		bool ret = true;
+		ret = GenericSerialization(serializer, "x", x) && ret;
+		ret = GenericSerialization(serializer, "y", y) && ret;
+		ret = GenericSerialization(serializer, "z", z) && ret;
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 template <typename T> constexpr Vector3<T> operator+(const T& scalar, const Vector3<T>& vector) { return vector + scalar; }
 template <typename T> constexpr Vector3<T> operator-(const T& scalar, const Vector3<T>& vector) { return scalar + (-vector); }
@@ -139,4 +159,4 @@ static_assert((ENLIVE_DEFAULT_HANDEDNESS == en::Math::Handedness::Right && ENLIV
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector3)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector3, en::Type_CustomSerialization, en::Type_CustomEditor)

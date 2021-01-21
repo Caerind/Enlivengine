@@ -80,6 +80,29 @@ public:
 	constexpr bool operator==(const Color& other) const { return r == other.r && g == other.g && b == other.b && a == other.a; }
 	constexpr bool operator!=(const Color& other) const { return !operator==(other); }
 
+	bool Serialize(ClassSerializer& serializer, const char* name)
+	{
+		if (serializer.IsReading())
+		{
+			U32 rgba;
+			const bool ret = serializer.Serialize(name, rgba);
+			if (ret)
+			{
+				FromRGBA(rgba);
+			}
+			return ret;
+		}
+		else if (serializer.IsWriting())
+		{
+			U32 rgba = ToRGBA();
+			return serializer.Serialize(name, rgba);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	U8 r;
 	U8 g;
 	U8 b;
@@ -158,7 +181,7 @@ namespace Colors
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::Color)
+ENLIVE_META_CLASS_BEGIN(en::Color, en::Type_CustomSerialization, en::Type_CustomEditor)
 	ENLIVE_META_CLASS_MEMBER("r", &en::Color::r),
 	ENLIVE_META_CLASS_MEMBER("g", &en::Color::g),
 	ENLIVE_META_CLASS_MEMBER("b", &en::Color::b),

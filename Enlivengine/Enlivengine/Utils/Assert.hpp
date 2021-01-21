@@ -14,5 +14,5 @@
 	#define enAssert(expr) enAssertChannel(expr, en::LogChannel::Global) 
 #else
 	#define enAssertChannel(expr, channel) 
-	#define enAssert(expr) 
+	#define enAssert(expr)
 #endif

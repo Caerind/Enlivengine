@@ -62,15 +62,12 @@ void World::Update(Time dt)
 	if (mPlaying)
 #endif // ENLIVE_DEBUG
 	{
-#endif // ENLIVE_DEBUG
 		for (System* system : mSystems)
 		{
 			ENLIVE_PROFILE_SCOPE(system->GetName());
 			system->Update(dt);
 		}
-#ifdef ENLIVE_DEBUG
 	}
-#endif // ENLIVE_DEBUG
 }
 
 void World::Render()
@@ -86,16 +83,6 @@ void World::Render()
 const std::string& World::GetName() const
 {
 	return mName;
-}
-
-std::string World::GetFilename() const
-{
-	return GetWorldFilename(mName);
-}
-
-std::string World::GetWorldFilename(const std::string& worldName)
-{
-	return PathManager::GetAssetsPath() + worldName + ".world";
 }
 
 #ifdef ENLIVE_DEBUG

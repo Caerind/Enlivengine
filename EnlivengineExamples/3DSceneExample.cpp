@@ -47,7 +47,7 @@ public:
 		}
 	}
 };
-ENLIVE_META_CLASS_BEGIN(RenderSystem)
+ENLIVE_META_CLASS_BEGIN(RenderSystem, true, true)
 ENLIVE_META_CLASS_END()
 const char* RenderSystem::GetName() const 
 { 
@@ -96,7 +96,7 @@ public:
 #endif // ENLIVE_DEBUG
 	}
 };
-ENLIVE_META_CLASS_BEGIN(DebugSystem)
+ENLIVE_META_CLASS_BEGIN(DebugSystem, true, true)
 ENLIVE_META_CLASS_END()
 const char* DebugSystem::GetName() const
 {
@@ -104,7 +104,7 @@ const char* DebugSystem::GetName() const
 }
 
 struct StupidShipComponent {};
-ENLIVE_META_CLASS_BEGIN(StupidShipComponent)
+ENLIVE_META_CLASS_BEGIN(StupidShipComponent, true, true)
 ENLIVE_META_CLASS_END()
 
 class StupidShipSystem : public System
@@ -126,7 +126,7 @@ public:
 		}
 	}
 };
-ENLIVE_META_CLASS_BEGIN(StupidShipSystem)
+ENLIVE_META_CLASS_BEGIN(StupidShipSystem, true, true)
 ENLIVE_META_CLASS_END()
 const char* StupidShipSystem::GetName() const
 {
@@ -134,7 +134,7 @@ const char* StupidShipSystem::GetName() const
 }
 
 struct PlayerComponent {};
-ENLIVE_META_CLASS_BEGIN(PlayerComponent)
+ENLIVE_META_CLASS_BEGIN(PlayerComponent, true, true)
 ENLIVE_META_CLASS_END()
 
 class PlayerSystem : public System
@@ -196,7 +196,7 @@ public:
 		}
 	}
 };
-ENLIVE_META_CLASS_BEGIN(PlayerSystem)
+ENLIVE_META_CLASS_BEGIN(PlayerSystem, true, true)
 ENLIVE_META_CLASS_END()
 const char* PlayerSystem::GetName() const
 {

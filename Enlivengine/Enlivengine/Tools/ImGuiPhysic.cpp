@@ -8,8 +8,6 @@
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/PhysicSystem2D.hpp>
 
-#include <Enlivengine/Meta/ObjectEditor.hpp>
-
 namespace en
 {
 
@@ -42,17 +40,23 @@ void ImGuiPhysic::Display()
 			if (PhysicSystem2D* physicSystem = dynamic_cast<PhysicSystem2D*>(world->GetPhysicSystem()))
 			{
 				auto gravity = physicSystem->GetGravity();
-				if (ObjectEditor::ImGuiEditor(gravity, "Gravity"))
+				enAssert(false);
+				// TODO : ObjectEditor
+				//if (ObjectEditor::ImGuiEditor(gravity, "Gravity"))
 				{
 					physicSystem->SetGravity(gravity);
 				}
 				auto velocityIterations = physicSystem->GetVelocityIterations();
-				if (ObjectEditor::ImGuiEditor(velocityIterations, "VelocityIterations"))
+				enAssert(false);
+				// TODO : ObjectEditor
+				//if (ObjectEditor::ImGuiEditor(velocityIterations, "VelocityIterations"))
 				{
 					physicSystem->SetVelocityIterations(velocityIterations);
 				}
 				auto positionIterations = physicSystem->GetPositionIterations();
-				if (ObjectEditor::ImGuiEditor(positionIterations, "PositionIterations"))
+				enAssert(false);
+				// TODO : ObjectEditor
+				//if (ObjectEditor::ImGuiEditor(positionIterations, "PositionIterations"))
 				{
 					physicSystem->SetPositionIterations(positionIterations);
 				}

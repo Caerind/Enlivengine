@@ -1,4 +1,4 @@
-#include <Enlivengine/Meta/ComponentFactory.hpp>
+#include <Enlivengine/Core/ComponentFactory.hpp>
 
 namespace en
 {

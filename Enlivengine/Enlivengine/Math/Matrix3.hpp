@@ -333,9 +333,31 @@ public:
 	constexpr T* GetData() { return data; }
 	constexpr const T* GetData() const { return data; }
 
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 private:
 	T data[9];
 };
+
+template <typename T>
+bool Matrix3<T>::Serialize(ClassSerializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<Matrix3<T>>::GetHash()))
+	{
+		bool ret = true;
+		for (U32 i = 0; i < Matrix3<T>::Elements; ++i)
+		{
+			const std::string childName(std::to_string(i));
+			ret = GenericSerialization(serializer, childName.c_str(), data[i]) && ret;
+		}
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 typedef Matrix3<F32> Matrix3f;
 
@@ -343,4 +365,4 @@ typedef Matrix3f mat3; // GLSL-like
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Matrix3)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Matrix3, en::Type_CustomSerialization, en::Type_CustomEditor)

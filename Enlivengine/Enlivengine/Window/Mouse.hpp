@@ -80,4 +80,4 @@ private:
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO(en::Mouse::Button)
+ENLIVE_DEFINE_ENUM_INFO(en::Mouse::Button)

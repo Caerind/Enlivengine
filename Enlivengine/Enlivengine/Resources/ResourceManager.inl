@@ -70,6 +70,12 @@ void ResourcePtr<T>::ReleaseFromManager()
 }
 
 template <typename T>
+bool ResourcePtr<T>::Serialize(ClassSerializer& serializer, const char* name)
+{
+	return serializer.Serialize(name, mID);
+}
+
+template <typename T>
 bool ResourcePtr<T>::operator==(const ResourcePtr<T>& other) const
 {
 	return mID == other.mID;

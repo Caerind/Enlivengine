@@ -5,6 +5,8 @@
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
 
+#include <Enlivengine/Core/ComponentFactory.hpp>
+
 namespace en
 {
 
@@ -103,6 +105,54 @@ const World& Entity::GetWorld() const
 {
 	enAssert(mManager != nullptr);
 	return mManager->GetWorld();
+}
+
+bool Entity::Serialize(ClassSerializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<Entity>::GetHash()))
+	{
+		bool ret = true;
+
+		if (serializer.IsReading())
+		{
+			const auto& componentInfos = ComponentFactory::GetComponentInfos();
+			const auto endItr = componentInfos.cend();
+			for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
+			{
+				const auto& ci = itr->second;
+				if (serializer.HasNode(ci.name))
+				{
+					ci.add(*this);
+					ret = ci.serialize(serializer, *this) && ret;
+				}
+			}
+		}
+		else if (serializer.IsWriting())
+		{
+			const auto& componentInfos = ComponentFactory::GetComponentInfos();
+			const auto endItr = componentInfos.cend();
+			for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
+			{
+				const auto& ci = itr->second;
+				if (ci.has(*this))
+				{
+					ret = ci.serialize(serializer, *this) && ret;
+				}
+			}
+		}
+		else
+		{ 
+			enAssert(false);
+			ret = false;
+		}
+
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 const entt::entity& Entity::GetEntity() const

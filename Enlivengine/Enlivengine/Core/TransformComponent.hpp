@@ -66,6 +66,10 @@ public:
 	// TODO : Should hide this, but now it it used by ImGuizmo
 	void MarkGlobalMatrixAsDirty();
 
+	bool Initialize(const Entity& entity);
+
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 private:
 	void UpdateGlobalMatrix() const;
 
@@ -81,17 +85,6 @@ private:
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::TransformComponent)
+ENLIVE_META_CLASS_BEGIN(en::TransformComponent, en::Type_CustomSerialization, en::Type_CustomEditor)
 ENLIVE_META_CLASS_END()
-
-template <>
-struct ComponentHasCustomInitialization<en::TransformComponent>
-{
-	static constexpr bool value = true;
-	static bool Initialize(const en::Entity& entity, en::TransformComponent& component)
-	{
-		enAssert(entity.IsValid());
-		component.mEntity = entity;
-		return true;
-	}
-};
+ENLIVE_COMPONENT_CUSTOM_INITIALIZATION(en::TransformComponent)

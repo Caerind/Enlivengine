@@ -8,9 +8,10 @@
 
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Core/SystemFactory.hpp>
+#include <Enlivengine/Engine/WorldFileManager.hpp>
 
-#include <Enlivengine/Meta/DataFile.hpp>
-#include <Enlivengine/Meta/SystemFactory.hpp>
+#include <Enlivengine/Utils/XmlClassSerializer.hpp>
 
 namespace en
 {
@@ -51,7 +52,6 @@ void ImGuiWorlds::Display()
 
 void ImGuiWorlds::CurrentWorld()
 {
-	// Current World
 	if (ImGui::CollapsingHeader("Current World"))
 	{
 		ImGui::Indent();
@@ -65,7 +65,7 @@ void ImGuiWorlds::CurrentWorld()
 			ImGui::SameLine();
 			if (ImGui::Button(ICON_FA_UPLOAD))
 			{
-				Universe::UnloadCurrentWorld();
+				WorldFileManager::UnloadCurrentWorld(true); // TODO : Do we really want to save here ?
 				ImGui::Unindent();
 				return;
 			}
@@ -138,6 +138,7 @@ void ImGuiWorlds::CurrentWorld()
 
 			if (worldModified)
 			{
+
 				// TODO : World Modified
 				//world.SaveToFile();
 			}
@@ -177,7 +178,7 @@ void ImGuiWorlds::AllWorlds()
 				const std::string worldName = std::string(newWorldName);
 				mWorlds.push_back(worldName);
 
-				Universe::CreateWorld(worldName);
+				WorldFileManager::CreateWorld(worldName);
 
 				modified = true;
 
@@ -219,7 +220,7 @@ void ImGuiWorlds::AllWorlds()
 			{
 				if (ImGui::Button(ICON_FA_DOWNLOAD))
 				{
-					Universe::LoadWorld(mWorlds[i]);
+					WorldFileManager::LoadWorld(mWorlds[i]);
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -230,7 +231,7 @@ void ImGuiWorlds::AllWorlds()
 
 				if (ImGui::Button(ICON_FA_TRASH))
 				{
-					Universe::RemoveWorld(mWorlds[i]);
+					WorldFileManager::RemoveWorld(mWorlds[i]);
 					remove = true;
 					modified = true;
 				}
@@ -262,25 +263,26 @@ void ImGuiWorlds::AllWorlds()
 bool ImGuiWorlds::LoadWorldsFromFile()
 {
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
-
 	if (std::filesystem::exists(path))
 	{
-		DataFile xml;
-		if (!xml.LoadFromFile(path.string()))
+		XmlClassSerializer xml;
+		if (!xml.Open(path.string(), Serializer::Mode::Read))
 		{
 			return false;
 		}
-		if (!xml.Deserialize(mWorlds, "Worlds"))
+
+		if (!GenericSerialization(xml, "Worlds", mWorlds))
 		{
+			enLogError(LogChannel::Tools, "Can't load Worlds");
 			return false;
 		}
 
 		std::string currentWorldName = "";
-		if (xml.Deserialize(currentWorldName, "CurrentWorld"))
+		if (GenericSerialization(xml, "CurrentWorld", currentWorldName))
 		{
 			if (currentWorldName != "")
 			{
-				Universe::LoadWorld(currentWorldName);
+				WorldFileManager::LoadWorld(currentWorldName);
 			}
 		}
 
@@ -296,19 +298,21 @@ bool ImGuiWorlds::SaveWorldsToFile()
 {
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
 
-	DataFile xml;
-	xml.CreateEmptyFile();
-	xml.Serialize(mWorlds, "Worlds");
-	if (World* world = Universe::GetCurrentWorld())
+	XmlClassSerializer xml;
+	if (xml.Open(path.string(), Serializer::Mode::Write))
 	{
-		xml.Serialize(world->GetName(), "CurrentWorld");
+		GenericSerialization(xml, "Worlds", mWorlds);
+
+		const World* world = Universe::GetCurrentWorld();
+		GenericSerialization(xml, "CurrentWorld", (world != nullptr) ? world->GetName() : "");
+
+		return xml.Close();
 	}
 	else
 	{
-		std::string emptyString = "";
-		xml.Serialize(emptyString, "CurrentWorld");
+		enLogError(LogChannel::Tools, "Can't save Worlds");
+		return false;
 	}
-	return xml.SaveToFile(path.string());
 }
 
 } // namespace en

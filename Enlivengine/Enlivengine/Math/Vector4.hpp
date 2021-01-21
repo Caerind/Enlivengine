@@ -110,11 +110,32 @@ public:
 	static constexpr Vector4<T> UnitW() { return Vector4<T>(0, 0, 0, 1); }
 	static constexpr Vector4<T> Zero() { return Vector4<T>(0, 0, 0, 0); }
 
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 	T x;
 	T y;
 	T z;
 	T w;
 };
+
+template <typename T>
+bool Vector4<T>::Serialize(ClassSerializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<Vector4<T>>::GetHash()))
+	{
+		bool ret = true;
+		ret = GenericSerialization(serializer, "x", x) && ret;
+		ret = GenericSerialization(serializer, "y", y) && ret;
+		ret = GenericSerialization(serializer, "z", z) && ret;
+		ret = GenericSerialization(serializer, "w", w) && ret;
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 template <typename T> constexpr Vector4<T> operator+(const T& scalar, const Vector4<T>& vector) { return vector + scalar; }
 template <typename T> constexpr Vector4<T> operator-(const T& scalar, const Vector4<T>& vector) { return scalar + (-vector); }
@@ -130,4 +151,4 @@ typedef Vector4f vec4; // GLSL-like
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector4)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector4, en::Type_CustomSerialization, en::Type_CustomEditor)

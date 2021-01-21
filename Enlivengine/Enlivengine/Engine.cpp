@@ -9,6 +9,7 @@
 #include <Enlivengine/Tools/ImGuiToolManager.hpp>
 #include <Enlivengine/Window/EventSystem.hpp>
 #include <Enlivengine/Core/Universe.hpp>
+#include <Enlivengine/Engine/WorldFileManager.hpp>
 
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
 #include <Enlivengine/Window/Keyboard.hpp>
@@ -34,6 +35,7 @@ namespace en
 
 int Engine::Main(int argc, char** argv)
 {
+	// Components
 	RegisterComponent<NameComponent>();
 	RegisterComponent<UIDComponent>();
 	RegisterComponent<RenderableComponent>();
@@ -43,6 +45,7 @@ int Engine::Main(int argc, char** argv)
 	RegisterComponent<TransformComponent>();
 	RegisterComponent<PhysicComponent2D>();
 
+	// Systems
 	RegisterSystem<PhysicSystem2D>();
 
 	if (Engine::Init(argc, argv))
@@ -107,7 +110,7 @@ int Engine::Main(int argc, char** argv)
 		if (World* world = Universe::GetCurrentWorld())
 		{
 			world->GetEntityManager().ClearEntities();
-			Universe::UnloadCurrentWorld();
+			WorldFileManager::UnloadCurrentWorld();
 		}
 
 		ResourceManager::GetInstance().ReleaseAll();

@@ -1,1 +1,0 @@
-#include <Enlivengine/Meta/DataFileSpecialization_Resources.hpp>

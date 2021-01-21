@@ -3,13 +3,8 @@
 #include <unordered_map>
 
 #include <Enlivengine/Utils/Meta.hpp>
+#include <Enlivengine/Utils/Serializer.hpp>
 #include <Enlivengine/Core/Entity.hpp>
-
-#include <Enlivengine/Meta/ObjectEditorSpecialization.hpp>
-#include <Enlivengine/Meta/DataFileSpecialization.hpp>
-
-#include <Enlivengine/Meta/ObjectEditor.hpp>
-#include <Enlivengine/Meta/DataFile.hpp>
 
 namespace en
 {
@@ -32,8 +27,7 @@ public:
 	using AddCallback = std::function<void(Entity&)>;
 	using HasCallback = std::function<bool(const Entity&)>;
 	using RemoveCallback = std::function<void(Entity&)>;
-	using SerializeCallback = std::function<bool(DataFile&, const Entity&)>;
-	using DeserializeCallback = std::function<bool(DataFile&, Entity&)>;
+	using SerializeCallback = std::function<bool(ClassSerializer&, Entity&)>;
 
 	struct ComponentInfo
 	{
@@ -45,7 +39,6 @@ public:
 		HasCallback has;
 		RemoveCallback remove;
 		SerializeCallback serialize;
-		DeserializeCallback deserialize;
 	};
 
 	static const std::unordered_map<U32, ComponentInfo>& GetComponentInfos();
@@ -77,8 +70,14 @@ bool ComponentFactory::Register()
 		}
 		else
 		{
+			ENLIVE_UNUSED(entity);
+			enAssert(false);
+			// TODO : ObjectEditor
+			/*
 			T& component = entity.Get<T>();
 			return ObjectEditor::ImGuiEditor(component, TypeInfo<T>::GetName());
+			*/
+			return false;
 		}
 	};
 #endif // ENLIVE_ENABLE_IMGUI
@@ -95,26 +94,22 @@ bool ComponentFactory::Register()
 	{
 		entity.Remove<T>();
 	};
-	mComponents[hash].serialize = [](DataFile& dataFile, const Entity& entity)
+	mComponents[hash].serialize = [](ClassSerializer& serializer, Entity& entity)
 	{
 		if constexpr (Traits::IsEmpty<T>::value)
 		{
-			return true;
+			if (serializer.BeginClass(TypeInfo<T>::GetName(), TypeInfo<T>::GetHash()))
+			{
+				return serializer.EndClass();
+			}
+			else
+			{
+				return false;
+			}
 		}
 		else
 		{
-			return dataFile.Serialize(entity.Get<T>(), TypeInfo<T>::GetName());
-		}
-	};
-	mComponents[hash].deserialize = [](DataFile& dataFile, Entity& entity)
-	{
-		if constexpr (Traits::IsEmpty<T>::value)
-		{
-			return true;
-		}
-		else
-		{
-			return dataFile.Deserialize(entity.Add<T>(), TypeInfo<T>::GetName());
+			return GenericSerialization(serializer, TypeInfo<T>::GetName(), entity.Get<T>());
 		}
 	};
 	return true;

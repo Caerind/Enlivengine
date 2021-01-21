@@ -76,8 +76,6 @@ public:
 	b2Body* GetBody();
 	const b2Body* GetBody() const;
 
-private:
-	friend struct ComponentHasCustomInitialization<PhysicComponent2D>;
 	bool Initialize(const Entity& entity);
 
 private:
@@ -89,11 +87,11 @@ private:
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO(en::PhysicBodyType)
+ENLIVE_DEFINE_ENUM_INFO(en::PhysicBodyType)
 
-ENLIVE_DEFINE_TYPE_INFO(en::PhysicShapeType)
+ENLIVE_DEFINE_ENUM_INFO(en::PhysicShapeType)
 
-ENLIVE_META_CLASS_BEGIN(en::PhysicComponent2D)
+ENLIVE_META_CLASS_BEGIN(en::PhysicComponent2D, en::Type_ClassSerialization, en::Type_ClassEditor)
 	ENLIVE_META_CLASS_MEMBER("type", &en::PhysicComponent2D::GetBodyType, &en::PhysicComponent2D::SetBodyType),
 	ENLIVE_META_CLASS_MEMBER("linearVelocity", &en::PhysicComponent2D::GetLinearVelocity, &en::PhysicComponent2D::SetLinearVelocity),
 	ENLIVE_META_CLASS_MEMBER("angularVelocity", &en::PhysicComponent2D::GetAngularVelocity, &en::PhysicComponent2D::SetAngularVelocity),
@@ -103,13 +101,4 @@ ENLIVE_META_CLASS_BEGIN(en::PhysicComponent2D)
 	ENLIVE_META_CLASS_MEMBER("fixedRotation", &en::PhysicComponent2D::IsFixedRotation, &en::PhysicComponent2D::SetFixedRotation),
 	ENLIVE_META_CLASS_MEMBER("bullet", &en::PhysicComponent2D::IsBullet, &en::PhysicComponent2D::SetBullet)
 ENLIVE_META_CLASS_END()
-
-template <>
-struct ComponentHasCustomInitialization<en::PhysicComponent2D>
-{
-	static constexpr bool value = true;
-	static bool Initialize(const en::Entity& entity, en::PhysicComponent2D& component)
-	{
-		return component.Initialize(entity);
-	}
-};
+ENLIVE_COMPONENT_CUSTOM_INITIALIZATION(en::PhysicComponent2D)

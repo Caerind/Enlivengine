@@ -69,7 +69,7 @@ private:
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::Plane)
+ENLIVE_META_CLASS_BEGIN(en::Plane, en::Type_ClassSerialization, en::Type_ClassEditor)
 	ENLIVE_META_CLASS_MEMBER("normal", &en::Plane::GetNormal, &en::Plane::SetNormal),
 	ENLIVE_META_CLASS_MEMBER("constant", &en::Plane::GetConstant, &en::Plane::SetConstant)
 ENLIVE_META_CLASS_END()

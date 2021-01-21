@@ -176,4 +176,4 @@ private:
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO(en::Keyboard::Key)
+ENLIVE_DEFINE_ENUM_INFO(en::Keyboard::Key)
