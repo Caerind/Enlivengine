@@ -284,11 +284,11 @@ bool Quaternion<T>::Serialize(ClassSerializer& serializer, const char* name)
 	if (serializer.BeginClass(name, TypeInfo<Quaternion<T>>::GetHash()))
 	{
 		bool ret = true;
-		ret = GenericSerialization(serializer, "x", object.v.x) && ret;
-		ret = GenericSerialization(serializer, "y", object.v.y) && ret;
-		ret = GenericSerialization(serializer, "z", object.v.z) && ret;
-		ret = GenericSerialization(serializer, "s", object.s) && ret;
-		ret = serializer.CloseNode() && ret;
+		ret = GenericSerialization(serializer, "x", v.x) && ret;
+		ret = GenericSerialization(serializer, "y", v.y) && ret;
+		ret = GenericSerialization(serializer, "z", v.z) && ret;
+		ret = GenericSerialization(serializer, "s", s) && ret;
+		ret = serializer.EndClass() && ret;
 		return ret;
 	}
 	else
