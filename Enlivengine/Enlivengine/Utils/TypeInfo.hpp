@@ -34,6 +34,16 @@ struct TypeInfo
 // Define Helpers
 //////////////////////////////////////////////////////////////////
 
+namespace en
+{
+
+static constexpr bool Type_CustomSerialization = true;
+static constexpr bool Type_CustomEditor = true;
+static constexpr bool Type_ClassSerialization = false;
+static constexpr bool Type_ClassEditor = false;
+
+} // namespace en
+
 #define ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(type) namespace en { \
 	template <> \
 	struct TypeInfo<type> \

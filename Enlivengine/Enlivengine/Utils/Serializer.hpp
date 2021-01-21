@@ -53,6 +53,8 @@ public:
 
 	virtual bool BeginClass(const char* name, U32 classTypeHash) = 0;
 	virtual bool EndClass() = 0;
+
+	virtual bool HasNode(const char* name) = 0;
 };
 
 template <typename T> bool GenericSerialization(ClassSerializer& serializer, const char* name, T& object);

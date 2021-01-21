@@ -91,6 +91,8 @@ public:
 	static void SetMainCamera(Camera* camera);
 	static Camera* GetMainCamera();
 
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 protected:
 	void UpdateProjectionMatrix() const;
 	void UpdateViewMatrix() const;
@@ -142,4 +144,4 @@ protected:
 
 ENLIVE_DEFINE_ENUM_INFO(en::Camera::ProjectionMode)
 
-ENLIVE_DEFINE_TYPE_INFO(en::Camera, true, true)
+ENLIVE_DEFINE_TYPE_INFO(en::Camera, en::Type_CustomSerialization, en::Type_CustomEditor)

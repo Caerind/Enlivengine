@@ -16,6 +16,8 @@ public:
 	virtual bool BeginClass(const char* name, U32 classTypeHash);
 	virtual bool EndClass();
 
+	virtual bool HasNode(const char* name);
+
 	virtual bool Serialize(const char* name, bool& value);
 	virtual bool Serialize(const char* name, char& value);
 	virtual bool Serialize(const char* name, I8& value);

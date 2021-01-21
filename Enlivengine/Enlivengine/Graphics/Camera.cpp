@@ -356,6 +356,40 @@ Camera* Camera::GetMainCamera()
 	return sMainCamera;
 }
 
+bool Camera::Serialize(ClassSerializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<Camera>::GetHash()))
+	{
+		bool ret = true;
+		ret = GenericSerialization(serializer, "viewMatrix", mViewMatrix) && ret;
+		ret = GenericSerialization(serializer, "projectionMatrix", mProjectionMatrix) && ret;
+		ret = GenericSerialization(serializer, "rotation", mRotation) && ret;
+		ret = GenericSerialization(serializer, "position", mPosition) && ret;
+		ret = GenericSerialization(serializer, "viewport", mViewport) && ret;
+		ret = GenericSerialization(serializer, "clearColor", mClearColor) && ret;
+		ret = GenericSerialization(serializer, "projectionMode", mProjectionMode) && ret;
+		if (mProjectionMode == ProjectionMode::Perspective)
+		{
+			ret = GenericSerialization(serializer, "nearPlane", mProjectionData.perspective.nearPlane) && ret;
+			ret = GenericSerialization(serializer, "farPlane", mProjectionData.perspective.farPlane) && ret;
+			ret = GenericSerialization(serializer, "fov", mProjectionData.perspective.fov) && ret;
+		}
+		else
+		{
+			ret = GenericSerialization(serializer, "nearPlane", mProjectionData.orthographic.nearPlane) && ret;
+			ret = GenericSerialization(serializer, "farPlane", mProjectionData.orthographic.farPlane) && ret;
+			ret = GenericSerialization(serializer, "size", mProjectionData.orthographic.size) && ret;
+		}
+		ret = serializer.EndClass() && ret;
+		// TODO : Framebuffer ?
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void Camera::UpdateProjectionMatrix() const
 {
 	const bool homogenousDepth = bgfx::getCaps()->homogeneousDepth;

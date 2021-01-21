@@ -4,6 +4,7 @@
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
 #include <Enlivengine/Utils/Meta.hpp>
+#include <Enlivengine/Utils/Serializer.hpp>
 
 // TODO : Constexpr Sqrt => InvSqrt, Asin, Acos
 // TODO : Real : Float/Double

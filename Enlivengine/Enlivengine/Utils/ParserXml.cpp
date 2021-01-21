@@ -30,6 +30,11 @@ bool ParserXml::SaveToFile(const std::string& filename)
 	return mDocument.save_file(!filename.empty() ? filename.c_str() : mFilename.c_str());
 }
 
+bool ParserXml::HasNode(const char* nodeName) const
+{
+	return mCurrentNode.child(nodeName);
+}
+
 bool ParserXml::HasNode(const std::string& nodeName) const
 {
 	return mCurrentNode.child(nodeName.c_str());

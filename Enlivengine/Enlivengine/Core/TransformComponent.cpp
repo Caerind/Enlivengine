@@ -254,6 +254,28 @@ void TransformComponent::MarkGlobalMatrixAsDirty()
 	}
 }
 
+bool TransformComponent::Initialize(const Entity& entity)
+{
+	enAssert(entity.IsValid());
+	mEntity = entity;
+	return true;
+}
+
+bool TransformComponent::Serialize(ClassSerializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<TransformComponent>::GetHash()))
+	{
+		bool ret = true;
+		ret = GenericSerialization(serializer, "Transform", static_cast<Transform&>(*this)) && ret;
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void TransformComponent::UpdateGlobalMatrix() const
 {
 	if (mParent.IsValid())

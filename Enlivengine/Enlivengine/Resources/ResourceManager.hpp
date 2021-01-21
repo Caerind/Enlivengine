@@ -11,6 +11,7 @@
 #include <Enlivengine/Utils/Array.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
 #include <Enlivengine/Utils/Meta.hpp>
+#include <Enlivengine/Utils/Serializer.hpp>
 
 namespace en
 {
@@ -140,6 +141,8 @@ public:
 
 	bool operator==(const ResourcePtr<T>& other) const;
 	bool operator!=(const ResourcePtr<T>& other) const;
+
+	bool Serialize(ClassSerializer& serializer, const char* name);
 
 private:
 	ResourceID mID;
@@ -281,13 +284,13 @@ private:
 
 ENLIVE_DEFINE_ENUM_INFO(en::ResourceLoadInfo::Method)
 
-ENLIVE_META_CLASS_BEGIN(en::ResourceLoadInfo, false, true)
+ENLIVE_META_CLASS_BEGIN(en::ResourceLoadInfo, en::Type_ClassSerialization, en::Type_ClassEditor)
 	ENLIVE_META_CLASS_MEMBER("method", &en::ResourceLoadInfo::method),
 	ENLIVE_META_CLASS_MEMBER("infoString", &en::ResourceLoadInfo::infoString)
 ENLIVE_META_CLASS_END()
 
 #ifdef ENLIVE_DEBUG
-ENLIVE_META_CLASS_BEGIN(en::ResourceInfo, false, true)
+ENLIVE_META_CLASS_BEGIN(en::ResourceInfo, en::Type_ClassSerialization, en::Type_ClassEditor)
 	ENLIVE_META_CLASS_MEMBER("id", &en::ResourceInfo::id),
 	ENLIVE_META_CLASS_MEMBER("type", &en::ResourceInfo::type),
 	ENLIVE_META_CLASS_MEMBER("identifier", &en::ResourceInfo::identifier),
@@ -296,6 +299,6 @@ ENLIVE_META_CLASS_BEGIN(en::ResourceInfo, false, true)
 ENLIVE_META_CLASS_END()
 #endif // ENLIVE_DEBUG
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::ResourcePtr, true, true)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::ResourcePtr, en::Type_CustomSerialization, en::Type_CustomEditor)
 
 #include "ResourceManager.inl"

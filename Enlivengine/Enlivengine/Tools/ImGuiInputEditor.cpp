@@ -270,17 +270,17 @@ bool ImGuiInputEditor::Axes()
 
 bool ImGuiInputEditor::LoadInputsFromFile()
 {
-	const std::string& assetsPath = PathManager::GetAssetsPath();
-	ENLIVE_UNUSED(assetsPath);
-
-	enAssert(false);
-	// TODO : DataFile
-	/*
-	DataFile xml;
-	if (xml.LoadFromFile(assetsPath + "inputs.data"))
+	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "inputs.data");
+	if (std::filesystem::exists(path))
 	{
+		XmlClassSerializer xml;
+		if (!xml.Open(path.string(), Serializer::Mode::Read))
+		{
+			return false;
+		}
+
 		Array<EventSystem::EventButton> buttons;
-		if (xml.Deserialize(buttons, "Buttons"))
+		if (GenericSerialization(xml, "Buttons", buttons))
 		{
 			for (const EventSystem::EventButton& button : buttons)
 			{
@@ -289,17 +289,20 @@ bool ImGuiInputEditor::LoadInputsFromFile()
 		}
 
 		Array<EventSystem::EventAxis> axes;
-		if (xml.Deserialize(axes, "Axes"))
+		if (GenericSerialization(xml, "Axes", axes))
 		{
 			for (const EventSystem::EventAxis& axis : axes)
 			{
 				EventSystem::AddAxis(axis.name.c_str(), axis.type, axis.axisIdentifier, axis.extraInfo);
 			}
 		}
-	}
-	*/
 
-	return true;
+		return true;
+	}
+	else
+	{
+		return SaveInputsToFile();
+	}
 }
 
 bool ImGuiInputEditor::SaveInputsToFile()

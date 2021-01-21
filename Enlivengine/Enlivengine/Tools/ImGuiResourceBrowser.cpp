@@ -87,17 +87,17 @@ void ImGuiResourceBrowser::Display()
 
 bool ImGuiResourceBrowser::LoadResourceInfosFromFile()
 {
-	const std::string& assetsPath = PathManager::GetAssetsPath();
-	ENLIVE_UNUSED(assetsPath);
-
-	enAssert(false);
-	// TODO : DataFile
-	/*
-	DataFile xml;
-	if (xml.LoadFromFile(assetsPath + "resources.data"))
+	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "resources.data");
+	if (std::filesystem::exists(path))
 	{
+		XmlClassSerializer xml;
+		if (!xml.Open(path.string(), Serializer::Mode::Read))
+		{
+			return false;
+		}
+
 		Array<ResourceInfo> resourceInfos;
-		if (xml.Deserialize(mResourceInfos, "Resources"))
+		if (GenericSerialization(xml, "Resources", mResourceInfos))
 		{
 			for (const ResourceInfo& resourceInfo : mResourceInfos)
 			{
@@ -118,10 +118,13 @@ bool ImGuiResourceBrowser::LoadResourceInfosFromFile()
 				}
 			}
 		}
-	}
-	*/
 
-	return true;
+		return true;
+	}
+	else
+	{
+		return SaveResourceInfosToFile();
+	}
 }
 
 bool ImGuiResourceBrowser::SaveResourceInfosToFile()

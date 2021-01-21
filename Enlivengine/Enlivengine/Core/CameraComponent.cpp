@@ -60,6 +60,28 @@ const Matrix4f& CameraComponent::GetViewMatrix() const
 	return mViewMatrix;
 }
 
+bool CameraComponent::Initialize(const Entity& entity)
+{
+	enAssert(entity.IsValid());
+	mEntity = entity;
+	return true;
+}
+
+bool CameraComponent::Serialize(ClassSerializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<CameraComponent>::GetHash()))
+	{
+		bool ret = true;
+		ret = GenericSerialization(serializer, "Camera", static_cast<Camera&>(*this)) && ret;
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void CameraComponent::InitializeView(const Vector3f& position, const Matrix3f& rotation)
 {
 	Camera::InitializeView(position, rotation);

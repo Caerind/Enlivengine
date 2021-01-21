@@ -154,7 +154,7 @@ bool PhysicSystem2D::AddEndContactSlot(EndContactSlotType& slot, const PhysicCom
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::PhysicSystem2D, true, true)
+ENLIVE_META_CLASS_BEGIN(en::PhysicSystem2D, true, true) // TODO : Use helpers
 	ENLIVE_META_CLASS_MEMBER("gravity", &en::PhysicSystem2D::GetGravity, &en::PhysicSystem2D::SetGravity),
 	ENLIVE_META_CLASS_MEMBER("positionIterations", &en::PhysicSystem2D::GetPositionIterations, &en::PhysicSystem2D::SetPositionIterations),
 	ENLIVE_META_CLASS_MEMBER("velocityIterations", &en::PhysicSystem2D::GetVelocityIterations, &en::PhysicSystem2D::SetVelocityIterations)

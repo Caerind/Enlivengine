@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include <Enlivengine/Utils/Meta.hpp>
+#include <Enlivengine/Utils/Serializer.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
 namespace en
@@ -26,9 +27,7 @@ public:
 	using AddCallback = std::function<void(Entity&)>;
 	using HasCallback = std::function<bool(const Entity&)>;
 	using RemoveCallback = std::function<void(Entity&)>;
-	// TODO : DataFile
-	//using SerializeCallback = std::function<bool(DataFile&, const Entity&)>;
-	//using DeserializeCallback = std::function<bool(DataFile&, Entity&)>;
+	using SerializeCallback = std::function<bool(ClassSerializer&, Entity&)>;
 
 	struct ComponentInfo
 	{
@@ -39,9 +38,7 @@ public:
 		AddCallback add;
 		HasCallback has;
 		RemoveCallback remove;
-		// TODO : DataFile
-		//SerializeCallback serialize;
-		//DeserializeCallback deserialize;
+		SerializeCallback serialize;
 	};
 
 	static const std::unordered_map<U32, ComponentInfo>& GetComponentInfos();
@@ -97,31 +94,24 @@ bool ComponentFactory::Register()
 	{
 		entity.Remove<T>();
 	};
-	// TODO : DataFile
-	/*
-	mComponents[hash].serialize = [](DataFile& dataFile, const Entity& entity)
+	mComponents[hash].serialize = [](ClassSerializer& serializer, Entity& entity)
 	{
 		if constexpr (Traits::IsEmpty<T>::value)
 		{
-			return true;
+			if (serializer.BeginClass(TypeInfo<T>::GetName(), TypeInfo<T>::GetHash()))
+			{
+				return serializer.EndClass();
+			}
+			else
+			{
+				return false;
+			}
 		}
 		else
 		{
-			return dataFile.Serialize(entity.Get<T>(), TypeInfo<T>::GetName());
+			return GenericSerialization(serializer, TypeInfo<T>::GetName(), entity.Get<T>());
 		}
 	};
-	mComponents[hash].deserialize = [](DataFile& dataFile, Entity& entity)
-	{
-		if constexpr (Traits::IsEmpty<T>::value)
-		{
-			return true;
-		}
-		else
-		{
-			return dataFile.Deserialize(entity.Add<T>(), TypeInfo<T>::GetName());
-		}
-	};
-	*/
 	return true;
 }
 

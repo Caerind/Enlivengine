@@ -60,6 +60,8 @@ public:
 	World& GetWorld();
 	const World& GetWorld() const;
 
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 	// TODO : Try to remove/hide these
 	const entt::entity& GetEntity() const;
 	entt::registry& GetRegistry();
@@ -87,7 +89,7 @@ decltype(auto) Entity::Add()
 		T& component = GetRegistry().emplace<T>(mEntity);
 		if constexpr (ComponentHasCustomInitialization<T>::value)
 		{
-			ComponentHasCustomInitialization<T>::Initialize(*this, component);
+			component.Initialize(*this);
 		}
 		return component;
 	}
@@ -107,7 +109,7 @@ decltype(auto) Entity::Add(Args&& ...args)
 		T& component = GetRegistry().emplace<T>(mEntity, std::forward<Args>(args)...);
 		if constexpr (ComponentHasCustomInitialization<T>::value)
 		{
-			ComponentHasCustomInitialization<T>::Initialize(*this, component);
+			component.Initialize(*this);
 		}
 		return component;
 	}
@@ -150,5 +152,5 @@ const T& Entity::Get() const
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::Entity, true, true)
+ENLIVE_META_CLASS_BEGIN(en::Entity, en::Type_CustomSerialization, en::Type_CustomEditor)
 ENLIVE_META_CLASS_END()

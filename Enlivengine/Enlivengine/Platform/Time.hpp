@@ -310,5 +310,5 @@ private:
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO(en::Time, true, true)
-ENLIVE_DEFINE_TYPE_INFO(en::DateTime, true, true)
+ENLIVE_DEFINE_TYPE_INFO(en::Time, en::Type_CustomSerialization, en::Type_CustomEditor)
+ENLIVE_DEFINE_TYPE_INFO(en::DateTime, en::Type_CustomSerialization, en::Type_CustomEditor)

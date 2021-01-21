@@ -272,9 +272,30 @@ public:
 
 	static constexpr Quaternion<T> Identity() { return Quaternion<T>(Vector3f::Zero(), T(1)); }
 
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 	Vector3<T> v;
 	T s;
 };
+
+template <typename T>
+bool Quaternion<T>::Serialize(ClassSerializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<Quaternion<T>>::GetHash()))
+	{
+		bool ret = true;
+		ret = GenericSerialization(serializer, "x", object.v.x) && ret;
+		ret = GenericSerialization(serializer, "y", object.v.y) && ret;
+		ret = GenericSerialization(serializer, "z", object.v.z) && ret;
+		ret = GenericSerialization(serializer, "s", object.s) && ret;
+		ret = serializer.CloseNode() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 template <typename T> constexpr Quaternion<T> operator*(const T& s, const Quaternion<T>& quaternion) { return quaternion * s; }
 
@@ -284,4 +305,4 @@ typedef Quaternionf quat; // GLSL-like
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Quaternion, false, true)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Quaternion, en::Type_CustomSerialization, en::Type_CustomEditor)

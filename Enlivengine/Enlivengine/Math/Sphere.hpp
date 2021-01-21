@@ -53,7 +53,7 @@ private:
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::Sphere, true, true)
+ENLIVE_META_CLASS_BEGIN(en::Sphere, en::Type_ClassSerialization, en::Type_ClassEditor)
 	ENLIVE_META_CLASS_MEMBER("center", &en::Sphere::GetCenter, &en::Sphere::SetCenter),
 	ENLIVE_META_CLASS_MEMBER("radius", &en::Sphere::GetRadius, &en::Sphere::SetRadius)
 ENLIVE_META_CLASS_END()

@@ -138,7 +138,7 @@ ENLIVE_DEFINE_ENUM_INFO(en::EventSystem::EventButton::Type)
 
 ENLIVE_DEFINE_ENUM_INFO(en::EventSystem::EventButton::ActionType)
 
-ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventButton, false, true)
+ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventButton, en::Type_ClassSerialization, en::Type_CustomEditor)
 	ENLIVE_META_CLASS_MEMBER("name", &en::EventSystem::EventButton::name),
 	ENLIVE_META_CLASS_MEMBER("type", &en::EventSystem::EventButton::type),
 	ENLIVE_META_CLASS_MEMBER("action", &en::EventSystem::EventButton::action),
@@ -148,7 +148,7 @@ ENLIVE_META_CLASS_END()
 
 ENLIVE_DEFINE_ENUM_INFO(en::EventSystem::EventAxis::Type)
 
-ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventAxis, false, true)
+ENLIVE_META_CLASS_BEGIN(en::EventSystem::EventAxis, en::Type_ClassSerialization, en::Type_CustomEditor)
 	ENLIVE_META_CLASS_MEMBER("name", &en::EventSystem::EventAxis::name),
 	ENLIVE_META_CLASS_MEMBER("type", &en::EventSystem::EventAxis::type),
 	ENLIVE_META_CLASS_MEMBER("axisIdentifier", &en::EventSystem::EventAxis::axisIdentifier),

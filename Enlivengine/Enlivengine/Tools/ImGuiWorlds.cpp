@@ -262,7 +262,6 @@ void ImGuiWorlds::AllWorlds()
 bool ImGuiWorlds::LoadWorldsFromFile()
 {
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
-
 	if (std::filesystem::exists(path))
 	{
 		XmlClassSerializer xml;

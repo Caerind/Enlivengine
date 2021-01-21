@@ -46,7 +46,7 @@ private:
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::Ray, true, true)
+ENLIVE_META_CLASS_BEGIN(en::Ray, en::Type_ClassSerialization, en::Type_ClassEditor)
 	ENLIVE_META_CLASS_MEMBER("origin", &en::Ray::GetOrigin, &en::Ray::SetOrigin),
 	ENLIVE_META_CLASS_MEMBER("direction", &en::Ray::GetDirection, &en::Ray::SetDirection)
 ENLIVE_META_CLASS_END()

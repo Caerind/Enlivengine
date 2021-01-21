@@ -28,6 +28,10 @@ public:
 
 	virtual const Matrix4f& GetViewMatrix() const override;
 
+	bool Initialize(const Entity& entity);
+
+	bool Serialize(ClassSerializer& serializer, const char* name);
+
 private:
 	// Hide camera view transform, use entity transform
 	void InitializeView(const Vector3f& position, const Matrix3f& rotation);
@@ -49,17 +53,6 @@ private:
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::CameraComponent, true, true)
+ENLIVE_META_CLASS_BEGIN(en::CameraComponent, en::Type_CustomSerialization, en::Type_CustomEditor)
 ENLIVE_META_CLASS_END()
-
-template <>
-struct ComponentHasCustomInitialization<en::CameraComponent>
-{
-	static constexpr bool value = true;
-	static bool Initialize(const en::Entity& entity, en::CameraComponent& component)
-	{
-		enAssert(entity.IsValid());
-		component.mEntity = entity;
-		return true;
-	}
-};
+ENLIVE_COMPONENT_CUSTOM_INITIALIZATION(en::CameraComponent)

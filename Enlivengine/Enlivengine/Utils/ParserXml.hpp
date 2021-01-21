@@ -18,6 +18,7 @@ public:
 	bool LoadFromFile(const std::string& filename);
 	bool SaveToFile(const std::string& filename = "");
 
+	bool HasNode(const char* nodeName) const;
 	bool HasNode(const std::string& nodeName) const;
 	bool ReadNode(const std::string& nodeName);
 	bool ReadFirstNode();

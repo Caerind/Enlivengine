@@ -97,6 +97,12 @@ bool XmlClassSerializer::EndClass()
 	return true;
 }
 
+bool XmlClassSerializer::HasNode(const char* name)
+{
+	enAssert(IsOpened());
+	return mParser.HasNode(name);
+}
+
 bool XmlClassSerializer::Serialize(const char* name, bool& value)
 {
 	enAssert(IsOpened());

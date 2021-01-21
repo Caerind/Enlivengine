@@ -169,5 +169,5 @@ bool World::HasSystem() const
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::World, true, true)
+ENLIVE_META_CLASS_BEGIN(en::World, true, true) // TODO : Use helpers
 ENLIVE_META_CLASS_END()
