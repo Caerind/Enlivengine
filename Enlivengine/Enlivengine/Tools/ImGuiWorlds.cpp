@@ -8,7 +8,11 @@
 
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Universe.hpp>
+<<<<<<< HEAD
 #include <Enlivengine/Core/SystemFactory.hpp>
+=======
+#include <Enlivengine/Engine/WorldFileManager.hpp>
+>>>>>>> 9dd2d43dcccedc6856bb3146df39cf455da86397
 
 #include <Enlivengine/Utils/XmlClassSerializer.hpp>
 
@@ -51,7 +55,6 @@ void ImGuiWorlds::Display()
 
 void ImGuiWorlds::CurrentWorld()
 {
-	// Current World
 	if (ImGui::CollapsingHeader("Current World"))
 	{
 		ImGui::Indent();
@@ -65,7 +68,7 @@ void ImGuiWorlds::CurrentWorld()
 			ImGui::SameLine();
 			if (ImGui::Button(ICON_FA_UPLOAD))
 			{
-				Universe::UnloadCurrentWorld();
+				WorldFileManager::UnloadCurrentWorld(true); // TODO : Do we really want to save here ?
 				ImGui::Unindent();
 				return;
 			}
@@ -138,6 +141,7 @@ void ImGuiWorlds::CurrentWorld()
 
 			if (worldModified)
 			{
+
 				// TODO : World Modified
 				//world.SaveToFile();
 			}
@@ -177,7 +181,7 @@ void ImGuiWorlds::AllWorlds()
 				const std::string worldName = std::string(newWorldName);
 				mWorlds.push_back(worldName);
 
-				Universe::CreateWorld(worldName);
+				WorldFileManager::CreateWorld(worldName);
 
 				modified = true;
 
@@ -219,7 +223,7 @@ void ImGuiWorlds::AllWorlds()
 			{
 				if (ImGui::Button(ICON_FA_DOWNLOAD))
 				{
-					Universe::LoadWorld(mWorlds[i]);
+					WorldFileManager::LoadWorld(mWorlds[i]);
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -230,7 +234,7 @@ void ImGuiWorlds::AllWorlds()
 
 				if (ImGui::Button(ICON_FA_TRASH))
 				{
-					Universe::RemoveWorld(mWorlds[i]);
+					WorldFileManager::RemoveWorld(mWorlds[i]);
 					remove = true;
 					modified = true;
 				}
@@ -281,7 +285,7 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 		{
 			if (currentWorldName != "")
 			{
-				Universe::LoadWorld(currentWorldName);
+				WorldFileManager::LoadWorld(currentWorldName);
 			}
 		}
 

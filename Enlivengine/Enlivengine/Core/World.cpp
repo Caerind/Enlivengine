@@ -85,16 +85,6 @@ const std::string& World::GetName() const
 	return mName;
 }
 
-std::string World::GetFilename() const
-{
-	return GetWorldFilename(mName);
-}
-
-std::string World::GetWorldFilename(const std::string& worldName)
-{
-	return PathManager::GetAssetsPath() + worldName + ".world";
-}
-
 #ifdef ENLIVE_DEBUG
 void World::Play()
 {

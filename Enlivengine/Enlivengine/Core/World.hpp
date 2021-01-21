@@ -16,6 +16,11 @@
 namespace en
 {
 
+class DataFile;
+namespace DataFileSpecialization
+{
+}
+
 class World
 {
 public:
@@ -45,8 +50,6 @@ public:
 	void Render();
 
 	const std::string& GetName() const;
-	std::string GetFilename() const;
-	static std::string GetWorldFilename(const std::string& worldName);
 
 #ifdef ENLIVE_DEBUG
 	void Play();
@@ -169,5 +172,9 @@ bool World::HasSystem() const
 
 } // namespace en
 
+<<<<<<< HEAD
 ENLIVE_META_CLASS_BEGIN(en::World, true, true) // TODO : Use helpers
+=======
+ENLIVE_META_CLASS_BEGIN(en::World)
+>>>>>>> 9dd2d43dcccedc6856bb3146df39cf455da86397
 ENLIVE_META_CLASS_END()
