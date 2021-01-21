@@ -45,6 +45,8 @@ bool WorldFileManager::SaveCurrentWorld()
 	enAssert(world != nullptr);
 
 	// TODO : SaveToFile
+	ENLIVE_UNUSED(world);
+
 	return false;
 }
 

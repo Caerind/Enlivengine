@@ -8,11 +8,8 @@
 
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Universe.hpp>
-<<<<<<< HEAD
 #include <Enlivengine/Core/SystemFactory.hpp>
-=======
 #include <Enlivengine/Engine/WorldFileManager.hpp>
->>>>>>> 9dd2d43dcccedc6856bb3146df39cf455da86397
 
 #include <Enlivengine/Utils/XmlClassSerializer.hpp>
 
