@@ -88,7 +88,8 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, T& obje
 		}
 		else
 		{
-			static_assert(false, "Can't find how to serialize T");
+			enLogError(LogChannel::System, "Can't find serialization for {}", TypeInfo<T>::GetName());
+			enAssert(false);
 			return false;
 		}
 	}
@@ -167,7 +168,8 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, const T
 		}
 		else
 		{
-			static_assert(false, "Can't find how to serialize T");
+			enLogError(LogChannel::System, "Can't find serialization for {}", TypeInfo<T>::GetName());
+			enAssert(false);
 			return false;
 		}
 	}	  

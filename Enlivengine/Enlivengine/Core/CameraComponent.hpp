@@ -14,7 +14,7 @@ class CameraComponent : public Camera
 {
 public:
 	CameraComponent();
-	~CameraComponent();
+	virtual ~CameraComponent();
 
 	CameraComponent(CameraComponent&& other) noexcept;
 	CameraComponent(const CameraComponent&) = delete;

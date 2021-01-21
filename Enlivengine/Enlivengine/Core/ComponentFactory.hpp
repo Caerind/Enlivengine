@@ -63,6 +63,11 @@ bool ComponentFactory::Register()
 #ifdef ENLIVE_ENABLE_IMGUI
 	mComponents[hash].editor = [](Entity& entity)
 	{
+		ENLIVE_UNUSED(entity);
+		enAssert(false);
+		return false;
+		// TODO : ObjectEditor
+		/*
 		if constexpr (Traits::IsEmpty<T>::value)
 		{
 			ImGui::Text("%s", TypeInfo<T>::GetName());
@@ -70,15 +75,10 @@ bool ComponentFactory::Register()
 		}
 		else
 		{
-			ENLIVE_UNUSED(entity);
-			enAssert(false);
-			// TODO : ObjectEditor
-			/*
 			T& component = entity.Get<T>();
 			return ObjectEditor::ImGuiEditor(component, TypeInfo<T>::GetName());
-			*/
-			return false;
 		}
+		*/
 	};
 #endif // ENLIVE_ENABLE_IMGUI
 	mComponents[hash].add = [](Entity& entity)
