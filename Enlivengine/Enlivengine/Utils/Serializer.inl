@@ -177,7 +177,7 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, const T
 template <typename T, std::size_t N>
 bool GenericSerialization(ClassSerializer& serializer, const char* name, std::array<T, N>& object)
 {
-	if (serializer.BeginClass(name, TypeInfo<std::array<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<std::array<T, N>>::GetHash()))
 	{
 		bool ret = true;
 
@@ -220,7 +220,7 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, std::ar
 template <typename T, std::size_t N>
 bool GenericSerialization(ClassSerializer& serializer, const char* name, const std::array<T, N>& object)
 {
-	if (serializer.BeginClass(name, TypeInfo<std::array<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<std::array<T, N>>::GetHash()))
 	{
 		bool ret = true;
 
