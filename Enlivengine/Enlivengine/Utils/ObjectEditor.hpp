@@ -15,6 +15,7 @@
 // Needed for the GenericEdit template part for Enums
 #ifdef ENLIVE_ENABLE_IMGUI
 #include <imgui/imgui.h>
+#include <IconFontCppHeaders/IconsFontAwesome5.h>
 #endif // ENLIVE_ENABLE_IMGUI
 
 namespace en
