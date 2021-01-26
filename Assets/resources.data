@@ -1,4 +1,14 @@
 <?xml version="1.0"?>
 <Resources type="en::Array<en::ResourceInfo>" hash="450972212">
-	<size>0</size>
+	<size>1</size>
+	<Resources_0 type="en::ResourceInfo" hash="1031480020">
+		<id>109796557</id>
+		<type>2</type>
+		<identifier>ship</identifier>
+		<loadInfo type="en::ResourceLoadInfo" hash="4273027252">
+			<method>File</method>
+			<infoString>../../Assets/ship_default.png</infoString>
+		</loadInfo>
+		<loaded>true</loaded>
+	</Resources_0>
 </Resources>

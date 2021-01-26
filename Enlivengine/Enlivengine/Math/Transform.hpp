@@ -32,6 +32,8 @@ public:
 	// Transform
 	void SetTransform(const Vector3f& translation, const Matrix3f& rotation, const Vector3f& scale = Vector3f(1.0f));
 
+	const Matrix4f& GetMatrix() const;
+
 protected:
 	Matrix4f mMatrix;
 };

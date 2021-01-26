@@ -11,8 +11,7 @@ namespace en
 
 World::World(const std::string& name)
 	: mEntityManager(*this)
-	, mSystems()
-	, mPhysicSystem(nullptr)
+	, mSystemManager(*this)
 	, mName(name)
 #ifdef ENLIVE_DEBUG
 	, mPlaying(false)
@@ -24,10 +23,6 @@ World::World(const std::string& name)
 
 World::~World()
 {
-	for (System* system : mSystems)
-	{
-		enDelete(System, system);
-	}
 }
 
 EntityManager& World::GetEntityManager()
@@ -40,44 +35,39 @@ const EntityManager& World::GetEntityManager() const
 	return mEntityManager;
 }
 
-PhysicSystemBase* World::GetPhysicSystem()
+SystemManager& World::GetSystemManager()
 {
-	return mPhysicSystem;
+	return mSystemManager;
 }
 
-const PhysicSystemBase* World::GetPhysicSystem() const
+const en::SystemManager& World::GetSystemManager() const
 {
-	return mPhysicSystem;
+	return mSystemManager;
 }
 
-bool World::HasPhysicSystem() const
+void World::UpdatePhysic(Time dt)
 {
-	return mPhysicSystem != nullptr;
-}
-
-void World::Update(Time dt)
-{
-	ENLIVE_PROFILE_FUNCTION();
 #ifdef ENLIVE_DEBUG
 	if (mPlaying)
 #endif // ENLIVE_DEBUG
 	{
-		for (System* system : mSystems)
-		{
-			ENLIVE_PROFILE_SCOPE(system->GetName());
-			system->Update(dt);
-		}
+		mSystemManager.UpdatePhysic(dt);
+	}
+}
+
+void World::Update(Time dt)
+{
+#ifdef ENLIVE_DEBUG
+	if (mPlaying)
+#endif // ENLIVE_DEBUG
+	{
+		mSystemManager.Update(dt);
 	}
 }
 
 void World::Render()
 {
-	ENLIVE_PROFILE_FUNCTION();
-	for (System* system : mSystems)
-	{
-		ENLIVE_PROFILE_SCOPE(system->GetName());
-		system->Render();
-	}
+	mSystemManager.Render();
 }
 
 const std::string& World::GetName() const
@@ -170,7 +160,7 @@ bool World::Serialize(Serializer& serializer, const char* name)
 		bool ret = true;
 
 		ret = GenericSerialization(serializer, "EntityManager", mEntityManager) && ret;
-		ret = GenericSerialization(serializer, "Systems", mSystems) && ret;
+		ret = GenericSerialization(serializer, "SystemManager", mSystemManager) && ret;
 
 		ret = serializer.EndClass() && ret;
 		return ret;
@@ -188,7 +178,7 @@ bool World::Edit(ObjectEditor& objectEditor, const char* name)
 		bool ret = false;
 
 		ret = GenericEdit(objectEditor, "EntityManager", mEntityManager) || ret;
-		ret = GenericEdit(objectEditor, "Systems", mSystems) || ret;
+		ret = GenericEdit(objectEditor, "SystemManager", mSystemManager) || ret;
 
 		objectEditor.EndClass();
 		return ret;

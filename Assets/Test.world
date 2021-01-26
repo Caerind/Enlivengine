@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<World type="en::World" hash="3748700136">
+	<EntityManager type="en::EntityManager" hash="1741196248">
+		<size>1</size>
+		<Entity_0 type="en::Entity" hash="2742466461">
+			<en::TransformComponent type="en::TransformComponent" hash="2679254095">
+				<Transform type="en::Transform" hash="3048476028">
+					<position type="en::Vector3<en::F32>" hash="3762263698">
+						<x>0</x>
+						<y>0</y>
+						<z>0</z>
+					</position>
+					<rotation type="en::Matrix3<en::F32>" hash="809589396">
+						<i0>1</i0>
+						<i1>0</i1>
+						<i2>0</i2>
+						<i3>0</i3>
+						<i4>1</i4>
+						<i5>0</i5>
+						<i6>0</i6>
+						<i7>0</i7>
+						<i8>1</i8>
+					</rotation>
+					<scale type="en::Vector3<en::F32>" hash="3762263698">
+						<x>1</x>
+						<y>1</y>
+						<z>1</z>
+					</scale>
+				</Transform>
+			</en::TransformComponent>
+		</Entity_0>
+	</EntityManager>
+	<SystemManager type="en::SystemManager" hash="2586247584">
+		<en::PhysicSystem2D type="en::PhysicSystem2D" hash="3650980363">
+			<gravity type="en::Vector2<en::F32>" hash="3694462321">
+				<x>0</x>
+				<y>0</y>
+			</gravity>
+			<positionIterations>3</positionIterations>
+			<velocityIterations>8</velocityIterations>
+		</en::PhysicSystem2D>
+	</SystemManager>
+</World>

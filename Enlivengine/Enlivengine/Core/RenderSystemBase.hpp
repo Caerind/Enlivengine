@@ -5,10 +5,10 @@
 namespace en
 {
 
-class PhysicSystemBase : public System
+class RenderSystemBase : public System
 {
 public:
-	virtual void UpdatePhysic(Time dt) = 0;
+	virtual void Render() = 0;
 };
 
 } // namespace en

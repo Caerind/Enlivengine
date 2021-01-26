@@ -57,23 +57,23 @@ bool SystemFactory::Register()
 	mSystems[hash].name = TypeInfo<T>::GetName(); 
 	mSystems[hash].editor = [](ObjectEditor& objectEditor, World& world)
 	{
-		return GenericEdit(objectEditor, TypeInfo<T>::GetName(), *world.GetSystem<T>());
+		return GenericEdit(objectEditor, TypeInfo<T>::GetName(), *world.GetSystemManager().GetSystem<T>());
 	};
 	mSystems[hash].add = [](World& world)
 	{
-		world.CreateSystem<T>();
+		world.GetSystemManager().CreateSystem<T>();
 	};
 	mSystems[hash].has = [](World& world)
 	{
-		return world.HasSystem<T>();
+		return world.GetSystemManager().HasSystem<T>();
 	};
 	mSystems[hash].remove = [](World& world)
 	{
-		world.RemoveSystem<T>();
+		world.GetSystemManager().RemoveSystem<T>();
 	};
 	mSystems[hash].serialize = [](Serializer& serializer, World& world)
 	{
-		return GenericSerialization(serializer, TypeInfo<T>::GetName(), *world.GetSystem<T>());
+		return GenericSerialization(serializer, TypeInfo<T>::GetName(), *world.GetSystemManager().GetSystem<T>());
 	};
 	return true;
 }

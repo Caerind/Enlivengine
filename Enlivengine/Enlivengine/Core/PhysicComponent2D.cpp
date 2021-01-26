@@ -76,12 +76,9 @@ PhysicComponent2D::~PhysicComponent2D()
 	if (mEntity.IsValid())
 	{
 		World& world = const_cast<World&>(mEntity.GetWorld());
-		if (world.HasPhysicSystem())
+		if (PhysicSystem2D* physicSystem = world.GetSystemManager().GetSystem<PhysicSystem2D>())
 		{
-			if (PhysicSystem2D* physicSystem = static_cast<PhysicSystem2D*>(world.GetPhysicSystem()))
-			{
-				physicSystem->Deinitialize(mEntity, *this);
-			}
+			physicSystem->Deinitialize(mEntity, *this);
 		}
 	}
 }
@@ -287,14 +284,14 @@ bool PhysicComponent2D::Initialize(const Entity& entity)
 {
 	enAssert(entity.IsValid());
 	World& world = const_cast<World&>(entity.GetWorld());
-	if (world.HasPhysicSystem())
+	if (PhysicSystem2D* physicSystem = world.GetSystemManager().GetSystem<PhysicSystem2D>())
 	{
-		if (PhysicSystem2D* physicSystem = static_cast<PhysicSystem2D*>(world.GetPhysicSystem()))
-		{
-			return physicSystem->Initialize(entity, *this);
-		}
+		return physicSystem->Initialize(entity, *this);
 	}
-	return false;
+	else
+	{
+		return false;
+	}
 }
 
 } // namespace en

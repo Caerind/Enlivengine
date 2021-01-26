@@ -90,61 +90,69 @@ bool PhysicSystem2D::Deinitialize(const Entity& entity, PhysicComponent2D& compo
 	return true;
 }
 
-void PhysicSystem2D::Update(Time dt)
+void PhysicSystem2D::UpdatePhysic(Time dt)
 {
 	ENLIVE_PROFILE_FUNCTION();
-	BeforeUpdate();
+	{
+		ENLIVE_PROFILE_SCOPE("BeforePhysic");
+		auto& entityManager = mWorld->GetEntityManager();
+		auto view = entityManager.View<TransformComponent, PhysicComponent2D>();
+		for (auto entt : view)
+		{
+			Entity entity(entityManager, entt);
+			if (entity.IsValid())
+			{
+				auto& physicComponent = entity.Get<PhysicComponent2D>();
+				if (auto* body = physicComponent.GetBody())
+				{
+					const auto& transformComponent = entity.Get<TransformComponent>();
+					const auto position = transformComponent.GetPosition();
+					// TODO : Fix this
+					body->SetTransform(b2Vec2(position.x, position.y), 0.0f);
+				}
+			}
+		}
+	}
 	{
 		ENLIVE_PROFILE_SCOPE("Box2D_Update");
 		mPhysicWorld->Step(dt.AsSeconds(), mVelocityIterations, mPositionIterations);
 	}
-	AfterUpdate();
 }
 
-void PhysicSystem2D::BeforeUpdate()
+void PhysicSystem2D::Update(Time dt)
 {
+	ENLIVE_UNUSED(dt);
+
 	ENLIVE_PROFILE_FUNCTION();
-	auto& entityManager = mWorld->GetEntityManager();
-	auto view = entityManager.View<TransformComponent, PhysicComponent2D>();
-	for (auto entt : view)
 	{
-		Entity entity(entityManager, entt);
-		if (entity.IsValid())
+		ENLIVE_PROFILE_SCOPE("AfterPhysic");
+		auto& entityManager = mWorld->GetEntityManager();
+		auto view = entityManager.View<TransformComponent, PhysicComponent2D>();
+		for (auto entt : view)
 		{
-			auto& physicComponent = entity.Get<PhysicComponent2D>();
-			if (auto* body = physicComponent.GetBody())
+			Entity entity(entityManager, entt);
+			if (entity.IsValid())
 			{
-				const auto& transformComponent = entity.Get<TransformComponent>();
-				const auto position = transformComponent.GetPosition();
-				// TODO : Fix this
-				body->SetTransform(b2Vec2(position.x, position.y), 0.0f);
+				const auto& physicComponent = entity.Get<PhysicComponent2D>();
+				if (physicComponent.GetBodyType() != PhysicBodyType::Static)
+				{
+					if (const auto* body = physicComponent.GetBody())
+					{
+						const auto& position = body->GetPosition();
+						auto& transformComponent = entity.Get<TransformComponent>();
+						// TODO : Fix this
+						transformComponent.SetPosition(Vector3f(position.x, position.y, transformComponent.GetPosition().z));
+						//transformComponent.SetRotation(Math::RadToDeg(body->GetAngle()));
+					}
+				}
 			}
 		}
 	}
-}
-
-void PhysicSystem2D::AfterUpdate()
-{
-	ENLIVE_PROFILE_FUNCTION();
-	auto& entityManager = mWorld->GetEntityManager();
-	auto view = entityManager.View<TransformComponent, PhysicComponent2D>();
-	for (auto entt : view)
+	if (mDebugRender)
 	{
-		Entity entity(entityManager, entt);
-		if (entity.IsValid())
+		ENLIVE_PROFILE_SCOPE("DrawDebugData");
 		{
-			const auto& physicComponent = entity.Get<PhysicComponent2D>();
-			if (physicComponent.GetBodyType() != PhysicBodyType::Static)
-			{
-				if (const auto* body = physicComponent.GetBody())
-				{
-					const auto& position = body->GetPosition();
-					auto& transformComponent = entity.Get<TransformComponent>();
-					// TODO : Fix this
-					transformComponent.SetPosition(Vector3f(position.x, position.y, transformComponent.GetPosition().z));
-					//transformComponent.SetRotation(Math::RadToDeg(body->GetAngle()));
-				}
-			}
+			mPhysicWorld->DrawDebugData();
 		}
 	}
 }
@@ -186,15 +194,6 @@ U32 PhysicSystem2D::GetPositionIterations() const
 }
 
 #if defined(ENLIVE_DEBUG)
-void PhysicSystem2D::Render()
-{
-	ENLIVE_PROFILE_FUNCTION();
-	if (mDebugRender)
-	{
-		mPhysicWorld->DrawDebugData();
-	}
-}
-
 void PhysicSystem2D::SetDebugRendering(bool value)
 {
 	mDebugRender = value;

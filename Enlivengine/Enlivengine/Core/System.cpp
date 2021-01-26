@@ -19,10 +19,6 @@ void System::Update(Time dt)
 	ENLIVE_UNUSED(dt);
 }
 
-void System::Render()
-{
-}
-
 void System::SetWorld(World* world)
 {
 	enAssert(world != nullptr);

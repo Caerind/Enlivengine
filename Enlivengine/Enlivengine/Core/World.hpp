@@ -6,8 +6,7 @@
 #include <Enlivengine/Utils/TypeInfo.hpp>
 
 #include <Enlivengine/Core/EntityManager.hpp>
-#include <Enlivengine/Core/System.hpp>
-#include <Enlivengine/Core/PhysicSystemBase.hpp>
+#include <Enlivengine/Core/SystemManager.hpp>
 
 #ifdef ENLIVE_DEBUG
 #include <Enlivengine/Graphics/DebugDraw.hpp>
@@ -25,22 +24,10 @@ public:
 	EntityManager& GetEntityManager();
 	const EntityManager& GetEntityManager() const;
 
-	template <typename T>
-	T* CreateSystem();
-	template <typename T>
-	void RemoveSystem();
-
-	template <typename T>
-	T* GetSystem();
-	template <typename T>
-	const T* GetSystem() const;
-	template <typename T>
-	bool HasSystem() const;
-
-	PhysicSystemBase* GetPhysicSystem();
-	const PhysicSystemBase* GetPhysicSystem() const;
-	bool HasPhysicSystem() const;
+	SystemManager& GetSystemManager();
+	const SystemManager& GetSystemManager() const;
 	
+	void UpdatePhysic(Time dt);
 	void Update(Time dt);
 	void Render();
 
@@ -65,9 +52,7 @@ public:
 
 private:
 	EntityManager mEntityManager;
-
-	std::vector<System*> mSystems;
-	PhysicSystemBase* mPhysicSystem;
+	SystemManager mSystemManager;
 
 	std::string mName;
 
@@ -80,95 +65,7 @@ private:
 #endif // ENLIVE_DEBUG
 };
 
-template <typename T>
-T* World::CreateSystem()
-{
-	static_assert(Traits::IsBaseOf<System, T>::value);
-
-	if (T* system = GetSystem<T>())
-	{
-		enLogWarning(LogChannel::Core, "World have too many {}", TypeInfo<T>::GetName());
-		return system;
-	}
-	else
-	{
-		system = enNew(T, "System");
-		if (system != nullptr)
-		{
-			mSystems.push_back(system);
-
-			system->SetWorld(this);
-
-			if constexpr (Traits::IsBaseOf<PhysicSystemBase, T>::value)
-			{
-				mPhysicSystem = system;
-			}
-		}
-		return system;
-	}
-}
-
-template <typename T>
-void World::RemoveSystem()
-{
-	static_assert(Traits::IsBaseOf<System, T>::value);
-	const U32 systemCount = static_cast<U32>(mSystems.size());
-	for (U32 i = 0; i < systemCount; ++i)
-	{
-		if (const T* s = dynamic_cast<const T*>(mSystems[i])) // TODO : Find how to not use dynamic_cast
-		{
-			if constexpr (Traits::IsBaseOf<PhysicSystemBase, T>::value)
-			{
-				if (mPhysicSystem == mSystems[i])
-				{
-					mPhysicSystem = nullptr;
-				}
-			}
-
-			enDelete(System, mSystems[i]);
-
-			mSystems.erase(mSystems.begin() + i);
-
-			return;
-		}
-	}
-}
-
-template <typename T>
-T* World::GetSystem()
-{
-	static_assert(Traits::IsBaseOf<System, T>::value);
-	for (auto system : mSystems)
-	{
-		if (T* s = dynamic_cast<T*>(system)) // TODO : Find how to not use dynamic_cast
-		{
-			return s;
-		}
-	}
-	return nullptr;
-}
-
-template <typename T>
-const T* World::GetSystem() const
-{
-	static_assert(Traits::IsBaseOf<System, T>::value);
-	for (auto system : mSystems)
-	{
-		if (const T* s = dynamic_cast<const T*>(system)) // TODO : Find how to not use dynamic_cast
-		{
-			return s;
-		}
-	}
-	return nullptr;
-}
-
-template <typename T>
-bool World::HasSystem() const
-{
-	return GetSystem<T>() != nullptr;
-}
-
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::World, true, true) // TODO : Use helpers
+ENLIVE_META_CLASS_BEGIN(en::World, en::Type_CustomSerialization, en::Type_CustomEditor)
 ENLIVE_META_CLASS_END()

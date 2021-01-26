@@ -11,7 +11,7 @@
 
 using namespace en;
 
-class RenderSystem : public System
+class RenderSystem : public RenderSystemBase
 {
 public:
 	const char* GetName() const override;
@@ -71,7 +71,7 @@ public:
 	bool Serialize(Serializer& serializer, const char* name) override;
 	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
-	void Render() override
+	void Update(Time dt) override
 	{
 #ifdef ENLIVE_DEBUG
 		mWorld->GetDebugDraw().DrawCross(Vector3f(-1.0f));

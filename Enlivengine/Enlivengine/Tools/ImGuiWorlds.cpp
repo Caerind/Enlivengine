@@ -12,6 +12,7 @@
 #include <Enlivengine/Engine/WorldFileManager.hpp>
 
 #include <Enlivengine/Utils/XmlSerializer.hpp>
+#include <Enlivengine/Tools/ImGuiObjectEditor.hpp>
 
 namespace en
 {
@@ -74,67 +75,8 @@ void ImGuiWorlds::CurrentWorld()
 				ImGui::SetTooltip("Unload World");
 			}
 
-			if (ImGui::CollapsingHeader("Systems"))
-			{
-				ImGui::Indent();
-
-				const auto& systemInfos = SystemFactory::GetSystemInfos();
-				static std::vector<U32> hasNot;
-				hasNot.clear();
-				const auto endItr = systemInfos.cend();
-				for (auto itr = systemInfos.cbegin(); itr != endItr; ++itr)
-				{
-					const auto& si = itr->second;
-					if (si.has(world))
-					{
-						ImGui::PushID(itr->first);
-						if (ImGui::Button("-"))
-						{
-							si.remove(world);
-							worldModified = true;
-							ImGui::PopID();
-							continue;
-						}
-						else
-						{
-							ImGui::SameLine();
-							ImGui::Text("%s", itr->second.name);
-							ImGui::PopID();
-						}
-					}
-					else
-					{
-						hasNot.push_back(itr->first);
-					}
-				}
-
-				if (!hasNot.empty())
-				{
-					if (ImGui::Button("+ Add System"))
-					{
-						ImGui::OpenPopup("Add System");
-					}
-					if (ImGui::BeginPopup("Add System"))
-					{
-						ImGui::TextUnformatted("Available:");
-						ImGui::Separator();
-						for (auto systemHash : hasNot)
-						{
-							const auto& si = systemInfos.at(systemHash);
-							ImGui::PushID(systemHash);
-							if (ImGui::Selectable(si.name))
-							{
-								si.add(world);
-								worldModified = true;
-							}
-							ImGui::PopID();
-						}
-						ImGui::EndPopup();
-					}
-				}
-
-				ImGui::Unindent();
-			}
+			ImGuiObjectEditor systemEditor;
+			worldModified = GenericEdit(systemEditor, "Systems", world.GetSystemManager());
 
 			if (worldModified)
 			{

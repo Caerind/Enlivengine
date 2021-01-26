@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <Worlds type="std::vector<std::string>" hash="221375579">
-	<size>2</size>
-	<Worlds_0>TestWorld1</Worlds_0>
-	<Worlds_1>TestWorld2</Worlds_1>
+	<size>1</size>
+	<Worlds_0>Test</Worlds_0>
 </Worlds>
-<CurrentWorld>TestWorld1</CurrentWorld>
+<CurrentWorld>Test</CurrentWorld>

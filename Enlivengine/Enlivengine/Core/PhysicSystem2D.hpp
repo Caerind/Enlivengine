@@ -30,9 +30,8 @@ public:
 		return "en::PhysicSystem2D";
 	}
 
+	void UpdatePhysic(Time dt) override;
 	void Update(Time dt) override;
-	virtual void BeforeUpdate();
-	virtual void AfterUpdate();
 
 	bool Initialize(const Entity& entity, PhysicComponent2D& component);
 	bool Deinitialize(const Entity& entity, PhysicComponent2D& component);
@@ -55,8 +54,6 @@ public:
 	bool AddEndContactSlot(EndContactSlotType& slot, const PhysicComponent2D& component, F&& fct);
 
 #if defined(ENLIVE_DEBUG)
-	void Render() override;
-
 	void SetDebugRendering(bool value);
 	bool IsDebugRendering() const;
 

@@ -1,5 +1,7 @@
 #include <Enlivengine/Utils/ParserXml.hpp>
 
+#include <Enlivengine/Utils/Log.hpp>
+
 namespace en
 {
 
@@ -16,11 +18,16 @@ void ParserXml::NewFile()
 
 bool ParserXml::LoadFromFile(const std::string& filename)
 {
-	if (mDocument.load_file(filename.c_str()))
+	const auto result = mDocument.load_file(filename.c_str());
+	if (result.status == pugi::xml_parse_status::status_ok)
 	{
 		mFilename = filename;
 		mCurrentNode = mDocument.root();
 		return true;
+	}
+	else
+	{
+		enLogError(LogChannel::System, "{}:{}", result.description(), result.offset);
 	}
 	return false;
 }

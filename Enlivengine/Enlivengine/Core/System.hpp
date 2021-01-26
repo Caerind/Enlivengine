@@ -7,6 +7,7 @@ namespace en
 {
 
 class World;
+class SystemManager;
 
 class System
 {
@@ -15,7 +16,6 @@ class System
         virtual ~System();
 		
         virtual void Update(Time dt);
-		virtual void Render();
 
 		virtual const char* GetName() const = 0;
 		virtual bool Serialize(Serializer& serializer, const char* name) = 0;
@@ -26,6 +26,7 @@ class System
 
 	private:
 		friend class World;
+		friend class SystemManager;
 		void SetWorld(World* world);
 };
         

@@ -348,7 +348,7 @@ bool Matrix3<T>::Serialize(Serializer& serializer, const char* name)
 		bool ret = true;
 		for (U32 i = 0; i < Matrix3<T>::Elements; ++i)
 		{
-			const std::string childName(std::to_string(i));
+			const std::string childName("i" + std::to_string(i));
 			ret = GenericSerialization(serializer, childName.c_str(), data[i]) && ret;
 		}
 		ret = serializer.EndClass() && ret;

@@ -72,7 +72,7 @@ bool CameraComponent::Serialize(Serializer& serializer, const char* name)
 	if (serializer.BeginClass(name, TypeInfo<CameraComponent>::GetName(), TypeInfo<CameraComponent>::GetHash()))
 	{
 		bool ret = true;
-		ret = GenericSerialization(serializer, "Camera", static_cast<Camera&>(*this)) && ret;
+		ret = Camera::Serialize(serializer, "Camera") && ret;
 		ret = serializer.EndClass() && ret;
 		return ret;
 	}
@@ -87,7 +87,7 @@ bool CameraComponent::Edit(ObjectEditor& objectEditor, const char* name)
 	if (objectEditor.BeginClass(name, TypeInfo<CameraComponent>::GetName(), TypeInfo<CameraComponent>::GetHash()))
 	{
 		bool ret = false;
-		ret = GenericEdit(objectEditor, "Camera", static_cast<Camera&>(*this)) || ret;
+		ret = Camera::Edit(objectEditor, "Camera") || ret;
 		objectEditor.EndClass();
 		return ret;
 	}

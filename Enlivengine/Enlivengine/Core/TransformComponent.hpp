@@ -13,7 +13,7 @@
 namespace en
 {
 
-class TransformComponent : public Transform
+class TransformComponent
 {
 public:
 	TransformComponent();
@@ -26,14 +26,17 @@ public:
 	TransformComponent& operator=(const TransformComponent&) = delete;
 
 	// Position
+	Vector3f GetPosition() const;
 	void SetPosition(const Vector3f& position);
 	void Move(const Vector3f& movement);
 
 	// Rotation
+	Matrix3f GetRotation() const;
 	void SetRotation(const Matrix3f& rotation);
 	void Rotate(const Matrix3f& rotation);
 
 	// Scale
+	Vector3f GetScale() const;
 	void SetScale(const Vector3f& scale);
 	void SetUniformScale(F32 uniformScale);
 	void Scale(const Vector3f& scale);
@@ -75,7 +78,7 @@ private:
 
 private:
 	friend struct ComponentHasCustomInitialization<TransformComponent>;
-
+	Transform mLocalTransform;
 	mutable Matrix4f mGlobalMatrix;
 	Entity mEntity;
 	Entity mParent;

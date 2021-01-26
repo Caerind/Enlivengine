@@ -104,7 +104,7 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 			enAssert(false);
 			ret = false;
 		}
-
+		ret = serializer.EndClass() && ret;
 		return ret;
 	}
 	else
