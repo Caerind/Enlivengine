@@ -5,6 +5,9 @@
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Universe.hpp>
 
+#include <Enlivengine/Utils/XmlSerializer.hpp>
+#include <Enlivengine/Resources/PathManager.hpp>
+
 namespace en
 {
 
@@ -35,18 +38,66 @@ bool WorldFileManager::LoadWorld(const std::string& worldName)
 	Universe::SetCurrentWorld(world);
 	enAssert(world != nullptr);
 
-	// TODO : LoadFromFile
+	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + worldName + ".world");
+	if (std::filesystem::exists(path))
+	{
+		XmlSerializer worldReader;
+		if (worldReader.Open(path.string(), Serializer::Mode::Read))
+		{
+			if (GenericSerialization(worldReader, "World", *world))
+			{
+				enLogInfo(LogChannel::Core, "World {} is correctly loaded", worldName);
+				return true;
+			}
+			else
+			{
+				enLogWarning(LogChannel::Core, "World {} isn't correctly loaded", worldName, path.string());
+			}
+		}
+		else
+		{
+			enLogError(LogChannel::Core, "Can't open world {} : {}", worldName, path.string());
+		}
+	}
+	else
+	{
+		enLogError(LogChannel::Core, "World {} doesn't exist : {}", worldName, path.string());
+	}
 	return false;
 }
 
 bool WorldFileManager::SaveCurrentWorld()
 {
-	World* world = Universe::GetCurrentWorld();
-	enAssert(world != nullptr);
+	if (World* world = Universe::GetCurrentWorld())
+	{
+		const std::string& worldName = world->GetName();
+		const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + worldName + ".world");
 
-	// TODO : SaveToFile
-	ENLIVE_UNUSED(world);
+		XmlSerializer worldWriter;
+		if (worldWriter.Open(path.string(), Serializer::Mode::Write))
+		{
+			bool correctlySerialized = GenericSerialization(worldWriter, "World", *world);
+			bool correctlyClosed = worldWriter.Close();
 
+			if (correctlySerialized && correctlyClosed)
+			{
+				enLogInfo(LogChannel::Core, "World {} is correctly saved", worldName);
+				return true;
+			}
+			else
+			{
+				enLogError(LogChannel::Core, "World {} file can't be saved : {}", worldName, path.string());
+			}
+		}
+		else
+		{
+			enLogError(LogChannel::Core, "Can't save world {} : {}", worldName, path.string());
+		}
+	}
+	else
+	{
+		enAssert(false);
+	}
 	return false;
 }
 
@@ -76,9 +127,15 @@ bool WorldFileManager::RemoveWorld(const std::string& worldName)
 		return false;
 	}
 
-	// TODO : RemoveFile
-	//return std::filesystem::remove(std::filesystem::path(World::GetWorldFilename(worldName)));
-	return false;
+	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + worldName + ".world");
+	if (std::filesystem::exists(path))
+	{
+		return std::filesystem::remove(path);
+	}
+	else
+	{
+		return true;
+	}
 }
 
 } // namespace en

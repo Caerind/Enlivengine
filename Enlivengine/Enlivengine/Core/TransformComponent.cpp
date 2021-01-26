@@ -261,13 +261,28 @@ bool TransformComponent::Initialize(const Entity& entity)
 	return true;
 }
 
-bool TransformComponent::Serialize(ClassSerializer& serializer, const char* name)
+bool TransformComponent::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<TransformComponent>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<TransformComponent>::GetName(), TypeInfo<TransformComponent>::GetHash()))
 	{
 		bool ret = true;
 		ret = GenericSerialization(serializer, "Transform", static_cast<Transform&>(*this)) && ret;
 		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool TransformComponent::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	if (objectEditor.BeginClass(name, TypeInfo<TransformComponent>::GetName(), TypeInfo<TransformComponent>::GetHash()))
+	{
+		bool ret = true;
+		ret = GenericEdit(objectEditor, "Transform", static_cast<Transform&>(*this)) || ret;
+		objectEditor.EndClass();
 		return ret;
 	}
 	else

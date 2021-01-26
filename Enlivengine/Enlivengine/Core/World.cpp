@@ -162,6 +162,43 @@ const std::vector<entt::entity>& World::GetSelectedEntities() const
 {
 	return mSelectedEntities;
 }
+
+bool World::Serialize(Serializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<World>::GetName(), TypeInfo<World>::GetHash()))
+	{
+		bool ret = true;
+
+		ret = GenericSerialization(serializer, "EntityManager", mEntityManager) && ret;
+		ret = GenericSerialization(serializer, "Systems", mSystems) && ret;
+
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool World::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	if (objectEditor.BeginClass(name, TypeInfo<World>::GetName(), TypeInfo<World>::GetHash()))
+	{
+		bool ret = false;
+
+		ret = GenericEdit(objectEditor, "EntityManager", mEntityManager) || ret;
+		ret = GenericEdit(objectEditor, "Systems", mSystems) || ret;
+
+		objectEditor.EndClass();
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 #endif // ENLIVE_DEBUG
 
 } // namespace en

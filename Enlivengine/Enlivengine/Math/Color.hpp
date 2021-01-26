@@ -80,7 +80,7 @@ public:
 	constexpr bool operator==(const Color& other) const { return r == other.r && g == other.g && b == other.b && a == other.a; }
 	constexpr bool operator!=(const Color& other) const { return !operator==(other); }
 
-	bool Serialize(ClassSerializer& serializer, const char* name)
+	bool Serialize(Serializer& serializer, const char* name)
 	{
 		if (serializer.IsReading())
 		{
@@ -101,6 +101,30 @@ public:
 		{
 			return false;
 		}
+	}
+
+	bool Edit(ObjectEditor& objectEditor, const char* name)
+	{
+		bool ret = false;
+#ifdef ENLIVE_ENABLE_IMGUI
+		if (objectEditor.IsImGuiEditor())
+		{
+			ImVec4 color = ToImGuiColor();
+			if (ImGui::ColorEdit3(name, (float*)&color))
+			{
+				FromImGuiColor(color);
+				ret = true;
+			}
+		}
+		else
+#endif // ENLIVE_ENABLE_IMGUI
+		{
+			ret = GenericEdit(objectEditor, "R", r) || ret;
+			ret = GenericEdit(objectEditor, "G", g) || ret;
+			ret = GenericEdit(objectEditor, "B", b) || ret;
+			ret = GenericEdit(objectEditor, "A", a) || ret;
+		}
+		return ret;
 	}
 
 	U8 r;

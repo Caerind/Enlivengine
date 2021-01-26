@@ -29,8 +29,8 @@ public:
 	virtual const Matrix4f& GetViewMatrix() const override;
 
 	bool Initialize(const Entity& entity);
-
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	// Hide camera view transform, use entity transform

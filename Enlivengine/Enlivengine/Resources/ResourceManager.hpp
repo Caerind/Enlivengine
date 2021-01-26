@@ -12,6 +12,7 @@
 #include <Enlivengine/Utils/TypeInfo.hpp>
 #include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Utils/Serializer.hpp>
+#include <Enlivengine/Utils/ObjectEditor.hpp>
 
 namespace en
 {
@@ -142,7 +143,8 @@ public:
 	bool operator==(const ResourcePtr<T>& other) const;
 	bool operator!=(const ResourcePtr<T>& other) const;
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	ResourceID mID;

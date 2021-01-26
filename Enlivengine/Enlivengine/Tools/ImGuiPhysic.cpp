@@ -8,6 +8,8 @@
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/PhysicSystem2D.hpp>
 
+#include <Enlivengine/Tools/ImGuiObjectEditor.hpp>
+
 namespace en
 {
 
@@ -39,51 +41,8 @@ void ImGuiPhysic::Display()
 		{
 			if (PhysicSystem2D* physicSystem = dynamic_cast<PhysicSystem2D*>(world->GetPhysicSystem()))
 			{
-				auto gravity = physicSystem->GetGravity();
-				enAssert(false);
-				// TODO : ObjectEditor
-				//if (ObjectEditor::ImGuiEditor(gravity, "Gravity"))
-				{
-					physicSystem->SetGravity(gravity);
-				}
-				auto velocityIterations = physicSystem->GetVelocityIterations();
-				enAssert(false);
-				// TODO : ObjectEditor
-				//if (ObjectEditor::ImGuiEditor(velocityIterations, "VelocityIterations"))
-				{
-					physicSystem->SetVelocityIterations(velocityIterations);
-				}
-				auto positionIterations = physicSystem->GetPositionIterations();
-				enAssert(false);
-				// TODO : ObjectEditor
-				//if (ObjectEditor::ImGuiEditor(positionIterations, "PositionIterations"))
-				{
-					physicSystem->SetPositionIterations(positionIterations);
-				}
-#ifdef ENLIVE_DEBUG
-				if (physicSystem->IsDebugRendering())
-				{
-					if (ImGui::Button("HideDebug"))
-					{
-						physicSystem->SetDebugRendering(false);
-					}
-				}
-				else
-				{
-					if (ImGui::Button("ShowDebug"))
-					{
-						physicSystem->SetDebugRendering(true);
-					}
-				}
-				if (physicSystem->IsDebugRendering())
-				{
-					auto renderFlags = physicSystem->GetDebugRenderFlags();
-					// TODO : DebugRenderFlags
-					{
-						physicSystem->SetDebugRenderFlags(renderFlags);
-					}
-				}
-#endif // ENLIVE_DEBUG
+				ImGuiObjectEditor editor;
+				physicSystem->Edit(editor, "PhysicSystem2D");
 			}
 		}
 		else

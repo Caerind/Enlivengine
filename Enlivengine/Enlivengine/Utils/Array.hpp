@@ -413,4 +413,4 @@ private:
 } // namespace en
 
 // The Serialization will be done like std::vector/std::array, using the GenericSerialization specialization for Array<T>
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Array, false, true)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Array, en::Type_TemplateSpecializationSerialization, en::Type_TemplateSpecializationEditor)

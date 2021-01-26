@@ -356,9 +356,9 @@ Camera* Camera::GetMainCamera()
 	return sMainCamera;
 }
 
-bool Camera::Serialize(ClassSerializer& serializer, const char* name)
+bool Camera::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Camera>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Camera>::GetName(), TypeInfo<Camera>::GetHash()))
 	{
 		bool ret = true;
 		ret = GenericSerialization(serializer, "viewMatrix", mViewMatrix) && ret;
@@ -382,6 +382,39 @@ bool Camera::Serialize(ClassSerializer& serializer, const char* name)
 		}
 		ret = serializer.EndClass() && ret;
 		// TODO : Framebuffer ?
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Camera::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	if (objectEditor.BeginClass(name, TypeInfo<Camera>::GetName(), TypeInfo<Camera>::GetHash()))
+	{
+		bool ret = false;
+		ret = GenericEdit(objectEditor, "Projection", mProjectionMode) || ret;
+		if (mProjectionMode == ProjectionMode::Perspective)
+		{
+			ret = GenericEdit(objectEditor, "NearPlane", mProjectionData.perspective.nearPlane) || ret;
+			ret = GenericEdit(objectEditor, "FarPlane", mProjectionData.perspective.farPlane) || ret;
+			ret = GenericEdit(objectEditor, "FOV", mProjectionData.perspective.fov) || ret;
+		}
+		else
+		{
+			ret = GenericEdit(objectEditor, "NearPlane", mProjectionData.orthographic.nearPlane) || ret;
+			ret = GenericEdit(objectEditor, "FarPlane", mProjectionData.orthographic.farPlane) || ret;
+			ret = GenericEdit(objectEditor, "Size", mProjectionData.orthographic.size) || ret;
+		}
+
+		ret = GenericEdit(objectEditor, "ClearColor", mClearColor) || ret;
+		ret = GenericEdit(objectEditor, "Viewport", mViewport) || ret;
+
+		// TODO : Framebuffer ?
+
+		objectEditor.EndClass();
 		return ret;
 	}
 	else

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<World type="en::World" hash="3748700136">
+	<EntityManager type="en::EntityManager" hash="1741196248">
+		<size>0</size>
+		<Systems type="std::vector<<Unknown>>" hash="3934696175">
+			<size>1</size>
+			<Systems_0 type="PlayerSystem" hash="98119915" />
+		</Systems>
+	</EntityManager>
+</World>

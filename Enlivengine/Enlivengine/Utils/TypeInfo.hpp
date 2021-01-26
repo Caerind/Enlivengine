@@ -13,7 +13,7 @@
 
 namespace en
 {
-	
+
 template <typename T>
 struct TypeInfo
 {
@@ -41,6 +41,10 @@ static constexpr bool Type_CustomSerialization = true;
 static constexpr bool Type_CustomEditor = true;
 static constexpr bool Type_ClassSerialization = false;
 static constexpr bool Type_ClassEditor = false;
+static constexpr bool Type_TemplateSpecializationSerialization = false;
+static constexpr bool Type_TemplateSpecializationEditor = false;
+static constexpr bool Type_VirtualSerialization = true;
+static constexpr bool Type_VirtualEditor = true;
 
 } // namespace en
 
@@ -131,8 +135,6 @@ ENLIVE_DEFINE_PRIMITIVE_TYPE_INFO(std::string) // Not technically Primitive but 
 // std
 //////////////////////////////////////////////////////////////////
 
-// TODO : Find how to handle the std::array & std::vector cases
-
 namespace en
 {
 
@@ -152,10 +154,10 @@ public:
 	static constexpr U32 GetSize() { return ENLIVE_SIZE_OF(T) * N; }
 	static constexpr U32 GetAlign() { return ENLIVE_ALIGN_OF(T); }
 	static constexpr bool IsPrimitive() { return false; }
-	static constexpr bool HasCustomSerialization() { return false; }
-	static constexpr bool HasCustomEditor() { return false; }
+	static constexpr bool HasCustomSerialization() { return en::Type_TemplateSpecializationSerialization; }
+	static constexpr bool HasCustomEditor() { return en::Type_TemplateSpecializationEditor; }
 };
 
 } // namespace en
 
-ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(std::vector, false, false)
+ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(std::vector, en::Type_TemplateSpecializationSerialization, en::Type_TemplateSpecializationEditor)

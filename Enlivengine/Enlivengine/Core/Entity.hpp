@@ -60,7 +60,8 @@ public:
 	World& GetWorld();
 	const World& GetWorld() const;
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 	// TODO : Try to remove/hide these
 	const entt::entity& GetEntity() const;

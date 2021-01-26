@@ -8,6 +8,8 @@
 #include <Enlivengine/Utils/Signal.hpp>
 #include <Enlivengine/Math/Vector2.hpp>
 
+#include <Enlivengine/Utils/ObjectEditor.hpp>
+
 #include <Enlivengine/Core/PhysicSystemBase.hpp>
 
 namespace en
@@ -61,6 +63,9 @@ public:
 	void SetDebugRenderFlags(U32 flags);
 	U32 GetDebugRenderFlags() const;
 #endif // ENLIVE_DEBUG
+
+	bool Serialize(Serializer& serializer, const char* name) override;
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	static b2Body* GetComponentBody(const PhysicComponent2D& component);
@@ -154,7 +159,7 @@ bool PhysicSystem2D::AddEndContactSlot(EndContactSlotType& slot, const PhysicCom
 
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::PhysicSystem2D, true, true) // TODO : Use helpers
+ENLIVE_META_CLASS_BEGIN(en::PhysicSystem2D, en::Type_ClassSerialization, en::Type_CustomEditor)
 	ENLIVE_META_CLASS_MEMBER("gravity", &en::PhysicSystem2D::GetGravity, &en::PhysicSystem2D::SetGravity),
 	ENLIVE_META_CLASS_MEMBER("positionIterations", &en::PhysicSystem2D::GetPositionIterations, &en::PhysicSystem2D::SetPositionIterations),
 	ENLIVE_META_CLASS_MEMBER("velocityIterations", &en::PhysicSystem2D::GetVelocityIterations, &en::PhysicSystem2D::SetVelocityIterations)

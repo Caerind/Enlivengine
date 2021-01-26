@@ -272,16 +272,17 @@ public:
 
 	static constexpr Quaternion<T> Identity() { return Quaternion<T>(Vector3f::Zero(), T(1)); }
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 	Vector3<T> v;
 	T s;
 };
 
 template <typename T>
-bool Quaternion<T>::Serialize(ClassSerializer& serializer, const char* name)
+bool Quaternion<T>::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Quaternion<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Quaternion<T>>::GetName(), TypeInfo<Quaternion<T>>::GetHash()))
 	{
 		bool ret = true;
 		ret = GenericSerialization(serializer, "x", v.x) && ret;
@@ -289,6 +290,43 @@ bool Quaternion<T>::Serialize(ClassSerializer& serializer, const char* name)
 		ret = GenericSerialization(serializer, "z", v.z) && ret;
 		ret = GenericSerialization(serializer, "s", s) && ret;
 		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+template <typename T>
+bool Quaternion<T>::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<Quaternion<T>>::GetName(), TypeInfo<Quaternion<T>>::GetHash()))
+	{
+		bool ret = false;
+#ifdef ENLIVE_ENABLE_IMGUI
+		if (objectEditor.IsImGuiEditor())
+		{
+			float vector[4];
+			vector[0] = static_cast<float>(v.x);
+			vector[1] = static_cast<float>(v.y);
+			vector[2] = static_cast<float>(v.z);
+			vector[3] = static_cast<float>(s);
+			if (ImGui::InputFloat4(name, vector))
+			{
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
+				ret = true;
+			}
+		}
+		else
+#endif // ENLIVE_ENABLE_IMGUI
+		{
+			ret = GenericEdit(objectEditor, "x", v.x) || ret;
+			ret = GenericEdit(objectEditor, "y", v.y) || ret;
+			ret = GenericEdit(objectEditor, "z", v.z) || ret;
+			ret = GenericEdit(objectEditor, "s", s) || ret;
+		}
+		objectEditor.EndClass();
 		return ret;
 	}
 	else

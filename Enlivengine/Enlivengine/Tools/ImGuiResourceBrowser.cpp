@@ -20,7 +20,7 @@
 
 #include <Enlivengine/Tools/ImGuiAnimationEditor.hpp>
 
-#include <Enlivengine/Utils/XmlClassSerializer.hpp>
+#include <Enlivengine/Utils/XmlSerializer.hpp>
 
 namespace en
 {
@@ -90,7 +90,7 @@ bool ImGuiResourceBrowser::LoadResourceInfosFromFile()
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "resources.data");
 	if (std::filesystem::exists(path))
 	{
-		XmlClassSerializer xml;
+		XmlSerializer xml;
 		if (!xml.Open(path.string(), Serializer::Mode::Read))
 		{
 			return false;
@@ -131,7 +131,7 @@ bool ImGuiResourceBrowser::SaveResourceInfosToFile()
 {
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "resources.data");
 
-	XmlClassSerializer xml;
+	XmlSerializer xml;
 	if (xml.Open(path.string(), Serializer::Mode::Write))
 	{
 		GenericSerialization(xml, "Resources", mResourceInfos);

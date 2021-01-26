@@ -67,8 +67,8 @@ public:
 	void MarkGlobalMatrixAsDirty();
 
 	bool Initialize(const Entity& entity);
-
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	void UpdateGlobalMatrix() const;

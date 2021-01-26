@@ -9,7 +9,8 @@ namespace en
 
 class World;
 class Entity;
-class ClassSerializer;
+class Serializer;
+class ObjectEditor;
 
 class EntityManager
 {
@@ -43,7 +44,8 @@ public:
 	World& GetWorld();
 	const World& GetWorld() const;
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 	// TODO : Try to remove/hide these
 	entt::registry& GetRegistry();

@@ -11,7 +11,7 @@
 #include <Enlivengine/Core/SystemFactory.hpp>
 #include <Enlivengine/Engine/WorldFileManager.hpp>
 
-#include <Enlivengine/Utils/XmlClassSerializer.hpp>
+#include <Enlivengine/Utils/XmlSerializer.hpp>
 
 namespace en
 {
@@ -52,7 +52,7 @@ void ImGuiWorlds::Display()
 
 void ImGuiWorlds::CurrentWorld()
 {
-	if (ImGui::CollapsingHeader("Current World"))
+	ImGui::Text("Current World");
 	{
 		ImGui::Indent();
 		if (World* worldPtr = Universe::GetCurrentWorld())
@@ -138,9 +138,7 @@ void ImGuiWorlds::CurrentWorld()
 
 			if (worldModified)
 			{
-
-				// TODO : World Modified
-				//world.SaveToFile();
+				WorldFileManager::SaveCurrentWorld();
 			}
 		}
 		else
@@ -208,6 +206,8 @@ void ImGuiWorlds::AllWorlds()
 			bool remove = false;
 
 			ImGui::Text("%s", mWorlds[i].c_str());
+			ImGui::PushID(i);
+			ImGui::PushID(mWorlds[i].c_str());
 
 			ImGui::SameLine();
 			if (Universe::GetCurrentWorld() != nullptr && Universe::GetCurrentWorld()->GetName() == mWorlds[i])
@@ -221,6 +221,7 @@ void ImGuiWorlds::AllWorlds()
 				if (ImGui::Button(ICON_FA_DOWNLOAD))
 				{
 					WorldFileManager::LoadWorld(mWorlds[i]);
+					modified = true;
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -250,6 +251,9 @@ void ImGuiWorlds::AllWorlds()
 			{
 				++i;
 			}
+
+			ImGui::PopID();
+			ImGui::PopID();
 		}
 		ImGui::Unindent();
 	}
@@ -265,7 +269,7 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
 	if (std::filesystem::exists(path))
 	{
-		XmlClassSerializer xml;
+		XmlSerializer xml;
 		if (!xml.Open(path.string(), Serializer::Mode::Read))
 		{
 			return false;
@@ -298,7 +302,7 @@ bool ImGuiWorlds::SaveWorldsToFile()
 {
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
 
-	XmlClassSerializer xml;
+	XmlSerializer xml;
 	if (xml.Open(path.string(), Serializer::Mode::Write))
 	{
 		GenericSerialization(xml, "Worlds", mWorlds);

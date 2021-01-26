@@ -215,6 +215,71 @@ U32 PhysicSystem2D::GetDebugRenderFlags() const
 {
 	return mDebugRenderFlags;
 }
+
+bool PhysicSystem2D::Serialize(Serializer& serializer, const char* name)
+{
+	return GenericSerialization(serializer, name, *this);
+}
+
+bool PhysicSystem2D::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	if (objectEditor.BeginClass(name, TypeInfo<PhysicSystem2D>::GetName(), TypeInfo<PhysicSystem2D>::GetHash()))
+	{
+		bool ret = false;
+		auto gravity = GetGravity();
+		if (GenericEdit(objectEditor, "Gravity", gravity))
+		{
+			SetGravity(gravity);
+			ret = true;
+		}
+		ret = GenericEdit(objectEditor, "PositionIterations", mPositionIterations) || ret;
+		ret = GenericEdit(objectEditor, "VelocityIterations", mVelocityIterations) || ret;
+
+#ifdef ENLIVE_DEBUG
+#ifdef ENLIVE_ENABLE_IMGUI
+		if (objectEditor.IsImGuiEditor())
+		{
+			if (IsDebugRendering())
+			{
+				if (ImGui::Button("HideDebug"))
+				{
+					SetDebugRendering(false);
+					ret = true;
+				}
+			}
+			else
+			{
+				if (ImGui::Button("ShowDebug"))
+				{
+					SetDebugRendering(true);
+					ret = true;
+				}
+			}
+			// TODO : DebugRenderFlags
+			/*
+			if (IsDebugRendering())
+			{
+				auto renderFlags = GetDebugRenderFlags();
+				if (false)
+				{
+					SetDebugRenderFlags(renderFlags);
+					ret = true;
+				}
+			}
+			*/
+		}
+#endif // ENLIVE_ENABLE_IMGUI
+#endif // ENLIVE_DEBUG
+
+		objectEditor.EndClass();
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 #endif // ENLIVE_DEBUG
 
 b2Body* PhysicSystem2D::GetComponentBody(const PhysicComponent2D& component)

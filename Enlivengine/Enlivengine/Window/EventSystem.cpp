@@ -8,8 +8,136 @@
 
 #include <Enlivengine/Utils/Serializer.hpp>
 
+#ifdef ENLIVE_ENABLE_IMGUI
+#include <imgui/imgui.h>
+#include <IconFontCppHeaders/IconsFontAwesome5.h>
+#endif // ENLIVE_ENABLE_IMGUI
+
 namespace en
 {
+
+bool EventSystem::EventButton::Edit(ObjectEditor& objectEditor, const char* _name)
+{
+	if (objectEditor.BeginClass(_name, TypeInfo<EventSystem::EventButton>::GetName(), TypeInfo<EventSystem::EventButton>::GetHash()))
+	{
+		bool ret = false;
+
+#ifdef ENLIVE_ENABLE_IMGUI
+		if (objectEditor.IsImGuiEditor())
+		{
+			if (EventSystem::HasButton(hash))
+			{
+				ImGui::Text("Active: %s", EventSystem::IsButtonActive(hash) ? ICON_FA_BELL : ICON_FA_BELL_SLASH);
+			}
+		}
+#endif // ENLIVE_ENABLE_IMGUI   
+
+		ret = GenericEdit(objectEditor, "Type", type) || ret;
+		ret = GenericEdit(objectEditor, "Action", action) || ret;
+
+		switch (type)
+		{
+		case EventSystem::EventButton::Type::KeyboardKey:
+		{
+			Keyboard::Key key = static_cast<Keyboard::Key>(buttonIdentifier);
+			if (GenericEdit(objectEditor, "Key", key))
+			{
+				buttonIdentifier = static_cast<U32>(key);
+				ret = true;
+			}
+
+			bool alt = (extraInfo & Keyboard::Modifier::Alt) > 0;
+			bool control = (extraInfo & Keyboard::Modifier::Control) > 0;
+			bool shift = (extraInfo & Keyboard::Modifier::Shift) > 0;
+			bool system = (extraInfo & Keyboard::Modifier::System) > 0;
+
+			ret = GenericEdit(objectEditor, "Alt", alt) || ret;
+#ifdef ENLIVE_ENABLE_IMGUI
+			if (objectEditor.IsImGuiEditor())
+			{
+				ImGui::SameLine();
+			}
+#endif // ENLIVE_ENABLE_IMGUI 
+			ret = GenericEdit(objectEditor, "Ctrl", control) || ret;
+
+			ret = GenericEdit(objectEditor, "Shift", shift) || ret;
+#ifdef ENLIVE_ENABLE_IMGUI
+			if (objectEditor.IsImGuiEditor())
+			{
+				ImGui::SameLine();
+			}
+#endif // ENLIVE_ENABLE_IMGUI 
+			ret = GenericEdit(objectEditor, "System", system) || ret;
+
+			if (ret)
+			{
+				extraInfo = 0 |
+					((alt) ? static_cast<U32>(Keyboard::Modifier::Alt) : 0) |
+					((control) ? static_cast<U32>(Keyboard::Modifier::Control) : 0) |
+					((shift) ? static_cast<U32>(Keyboard::Modifier::Shift) : 0) |
+					((system) ? static_cast<U32>(Keyboard::Modifier::System) : 0);
+			}
+
+		} break;
+		case EventSystem::EventButton::Type::MouseButton:
+		{
+			Mouse::Button mbutton = static_cast<Mouse::Button>(buttonIdentifier);
+			if (GenericEdit(objectEditor, "Button", mbutton))
+			{
+				buttonIdentifier = static_cast<U32>(mbutton);
+				ret = true;
+			}
+		} break;
+		case EventSystem::EventButton::Type::JoystickButton:
+		{
+			ret = GenericEdit(objectEditor, "Button", buttonIdentifier) || ret;
+			ret = GenericEdit(objectEditor, "Controller", extraInfo) || ret;
+		} break;
+		}
+
+		objectEditor.EndClass();
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool EventSystem::EventAxis::Edit(ObjectEditor& objectEditor, const char* _name)
+{
+	if (objectEditor.BeginClass(_name, TypeInfo<EventSystem::EventAxis>::GetName(), TypeInfo<EventSystem::EventAxis>::GetHash()))
+	{
+		bool ret = false;
+
+#ifdef ENLIVE_ENABLE_IMGUI
+		if (objectEditor.IsImGuiEditor())
+		{
+			if (EventSystem::HasAxis(hash))
+			{
+				ImGui::Text("Value: %f", EventSystem::GetAxisValue(hash));
+			}
+		}
+#endif // ENLIVE_ENABLE_IMGUI   
+
+		ret = GenericEdit(objectEditor, "Type", type) || ret;
+
+		if (type == EventSystem::EventAxis::Type::JoystickAxis
+			|| type == EventSystem::EventAxis::Type::JoystickBallX
+			|| type == EventSystem::EventAxis::Type::JoystickBallY)
+		{
+			ret = GenericEdit(objectEditor, "Axis", axisIdentifier) || ret;
+			ret = GenericEdit(objectEditor, "Controller", extraInfo) || ret;
+		}
+
+		objectEditor.EndClass();
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 void EventSystem::Update()
 {

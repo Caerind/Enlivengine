@@ -16,11 +16,6 @@
 namespace en
 {
 
-class DataFile;
-namespace DataFileSpecialization
-{
-}
-
 class World
 {
 public:
@@ -64,6 +59,9 @@ public:
 	void ClearSelectedEntities();
 	const std::vector<entt::entity>& GetSelectedEntities() const;
 #endif // ENLIVE_DEBUG
+
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	EntityManager mEntityManager;

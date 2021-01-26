@@ -18,6 +18,8 @@ class System
 		virtual void Render();
 
 		virtual const char* GetName() const = 0;
+		virtual bool Serialize(Serializer& serializer, const char* name) = 0;
+		virtual bool Edit(ObjectEditor& objectEditor, const char* name) = 0;
 		
 	protected:
 		World* mWorld;
@@ -29,5 +31,5 @@ class System
         
 } // namespace en
 
-ENLIVE_META_CLASS_BEGIN(en::System, true, true) // TODO : Use helpers
+ENLIVE_META_CLASS_BEGIN(en::System, en::Type_VirtualSerialization, en::Type_VirtualEditor)
 ENLIVE_META_CLASS_END()

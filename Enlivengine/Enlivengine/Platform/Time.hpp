@@ -3,6 +3,7 @@
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
 #include <Enlivengine/Utils/Serializer.hpp>
+#include <Enlivengine/Utils/ObjectEditor.hpp>
 
 namespace en
 {
@@ -86,7 +87,8 @@ public:
 	static constexpr Time Millisecond() { return Time(TicksPerMillisecond); }
 	static constexpr Time Microsecond() { return Time(TicksPerMicrosecond); }
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	I64 mTicks;
@@ -302,7 +304,8 @@ public:
 	static constexpr DateTime UnixDate() { return DateTime(1970, 1, 1); }
 	static const DateTime ProgramStart;
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	I64 mTicks;

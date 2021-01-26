@@ -2,7 +2,7 @@ namespace en
 {
 
 template <typename T>
-bool GenericSerialization(ClassSerializer& serializer, const char* name, T& object)
+bool GenericSerialization(Serializer& serializer, const char* name, T& object)
 {
 	static_assert(TypeInfo<T>::IsKnown());
 
@@ -12,7 +12,7 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, T& obje
 	}
 	else if constexpr (Meta::IsRegistered<T>())
 	{
-		if (serializer.BeginClass(name, TypeInfo<T>::GetHash()))
+		if (serializer.BeginClass(name, TypeInfo<T>::GetName(), TypeInfo<T>::GetHash()))
 		{
 			bool ret = true;
 			Meta::ForEachMember<T>([&ret, &serializer, &object](const auto& member)
@@ -96,7 +96,7 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, T& obje
 }
 
 template <typename T>
-bool GenericSerialization(ClassSerializer& serializer, const char* name, const T& object)
+bool GenericSerialization(Serializer& serializer, const char* name, const T& object)
 {
 	enAssert(serializer.IsWriting());
 
@@ -108,7 +108,7 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, const T
 	}
 	else if constexpr (Meta::IsRegistered<T>())
 	{
-		if (serializer.BeginClass(name, TypeInfo<T>::GetHash()))
+		if (serializer.BeginClass(name, TypeInfo<T>::GetName(), TypeInfo<T>::GetHash()))
 		{
 			bool ret = true;
 			Meta::ForEachMember<T>([&ret, &serializer, &object](const auto& member)
@@ -175,11 +175,10 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, const T
 	}	  
 }
 
-// TODO : Support std::array<T>, std::array<T&>, std::array<T*>
 template <typename T, std::size_t N>
-bool GenericSerialization(ClassSerializer& serializer, const char* name, std::array<T, N>& object)
+bool GenericSerialization(Serializer& serializer, const char* name, std::array<T, N>& object)
 {
-	if (serializer.BeginClass(name, TypeInfo<std::array<T, N>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<std::array<T, N>>::GetName(), TypeInfo<std::array<T, N>>::GetHash()))
 	{
 		bool ret = true;
 
@@ -189,7 +188,8 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, std::ar
 			serializer.Serialize("size", size);
 			if (size != static_cast<U32>(N))
 			{
-				// TODO : ?
+				enLogWarning(LogChannel::System, "Encountered std::array with size {} while reading using an std::array of size {}", size, N);
+				ret = false;
 			}
 		}
 		else if (serializer.IsWriting())
@@ -198,16 +198,7 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, std::ar
 			serializer.Serialize("size", size);
 		}
 
-		for (U32 i = 0; i < size; ++i)
-		{
-			std::string childName(name);
-			childName.append("_");
-			childName.append(std::to_string(i));
-
-			// TODO : Polymorphism
-
-			ret = GenericSerialization(serializer, childName.c_str(), object[i]) && ret;
-		}
+		ret = priv::GenericSerializationArray<std::array<T, N>, T>(serializer, name, size, object) && ret;
 
 		ret = serializer.EndClass() && ret;
 		return ret;
@@ -218,39 +209,23 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, std::ar
 	}
 }
 
-// TODO : Support const std::array<T>, const std::array<T&>, const std::array<T*>
 template <typename T, std::size_t N>
-bool GenericSerialization(ClassSerializer& serializer, const char* name, const std::array<T, N>& object)
+bool GenericSerialization(Serializer& serializer, const char* name, const std::array<T, N>& object)
 {
-	if (serializer.BeginClass(name, TypeInfo<std::array<T, N>>::GetHash()))
+	if (!serializer.IsWriting())
+	{
+		enAssert(false);
+		return false;
+	}
+
+	if (serializer.BeginClass(name, TypeInfo<std::array<T, N>>::GetName(), TypeInfo<std::array<T, N>>::GetHash()))
 	{
 		bool ret = true;
 
-		U32 size = 0;
-		if (serializer.IsReading())
-		{
-			serializer.Serialize("size", size);
-			if (size != static_cast<U32>(N))
-			{
-				// TODO : ?
-			}
-		}
-		else if (serializer.IsWriting())
-		{
-			size = static_cast<U32>(N);
-			serializer.Serialize("size", size);
-		}
+		U32 size = static_cast<U32>(N);
+		serializer.Serialize("size", size);
 
-		for (U32 i = 0; i < size; ++i)
-		{
-			std::string childName(name);
-			childName.append("_");
-			childName.append(std::to_string(i));
-
-			// TODO : Polymorphism
-
-			ret = GenericSerialization(serializer, childName.c_str(), object[i]) && ret;
-		}
+		ret = priv::GenericSerializationArray<std::array<T, N>, T>(serializer, name, size, object) && ret;
 
 		ret = serializer.EndClass() && ret;
 		return ret;
@@ -261,11 +236,10 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, const s
 	}
 }
 
-// TODO : Support vector<T>, vector<T&>, vector<T*>
 template <typename T>
-bool GenericSerialization(ClassSerializer& serializer, const char* name, std::vector<T>& object)
+bool GenericSerialization(Serializer& serializer, const char* name, std::vector<T>& object)
 {
-	if (serializer.BeginClass(name, TypeInfo<std::vector<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<std::vector<T>>::GetName(), TypeInfo<std::vector<T>>::GetHash()))
 	{
 		bool ret = true;
 
@@ -281,16 +255,7 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, std::ve
 			serializer.Serialize("size", size);
 		}
 
-		for (U32 i = 0; i < size; ++i)
-		{
-			std::string childName(name);
-			childName.append("_");
-			childName.append(std::to_string(i));
-
-			// TODO : Polymorphism
-
-			ret = GenericSerialization(serializer, childName.c_str(), object[i]) && ret;
-		}
+		ret = priv::GenericSerializationArray<std::vector<T>, T>(serializer, name, size, object) && ret;
 
 		ret = serializer.EndClass() && ret;
 		return ret;
@@ -301,9 +266,8 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, std::ve
 	}
 }
 
-// TODO : Support const vector<T>, const vector<T&>, const vector<T*>
 template <typename T>
-bool GenericSerialization(ClassSerializer& serializer, const char* name, const std::vector<T>& object)
+bool GenericSerialization(Serializer& serializer, const char* name, const std::vector<T>& object)
 {
 	if (!serializer.IsWriting())
 	{
@@ -311,35 +275,14 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, const s
 		return false;
 	}
 
-	if (serializer.BeginClass(name, TypeInfo<std::vector<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<std::vector<T>>::GetName(), TypeInfo<std::vector<T>>::GetHash()))
 	{
 		bool ret = true;
 
-		U32 size = 0;
-		if (serializer.IsReading())
-		{
-			serializer.Serialize("size", size);
-			if (size != static_cast<U32>(object.size()))
-			{
-				// TODO : ?
-			}
-		}
-		else if (serializer.IsWriting())
-		{
-			size = static_cast<U32>(object.size());
-			serializer.Serialize("size", size);
-		}
+		U32 size = static_cast<U32>(object.size());
+		serializer.Serialize("size", size);
 
-		for (U32 i = 0; i < size; ++i)
-		{
-			std::string childName(name);
-			childName.append("_");
-			childName.append(std::to_string(i));
-
-			// TODO : Polymorphism
-
-			ret = GenericSerialization(serializer, childName.c_str(), object[i]) && ret;
-		}
+		ret = priv::GenericSerializationArray<std::vector<T>, T>(serializer, name, size, object) && ret;
 
 		ret = serializer.EndClass() && ret;
 		return ret;
@@ -350,11 +293,10 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, const s
 	}
 }
 
-// TODO : Support Array<T>, Array<T&>, Array<T*>
 template <typename T>
-bool GenericSerialization(ClassSerializer& serializer, const char* name, Array<T>& object)
+bool GenericSerialization(Serializer& serializer, const char* name, Array<T>& object)
 {
-	if (serializer.BeginClass(name, TypeInfo<Array<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Array<T>>::GetName(), TypeInfo<Array<T>>::GetHash()))
 	{
 		bool ret = true;
 
@@ -370,16 +312,7 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, Array<T
 			serializer.Serialize("size", size);
 		}
 
-		for (U32 i = 0; i < size; ++i)
-		{
-			std::string childName(name);
-			childName.append("_");
-			childName.append(std::to_string(i));
-
-			// TODO : Polymorphism
-
-			ret = GenericSerialization(serializer, childName.c_str(), object[i]) && ret;
-		}
+		ret = priv::GenericSerializationArray<Array<T>, T>(serializer, name, size, object) && ret;
 
 		ret = serializer.EndClass() && ret;
 		return ret;
@@ -390,9 +323,8 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, Array<T
 	}
 }
 
-// TODO : Support const Array<T>, const Array<T&>, const Array<T*>
 template <typename T>
-bool GenericSerialization(ClassSerializer& serializer, const char* name, const Array<T>& object)
+bool GenericSerialization(Serializer& serializer, const char* name, const Array<T>& object)
 {
 	if (!serializer.IsWriting())
 	{
@@ -400,35 +332,14 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, const A
 		return false;
 	}
 
-	if (serializer.BeginClass(name, TypeInfo<Array<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Array<T>>::GetName(), TypeInfo<Array<T>>::GetHash()))
 	{
 		bool ret = true;
 
-		U32 size = 0;
-		if (serializer.IsReading())
-		{
-			serializer.Serialize("size", size);
-			if (size != object.Size())
-			{
-				// TODO : ?
-			}
-		}
-		else if (serializer.IsWriting())
-		{
-			size = object.Size();
-			serializer.Serialize("size", size);
-		}
+		U32 size = object.Size();
+		serializer.Serialize("size", size);
 
-		for (U32 i = 0; i < size; ++i)
-		{
-			std::string childName(name);
-			childName.append("_");
-			childName.append(std::to_string(i));
-
-			// TODO : Polymorphism
-
-			ret = GenericSerialization(serializer, childName.c_str(), object[i]) && ret;
-		}
+		ret = priv::GenericSerializationArray<Array<T>, T>(serializer, name, size, object) && ret;
 
 		ret = serializer.EndClass() && ret;
 		return ret;
@@ -438,5 +349,86 @@ bool GenericSerialization(ClassSerializer& serializer, const char* name, const A
 		return false;
 	}
 }
+
+namespace priv
+{
+
+template <typename ArrayType, typename ObjectType>
+bool GenericSerializationArray(Serializer& serializer, const char* name, U32 size, ArrayType& arrayObject)
+{
+	bool ret = true;
+	for (U32 i = 0; i < size; ++i)
+	{
+		std::string childName(name);
+		childName.append("_");
+		childName.append(std::to_string(i));
+
+		if constexpr (Traits::IsPointer<ObjectType>::value)
+		{
+			if (serializer.IsReading())
+			{
+				// TODO : READ CHILD
+			}
+			else if (serializer.IsWriting())
+			{
+				if (arrayObject[i] != nullptr)
+				{
+					ret = GenericSerialization(serializer, childName.c_str(), *(arrayObject[i])) && ret;
+				}
+				else
+				{
+					std::string nullString("");
+					ret = GenericSerialization(serializer, childName.c_str(), nullString) && ret;
+				}
+			}
+			else
+			{
+				enAssert(false);
+			}
+		}
+		else
+		{
+			ret = GenericSerialization(serializer, childName.c_str(), arrayObject[i]) && ret;
+		}
+	}
+	return ret;
+}
+
+template <typename ArrayType, typename ObjectType>
+bool GenericSerializationArray(Serializer& serializer, const char* name, U32 size, const ArrayType& arrayObject)
+{
+	if (!serializer.IsWriting())
+	{
+		enAssert(false);
+		return false;
+	}
+
+	bool ret = true;
+	for (U32 i = 0; i < size; ++i)
+	{
+		std::string childName(name);
+		childName.append("_");
+		childName.append(std::to_string(i));
+
+		if constexpr (Traits::IsPointer<ObjectType>::value)
+		{
+			if (arrayObject[i] != nullptr)
+			{
+				ret = GenericSerialization(serializer, childName.c_str(), *(arrayObject[i])) && ret;
+			}
+			else
+			{
+				ret = GenericSerialization(serializer, childName.c_str(), "") && ret;
+			}
+		}
+		else
+		{
+			ret = GenericSerialization(serializer, childName.c_str(), arrayObject[i]) && ret;
+		}
+	}
+	return ret;
+}
+
+} // namespace priv
 
 } // namespace en

@@ -11,9 +11,32 @@ Time Time::Now()
 	return Time(static_cast<I64>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 }
 
-bool Time::Serialize(ClassSerializer& serializer, const char* name)
+bool Time::Serialize(Serializer& serializer, const char* name)
 {
 	return serializer.Serialize(name, mTicks);
+}
+
+bool Time::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	static constexpr std::size_t maxSize = 128;
+	static char concatName[maxSize];
+#ifdef ENLIVE_COMPILER_MSVC
+	strcpy_s(concatName, name);
+	strcpy_s(concatName, " (s)");
+#else
+	strcpy(concatName, name);
+	strcpy(concatName, " (s)");
+#endif // ENLIVE_COMPILER_MSVC
+	float seconds = static_cast<float>(AsSeconds());
+	if (GenericEdit(objectEditor, concatName, seconds))
+	{
+		mTicks = Time::Seconds(seconds).mTicks;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 Clock::Clock()
@@ -174,10 +197,16 @@ DateTime DateTime::Today()
 	return Now().GetDate();
 }
 
-bool DateTime::Serialize(ClassSerializer& serializer, const char* name)
+bool DateTime::Serialize(Serializer& serializer, const char* name)
 {
-	// TODO : Improve ?
+	// TODO : Improve
 	return serializer.Serialize(name, mTicks);
+}
+
+bool DateTime::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	// TODO : Improve
+	return objectEditor.Edit(name, mTicks);
 }
 
 } // namespace en

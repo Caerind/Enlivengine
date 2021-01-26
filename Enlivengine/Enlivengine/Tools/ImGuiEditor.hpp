@@ -53,4 +53,6 @@ private:
 
 } // namespace en
 
+ENLIVE_DEFINE_ENUM_INFO(en::ImGuiEditor::GizmoOperation)
+
 #endif // ENLIVE_ENABLE_IMGUI && defined(ENLIVE_TOOL)
