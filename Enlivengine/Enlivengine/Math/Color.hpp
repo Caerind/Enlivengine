@@ -103,20 +103,30 @@ public:
 		}
 	}
 
-	bool Edit(ObjectEditor& objectEditor, const char* name)
-	{
-		bool ret = false;
+	bool Edit(ObjectEditor& objectEditor, const char* name);
+
+	U8 r;
+	U8 g;
+	U8 b;
+	U8 a;
+};
+
+// Should be outside the class to be able to use TypeInfo
+// TODO : Move to cpp file
+bool Color::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	bool ret = false;
 #ifdef ENLIVE_ENABLE_IMGUI
-		if (objectEditor.IsImGuiEditor())
+	if (objectEditor.IsImGuiEditor())
+	{
+		ImVec4 color = ToImGuiColor();
+		if (ImGui::ColorEdit3(name, (float*)&color))
 		{
-			ImVec4 color = ToImGuiColor();
-			if (ImGui::ColorEdit3(name, (float*)&color))
-			{
-				FromImGuiColor(color);
-				ret = true;
-			}
+			FromImGuiColor(color);
+			ret = true;
 		}
-		else
+	}
+	else
 #endif // ENLIVE_ENABLE_IMGUI
 		if (objectEditor.BeginClass(name, TypeInfo<Color>::GetName(), TypeInfo<Color>::GetHash()))
 		{
@@ -126,14 +136,8 @@ public:
 			ret = GenericEdit(objectEditor, "A", a) || ret;
 			objectEditor.EndClass();
 		}
-		return ret;
-	}
-
-	U8 r;
-	U8 g;
-	U8 b;
-	U8 a;
-};
+	return ret;
+}
 
 namespace Colors
 {
