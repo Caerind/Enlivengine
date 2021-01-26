@@ -40,7 +40,7 @@ SystemManager& World::GetSystemManager()
 	return mSystemManager;
 }
 
-const en::SystemManager& World::GetSystemManager() const
+const SystemManager& World::GetSystemManager() const
 {
 	return mSystemManager;
 }

@@ -118,11 +118,13 @@ public:
 		}
 		else
 #endif // ENLIVE_ENABLE_IMGUI
+		if (objectEditor.BeginClass(name, TypeInfo<Color>::GetName(), TypeInfo<Color>::GetHash()))
 		{
 			ret = GenericEdit(objectEditor, "R", r) || ret;
 			ret = GenericEdit(objectEditor, "G", g) || ret;
 			ret = GenericEdit(objectEditor, "B", b) || ret;
 			ret = GenericEdit(objectEditor, "A", a) || ret;
+			objectEditor.EndClass();
 		}
 		return ret;
 	}

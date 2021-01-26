@@ -162,7 +162,7 @@ bool Vector4<T>::Edit(ObjectEditor& objectEditor, const char* name)
 			}
 			else
 			{
-				int vector[3];
+				int vector[4];
 				vector[0] = static_cast<int>(x);
 				vector[1] = static_cast<int>(y);
 				vector[2] = static_cast<int>(z);

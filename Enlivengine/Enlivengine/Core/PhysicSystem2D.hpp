@@ -62,7 +62,7 @@ public:
 #endif // ENLIVE_DEBUG
 
 	bool Serialize(Serializer& serializer, const char* name) override;
-	bool Edit(ObjectEditor& objectEditor, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
 private:
 	static b2Body* GetComponentBody(const PhysicComponent2D& component);

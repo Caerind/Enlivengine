@@ -301,7 +301,7 @@ bool Quaternion<T>::Serialize(Serializer& serializer, const char* name)
 template <typename T>
 bool Quaternion<T>::Edit(ObjectEditor& objectEditor, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Quaternion<T>>::GetName(), TypeInfo<Quaternion<T>>::GetHash()))
+	if (objectEditor.BeginClass(name, TypeInfo<Quaternion<T>>::GetName(), TypeInfo<Quaternion<T>>::GetHash()))
 	{
 		bool ret = false;
 #ifdef ENLIVE_ENABLE_IMGUI

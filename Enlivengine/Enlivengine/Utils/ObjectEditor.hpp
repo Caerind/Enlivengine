@@ -11,6 +11,12 @@
 #include <array>
 #include <Enlivengine/Utils/Array.hpp>
 
+// TODO : Not good to have this here...
+// Needed for the GenericEdit template part for Enums
+#ifdef ENLIVE_ENABLE_IMGUI
+#include <imgui/imgui.h>
+#endif // ENLIVE_ENABLE_IMGUI
+
 namespace en
 {
 

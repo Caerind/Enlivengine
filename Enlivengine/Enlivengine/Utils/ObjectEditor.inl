@@ -63,27 +63,35 @@ bool GenericEdit(ObjectEditor& objectEditor, const char* name, T& object)
 		else if constexpr (Traits::IsEnum<T>::value)
 		{
 			// TODO : Not good to have this here...
-
-			static bool initialized = false;
-			static constexpr U32 enumCount = Enum::GetCount<T>();
-			static std::string stringsStorage[enumCount];
-			static const char* stringsImGui[enumCount];
-			if (!initialized)
+			if (objectEditor.IsImGuiEditor())
 			{
-				auto enumNames = Enum::GetValueNames<T>();
-				for (U32 i = 0; i < enumCount; ++i)
+#ifdef ENLIVE_ENABLE_IMGUI
+				static bool initialized = false;
+				static constexpr U32 enumCount = Enum::GetCount<T>();
+				static std::string stringsStorage[enumCount];
+				static const char* stringsImGui[enumCount];
+				if (!initialized)
 				{
-					stringsStorage[i] = enumNames[i];
-					stringsImGui[i] = stringsStorage[i].c_str();
+					auto enumNames = Enum::GetValueNames<T>();
+					for (U32 i = 0; i < enumCount; ++i)
+					{
+						stringsStorage[i] = enumNames[i];
+						stringsImGui[i] = stringsStorage[i].c_str();
+					}
+					initialized = true;
 				}
-				initialized = true;
-			}
 
-			int index = static_cast<int>(Enum::GetIndex(object));
-			if (ImGui::Combo(name, &index, stringsImGui, static_cast<int>(enumCount)))
+				int index = static_cast<int>(Enum::GetIndex(object));
+				if (ImGui::Combo(name, &index, stringsImGui, static_cast<int>(enumCount)))
+				{
+					object = Enum::GetFromIndex<T>(static_cast<U32>(index));
+					return true;
+				}
+#endif // ENLIVE_ENABLE_IMGUI
+			}
+			else
 			{
-				object = Enum::GetFromIndex<T>(static_cast<U32>(index));
-				return true;
+				enAssert(false);
 			}
 			return false;
 		}
