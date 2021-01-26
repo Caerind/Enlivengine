@@ -110,7 +110,8 @@ public:
 	static constexpr Vector4<T> UnitW() { return Vector4<T>(0, 0, 0, 1); }
 	static constexpr Vector4<T> Zero() { return Vector4<T>(0, 0, 0, 0); }
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 	T x;
 	T y;
@@ -119,9 +120,9 @@ public:
 };
 
 template <typename T>
-bool Vector4<T>::Serialize(ClassSerializer& serializer, const char* name)
+bool Vector4<T>::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Vector4<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Vector4<T>>::GetName(), TypeInfo<Vector4<T>>::GetHash()))
 	{
 		bool ret = true;
 		ret = GenericSerialization(serializer, "x", x) && ret;
@@ -134,6 +135,59 @@ bool Vector4<T>::Serialize(ClassSerializer& serializer, const char* name)
 	else
 	{
 		return false;
+	}
+}
+
+template <typename T>
+bool Vector4<T>::Edit(ObjectEditor& objectEditor, const char* name)
+{
+#ifdef ENLIVE_ENABLE_IMGUI
+	if (objectEditor.IsImGuiEditor())
+	{
+		if constexpr (Traits::IsFloatingPoint<T>::value)
+		{
+			float vector[4];
+			vector[0] = static_cast<float>(x);
+			vector[1] = static_cast<float>(y);
+			vector[2] = static_cast<float>(z);
+			vector[3] = static_cast<float>(w);
+			if (ImGui::InputFloat4(name, vector))
+			{
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
+				return true;
+			}
+			return false;
+		}
+		else
+		{
+			int vector[4];
+			vector[0] = static_cast<int>(x);
+			vector[1] = static_cast<int>(y);
+			vector[2] = static_cast<int>(z);
+			vector[3] = static_cast<int>(w);
+			if (ImGui::InputInt4(name, vector))
+			{
+				// TODO : NumericLimits<T> Min
+				// TODO : NumericLimits<T> Max
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
+				return true;
+			}
+			return false;
+		}
+	}
+	else
+#endif // ENLIVE_ENABLE_IMGUI
+	{
+		bool ret = false;
+		if (objectEditor.BeginClass(name, TypeInfo<Vector4<T>>::GetName(), TypeInfo<Vector4<T>>::GetHash()))
+		{
+			ret = GenericEdit(objectEditor, "x", x) || ret;
+			ret = GenericEdit(objectEditor, "y", y) || ret;
+			ret = GenericEdit(objectEditor, "z", z) || ret;
+			ret = GenericEdit(objectEditor, "w", w) || ret;
+			objectEditor.EndClass();
+		}
+		return ret;
 	}
 }
 

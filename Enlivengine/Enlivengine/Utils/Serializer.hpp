@@ -27,6 +27,15 @@ public:
 	bool IsReading() const { return mMode == Mode::Read; }
 	bool IsWriting() const { return mMode == Mode::Write; }
 
+	virtual bool IsOpened() const = 0;
+	virtual bool Open(const std::string& filename, Serializer::Mode mode) = 0;
+	virtual bool Close() = 0;
+
+	virtual bool BeginClass(const char* name, const char* className, U32 classTypeHash) = 0;
+	virtual bool EndClass() = 0;
+
+	virtual bool HasNode(const char* name) = 0;
+
 	virtual bool Serialize(const char* name, bool& value) = 0;
 	virtual bool Serialize(const char* name, char& value) = 0;
 	virtual bool Serialize(const char* name, I8& value) = 0;
@@ -45,30 +54,25 @@ protected:
 	Mode mMode{ Mode::None };
 };
 
-class ClassSerializer : public Serializer
+template <typename T> bool GenericSerialization(Serializer& serializer, const char* name, T& object);
+template <typename T> bool GenericSerialization(Serializer& serializer, const char* name, const T& object);
+
+template <typename T, std::size_t N> bool GenericSerialization(Serializer& serializer, const char* name, std::array<T, N>& object);
+template <typename T, std::size_t N> bool GenericSerialization(Serializer& serializer, const char* name, const std::array<T, N>& object);
+
+template <typename T> bool GenericSerialization(Serializer& serializer, const char* name, std::vector<T>& object);
+template <typename T> bool GenericSerialization(Serializer& serializer, const char* name, const std::vector<T>& object);
+
+template <typename T> bool GenericSerialization(Serializer& serializer, const char* name, Array<T>& object);
+template <typename T> bool GenericSerialization(Serializer& serializer, const char* name, const Array<T>& object);
+
+namespace priv
 {
-public:
-	virtual bool IsOpened() const = 0;
-	virtual bool Open(const std::string& filename, Serializer::Mode mode) = 0;
-	virtual bool Close() = 0;
+	
+template <typename ArrayType, typename ObjectType> bool GenericSerializationArray(Serializer& serializer, const char* name, U32 size, ArrayType& arrayObject);
+template <typename ArrayType, typename ObjectType> bool GenericSerializationArray(Serializer& serializer, const char* name, U32 size, const ArrayType& arrayObject);
 
-	virtual bool BeginClass(const char* name, U32 classTypeHash) = 0;
-	virtual bool EndClass() = 0;
-
-	virtual bool HasNode(const char* name) = 0;
-};
-
-template <typename T> bool GenericSerialization(ClassSerializer& serializer, const char* name, T& object);
-template <typename T> bool GenericSerialization(ClassSerializer& serializer, const char* name, const T& object);
-
-template <typename T, std::size_t N> bool GenericSerialization(ClassSerializer& serializer, const char* name, std::array<T, N>& object);
-template <typename T, std::size_t N> bool GenericSerialization(ClassSerializer& serializer, const char* name, const std::array<T, N>& object);
-
-template <typename T> bool GenericSerialization(ClassSerializer& serializer, const char* name, std::vector<T>& object);
-template <typename T> bool GenericSerialization(ClassSerializer& serializer, const char* name, const std::vector<T>& object);
-
-template <typename T> bool GenericSerialization(ClassSerializer& serializer, const char* name, Array<T>& object);
-template <typename T> bool GenericSerialization(ClassSerializer& serializer, const char* name, const Array<T>& object);
+} // namespace priv
 
 } // namespace en
 

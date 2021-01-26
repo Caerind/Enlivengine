@@ -5,6 +5,11 @@
 #include <Enlivengine/Utils/TypeInfo.hpp>
 #include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Utils/Serializer.hpp>
+#include <Enlivengine/Utils/ObjectEditor.hpp>
+
+#ifdef ENLIVE_ENABLE_IMGUI
+#include <imgui/imgui.h>
+#endif // ENLIVE_ENABLE_IMGUI
 
 // TODO : Constexpr Sqrt => InvSqrt, Asin, Acos
 // TODO : Real : Float/Double

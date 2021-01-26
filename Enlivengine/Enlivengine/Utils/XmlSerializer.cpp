@@ -1,4 +1,4 @@
-#include <Enlivengine/Utils/XmlClassSerializer.hpp>
+#include <Enlivengine/Utils/XmlSerializer.hpp>
 
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Utils/String.hpp>
@@ -6,12 +6,12 @@
 namespace en
 {
 
-bool XmlClassSerializer::IsOpened() const
+bool XmlSerializer::IsOpened() const
 {
 	return mMode != Mode::None;
 }
 
-bool XmlClassSerializer::Open(const std::string& filename, Serializer::Mode mode)
+bool XmlSerializer::Open(const std::string& filename, Serializer::Mode mode)
 {
 	if (IsOpened())
 		Close();
@@ -44,7 +44,7 @@ bool XmlClassSerializer::Open(const std::string& filename, Serializer::Mode mode
 	return true;
 }
 
-bool XmlClassSerializer::Close()
+bool XmlSerializer::Close()
 {
 	if (mMode == Mode::Write)
 	{
@@ -67,7 +67,7 @@ bool XmlClassSerializer::Close()
 	}
 }
 
-bool XmlClassSerializer::BeginClass(const char* name, U32 classTypeHash)
+bool XmlSerializer::BeginClass(const char* name, const char* className, U32 classTypeHash)
 {
 	enAssert(IsOpened());
 	if (mMode == Serializer::Mode::Read)
@@ -75,7 +75,7 @@ bool XmlClassSerializer::BeginClass(const char* name, U32 classTypeHash)
 		if (mParser.ReadNode(name))
 		{
 			U32 nodeTypeAttribute = 0;
-			mParser.GetAttribute("type", nodeTypeAttribute);
+			mParser.GetAttribute("hash", nodeTypeAttribute);
 			return nodeTypeAttribute == classTypeHash;
 		}
 	}
@@ -83,27 +83,28 @@ bool XmlClassSerializer::BeginClass(const char* name, U32 classTypeHash)
 	{
 		if (mParser.CreateNode(name))
 		{
-			mParser.SetAttribute("type", classTypeHash);
+			mParser.SetAttribute("type", className);
+			mParser.SetAttribute("hash", classTypeHash);
 			return true;
 		}
 	}
 	return false;
 }
 
-bool XmlClassSerializer::EndClass()
+bool XmlSerializer::EndClass()
 {
 	enAssert(IsOpened());
 	mParser.CloseNode();
 	return true;
 }
 
-bool XmlClassSerializer::HasNode(const char* name)
+bool XmlSerializer::HasNode(const char* name)
 {
 	enAssert(IsOpened());
 	return mParser.HasNode(name);
 }
 
-bool XmlClassSerializer::Serialize(const char* name, bool& value)
+bool XmlSerializer::Serialize(const char* name, bool& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -141,7 +142,7 @@ bool XmlClassSerializer::Serialize(const char* name, bool& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, char& value)
+bool XmlSerializer::Serialize(const char* name, char& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -179,7 +180,7 @@ bool XmlClassSerializer::Serialize(const char* name, char& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, I8& value)
+bool XmlSerializer::Serialize(const char* name, I8& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -217,7 +218,7 @@ bool XmlClassSerializer::Serialize(const char* name, I8& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, U8& value)
+bool XmlSerializer::Serialize(const char* name, U8& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -255,7 +256,7 @@ bool XmlClassSerializer::Serialize(const char* name, U8& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, I16& value)
+bool XmlSerializer::Serialize(const char* name, I16& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -293,7 +294,7 @@ bool XmlClassSerializer::Serialize(const char* name, I16& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, U16& value)
+bool XmlSerializer::Serialize(const char* name, U16& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -331,7 +332,7 @@ bool XmlClassSerializer::Serialize(const char* name, U16& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, I32& value)
+bool XmlSerializer::Serialize(const char* name, I32& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -369,7 +370,7 @@ bool XmlClassSerializer::Serialize(const char* name, I32& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, U32& value)
+bool XmlSerializer::Serialize(const char* name, U32& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -407,7 +408,7 @@ bool XmlClassSerializer::Serialize(const char* name, U32& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, I64& value)
+bool XmlSerializer::Serialize(const char* name, I64& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -445,7 +446,7 @@ bool XmlClassSerializer::Serialize(const char* name, I64& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, U64& value)
+bool XmlSerializer::Serialize(const char* name, U64& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -483,7 +484,7 @@ bool XmlClassSerializer::Serialize(const char* name, U64& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, F32& value)
+bool XmlSerializer::Serialize(const char* name, F32& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -521,7 +522,7 @@ bool XmlClassSerializer::Serialize(const char* name, F32& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, F64& value)
+bool XmlSerializer::Serialize(const char* name, F64& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)
@@ -559,7 +560,7 @@ bool XmlClassSerializer::Serialize(const char* name, F64& value)
 	}
 }
 
-bool XmlClassSerializer::Serialize(const char* name, std::string& value)
+bool XmlSerializer::Serialize(const char* name, std::string& value)
 {
 	enAssert(IsOpened());
 	if (mMode == Mode::Read)

@@ -70,4 +70,9 @@ void Transform::SetTransform(const Vector3f& translation, const Matrix3f& rotati
 	mMatrix = Matrix4f::Transform(translation, rotation, scale);
 }
 
+const Matrix4f& Transform::GetMatrix() const
+{
+	return mMatrix;
+}
+
 } // namespace en

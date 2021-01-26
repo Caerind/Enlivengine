@@ -1,6 +1,10 @@
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Utils/Hash.hpp>
 
+#ifdef ENLIVE_ENABLE_IMGUI
+#include <imgui/imgui.h>
+#endif // ENLIVE_ENABLE_IMGUI
+
 namespace en
 {
 
@@ -70,9 +74,94 @@ void ResourcePtr<T>::ReleaseFromManager()
 }
 
 template <typename T>
-bool ResourcePtr<T>::Serialize(ClassSerializer& serializer, const char* name)
+bool ResourcePtr<T>::Serialize(Serializer& serializer, const char* name)
 {
 	return serializer.Serialize(name, mID);
+}
+
+template <typename T>
+bool ResourcePtr<T>::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	bool modified = false;
+
+#ifdef ENLIVE_ENABLE_IMGUI
+	if (objectEditor.IsImGuiEditor())
+	{
+		Array<ResourceInfo> resourceInfos;
+		ResourceManager::GetInstance().GetResourceInfosOfType<T>(resourceInfos);
+
+		static const char* nullResourceIdentifier = "@Null";
+		static const char* notLoadedResourceIdentifier = "@NotLoaded";
+		const char* currentLabel = nullptr;
+
+		if (HasValidID())
+		{
+			bool found = false;
+			for (U32 i = 0; i < resourceInfos.Size() && !found; ++i)
+			{
+				if (resourceInfos[i].id == GetID())
+				{
+					currentLabel = resourceInfos[i].identifier.c_str();
+					found = true;
+				}
+			}
+			if (found)
+			{
+				ImGui::Text(ICON_FA_CHECK);
+			}
+			else
+			{
+				ImGui::Text(ICON_FA_EXCLAMATION);
+				currentLabel = notLoadedResourceIdentifier;
+			}
+		}
+		else
+		{
+			ImGui::Text(ICON_FA_EXCLAMATION);
+			currentLabel = nullResourceIdentifier;
+		}
+
+		ImGui::SameLine();
+		ImGui::PushID("ComboResourceIdentifier");
+		if (ImGui::BeginCombo(name, currentLabel))
+		{
+			{
+				const bool nullSelected = !HasValidID();
+				if (ImGui::Selectable(nullResourceIdentifier, nullSelected))
+				{
+					Release();
+					modified = true;
+				}
+				if (nullSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			for (U32 i = 0; i < resourceInfos.Size(); ++i)
+			{
+				bool selected = resourceInfos[i].id == GetID();
+				if (ImGui::Selectable(resourceInfos[i].identifier.c_str(), selected))
+				{
+					mID = resourceInfos[i].id;
+					modified = true;
+					selected = true;
+				}
+				if (selected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::PopID();
+	}
+	else
+#endif // ENLIVE_ENABLE_IMGUI
+	{
+		modified = GenericEdit(objectEditor, name, mID);
+	}
+
+	return modified;
 }
 
 template <typename T>

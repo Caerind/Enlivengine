@@ -7,6 +7,11 @@
 
 #include <Enlivengine/Core/ComponentFactory.hpp>
 
+#ifdef ENLIVE_ENABLE_IMGUI
+#include <imgui/imgui.h>
+#include <IconFontCppHeaders/IconsFontAwesome5.h>
+#endif // ENLIVE_ENABLE_IMGUI
+
 namespace en
 {
 
@@ -107,9 +112,9 @@ const World& Entity::GetWorld() const
 	return mManager->GetWorld();
 }
 
-bool Entity::Serialize(ClassSerializer& serializer, const char* name)
+bool Entity::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Entity>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Entity>::GetName(), TypeInfo<Entity>::GetHash()))
 	{
 		bool ret = true;
 
@@ -147,6 +152,110 @@ bool Entity::Serialize(ClassSerializer& serializer, const char* name)
 		}
 
 		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	if (objectEditor.BeginClass(name, TypeInfo<Entity>::GetName(), TypeInfo<Entity>::GetHash()))
+	{
+		bool ret = false;
+		if (IsValid())
+		{
+#ifdef ENLIVE_ENABLE_IMGUI
+			if (objectEditor.IsImGuiEditor())
+			{
+				const U32 entityID = GetID();
+				ImGui::Text("%s (ID: %d)", name, entityID);
+
+				ImGui::SameLine();
+				bool destroyed = false;
+				if (ImGui::SmallButton(ICON_FA_BAN))
+				{
+					destroyed = true;
+				}
+
+				ImGui::PushID(entityID);
+
+				const auto& componentInfos = ComponentFactory::GetComponentInfos();
+				std::vector<U32> hasNot;
+				const auto endItr = componentInfos.cend();
+				for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
+				{
+					const auto& ci = itr->second;
+					if (ci.has(*this))
+					{
+						ImGui::PushID(itr->first);
+						if (ImGui::Button("-"))
+						{
+							ci.remove(*this);
+							ret = true;
+						}
+						else
+						{
+							ImGui::SameLine();
+							if (ci.editor(objectEditor, *this))
+							{
+								ret = true;
+							}
+						}
+						ImGui::PopID();
+					}
+					else
+					{
+						hasNot.push_back(itr->first);
+					}
+				}
+
+				if (!hasNot.empty())
+				{
+					if (ImGui::Button("+ Add Component"))
+					{
+						ImGui::OpenPopup("Add Component");
+					}
+					if (ImGui::BeginPopup("Add Component"))
+					{
+						ImGui::TextUnformatted("Available:");
+						ImGui::Separator();
+						for (auto componentHash : hasNot)
+						{
+							const auto& ci = componentInfos.at(componentHash);
+							ImGui::PushID(componentHash);
+							if (ImGui::Selectable(ci.name))
+							{
+								ci.add(*this);
+								ret = true;
+							}
+							ImGui::PopID();
+						}
+						ImGui::EndPopup();
+					}
+				}
+
+				ImGui::PopID();
+
+				if (destroyed)
+				{
+					Destroy();
+				}
+			}
+#endif // ENLIVE_ENABLE_IMGUI
+		}
+		else
+		{
+#ifdef ENLIVE_ENABLE_IMGUI
+			if (objectEditor.IsImGuiEditor())
+			{
+				ImGui::Text("Invalid entity");
+			}
+#endif // ENLIVE_ENABLE_IMGUI
+		}
+		objectEditor.EndClass();
 		return ret;
 	}
 	else

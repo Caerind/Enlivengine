@@ -30,13 +30,6 @@ void Mouse::SetPositionCurrentWindow(const Vector2i& mousePos)
 
 Vector2i Mouse::GetPositionCurrentWindow()
 {
-	// TODO : Is this more precise ?
-	/*
-	int x, y;
-	SDL_GetMouseState(&x, &y);
-	return Vector2i(x, y);
-	*/
-
 	return GetInstance().mPosition;
 }
 

@@ -91,7 +91,8 @@ public:
 	static void SetMainCamera(Camera* camera);
 	static Camera* GetMainCamera();
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 protected:
 	void UpdateProjectionMatrix() const;

@@ -1,6 +1,6 @@
 {
     "AnimationEditor": false,
-    "Console": true,
+    "Console": false,
     "Editor": true,
     "EntityBrowser": true,
     "Game": true,
@@ -8,7 +8,6 @@
     "InputEditor": true,
     "Logs": true,
     "MemoryDebugger": false,
-    "Physic": true,
     "Profiler": false,
     "ResourceBrowser": true,
     "Worlds": true

@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
-<Worlds type="221375579">
-	<size>2</size>
-	<Worlds_0>sdqsdqsd</Worlds_0>
-	<Worlds_1>azeazeaze</Worlds_1>
+<Worlds type="std::vector<std::string>" hash="221375579">
+	<size>1</size>
+	<Worlds_0>Test</Worlds_0>
 </Worlds>
-<CurrentWorld>azeazeaze</CurrentWorld>
+<CurrentWorld>Test</CurrentWorld>

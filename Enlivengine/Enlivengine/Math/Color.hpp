@@ -80,28 +80,8 @@ public:
 	constexpr bool operator==(const Color& other) const { return r == other.r && g == other.g && b == other.b && a == other.a; }
 	constexpr bool operator!=(const Color& other) const { return !operator==(other); }
 
-	bool Serialize(ClassSerializer& serializer, const char* name)
-	{
-		if (serializer.IsReading())
-		{
-			U32 rgba;
-			const bool ret = serializer.Serialize(name, rgba);
-			if (ret)
-			{
-				FromRGBA(rgba);
-			}
-			return ret;
-		}
-		else if (serializer.IsWriting())
-		{
-			U32 rgba = ToRGBA();
-			return serializer.Serialize(name, rgba);
-		}
-		else
-		{
-			return false;
-		}
-	}
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 	U8 r;
 	U8 g;

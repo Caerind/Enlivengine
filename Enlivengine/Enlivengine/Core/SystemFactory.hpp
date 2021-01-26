@@ -20,20 +20,20 @@ public:
 	template <typename T>
 	static bool Register();
 
+	using EditorCallback = std::function<bool(ObjectEditor& objectEditor, World&)>;
 	using AddCallback = std::function<void(World&)>;
 	using HasCallback = std::function<bool(World&)>;
 	using RemoveCallback = std::function<void(World&)>;
-	//using SerializeCallback = std::function<bool(DataFile&, const World&)>;
-	//using DeserializeCallback = std::function<bool(DataFile&, World&)>;
+	using SerializeCallback = std::function<bool(Serializer&, World&)>;
 
 	struct SystemInfo
 	{
 		const char* name;
+		EditorCallback editor;
 		AddCallback add;
 		HasCallback has;
 		RemoveCallback remove;
-		//SerializeCallback serialize;
-		//DeserializeCallback deserialize;
+		SerializeCallback serialize;
 	};
 
 	static const std::unordered_map<U32, SystemInfo>& GetSystemInfos();
@@ -54,29 +54,27 @@ bool SystemFactory::Register()
 	static_assert(Meta::IsRegistered<T>());
 	static_assert(TypeInfo<T>::IsKnown());
 	constexpr U32 hash = TypeInfo<T>::GetHash();
-	mSystems[hash].name = TypeInfo<T>::GetName();
+	mSystems[hash].name = TypeInfo<T>::GetName(); 
+	mSystems[hash].editor = [](ObjectEditor& objectEditor, World& world)
+	{
+		return GenericEdit(objectEditor, TypeInfo<T>::GetName(), *world.GetSystemManager().GetSystem<T>());
+	};
 	mSystems[hash].add = [](World& world)
 	{
-		world.CreateSystem<T>();
+		world.GetSystemManager().CreateSystem<T>();
 	};
 	mSystems[hash].has = [](World& world)
 	{
-		return world.HasSystem<T>();
+		return world.GetSystemManager().HasSystem<T>();
 	};
 	mSystems[hash].remove = [](World& world)
 	{
-		world.RemoveSystem<T>();
+		world.GetSystemManager().RemoveSystem<T>();
 	};
-	/*
-	mSystems[hash].serialize = [](DataFile& dataFile, const World& world)
+	mSystems[hash].serialize = [](Serializer& serializer, World& world)
 	{
-		return dataFile.Serialize(world.GetSystem<T>(), TypeInfo<T>::GetName());
+		return GenericSerialization(serializer, TypeInfo<T>::GetName(), *world.GetSystemManager().GetSystem<T>());
 	};
-	mSystems[hash].deserialize = [](DataFile& dataFile, const World& world)
-	{
-		return dataFile.Deserialize(world.GetSystem<T>(), TypeInfo<T>::GetName());
-	};
-	*/
 	return true;
 }
 

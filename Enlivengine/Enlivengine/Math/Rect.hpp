@@ -126,7 +126,8 @@ public:
 	constexpr bool operator==(const Rect<T>& other) const { return mMin == other.mMin && mMax == other.mMax; }
 	constexpr bool operator!=(const Rect<T>& other) const { return !operator==(other); }
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	Vector2<T> mMin;
@@ -134,14 +135,31 @@ private:
 };
 
 template <typename T>
-bool Rect<T>::Serialize(ClassSerializer& serializer, const char* name)
+bool Rect<T>::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Rect<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Rect<T>>::GetName(), TypeInfo<Rect<T>>::GetHash()))
 	{
 		bool ret = true;
 		ret = GenericSerialization(serializer, "min", mMin) && ret;
 		ret = GenericSerialization(serializer, "max", mMax) && ret;
 		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+template <typename T>
+bool Rect<T>::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	if (objectEditor.BeginClass(name, TypeInfo<Rect<T>>::GetName(), TypeInfo<Rect<T>>::GetHash()))
+	{
+		bool ret = false;
+		ret = GenericEdit(objectEditor, "min", mMin) || ret;
+		ret = GenericEdit(objectEditor, "max", mMax) || ret;
+		objectEditor.EndClass();
 		return ret;
 	}
 	else

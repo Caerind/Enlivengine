@@ -11,10 +11,12 @@
 
 using namespace en;
 
-class RenderSystem : public System
+class RenderSystem : public RenderSystemBase
 {
 public:
 	const char* GetName() const override;
+	bool Serialize(Serializer& serializer, const char* name) override;
+	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
 	void Render() override
 	{
@@ -47,19 +49,29 @@ public:
 		}
 	}
 };
-ENLIVE_META_CLASS_BEGIN(RenderSystem, true, true)
+ENLIVE_META_CLASS_BEGIN(RenderSystem, en::Type_ClassSerialization, en::Type_ClassEditor)
 ENLIVE_META_CLASS_END()
 const char* RenderSystem::GetName() const 
 { 
 	return TypeInfo<RenderSystem>::GetName(); 
+}
+bool RenderSystem::Serialize(Serializer& serializer, const char* name)
+{
+	return GenericSerialization(serializer, name, *this);
+}
+bool RenderSystem::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	return GenericEdit(objectEditor, name, *this);
 }
 
 class DebugSystem : public System
 {
 public:
 	const char* GetName() const override;
+	bool Serialize(Serializer& serializer, const char* name) override;
+	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
-	void Render() override
+	void Update(Time dt) override
 	{
 #ifdef ENLIVE_DEBUG
 		mWorld->GetDebugDraw().DrawCross(Vector3f(-1.0f));
@@ -96,21 +108,31 @@ public:
 #endif // ENLIVE_DEBUG
 	}
 };
-ENLIVE_META_CLASS_BEGIN(DebugSystem, true, true)
+ENLIVE_META_CLASS_BEGIN(DebugSystem, en::Type_ClassSerialization, en::Type_ClassEditor)
 ENLIVE_META_CLASS_END()
 const char* DebugSystem::GetName() const
 {
 	return TypeInfo<DebugSystem>::GetName();
 }
+bool DebugSystem::Serialize(Serializer& serializer, const char* name)
+{
+	return GenericSerialization(serializer, name, *this);
+}
+bool DebugSystem::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	return GenericEdit(objectEditor, name, *this);
+}
 
 struct StupidShipComponent {};
-ENLIVE_META_CLASS_BEGIN(StupidShipComponent, true, true)
+ENLIVE_META_CLASS_BEGIN(StupidShipComponent, en::Type_ClassSerialization, en::Type_ClassEditor)
 ENLIVE_META_CLASS_END()
 
 class StupidShipSystem : public System
 {
 public:
 	const char* GetName() const override;
+	bool Serialize(Serializer& serializer, const char* name) override;
+	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
 	void Update(Time dt) override
 	{
@@ -126,21 +148,31 @@ public:
 		}
 	}
 };
-ENLIVE_META_CLASS_BEGIN(StupidShipSystem, true, true)
+ENLIVE_META_CLASS_BEGIN(StupidShipSystem, en::Type_ClassSerialization, en::Type_ClassEditor)
 ENLIVE_META_CLASS_END()
 const char* StupidShipSystem::GetName() const
 {
 	return TypeInfo<StupidShipSystem>::GetName();
 }
+bool StupidShipSystem::Serialize(Serializer& serializer, const char* name)
+{
+	return GenericSerialization(serializer, name, *this);
+}
+bool StupidShipSystem::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	return GenericEdit(objectEditor, name, *this);
+}
 
 struct PlayerComponent {};
-ENLIVE_META_CLASS_BEGIN(PlayerComponent, true, true)
+ENLIVE_META_CLASS_BEGIN(PlayerComponent, en::Type_ClassSerialization, en::Type_ClassEditor)
 ENLIVE_META_CLASS_END()
 
 class PlayerSystem : public System
 {
 public:
 	const char* GetName() const override;
+	bool Serialize(Serializer& serializer, const char* name) override;
+	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
 	void Update(Time dt) override
 	{
@@ -196,11 +228,19 @@ public:
 		}
 	}
 };
-ENLIVE_META_CLASS_BEGIN(PlayerSystem, true, true)
+ENLIVE_META_CLASS_BEGIN(PlayerSystem, en::Type_ClassSerialization, en::Type_ClassEditor)
 ENLIVE_META_CLASS_END()
 const char* PlayerSystem::GetName() const
 {
 	return TypeInfo<PlayerSystem>::GetName();
+}
+bool PlayerSystem::Serialize(Serializer& serializer, const char* name)
+{
+	return GenericSerialization(serializer, name, *this);
+}
+bool PlayerSystem::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	return GenericEdit(objectEditor, name, *this);
 }
 
 int main(int argc, char** argv)

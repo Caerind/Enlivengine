@@ -46,9 +46,9 @@ const World& EntityManager::GetWorld() const
 	return mWorld;
 }
 
-bool EntityManager::Serialize(ClassSerializer& serializer, const char* name)
+bool EntityManager::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<EntityManager>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<EntityManager>::GetName(), TypeInfo<EntityManager>::GetHash()))
 	{
 		bool ret = true;
 
@@ -104,7 +104,53 @@ bool EntityManager::Serialize(ClassSerializer& serializer, const char* name)
 			enAssert(false);
 			ret = false;
 		}
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
 
+bool EntityManager::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	if (objectEditor.BeginClass(name, TypeInfo<EntityManager>::GetName(), TypeInfo<EntityManager>::GetHash()))
+	{
+		bool ret = false;
+#ifdef ENLIVE_ENABLE_IMGUI
+		if (objectEditor.IsImGuiEditor())
+		{
+			if (ImGui::Button("New Entity"))
+			{
+				CreateEntity();
+				ret = true;
+			}
+			Each([this, &objectEditor, &ret](auto enttEntity)
+			{
+				Entity entity(*this, enttEntity);
+				if (entity.IsValid())
+				{
+					ImGui::PushID(entity.GetID());
+					if (ImGui::Button("X"))
+					{
+						DestroyEntity(entity);
+						ret = true;
+					}
+					else
+					{
+						ImGui::SameLine();
+						if (entity.Edit(objectEditor, entity.GetName()))
+						{
+							ret = true;
+						}
+					}
+					ImGui::PopID();
+				}
+			});
+		}
+#endif // ENLIVE_ENABLE_IMGUI
+		objectEditor.EndClass();
 		return ret;
 	}
 	else

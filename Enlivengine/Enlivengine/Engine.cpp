@@ -57,6 +57,7 @@ int Engine::Main(int argc, char** argv)
 			{
 				// Update
 				{
+					world->UpdatePhysic(dt);
 					world->Update(dt);
 
 #ifdef ENLIVE_TOOL

@@ -11,7 +11,8 @@
 #include <Enlivengine/Core/SystemFactory.hpp>
 #include <Enlivengine/Engine/WorldFileManager.hpp>
 
-#include <Enlivengine/Utils/XmlClassSerializer.hpp>
+#include <Enlivengine/Utils/XmlSerializer.hpp>
+#include <Enlivengine/Tools/ImGuiObjectEditor.hpp>
 
 namespace en
 {
@@ -52,7 +53,7 @@ void ImGuiWorlds::Display()
 
 void ImGuiWorlds::CurrentWorld()
 {
-	if (ImGui::CollapsingHeader("Current World"))
+	ImGui::Text("Current World");
 	{
 		ImGui::Indent();
 		if (World* worldPtr = Universe::GetCurrentWorld())
@@ -74,73 +75,12 @@ void ImGuiWorlds::CurrentWorld()
 				ImGui::SetTooltip("Unload World");
 			}
 
-			if (ImGui::CollapsingHeader("Systems"))
-			{
-				ImGui::Indent();
-
-				const auto& systemInfos = SystemFactory::GetSystemInfos();
-				static std::vector<U32> hasNot;
-				hasNot.clear();
-				const auto endItr = systemInfos.cend();
-				for (auto itr = systemInfos.cbegin(); itr != endItr; ++itr)
-				{
-					const auto& si = itr->second;
-					if (si.has(world))
-					{
-						ImGui::PushID(itr->first);
-						if (ImGui::Button("-"))
-						{
-							si.remove(world);
-							worldModified = true;
-							ImGui::PopID();
-							continue;
-						}
-						else
-						{
-							ImGui::SameLine();
-							ImGui::Text("%s", itr->second.name);
-							ImGui::PopID();
-						}
-					}
-					else
-					{
-						hasNot.push_back(itr->first);
-					}
-				}
-
-				if (!hasNot.empty())
-				{
-					if (ImGui::Button("+ Add System"))
-					{
-						ImGui::OpenPopup("Add System");
-					}
-					if (ImGui::BeginPopup("Add System"))
-					{
-						ImGui::TextUnformatted("Available:");
-						ImGui::Separator();
-						for (auto systemHash : hasNot)
-						{
-							const auto& si = systemInfos.at(systemHash);
-							ImGui::PushID(systemHash);
-							if (ImGui::Selectable(si.name))
-							{
-								si.add(world);
-								worldModified = true;
-							}
-							ImGui::PopID();
-						}
-						ImGui::EndPopup();
-					}
-				}
-
-				ImGui::Unindent();
-			}
+			ImGuiObjectEditor systemEditor;
+			worldModified = GenericEdit(systemEditor, "Systems", world.GetSystemManager());
 
 			if (worldModified)
 			{
-
-				// TODO : World Modified
-				//world.SaveToFile();
+				WorldFileManager::SaveCurrentWorld();
 			}
 		}
 		else
@@ -208,6 +148,8 @@ void ImGuiWorlds::AllWorlds()
 			bool remove = false;
 
 			ImGui::Text("%s", mWorlds[i].c_str());
+			ImGui::PushID(i);
+			ImGui::PushID(mWorlds[i].c_str());
 
 			ImGui::SameLine();
 			if (Universe::GetCurrentWorld() != nullptr && Universe::GetCurrentWorld()->GetName() == mWorlds[i])
@@ -221,6 +163,7 @@ void ImGuiWorlds::AllWorlds()
 				if (ImGui::Button(ICON_FA_DOWNLOAD))
 				{
 					WorldFileManager::LoadWorld(mWorlds[i]);
+					modified = true;
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -250,6 +193,9 @@ void ImGuiWorlds::AllWorlds()
 			{
 				++i;
 			}
+
+			ImGui::PopID();
+			ImGui::PopID();
 		}
 		ImGui::Unindent();
 	}
@@ -265,7 +211,7 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
 	if (std::filesystem::exists(path))
 	{
-		XmlClassSerializer xml;
+		XmlSerializer xml;
 		if (!xml.Open(path.string(), Serializer::Mode::Read))
 		{
 			return false;
@@ -298,7 +244,7 @@ bool ImGuiWorlds::SaveWorldsToFile()
 {
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
 
-	XmlClassSerializer xml;
+	XmlSerializer xml;
 	if (xml.Open(path.string(), Serializer::Mode::Write))
 	{
 		GenericSerialization(xml, "Worlds", mWorlds);

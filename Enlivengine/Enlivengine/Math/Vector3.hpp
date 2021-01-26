@@ -112,7 +112,8 @@ public:
 	static constexpr Vector3<T> UnitZ() { return Vector3<T>(0, 0, 1); }
 	static constexpr Vector3<T> Zero() { return Vector3<T>(0, 0, 0); }
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 	T x;
 	T y;
@@ -120,9 +121,9 @@ public:
 };
 
 template <typename T>
-bool Vector3<T>::Serialize(ClassSerializer& serializer, const char* name)
+bool Vector3<T>::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Vector3<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Vector3<T>>::GetName(), TypeInfo<Vector3<T>>::GetHash()))
 	{
 		bool ret = true;
 		ret = GenericSerialization(serializer, "x", x) && ret;
@@ -134,6 +135,56 @@ bool Vector3<T>::Serialize(ClassSerializer& serializer, const char* name)
 	else
 	{
 		return false;
+	}
+}
+
+template <typename T>
+bool Vector3<T>::Edit(ObjectEditor& objectEditor, const char* name)
+{
+#ifdef ENLIVE_ENABLE_IMGUI
+	if (objectEditor.IsImGuiEditor())
+	{
+		if constexpr (Traits::IsFloatingPoint<T>::value)
+		{
+			float vector[3];
+			vector[0] = static_cast<float>(x);
+			vector[1] = static_cast<float>(y);
+			vector[2] = static_cast<float>(z);
+			if (ImGui::InputFloat3(name, vector))
+			{
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]));
+				return true;
+			}
+			return false;
+		}
+		else
+		{
+			int vector[3];
+			vector[0] = static_cast<int>(x);
+			vector[1] = static_cast<int>(y);
+			vector[2] = static_cast<int>(z);
+			if (ImGui::InputInt3(name, vector))
+			{
+				// TODO : NumericLimits<T> Min
+				// TODO : NumericLimits<T> Max
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]));
+				return true;
+			}
+			return false;
+		}
+	}
+	else
+#endif // ENLIVE_ENABLE_IMGUI
+	{
+		bool ret = false;
+		if (objectEditor.BeginClass(name, TypeInfo<Vector3<T>>::GetName(), TypeInfo<Vector3<T>>::GetHash()))
+		{
+			ret = GenericEdit(objectEditor, "x", x) || ret;
+			ret = GenericEdit(objectEditor, "y", y) || ret;
+			ret = GenericEdit(objectEditor, "z", z) || ret;
+			objectEditor.EndClass();
+		}
+		return ret;
 	}
 }
 

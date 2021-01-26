@@ -23,7 +23,6 @@
 #include <Enlivengine/Tools/ImGuiInputEditor.hpp>
 #include <Enlivengine/Tools/ImGuiLogger.hpp>
 #include <Enlivengine/Tools/ImGuiMemoryDebugger.hpp>
-#include <Enlivengine/Tools/ImGuiPhysic.hpp>
 #include <Enlivengine/Tools/ImGuiProfiler.hpp>
 #include <Enlivengine/Tools/ImGuiResourceBrowser.hpp>
 #include <Enlivengine/Tools/ImGuiWorlds.hpp>
@@ -201,17 +200,18 @@ void ImGuiToolManager::RegisterTools()
 	RegisterTool(ImGuiGame::GetInstance());
 #endif // ENLIVE_TOOL
 
-	RegisterTool(ImGuiWorlds::GetInstance());
-	RegisterTool(ImGuiAnimationEditor::GetInstance());
-	RegisterTool(ImGuiConsole::GetInstance());
-	RegisterTool(ImGuiDemoWindow::GetInstance());
-	RegisterTool(ImGuiEntityBrowser::GetInstance());
-	RegisterTool(ImGuiInputEditor::GetInstance());
 	RegisterTool(ImGuiLogger::GetInstance());
 	RegisterTool(ImGuiMemoryDebugger::GetInstance());
-	RegisterTool(ImGuiPhysic::GetInstance());
 	RegisterTool(ImGuiProfiler::GetInstance());
+	RegisterTool(ImGuiConsole::GetInstance());
+	RegisterTool(ImGuiDemoWindow::GetInstance());
+	
+	RegisterTool(ImGuiInputEditor::GetInstance());
+	RegisterTool(ImGuiAnimationEditor::GetInstance());
 	RegisterTool(ImGuiResourceBrowser::GetInstance());
+
+	RegisterTool(ImGuiWorlds::GetInstance());
+	RegisterTool(ImGuiEntityBrowser::GetInstance());
 }
 
 void ImGuiToolManager::ImGuiMain()

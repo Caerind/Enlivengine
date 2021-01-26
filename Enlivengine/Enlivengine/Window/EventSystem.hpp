@@ -41,6 +41,8 @@ public:
 		U32 buttonIdentifier{ 0 };
 		U32 extraInfo{ 0 };
 
+		bool Edit(ObjectEditor& objectEditor, const char* name);
+
 	private:
 		friend class EventSystem;
 		bool active{ false };
@@ -67,6 +69,8 @@ public:
 		U32 extraInfo{ 0 };
 
 		F32 GetValue() const { return value; }
+
+		bool Edit(ObjectEditor& objectEditor, const char* name);
 
 	private:
 		friend class EventSystem;

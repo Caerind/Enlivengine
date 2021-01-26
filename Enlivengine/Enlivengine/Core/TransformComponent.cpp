@@ -6,7 +6,7 @@ namespace en
 {
 
 TransformComponent::TransformComponent()
-	: Transform()
+	: mLocalTransform()
 	, mGlobalMatrix(Matrix4f::Identity())
 	, mEntity()
 	, mParent()
@@ -21,7 +21,7 @@ TransformComponent::~TransformComponent()
 }
 
 TransformComponent::TransformComponent(TransformComponent&& other) noexcept
-	: Transform(other)
+	: mLocalTransform(other.mLocalTransform)
 	, mGlobalMatrix(other.mGlobalMatrix)
 	, mEntity(other.mEntity)
 	, mParent(other.mParent)
@@ -37,7 +37,7 @@ TransformComponent& TransformComponent::operator=(TransformComponent&& other) no
 {
 	if (&other != this)
 	{
-		Transform::operator=(other);
+		mLocalTransform = other.mLocalTransform;
 		mGlobalMatrix = other.mGlobalMatrix;
 		mEntity = other.mEntity;
 		mParent = other.mParent;
@@ -50,57 +50,72 @@ TransformComponent& TransformComponent::operator=(TransformComponent&& other) no
 	return *this;
 }
 
+Vector3f TransformComponent::GetPosition() const
+{
+	return mLocalTransform.GetPosition();
+}
+
 void TransformComponent::SetPosition(const Vector3f& position)
 {
-	Transform::SetPosition(position);
+	mLocalTransform.SetPosition(position);
 	MarkGlobalMatrixAsDirty();
 }
 
 void TransformComponent::Move(const Vector3f& movement)
 {
-	Transform::Move(movement);
+	mLocalTransform.Move(movement);
 	MarkGlobalMatrixAsDirty();
+}
+
+Matrix3f TransformComponent::GetRotation() const
+{
+	return mLocalTransform.GetRotation();
 }
 
 void TransformComponent::SetRotation(const Matrix3f& rotation)
 {
-	Transform::SetRotation(rotation);
+	mLocalTransform.SetRotation(rotation);
 	MarkGlobalMatrixAsDirty();
 }
 
 void TransformComponent::Rotate(const Matrix3f& rotation)
 {
-	Transform::Rotate(rotation);
+	mLocalTransform.Rotate(rotation);
 	MarkGlobalMatrixAsDirty();
+}
+
+Vector3f TransformComponent::GetScale() const
+{
+	return mLocalTransform.GetScale();
 }
 
 void TransformComponent::SetScale(const Vector3f& scale)
 {
-	Transform::SetScale(scale);
+	mLocalTransform.SetScale(scale);
 	MarkGlobalMatrixAsDirty();
 }
 
 void TransformComponent::SetUniformScale(F32 uniformScale)
 {
-	Transform::SetUniformScale(uniformScale);
+	mLocalTransform.SetUniformScale(uniformScale);
 	MarkGlobalMatrixAsDirty();
 }
 
 void TransformComponent::Scale(const Vector3f& scale)
 {
-	Transform::Scale(scale);
+	mLocalTransform.Scale(scale);
 	MarkGlobalMatrixAsDirty();
 }
 
 void TransformComponent::Scale(F32 uniformScale)
 {
-	Transform::Scale(uniformScale);
+	mLocalTransform.Scale(uniformScale);
 	MarkGlobalMatrixAsDirty();
 }
 
 void TransformComponent::SetTransform(const Vector3f& translation, const Matrix3f& rotation, const Vector3f& scale /*= Vector3f(1.0f)*/)
 {
-	Transform::SetTransform(translation, rotation, scale);
+	mLocalTransform.SetTransform(translation, rotation, scale);
 	MarkGlobalMatrixAsDirty();
 }
 
@@ -236,7 +251,7 @@ Matrix3f TransformComponent::GetGlobalRotation() const
 
 const Matrix4f& TransformComponent::GetLocalMatrix() const
 {
-	return mMatrix;
+	return mLocalTransform.GetMatrix();
 }
 
 void TransformComponent::MarkGlobalMatrixAsDirty()
@@ -261,13 +276,30 @@ bool TransformComponent::Initialize(const Entity& entity)
 	return true;
 }
 
-bool TransformComponent::Serialize(ClassSerializer& serializer, const char* name)
+bool TransformComponent::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<TransformComponent>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<TransformComponent>::GetName(), TypeInfo<TransformComponent>::GetHash()))
 	{
 		bool ret = true;
-		ret = GenericSerialization(serializer, "Transform", static_cast<Transform&>(*this)) && ret;
+		ret = GenericSerialization(serializer, "Transform", mLocalTransform) && ret;
+		// TODO : Serialize Parent/Children
 		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool TransformComponent::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	if (objectEditor.BeginClass(name, TypeInfo<TransformComponent>::GetName(), TypeInfo<TransformComponent>::GetHash()))
+	{
+		bool ret = false;
+		ret = GenericEdit(objectEditor, "Transform", mLocalTransform) || ret;
+		// TODO : Serialize Parent/Children
+		objectEditor.EndClass();
 		return ret;
 	}
 	else
@@ -281,11 +313,11 @@ void TransformComponent::UpdateGlobalMatrix() const
 	if (mParent.IsValid())
 	{
 		enAssert(mParent.Has<TransformComponent>());
-		mGlobalMatrix = mMatrix * mParent.Get<TransformComponent>().GetGlobalMatrix();
+		mGlobalMatrix = mLocalTransform.GetMatrix() * mParent.Get<TransformComponent>().GetGlobalMatrix();
 	}
 	else
 	{
-		mGlobalMatrix = mMatrix;
+		mGlobalMatrix = mLocalTransform.GetMatrix();
 	}
 	mGlobalMatrixDirty = false;
 }

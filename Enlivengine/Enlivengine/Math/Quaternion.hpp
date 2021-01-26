@@ -272,16 +272,17 @@ public:
 
 	static constexpr Quaternion<T> Identity() { return Quaternion<T>(Vector3f::Zero(), T(1)); }
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 	Vector3<T> v;
 	T s;
 };
 
 template <typename T>
-bool Quaternion<T>::Serialize(ClassSerializer& serializer, const char* name)
+bool Quaternion<T>::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Quaternion<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Quaternion<T>>::GetName(), TypeInfo<Quaternion<T>>::GetHash()))
 	{
 		bool ret = true;
 		ret = GenericSerialization(serializer, "x", v.x) && ret;
@@ -294,6 +295,59 @@ bool Quaternion<T>::Serialize(ClassSerializer& serializer, const char* name)
 	else
 	{
 		return false;
+	}
+}
+
+template <typename T>
+bool Quaternion<T>::Edit(ObjectEditor& objectEditor, const char* name)
+{
+#ifdef ENLIVE_ENABLE_IMGUI
+	if (objectEditor.IsImGuiEditor())
+	{
+		if constexpr (Traits::IsFloatingPoint<T>::value)
+		{
+			float vector[4];
+			vector[0] = static_cast<float>(v.x);
+			vector[1] = static_cast<float>(v.y);
+			vector[2] = static_cast<float>(v.z);
+			vector[3] = static_cast<float>(s);
+			if (ImGui::InputFloat4(name, vector))
+			{
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
+				return true;
+			}
+			return false;
+		}
+		else
+		{
+			int vector[4];
+			vector[0] = static_cast<int>(v.x);
+			vector[1] = static_cast<int>(v.y);
+			vector[2] = static_cast<int>(v.z);
+			vector[3] = static_cast<int>(s);
+			if (ImGui::InputInt4(name, vector))
+			{
+				// TODO : NumericLimits<T> Min
+				// TODO : NumericLimits<T> Max
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
+				return true;
+			}
+			return false;
+		}
+	}
+	else
+#endif // ENLIVE_ENABLE_IMGUI
+	{
+		bool ret = false;
+		if (objectEditor.BeginClass(name, TypeInfo<Quaternion<T>>::GetName(), TypeInfo<Quaternion<T>>::GetHash()))
+		{
+			ret = GenericEdit(objectEditor, "x", v.x) || ret;
+			ret = GenericEdit(objectEditor, "y", v.y) || ret;
+			ret = GenericEdit(objectEditor, "z", v.z) || ret;
+			ret = GenericEdit(objectEditor, "s", s) || ret;
+			objectEditor.EndClass();
+		}
+		return ret;
 	}
 }
 

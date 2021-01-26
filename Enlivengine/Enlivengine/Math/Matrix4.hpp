@@ -669,24 +669,50 @@ public:
 	constexpr T* GetData() { return data; }
 	constexpr const T* GetData() const { return data; }
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	T data[16];
 };
 
 template <typename T>
-bool Matrix4<T>::Serialize(ClassSerializer& serializer, const char* name)
+bool Matrix4<T>::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Matrix4<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Matrix4<T>>::GetName(), TypeInfo<Matrix4<T>>::GetHash()))
 	{
 		bool ret = true;
 		for (U32 i = 0; i < Matrix4<T>::Elements; ++i)
 		{
-			const std::string childName(std::to_string(i));
+			const std::string childName("i" + std::to_string(i));
 			ret = GenericSerialization(serializer, childName.c_str(), data[i]) && ret;
 		}
 		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+template <typename T>
+bool Matrix4<T>::Edit(ObjectEditor& objectEditor, const char* name)
+{
+	if (objectEditor.BeginClass(name, TypeInfo<Matrix4<T>>::GetName(), TypeInfo<Matrix4<T>>::GetHash()))
+	{
+		bool ret = false;
+		for (U32 i = 0; i < Matrix4<T>::Rows; ++i)
+		{
+			const std::string childName("Row_" + std::to_string(i));
+			Vector4<T> row = GetRow(i);
+			if (GenericEdit(objectEditor, childName.c_str(), row))
+			{
+				SetRow(i, row);
+				ret = true;
+			}
+		}
+		objectEditor.EndClass();
 		return ret;
 	}
 	else

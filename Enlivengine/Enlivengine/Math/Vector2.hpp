@@ -125,16 +125,17 @@ public:
 	static constexpr Vector2<T> UnitY() { return Vector2<T>(0, 1); }
 	static constexpr Vector2<T> Zero() { return Vector2<T>(0, 0); }
 
-	bool Serialize(ClassSerializer& serializer, const char* name);
+	bool Serialize(Serializer& serializer, const char* name);
+	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 	T x;
 	T y;
 };
 
 template <typename T>
-bool Vector2<T>::Serialize(ClassSerializer& serializer, const char* name)
+bool Vector2<T>::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Vector2<T>>::GetHash()))
+	if (serializer.BeginClass(name, TypeInfo<Vector2<T>>::GetName(), TypeInfo<Vector2<T>>::GetHash()))
 	{
 		bool ret = true;
 		ret = GenericSerialization(serializer, "x", x) && ret;
@@ -145,6 +146,53 @@ bool Vector2<T>::Serialize(ClassSerializer& serializer, const char* name)
 	else
 	{
 		return false;
+	}
+}
+
+template <typename T>
+bool Vector2<T>::Edit(ObjectEditor& objectEditor, const char* name)
+{
+#ifdef ENLIVE_ENABLE_IMGUI
+	if (objectEditor.IsImGuiEditor())
+	{
+		if constexpr (Traits::IsFloatingPoint<T>::value)
+		{
+			float vector[2];
+			vector[0] = static_cast<float>(x);
+			vector[1] = static_cast<float>(y);
+			if (ImGui::InputFloat2(name, vector))
+			{
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]));
+				return true;
+			}
+			return false;
+		}
+		else
+		{
+			int vector[2];
+			vector[0] = static_cast<int>(x);
+			vector[1] = static_cast<int>(y);
+			if (ImGui::InputInt2(name, vector))
+			{
+				// TODO : NumericLimits<T> Min
+				// TODO : NumericLimits<T> Max
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]));
+				return true;
+			}
+			return false;
+		}
+	}
+	else
+#endif // ENLIVE_ENABLE_IMGUI
+	{
+		bool ret = false;
+		if (objectEditor.BeginClass(name, TypeInfo<Vector2<T>>::GetName(), TypeInfo<Vector2<T>>::GetHash()))
+		{
+			ret = GenericEdit(objectEditor, "x", x) || ret;
+			ret = GenericEdit(objectEditor, "y", y) || ret;
+			objectEditor.EndClass();
+		}
+		return ret;
 	}
 }
 

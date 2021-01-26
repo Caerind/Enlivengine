@@ -5,7 +5,8 @@
 #include <Enlivengine/Window/EventSystem.hpp>
 #include <Enlivengine/Window/Controller.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
-#include <Enlivengine/Utils/XmlClassSerializer.hpp>
+#include <Enlivengine/Utils/XmlSerializer.hpp>
+#include <Enlivengine/Tools/ImGuiObjectEditor.hpp>
 
 namespace en
 {
@@ -74,9 +75,8 @@ bool ImGuiInputEditor::Buttons()
 
 	ImGui::InputText("Name##NewButton", newButtonName, kBufferSize);
 	
-	enAssert(false);
-	// TODO : ObjectEditor
-	//ObjectEditor::ImGuiEditor(newButton, "New button");
+	ImGuiObjectEditor objectEditor;
+	GenericEdit(objectEditor, "New button", newButton);
 
 	// Capturing system
 	{
@@ -172,10 +172,10 @@ bool ImGuiInputEditor::Buttons()
 		}
 		ImGui::SameLine();
 
-		ENLIVE_UNUSED(button);
-		enAssert(false);
-		// TODO : ObjectEditor
-		//ObjectEditor::ImGuiEditor(button, button.name.c_str());
+		if (GenericEdit(objectEditor, button.name.c_str(), button))
+		{
+			modified = true;
+		}
 
 		if (queryRemoval)
 		{
@@ -201,9 +201,9 @@ bool ImGuiInputEditor::Axes()
 	static EventSystem::EventAxis newAxis;
 
 	ImGui::InputText("Name##NewAxis", newAxisName, kBufferSize);
-	enAssert(false);
-	// TODO : ObjectEditor
-	//ObjectEditor::ImGuiEditor(newAxis, "New axis");
+
+	ImGuiObjectEditor objectEditor;
+	GenericEdit(objectEditor, "New axis", newAxis);
 
 	bool validNewInput = true;
 
@@ -248,10 +248,10 @@ bool ImGuiInputEditor::Axes()
 		}
 		ImGui::SameLine();
 
-		ENLIVE_UNUSED(axis);
-		enAssert(false);
-		// TODO : ObjectEditor
-		//ObjectEditor::ImGuiEditor(axis, axis.name.c_str());
+		if (GenericEdit(objectEditor, axis.name.c_str(), axis))
+		{
+			modified = true;
+		}
 
 		if (queryRemoval)
 		{
@@ -273,13 +273,13 @@ bool ImGuiInputEditor::LoadInputsFromFile()
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "inputs.data");
 	if (std::filesystem::exists(path))
 	{
-		XmlClassSerializer xml;
+		XmlSerializer xml;
 		if (!xml.Open(path.string(), Serializer::Mode::Read))
 		{
 			return false;
 		}
 
-		Array<EventSystem::EventButton> buttons;
+		std::vector<EventSystem::EventButton> buttons;
 		if (GenericSerialization(xml, "Buttons", buttons))
 		{
 			for (const EventSystem::EventButton& button : buttons)
@@ -288,7 +288,7 @@ bool ImGuiInputEditor::LoadInputsFromFile()
 			}
 		}
 
-		Array<EventSystem::EventAxis> axes;
+		std::vector<EventSystem::EventAxis> axes;
 		if (GenericSerialization(xml, "Axes", axes))
 		{
 			for (const EventSystem::EventAxis& axis : axes)
@@ -309,7 +309,7 @@ bool ImGuiInputEditor::SaveInputsToFile()
 {
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "inputs.data");
 
-	XmlClassSerializer xml;
+	XmlSerializer xml;
 	if (xml.Open(path.string(), Serializer::Mode::Write))
 	{
 		GenericSerialization(xml, "Buttons", EventSystem::GetButtons());
