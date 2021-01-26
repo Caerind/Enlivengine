@@ -4,6 +4,10 @@
 
 #include <Enlivengine/Core/SystemFactory.hpp>
 
+#ifdef ENLIVE_ENABLE_IMGUI
+#include <imgui/imgui.h>
+#endif // ENLIVE_ENABLE_IMGUI
+
 namespace en
 {
 
@@ -107,60 +111,65 @@ bool SystemManager::Edit(ObjectEditor& objectEditor, const char* name)
 	{
 		bool ret = false;
 
-		std::vector<U32> hasNot;
-
-		const auto& systemInfos = SystemFactory::GetSystemInfos();
-		const auto endItr = systemInfos.cend();
-		for (auto itr = systemInfos.cbegin(); itr != endItr; ++itr)
+		if (objectEditor.IsImGuiEditor())
 		{
-			const auto& si = itr->second;
-			if (si.has(mWorld))
+#ifdef ENLIVE_ENABLE_IMGUI
+			std::vector<U32> hasNot;
+
+			const auto& systemInfos = SystemFactory::GetSystemInfos();
+			const auto endItr = systemInfos.cend();
+			for (auto itr = systemInfos.cbegin(); itr != endItr; ++itr)
 			{
-				ImGui::PushID(itr->first);
-				if (ImGui::Button("-"))
+				const auto& si = itr->second;
+				if (si.has(mWorld))
 				{
-					si.remove(mWorld);
-					ret = true;
-				}
-				else
-				{
-					ImGui::SameLine();
-					if (si.editor(objectEditor, mWorld))
+					ImGui::PushID(itr->first);
+					if (ImGui::Button("-"))
 					{
+						si.remove(mWorld);
 						ret = true;
 					}
-				}
-				ImGui::PopID();
-			}
-			else
-			{
-				hasNot.push_back(itr->first);
-			}
-		}
-		
-		if (!hasNot.empty())
-		{
-			if (ImGui::Button("+ Add System"))
-			{
-				ImGui::OpenPopup("Add System");
-			}
-			if (ImGui::BeginPopup("Add System"))
-			{
-				ImGui::TextUnformatted("Available:");
-				ImGui::Separator();
-				for (auto systemHash : hasNot)
-				{
-					const auto& si = systemInfos.at(systemHash);
-					ImGui::PushID(systemHash);
-					if (ImGui::Selectable(si.name))
+					else
 					{
-						si.add(mWorld);
-						ret = true;
+						ImGui::SameLine();
+						if (si.editor(objectEditor, mWorld))
+						{
+							ret = true;
+						}
 					}
 					ImGui::PopID();
 				}
-				ImGui::EndPopup();
+				else
+				{
+					hasNot.push_back(itr->first);
+				}
 			}
+
+			if (!hasNot.empty())
+			{
+				if (ImGui::Button("+ Add System"))
+				{
+					ImGui::OpenPopup("Add System");
+				}
+				if (ImGui::BeginPopup("Add System"))
+				{
+					ImGui::TextUnformatted("Available:");
+					ImGui::Separator();
+					for (auto systemHash : hasNot)
+					{
+						const auto& si = systemInfos.at(systemHash);
+						ImGui::PushID(systemHash);
+						if (ImGui::Selectable(si.name))
+						{
+							si.add(mWorld);
+							ret = true;
+						}
+						ImGui::PopID();
+					}
+					ImGui::EndPopup();
+				}
+			}
+#endif // ENLIVE_ENABLE_IMGUI
 		}
 
 		objectEditor.EndClass();

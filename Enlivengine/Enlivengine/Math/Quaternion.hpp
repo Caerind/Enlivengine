@@ -301,11 +301,10 @@ bool Quaternion<T>::Serialize(Serializer& serializer, const char* name)
 template <typename T>
 bool Quaternion<T>::Edit(ObjectEditor& objectEditor, const char* name)
 {
-	if (objectEditor.BeginClass(name, TypeInfo<Quaternion<T>>::GetName(), TypeInfo<Quaternion<T>>::GetHash()))
-	{
-		bool ret = false;
 #ifdef ENLIVE_ENABLE_IMGUI
-		if (objectEditor.IsImGuiEditor())
+	if (objectEditor.IsImGuiEditor())
+	{
+		if constexpr (Traits::IsFloatingPoint<T>::value)
 		{
 			float vector[4];
 			vector[0] = static_cast<float>(v.x);
@@ -315,23 +314,40 @@ bool Quaternion<T>::Edit(ObjectEditor& objectEditor, const char* name)
 			if (ImGui::InputFloat4(name, vector))
 			{
 				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
-				ret = true;
+				return true;
 			}
+			return false;
 		}
 		else
+		{
+			int vector[4];
+			vector[0] = static_cast<int>(v.x);
+			vector[1] = static_cast<int>(v.y);
+			vector[2] = static_cast<int>(v.z);
+			vector[3] = static_cast<int>(s);
+			if (ImGui::InputInt4(name, vector))
+			{
+				// TODO : NumericLimits<T> Min
+				// TODO : NumericLimits<T> Max
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
+				return true;
+			}
+			return false;
+		}
+	}
+	else
 #endif // ENLIVE_ENABLE_IMGUI
+	{
+		bool ret = false;
+		if (objectEditor.BeginClass(name, TypeInfo<Quaternion<T>>::GetName(), TypeInfo<Quaternion<T>>::GetHash()))
 		{
 			ret = GenericEdit(objectEditor, "x", v.x) || ret;
 			ret = GenericEdit(objectEditor, "y", v.y) || ret;
 			ret = GenericEdit(objectEditor, "z", v.z) || ret;
 			ret = GenericEdit(objectEditor, "s", s) || ret;
+			objectEditor.EndClass();
 		}
-		objectEditor.EndClass();
 		return ret;
-	}
-	else
-	{
-		return false;
 	}
 }
 

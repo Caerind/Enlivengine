@@ -148,6 +148,7 @@ void PhysicSystem2D::Update(Time dt)
 			}
 		}
 	}
+#ifdef ENLIVE_DEBUG
 	if (mDebugRender)
 	{
 		ENLIVE_PROFILE_SCOPE("DrawDebugData");
@@ -155,6 +156,7 @@ void PhysicSystem2D::Update(Time dt)
 			mPhysicWorld->DrawDebugData();
 		}
 	}
+#endif // ENLIVE_DEBUG
 }
 
 void PhysicSystem2D::DisableGravity()
@@ -214,6 +216,8 @@ U32 PhysicSystem2D::GetDebugRenderFlags() const
 {
 	return mDebugRenderFlags;
 }
+
+#endif // ENLIVE_DEBUG
 
 bool PhysicSystem2D::Serialize(Serializer& serializer, const char* name)
 {
@@ -278,8 +282,6 @@ bool PhysicSystem2D::Edit(ObjectEditor& objectEditor, const char* name)
 		return false;
 	}
 }
-
-#endif // ENLIVE_DEBUG
 
 b2Body* PhysicSystem2D::GetComponentBody(const PhysicComponent2D& component)
 {

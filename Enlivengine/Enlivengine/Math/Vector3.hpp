@@ -141,52 +141,50 @@ bool Vector3<T>::Serialize(Serializer& serializer, const char* name)
 template <typename T>
 bool Vector3<T>::Edit(ObjectEditor& objectEditor, const char* name)
 {
-	if (objectEditor.BeginClass(name, TypeInfo<Vector3<T>>::GetName(), TypeInfo<Vector3<T>>::GetHash()))
-	{
-		bool ret = false;
 #ifdef ENLIVE_ENABLE_IMGUI
-		if (objectEditor.IsImGuiEditor())
+	if (objectEditor.IsImGuiEditor())
+	{
+		if constexpr (Traits::IsFloatingPoint<T>::value)
 		{
-			if constexpr (Traits::IsFloatingPoint<T>::value)
+			float vector[3];
+			vector[0] = static_cast<float>(x);
+			vector[1] = static_cast<float>(y);
+			vector[2] = static_cast<float>(z);
+			if (ImGui::InputFloat3(name, vector))
 			{
-				float vector[3];
-				vector[0] = static_cast<float>(x);
-				vector[1] = static_cast<float>(y);
-				vector[2] = static_cast<float>(z);
-				if (ImGui::InputFloat3(name, vector))
-				{
-					Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]));
-					ret = true;
-				}
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]));
+				return true;
 			}
-			else
-			{
-				int vector[3];
-				vector[0] = static_cast<int>(x);
-				vector[1] = static_cast<int>(y);
-				vector[2] = static_cast<int>(z);
-				if (ImGui::InputInt3(name, vector))
-				{
-					// TODO : NumericLimits<T> Min
-					// TODO : NumericLimits<T> Max
-					Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]));
-					ret = true;
-				}
-			}
+			return false;
 		}
 		else
+		{
+			int vector[3];
+			vector[0] = static_cast<int>(x);
+			vector[1] = static_cast<int>(y);
+			vector[2] = static_cast<int>(z);
+			if (ImGui::InputInt3(name, vector))
+			{
+				// TODO : NumericLimits<T> Min
+				// TODO : NumericLimits<T> Max
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]));
+				return true;
+			}
+			return false;
+		}
+	}
+	else
 #endif // ENLIVE_ENABLE_IMGUI
+	{
+		bool ret = false;
+		if (objectEditor.BeginClass(name, TypeInfo<Vector3<T>>::GetName(), TypeInfo<Vector3<T>>::GetHash()))
 		{
 			ret = GenericEdit(objectEditor, "x", x) || ret;
 			ret = GenericEdit(objectEditor, "y", y) || ret;
 			ret = GenericEdit(objectEditor, "z", z) || ret;
+			objectEditor.EndClass();
 		}
-		objectEditor.EndClass();
 		return ret;
-	}
-	else
-	{
-		return false;
 	}
 }
 

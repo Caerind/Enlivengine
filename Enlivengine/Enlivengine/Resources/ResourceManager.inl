@@ -155,7 +155,11 @@ bool ResourcePtr<T>::Edit(ObjectEditor& objectEditor, const char* name)
 		}
 		ImGui::PopID();
 	}
+	else
 #endif // ENLIVE_ENABLE_IMGUI
+	{
+		modified = GenericEdit(objectEditor, name, mID);
+	}
 
 	return modified;
 }

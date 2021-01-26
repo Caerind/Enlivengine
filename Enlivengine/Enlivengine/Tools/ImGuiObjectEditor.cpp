@@ -1,8 +1,8 @@
 #include <Enlivengine/Tools/ImGuiObjectEditor.hpp>
 
 #ifdef ENLIVE_ENABLE_IMGUI
+
 #include <imgui/imgui.h>
-#endif // ENLIVE_ENABLE_IMGUI
 
 namespace en
 {
@@ -11,27 +11,18 @@ bool ImGuiObjectEditor::BeginClass(const char* name, const char* className, U32 
 {
 	ENLIVE_UNUSED(className);
 	ENLIVE_UNUSED(classTypeHash);
-#ifdef ENLIVE_ENABLE_IMGUI
 	const bool open = ImGui::CollapsingHeader(name);
 	if (open)
 	{
 		ImGui::Indent();
 	}
 	return open;
-#else
-	ENLIVE_UNUSED(name);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::EndClass()
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	ImGui::Unindent();
 	return true;
-#else
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::IsImGuiEditor() const
@@ -41,18 +32,11 @@ bool ImGuiObjectEditor::IsImGuiEditor() const
 
 bool ImGuiObjectEditor::Edit(const char* name, bool& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	return ImGui::Checkbox(name, &value);
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, char& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	char tmp = value;
 	if (ImGui::InputText(name, &tmp, 2))
 	{
@@ -63,16 +47,10 @@ bool ImGuiObjectEditor::Edit(const char* name, char& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, I8& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	int tmp = static_cast<int>(value);
 	if (ImGui::InputInt(name, &tmp))
 	{
@@ -84,16 +62,10 @@ bool ImGuiObjectEditor::Edit(const char* name, I8& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, U8& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	int tmp = static_cast<int>(value);
 	if (ImGui::InputInt(name, &tmp))
 	{
@@ -105,16 +77,10 @@ bool ImGuiObjectEditor::Edit(const char* name, U8& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, I16& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	int tmp = static_cast<int>(value);
 	if (ImGui::InputInt(name, &tmp))
 	{
@@ -126,16 +92,10 @@ bool ImGuiObjectEditor::Edit(const char* name, I16& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, U16& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	int tmp = static_cast<int>(value);
 	if (ImGui::InputInt(name, &tmp))
 	{
@@ -147,16 +107,10 @@ bool ImGuiObjectEditor::Edit(const char* name, U16& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, I32& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	int tmp = static_cast<int>(value);
 	if (ImGui::InputInt(name, &tmp))
 	{
@@ -168,16 +122,10 @@ bool ImGuiObjectEditor::Edit(const char* name, I32& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, U32& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	int tmp = static_cast<int>(value);
 	if (ImGui::InputInt(name, &tmp))
 	{
@@ -189,16 +137,10 @@ bool ImGuiObjectEditor::Edit(const char* name, U32& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, I64& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	int tmp = static_cast<int>(value);
 	if (ImGui::InputInt(name, &tmp))
 	{
@@ -210,16 +152,10 @@ bool ImGuiObjectEditor::Edit(const char* name, I64& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, U64& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	int tmp = static_cast<int>(value);
 	if (ImGui::InputInt(name, &tmp))
 	{
@@ -231,16 +167,10 @@ bool ImGuiObjectEditor::Edit(const char* name, U64& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, F32& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	float tmp = static_cast<float>(value);
 	if (ImGui::InputFloat(name, &tmp))
 	{
@@ -251,16 +181,10 @@ bool ImGuiObjectEditor::Edit(const char* name, F32& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, F64& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	float tmp = static_cast<float>(value);
 	if (ImGui::InputFloat(name, &tmp))
 	{
@@ -271,16 +195,10 @@ bool ImGuiObjectEditor::Edit(const char* name, F64& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 bool ImGuiObjectEditor::Edit(const char* name, std::string& value)
 {
-#ifdef ENLIVE_ENABLE_IMGUI
 	static constexpr std::size_t maxSize = 512;
 	static char inputBuffer[maxSize];
 	if (strcmp(inputBuffer, value.c_str()) != 0)
@@ -300,11 +218,8 @@ bool ImGuiObjectEditor::Edit(const char* name, std::string& value)
 	{
 		return false;
 	}
-#else
-	ENLIVE_UNUSED(name);
-	ENLIVE_UNUSED(value);
-	return false;
-#endif // ENLIVE_ENABLE_IMGUI
 }
 
 } // namespace en
+
+#endif // ENLIVE_ENABLE_IMGUI

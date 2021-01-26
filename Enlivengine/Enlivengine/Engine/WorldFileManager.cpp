@@ -8,6 +8,8 @@
 #include <Enlivengine/Utils/XmlSerializer.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
 
+#include <filesystem>
+
 namespace en
 {
 

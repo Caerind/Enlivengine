@@ -153,6 +153,8 @@ const std::vector<entt::entity>& World::GetSelectedEntities() const
 	return mSelectedEntities;
 }
 
+#endif // ENLIVE_DEBUG
+
 bool World::Serialize(Serializer& serializer, const char* name)
 {
 	if (serializer.BeginClass(name, TypeInfo<World>::GetName(), TypeInfo<World>::GetHash()))
@@ -188,7 +190,5 @@ bool World::Edit(ObjectEditor& objectEditor, const char* name)
 		return false;
 	}
 }
-
-#endif // ENLIVE_DEBUG
 
 } // namespace en

@@ -80,29 +80,7 @@ public:
 	constexpr bool operator==(const Color& other) const { return r == other.r && g == other.g && b == other.b && a == other.a; }
 	constexpr bool operator!=(const Color& other) const { return !operator==(other); }
 
-	bool Serialize(Serializer& serializer, const char* name)
-	{
-		if (serializer.IsReading())
-		{
-			U32 rgba;
-			const bool ret = serializer.Serialize(name, rgba);
-			if (ret)
-			{
-				FromRGBA(rgba);
-			}
-			return ret;
-		}
-		else if (serializer.IsWriting())
-		{
-			U32 rgba = ToRGBA();
-			return serializer.Serialize(name, rgba);
-		}
-		else
-		{
-			return false;
-		}
-	}
-
+	bool Serialize(Serializer& serializer, const char* name);
 	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 	U8 r;
@@ -110,34 +88,6 @@ public:
 	U8 b;
 	U8 a;
 };
-
-// Should be outside the class to be able to use TypeInfo
-// TODO : Move to cpp file
-bool Color::Edit(ObjectEditor& objectEditor, const char* name)
-{
-	bool ret = false;
-#ifdef ENLIVE_ENABLE_IMGUI
-	if (objectEditor.IsImGuiEditor())
-	{
-		ImVec4 color = ToImGuiColor();
-		if (ImGui::ColorEdit3(name, (float*)&color))
-		{
-			FromImGuiColor(color);
-			ret = true;
-		}
-	}
-	else
-#endif // ENLIVE_ENABLE_IMGUI
-		if (objectEditor.BeginClass(name, TypeInfo<Color>::GetName(), TypeInfo<Color>::GetHash()))
-		{
-			ret = GenericEdit(objectEditor, "R", r) || ret;
-			ret = GenericEdit(objectEditor, "G", g) || ret;
-			ret = GenericEdit(objectEditor, "B", b) || ret;
-			ret = GenericEdit(objectEditor, "A", a) || ret;
-			objectEditor.EndClass();
-		}
-	return ret;
-}
 
 namespace Colors
 {

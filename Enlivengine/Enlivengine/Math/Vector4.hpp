@@ -141,55 +141,53 @@ bool Vector4<T>::Serialize(Serializer& serializer, const char* name)
 template <typename T>
 bool Vector4<T>::Edit(ObjectEditor& objectEditor, const char* name)
 {
-	if (objectEditor.BeginClass(name, TypeInfo<Vector4<T>>::GetName(), TypeInfo<Vector4<T>>::GetHash()))
-	{
-		bool ret = false;
 #ifdef ENLIVE_ENABLE_IMGUI
-		if (objectEditor.IsImGuiEditor())
+	if (objectEditor.IsImGuiEditor())
+	{
+		if constexpr (Traits::IsFloatingPoint<T>::value)
 		{
-			if constexpr (Traits::IsFloatingPoint<T>::value)
+			float vector[4];
+			vector[0] = static_cast<float>(x);
+			vector[1] = static_cast<float>(y);
+			vector[2] = static_cast<float>(z);
+			vector[3] = static_cast<float>(w);
+			if (ImGui::InputFloat4(name, vector))
 			{
-				float vector[4];
-				vector[0] = static_cast<float>(x);
-				vector[1] = static_cast<float>(y);
-				vector[2] = static_cast<float>(z);
-				vector[3] = static_cast<float>(w);
-				if (ImGui::InputFloat4(name, vector))
-				{
-					Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
-					ret = true;
-				}
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
+				return true;
 			}
-			else
-			{
-				int vector[4];
-				vector[0] = static_cast<int>(x);
-				vector[1] = static_cast<int>(y);
-				vector[2] = static_cast<int>(z);
-				vector[3] = static_cast<int>(w);
-				if (ImGui::InputInt4(name, vector))
-				{
-					// TODO : NumericLimits<T> Min
-					// TODO : NumericLimits<T> Max
-					Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
-					ret = true;
-				}
-			}
+			return false;
 		}
 		else
+		{
+			int vector[4];
+			vector[0] = static_cast<int>(x);
+			vector[1] = static_cast<int>(y);
+			vector[2] = static_cast<int>(z);
+			vector[3] = static_cast<int>(w);
+			if (ImGui::InputInt4(name, vector))
+			{
+				// TODO : NumericLimits<T> Min
+				// TODO : NumericLimits<T> Max
+				Set(static_cast<T>(vector[0]), static_cast<T>(vector[1]), static_cast<T>(vector[2]), static_cast<T>(vector[3]));
+				return true;
+			}
+			return false;
+		}
+	}
+	else
 #endif // ENLIVE_ENABLE_IMGUI
+	{
+		bool ret = false;
+		if (objectEditor.BeginClass(name, TypeInfo<Vector4<T>>::GetName(), TypeInfo<Vector4<T>>::GetHash()))
 		{
 			ret = GenericEdit(objectEditor, "x", x) || ret;
 			ret = GenericEdit(objectEditor, "y", y) || ret;
 			ret = GenericEdit(objectEditor, "z", z) || ret;
 			ret = GenericEdit(objectEditor, "w", w) || ret;
+			objectEditor.EndClass();
 		}
-		objectEditor.EndClass();
 		return ret;
-	}
-	else
-	{
-		return false;
 	}
 }
 
