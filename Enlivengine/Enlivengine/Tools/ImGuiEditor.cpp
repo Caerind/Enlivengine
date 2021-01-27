@@ -25,12 +25,12 @@ ImGuiEditor::ImGuiEditor()
 	, mViewRect()
 	, mViewVisible(false)
 	, mCamera()
+	, mUseMainCamera(true)
 	, mEditConfig(false)
 	, mShowManipulator(true)
 	, mShowDebug(true)
 	, mGizmoOperation(GizmoOperation::Translate)
 	, mStatus(GameStatus::Stopped)
-	, mUseMainCamera(true)
 {
 	mCamera.InitializePerspective(80.0f);
 	mCamera.InitializeView(Vector3f(-2.0f, 0.8f, 2.0f), Matrix3f::RotationY(-135.0f));
