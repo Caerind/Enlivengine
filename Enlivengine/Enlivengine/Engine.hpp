@@ -19,7 +19,7 @@ public:
 	static bool Release();
 
 	static Window& GetWindow();
-	static bool Update(Time& dt);
+	static bool Update();
 
 	template <typename T>
 	static void RegisterComponent();

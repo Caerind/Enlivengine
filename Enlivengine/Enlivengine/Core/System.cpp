@@ -7,6 +7,7 @@ namespace en
 
 System::System()
 	: mWorld(nullptr)
+	, mFlags(static_cast<U32>(Flags::None))
 {
 }
 
@@ -14,9 +15,13 @@ System::~System()
 {
 }
 
-void System::Update(Time dt)
+void System::Update()
 {
-	ENLIVE_UNUSED(dt);
+}
+
+U32 System::GetFlags() const
+{
+	return mFlags;
 }
 
 void System::SetWorld(World* world)

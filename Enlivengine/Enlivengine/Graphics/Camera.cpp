@@ -20,11 +20,11 @@ Camera::Camera()
 	, mPosition()
 	, mProjectionData()
 	, mClearColor(U32(0x443355FF))
-	, mFramebuffer(nullptr)
-	, mViewId(sViewIdCounter++)
+	, mAspect(4.0f/3.0f)
 	, mProjectionMode(ProjectionMode::Perspective)
 	, mProjectionDirty(true)
 	, mViewDirty(true)
+	, mMainCamera(false)
 {
 	RegisterCamera(this);
 }
@@ -32,6 +32,10 @@ Camera::Camera()
 Camera::~Camera()
 {
 	UnregisterCamera(this);
+	if (sMainCamera == this)
+	{
+		sMainCamera = nullptr;
+	}
 }
 
 Camera::Camera(Camera&& other) noexcept
@@ -42,8 +46,7 @@ Camera::Camera(Camera&& other) noexcept
 	, mPosition(other.mPosition)
 	, mProjectionData(other.mProjectionData)
 	, mClearColor(other.mClearColor)
-	, mFramebuffer(other.mFramebuffer)
-	, mViewId(other.mViewId)
+	, mAspect(other.mAspect)
 	, mProjectionMode(other.mProjectionMode)
 	, mProjectionDirty(other.mProjectionDirty)
 	, mViewDirty(other.mViewDirty)
@@ -61,36 +64,12 @@ Camera& Camera::operator=(Camera&& other) noexcept
 		mPosition = other.mPosition;
 		mProjectionData = other.mProjectionData;
 		mClearColor = other.mClearColor;
-		mFramebuffer = other.mFramebuffer;
-		mViewId = other.mViewId;
+		mAspect = other.mAspect;
 		mProjectionMode = other.mProjectionMode;
 		mProjectionDirty = other.mProjectionDirty;
 		mViewDirty = other.mViewDirty;
 	}
 	return *this;
-}
-
-void Camera::Apply() const
-{
-	if (mFramebuffer != nullptr && mFramebuffer->IsValid())
-	{
-		BgfxWrapper::SetCurrentView(mViewId);
-		bgfx::setViewClear(mViewId, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, mClearColor.ToRGBA(), 1.0f, 0);
-		if (mProjectionMode == ProjectionMode::Perspective)
-		{
-			bgfx::setViewTransform(mViewId, GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
-		}
-		else
-		{
-			bgfx::setViewTransform(mViewId, GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
-		}
-		const Vector2u& framebufferSize = mFramebuffer->GetSize();
-		const Vector2f vpMin = mViewport.GetMin();
-		const Vector2f vpSize = mViewport.GetSize();
-		bgfx::setViewRect(mViewId, static_cast<U16>(vpMin.x * framebufferSize.x), static_cast<U16>(vpMin.y * framebufferSize.y), static_cast<U16>(vpSize.x * framebufferSize.x), static_cast<U16>(vpSize.y * framebufferSize.y));
-		bgfx::setViewFrameBuffer(mViewId, mFramebuffer->GetHandle());
-		bgfx::touch(mViewId);
-	}
 }
 
 Frustum Camera::CreateFrustum() const
@@ -106,14 +85,8 @@ Frustum Camera::CreateFrustum() const
 	}
 }
 
-Vector3f Camera::ScreenToWorldPoint(const Vector2i& screenCoordinates, Vector3f* outDirection) const
+Vector3f Camera::ScreenToWorldPoint(const Vector2u& fbSize, const Vector2i& screenCoordinates, Vector3f* outDirection) const
 {
-	if (mFramebuffer == nullptr)
-	{
-		return Vector3f::Zero();
-	}
-
-	const Vector2u& fbSize = mFramebuffer->GetSize();
 	enAssert(fbSize.x > 0);
 	enAssert(fbSize.y > 0);
 
@@ -243,6 +216,17 @@ F32 Camera::GetSize() const
 	return mProjectionData.orthographic.size;
 }
 
+void Camera::SetAspect(F32 aspect)
+{
+	mAspect = aspect;
+	mProjectionDirty = true;
+}
+
+F32 Camera::GetAspect() const
+{
+	return mAspect;
+}
+
 const Matrix4f& Camera::GetProjectionMatrix() const
 {
 	if (mProjectionDirty)
@@ -317,38 +301,51 @@ void Camera::SetViewport(const Rectf& viewport)
 	mViewport = viewport;
 }
 
-const en::Rectf& Camera::GetViewport() const
+const Rectf& Camera::GetViewport() const
 {
 	return mViewport;
 }
 
-void Camera::SetFramebuffer(Framebuffer* framebuffer)
+void Camera::SetMainCamera(bool mainCamera)
 {
-	mFramebuffer = framebuffer;
-
-	if (mFramebufferResized.IsConnected())
+	if (!mainCamera)
 	{
-		mFramebufferResized.Disconnect();
+		if (IsCurrentMainCamera())
+		{
+			mMainCamera = false;
+			sMainCamera = nullptr;
+			for (U32 i = 0; i < sCameraCount; ++i)
+			{
+				if (sCameras[i] != nullptr && sCameras[i]->IsMainCamera())
+				{
+					sMainCamera = sCameras[i];
+				}
+			}
+		}
+		else
+		{
+			mMainCamera = false;
+		}
 	}
-	if (mFramebuffer != nullptr)
+	else
 	{
-		mFramebufferResized.Connect(mFramebuffer->OnResized, [this](const Framebuffer*, const Vector2u&) { mProjectionDirty = true; });
+		// TODO : Priority to the current sMainCamera or the newest ?
+		if (sMainCamera == nullptr)
+		{
+			sMainCamera = this;
+		}
+		mMainCamera = true;
 	}
 }
 
-Framebuffer* Camera::GetFramebuffer() const
+bool Camera::IsMainCamera() const
 {
-	return mFramebuffer;
+	return mMainCamera;
 }
 
-bgfx::ViewId Camera::GetViewID() const
+bool Camera::IsCurrentMainCamera() const
 {
-	return mViewId;
-}
-
-void Camera::SetMainCamera(Camera* camera)
-{
-	sMainCamera = camera;
+	return mMainCamera && sMainCamera == this;
 }
 
 Camera* Camera::GetMainCamera()
@@ -361,13 +358,12 @@ bool Camera::Serialize(Serializer& serializer, const char* name)
 	if (serializer.BeginClass(name, TypeInfo<Camera>::GetName(), TypeInfo<Camera>::GetHash()))
 	{
 		bool ret = true;
-		ret = GenericSerialization(serializer, "viewMatrix", mViewMatrix) && ret;
-		ret = GenericSerialization(serializer, "projectionMatrix", mProjectionMatrix) && ret;
 		ret = GenericSerialization(serializer, "rotation", mRotation) && ret;
 		ret = GenericSerialization(serializer, "position", mPosition) && ret;
 		ret = GenericSerialization(serializer, "viewport", mViewport) && ret;
 		ret = GenericSerialization(serializer, "clearColor", mClearColor) && ret;
 		ret = GenericSerialization(serializer, "projectionMode", mProjectionMode) && ret;
+		//ret = GenericSerialization(serializer, "aspect", mAspect) && ret;
 		if (mProjectionMode == ProjectionMode::Perspective)
 		{
 			ret = GenericSerialization(serializer, "nearPlane", mProjectionData.perspective.nearPlane) && ret;
@@ -380,8 +376,29 @@ bool Camera::Serialize(Serializer& serializer, const char* name)
 			ret = GenericSerialization(serializer, "farPlane", mProjectionData.orthographic.farPlane) && ret;
 			ret = GenericSerialization(serializer, "size", mProjectionData.orthographic.size) && ret;
 		}
+
+		if (serializer.IsReading())
+		{
+			bool mainCamera = false;
+			if (GenericSerialization(serializer, "mainCamera", mainCamera))
+			{
+				SetMainCamera(mainCamera);
+			}
+			else
+			{
+				ret = false;
+			}
+		}
+		else if (serializer.IsWriting())
+		{
+			ret = GenericSerialization(serializer, "mainCamera", mMainCamera) && ret;
+		}
+		else
+		{
+			enAssert(false);
+		}
+
 		ret = serializer.EndClass() && ret;
-		// TODO : Framebuffer ?
 		return ret;
 	}
 	else
@@ -411,8 +428,15 @@ bool Camera::Edit(ObjectEditor& objectEditor, const char* name)
 
 		ret = GenericEdit(objectEditor, "ClearColor", mClearColor) || ret;
 		ret = GenericEdit(objectEditor, "Viewport", mViewport) || ret;
+		//ret = GenericEdit(objectEditor, "Aspect", mAspect) || ret;
 
-		// TODO : Framebuffer ?
+		bool mainCamera = mMainCamera;
+		if (GenericEdit(objectEditor, "MainCamera", mainCamera))
+		{
+			SetMainCamera(mainCamera);
+			enAssert(mainCamera == mMainCamera);
+			ret = true;
+		}
 
 		objectEditor.EndClass();
 		return ret;
@@ -442,20 +466,6 @@ void Camera::UpdateViewMatrix() const
 {
 	mViewMatrix = Matrix4f::LookAt(mPosition, mPosition + mRotation.GetForward(), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	mViewDirty = false;
-}
-
-F32 Camera::GetAspect() const
-{
-	if (mFramebuffer != nullptr && mFramebuffer->IsValid())
-	{
-		const Vector2f framebufferSize = static_cast<Vector2f>(mFramebuffer->GetSize());
-		enAssert(framebufferSize.y != 0.0f);
-		return framebufferSize.x / framebufferSize.y;
-	}
-	else
-	{
-		return 1.0f;
-	}
 }
 
 void Camera::RegisterCamera(Camera* camera)

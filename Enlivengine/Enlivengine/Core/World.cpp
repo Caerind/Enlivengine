@@ -14,7 +14,7 @@ World::World(const std::string& name)
 	, mSystemManager(*this)
 	, mName(name)
 #ifdef ENLIVE_DEBUG
-	, mPlaying(false)
+	, mDebugRendering(true)
 	, mDebugDraw()
 	, mSelectedEntities()
 #endif // ENLIVE_DEBUG
@@ -45,24 +45,19 @@ const SystemManager& World::GetSystemManager() const
 	return mSystemManager;
 }
 
-void World::UpdatePhysic(Time dt)
+void World::UpdatePhysic()
 {
-#ifdef ENLIVE_DEBUG
-	if (mPlaying)
-#endif // ENLIVE_DEBUG
-	{
-		mSystemManager.UpdatePhysic(dt);
-	}
+	mSystemManager.UpdatePhysic();
 }
 
-void World::Update(Time dt)
+void World::Update()
 {
-#ifdef ENLIVE_DEBUG
-	if (mPlaying)
-#endif // ENLIVE_DEBUG
-	{
-		mSystemManager.Update(dt);
-	}
+	mSystemManager.Update();
+}
+
+void World::UpdateTool()
+{
+	mSystemManager.UpdateTool();
 }
 
 void World::Render()
@@ -76,19 +71,14 @@ const std::string& World::GetName() const
 }
 
 #ifdef ENLIVE_DEBUG
-void World::Play()
+void World::SetDebugRendering(bool value)
 {
-	mPlaying = true;
+	mDebugRendering = value;
 }
 
-void World::Pause()
+bool World::IsDebugRendering() const
 {
-	mPlaying = false;
-}
-
-bool World::IsPlaying() const
-{
-	return mPlaying;
+	return mDebugRendering;
 }
 
 DebugDraw& World::GetDebugDraw()

@@ -90,7 +90,7 @@ bool PhysicSystem2D::Deinitialize(const Entity& entity, PhysicComponent2D& compo
 	return true;
 }
 
-void PhysicSystem2D::UpdatePhysic(Time dt)
+void PhysicSystem2D::UpdatePhysic()
 {
 	ENLIVE_PROFILE_FUNCTION();
 	{
@@ -115,15 +115,8 @@ void PhysicSystem2D::UpdatePhysic(Time dt)
 	}
 	{
 		ENLIVE_PROFILE_SCOPE("Box2D_Update");
-		mPhysicWorld->Step(dt.AsSeconds(), mVelocityIterations, mPositionIterations);
+		mPhysicWorld->Step(Time::GetDeltaTime().AsSeconds(), mVelocityIterations, mPositionIterations);
 	}
-}
-
-void PhysicSystem2D::Update(Time dt)
-{
-	ENLIVE_UNUSED(dt);
-
-	ENLIVE_PROFILE_FUNCTION();
 	{
 		ENLIVE_PROFILE_SCOPE("AfterPhysic");
 		auto& entityManager = mWorld->GetEntityManager();
@@ -148,6 +141,11 @@ void PhysicSystem2D::Update(Time dt)
 			}
 		}
 	}
+}
+
+void PhysicSystem2D::Update()
+{
+	ENLIVE_PROFILE_FUNCTION();
 #ifdef ENLIVE_DEBUG
 	if (mDebugRender)
 	{

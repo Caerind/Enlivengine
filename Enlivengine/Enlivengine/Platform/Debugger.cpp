@@ -1,5 +1,7 @@
 #include <Enlivengine/Platform/Debugger.hpp>
 
+#include <Enlivengine/Config.hpp>
+
 #include <Enlivengine/Platform/CompilerTraits.hpp>
 #include <Enlivengine/Platform/PlatformTraits.hpp>
 

@@ -25,8 +25,17 @@ public:
 	template <typename T>
 	bool HasSystem() const;
 
-	void UpdatePhysic(Time dt);
-	void Update(Time dt);
+	bool HasPhysicSystem() const;
+	PhysicSystemBase* GetPhysicSystem();
+	const PhysicSystemBase* GetPhysicSystem() const;
+
+	bool HasRenderSystem() const;
+	RenderSystemBase* GetRenderSystem();
+	const RenderSystemBase* GetRenderSystem() const;
+
+	void UpdatePhysic();
+	void Update();
+	void UpdateTool();
 	void Render();
 
 	bool Serialize(Serializer& serializer, const char* name);
@@ -35,8 +44,8 @@ public:
 private:
 	World& mWorld;
 	Array<System*> mSystems;
-	Array<PhysicSystemBase*> mPhysicSystems;
-	Array<RenderSystemBase*> mRenderSystems;
+	PhysicSystemBase* mPhysicSystem;
+	RenderSystemBase* mRenderSystem;
 };
 
 template <typename T>
@@ -60,12 +69,12 @@ T* SystemManager::CreateSystem()
 
 			if constexpr (Traits::IsBaseOf<PhysicSystemBase, T>::value)
 			{
-				mPhysicSystems.Add(system);
+				mPhysicSystem = system;
 			}
 
 			if constexpr (Traits::IsBaseOf<RenderSystemBase, T>::value)
 			{
-				mRenderSystems.Add(system);
+				mRenderSystem = system;
 			}
 		}
 		return system;
@@ -83,12 +92,12 @@ void SystemManager::RemoveSystem()
 		{
 			if constexpr (Traits::IsBaseOf<PhysicSystemBase, T>::value)
 			{
-				mPhysicSystems.Remove(static_cast<PhysicSystemBase*>(mSystems[i]));
+				mPhysicSystem = nullptr;
 			}
 			
 			if constexpr (Traits::IsBaseOf<RenderSystemBase, T>::value)
 			{
-				mRenderSystems.Remove(static_cast<RenderSystemBase*>(mSystems[i]));
+				mRenderSystem = nullptr;
 			}
 
 			enDelete(System, mSystems[i]);

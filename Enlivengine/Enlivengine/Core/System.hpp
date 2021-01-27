@@ -15,14 +15,22 @@ class System
         System();
         virtual ~System();
 		
-        virtual void Update(Time dt);
+        virtual void Update();
 
 		virtual const char* GetName() const = 0;
 		virtual bool Serialize(Serializer& serializer, const char* name) = 0;
 		virtual bool Edit(ObjectEditor& objectEditor, const char* name) = 0;
+
+		enum class Flags
+		{
+			None = 0,
+			UpdateOnTool = 1 << 0
+		};
+		U32 GetFlags() const;
 		
 	protected:
 		World* mWorld;
+		U32 mFlags;
 
 	private:
 		friend class World;

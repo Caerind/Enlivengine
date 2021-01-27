@@ -8,7 +8,7 @@ namespace en
 class PhysicSystemBase : public System
 {
 public:
-	virtual void UpdatePhysic(Time dt) = 0;
+	virtual void UpdatePhysic() = 0;
 };
 
 } // namespace en

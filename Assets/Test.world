@@ -3,12 +3,65 @@
 	<EntityManager type="en::EntityManager" hash="1741196248">
 		<size>1</size>
 		<Entity_0 type="en::Entity" hash="2742466461">
-			<en::TransformComponent type="en::TransformComponent" hash="2679254095">
-				<Transform type="en::Transform" hash="3048476028">
+			<PlayerComponent type="PlayerComponent" hash="2771901145" />
+			<en::RenderableComponent type="en::RenderableComponent" hash="2105190279" />
+			<en::SpriteComponent type="en::SpriteComponent" hash="642241994">
+				<sprite type="en::Sprite" hash="3292661911">
+					<texture>109796557</texture>
+					<textureRect type="en::Rect<en::I32>" hash="2777298269">
+						<min type="en::Vector2<en::I32>" hash="3694570132">
+							<x>0</x>
+							<y>0</y>
+						</min>
+						<max type="en::Vector2<en::I32>" hash="3694570132">
+							<x>256</x>
+							<y>256</y>
+						</max>
+					</textureRect>
+				</sprite>
+			</en::SpriteComponent>
+			<en::CameraComponent type="en::CameraComponent" hash="226575676">
+				<Camera type="en::Camera" hash="2648522697">
+					<rotation type="en::Matrix3<en::F32>" hash="809589396">
+						<i0>1</i0>
+						<i1>0</i1>
+						<i2>0</i2>
+						<i3>0</i3>
+						<i4>1</i4>
+						<i5>0</i5>
+						<i6>0</i6>
+						<i7>0</i7>
+						<i8>1</i8>
+					</rotation>
 					<position type="en::Vector3<en::F32>" hash="3762263698">
 						<x>0</x>
 						<y>0</y>
 						<z>0</z>
+					</position>
+					<viewport type="en::Rect<en::F32>" hash="2777190458">
+						<min type="en::Vector2<en::F32>" hash="3694462321">
+							<x>0</x>
+							<y>0</y>
+						</min>
+						<max type="en::Vector2<en::F32>" hash="3694462321">
+							<x>1</x>
+							<y>1</y>
+						</max>
+					</viewport>
+					<clearColor>1316878335</clearColor>
+					<projectionMode>Perspective</projectionMode>
+					<nearPlane>0.1</nearPlane>
+					<farPlane>10</farPlane>
+					<fov>60</fov>
+					<mainCamera>true</mainCamera>
+				</Camera>
+			</en::CameraComponent>
+			<en::TransformComponent type="en::TransformComponent" hash="2679254095">
+				<transform type="en::Transform" hash="3048476028">
+					<position type="en::Vector3<en::F32>" hash="3762263698">
+						<x>0.846269</x>
+						<y>0</y>
+						<z>-1.61134</z>
 					</position>
 					<rotation type="en::Matrix3<en::F32>" hash="809589396">
 						<i0>1</i0>
@@ -26,18 +79,13 @@
 						<y>1</y>
 						<z>1</z>
 					</scale>
-				</Transform>
+				</transform>
 			</en::TransformComponent>
 		</Entity_0>
 	</EntityManager>
 	<SystemManager type="en::SystemManager" hash="2586247584">
-		<en::PhysicSystem2D type="en::PhysicSystem2D" hash="3650980363">
-			<gravity type="en::Vector2<en::F32>" hash="3694462321">
-				<x>0</x>
-				<y>0</y>
-			</gravity>
-			<positionIterations>3</positionIterations>
-			<velocityIterations>8</velocityIterations>
-		</en::PhysicSystem2D>
+		<PlayerSystem type="PlayerSystem" hash="98119915" />
+		<RenderSystem type="RenderSystem" hash="1753944190" />
+		<DebugSystem type="DebugSystem" hash="1580836997" />
 	</SystemManager>
 </World>

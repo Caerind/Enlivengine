@@ -90,8 +90,15 @@ public:
 	bool Serialize(Serializer& serializer, const char* name);
 	bool Edit(ObjectEditor& objectEditor, const char* name);
 
+	static Time GetDeltaTime();
+
 private:
 	I64 mTicks;
+
+private:
+	friend class Engine;
+	static void SetDeltaTime(Time dt);
+	static Time sDeltaTime;
 };
 
 constexpr Time operator*(F32 scalar, const Time& time)

@@ -22,8 +22,6 @@ public:
 	CameraComponent& operator=(CameraComponent&& other) noexcept;
 	CameraComponent& operator=(const CameraComponent&) = delete;
 
-	virtual void Apply() const override;
-
 	virtual Frustum CreateFrustum() const override;
 
 	virtual const Matrix4f& GetViewMatrix() const override;

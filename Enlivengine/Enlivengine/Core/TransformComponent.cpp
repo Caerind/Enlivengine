@@ -281,9 +281,12 @@ bool TransformComponent::Serialize(Serializer& serializer, const char* name)
 	if (serializer.BeginClass(name, TypeInfo<TransformComponent>::GetName(), TypeInfo<TransformComponent>::GetHash()))
 	{
 		bool ret = true;
-		ret = GenericSerialization(serializer, "Transform", mLocalTransform) && ret;
+		ret = GenericSerialization(serializer, "transform", mLocalTransform) && ret;
 		// TODO : Serialize Parent/Children
 		ret = serializer.EndClass() && ret;
+
+		MarkGlobalMatrixAsDirty();
+
 		return ret;
 	}
 	else
@@ -300,6 +303,12 @@ bool TransformComponent::Edit(ObjectEditor& objectEditor, const char* name)
 		ret = GenericEdit(objectEditor, "Transform", mLocalTransform) || ret;
 		// TODO : Serialize Parent/Children
 		objectEditor.EndClass();
+
+		if (ret)
+		{
+			MarkGlobalMatrixAsDirty();
+		}
+
 		return ret;
 	}
 	else
