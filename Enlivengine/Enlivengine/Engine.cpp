@@ -84,7 +84,7 @@ int Engine::Main(int argc, char** argv)
 			BgfxWrapper::Frame();
 		}
 
-		if (World* world = Universe::GetCurrentWorld())
+		if (Universe::GetCurrentWorld() != nullptr)
 		{
 			WorldFileManager::UnloadCurrentWorld();
 		}
