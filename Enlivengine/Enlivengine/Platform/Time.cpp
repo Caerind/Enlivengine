@@ -6,6 +6,8 @@
 namespace en
 {
 
+Time Time::sDeltaTime;
+
 Time Time::Now()
 {
 	return Time(static_cast<I64>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
@@ -37,6 +39,16 @@ bool Time::Edit(ObjectEditor& objectEditor, const char* name)
 	{
 		return false;
 	}
+}
+
+Time Time::GetDeltaTime()
+{
+	return sDeltaTime;
+}
+
+void Time::SetDeltaTime(Time dt)
+{
+	sDeltaTime = dt;
 }
 
 Clock::Clock()

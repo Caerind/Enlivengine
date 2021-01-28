@@ -1,10 +1,5 @@
 #pragma once
 
-#include <Enlivengine/Platform/Time.hpp>
-#include <Enlivengine/Utils/Array.hpp>
-#include <Enlivengine/Utils/TypeTraits.hpp>
-#include <Enlivengine/Utils/TypeInfo.hpp>
-
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/SystemManager.hpp>
 
@@ -27,17 +22,16 @@ public:
 	SystemManager& GetSystemManager();
 	const SystemManager& GetSystemManager() const;
 	
-	void UpdatePhysic(Time dt);
-	void Update(Time dt);
+	void UpdatePhysic();
+	void Update();
+	void UpdateTool();
 	void Render();
 
 	const std::string& GetName() const;
 
 #ifdef ENLIVE_DEBUG
-	void Play();
-	void Pause();
-	bool IsPlaying() const;
-
+	void SetDebugRendering(bool value);
+	bool IsDebugRendering() const;
 	DebugDraw& GetDebugDraw();
 
 	bool IsSelected(const Entity& entity) const;
@@ -57,8 +51,7 @@ private:
 	std::string mName;
 
 #ifdef ENLIVE_DEBUG
-	bool mPlaying;
-
+	bool mDebugRendering;
 	DebugDraw mDebugDraw;
 
 	std::vector<entt::entity> mSelectedEntities;

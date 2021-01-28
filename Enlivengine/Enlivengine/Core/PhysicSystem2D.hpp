@@ -30,8 +30,8 @@ public:
 		return "en::PhysicSystem2D";
 	}
 
-	void UpdatePhysic(Time dt) override;
-	void Update(Time dt) override;
+	void UpdatePhysic() override;
+	void Update() override;
 
 	bool Initialize(const Entity& entity, PhysicComponent2D& component);
 	bool Deinitialize(const Entity& entity, PhysicComponent2D& component);

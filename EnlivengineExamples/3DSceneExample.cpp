@@ -3,11 +3,13 @@
 #include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Window/EventSystem.hpp>
 #include <Enlivengine/Window/Controller.hpp>
-#include <Enlivengine/Graphics/Camera.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
+#include <Enlivengine/Core/CameraComponent.hpp>
 #include <Enlivengine/Core/Components.hpp>
-#include <Enlivengine/Tools/ImGuiGame.hpp>
+#include <Enlivengine/Graphics/Camera.hpp>
+#include <Enlivengine/Graphics/BgfxWrapper.hpp>
+#include <Enlivengine/Tools/ImGuiEditor.hpp>
 
 using namespace en;
 
@@ -19,6 +21,58 @@ public:
 	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
 	void Render() override
+	{
+#ifdef ENLIVE_DEBUG
+		mWorld->GetDebugDraw().DrawCross(Vector3f(0.0f));
+		mWorld->GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -16, 16, 1, Colors::White);
+#endif // ENLIVE_DEBUG
+
+#ifdef ENLIVE_TOOL
+		Framebuffer& framebuffer = ImGuiEditor::GetFramebuffer();
+		Camera* camera = &ImGuiEditor::GetCamera();
+#else
+		Framebuffer& framebuffer = Framebuffer::GetDefaultFramebuffer();
+		Camera* camera = Camera::GetMainCamera();
+#endif // ENLIVE_TOOL
+
+		if (framebuffer.IsValid() && camera != nullptr)
+		{
+			const bgfx::ViewId mainViewID = 2;
+			BgfxWrapper::SetCurrentView(mainViewID);
+
+			const Vector2u& framebufferSize = framebuffer.GetSize();
+			const F32 aspectRatio = static_cast<F32>(framebufferSize.x) / static_cast<F32>(framebufferSize.y);
+			const Vector2f vpMin = camera->GetViewport().GetMin();
+			const Vector2f vpSize = camera->GetViewport().GetSize();
+
+			if (camera->GetAspect() != aspectRatio)
+			{
+				camera->SetAspect(aspectRatio);
+			}
+
+			bgfx::setViewClear(mainViewID, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, camera->GetClearColor().ToRGBA(), 1.0f, 0);
+			bgfx::setViewTransform(mainViewID, camera->GetViewMatrix().GetData(), camera->GetProjectionMatrix().GetData());
+			bgfx::setViewRect(mainViewID, static_cast<U16>(vpMin.x * framebufferSize.x), static_cast<U16>(vpMin.y * framebufferSize.y), static_cast<U16>(vpSize.x * framebufferSize.x), static_cast<U16>(vpSize.y * framebufferSize.y));
+			bgfx::setViewFrameBuffer(mainViewID, framebuffer.GetHandle());
+			bgfx::touch(mainViewID);
+
+			RenderWorld();
+
+#ifdef ENLIVE_DEBUG
+#ifdef ENLIVE_TOOL
+			if (ImGuiEditor::IsShowingDebug())
+#else
+			if (mWorld->IsDebugRendering())
+#endif // ENLIVE_TOOL
+			{
+				mWorld->GetDebugDraw().Render();
+			}
+			mWorld->GetDebugDraw().Clear();
+#endif // ENLIVE_DEBUG
+		}
+	}
+
+	void RenderWorld()
 	{
 		auto& entityManager = mWorld->GetEntityManager();
 		auto view = entityManager.View<TransformComponent>();
@@ -67,44 +121,33 @@ bool RenderSystem::Edit(ObjectEditor& objectEditor, const char* name)
 class DebugSystem : public System
 {
 public:
+	DebugSystem() : System()
+	{
+		mFlags = static_cast<U32>(Flags::UpdateOnTool);
+	}
+
 	const char* GetName() const override;
 	bool Serialize(Serializer& serializer, const char* name) override;
 	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
-	void Update(Time dt) override
+	void Update() override
 	{
 #ifdef ENLIVE_DEBUG
-		mWorld->GetDebugDraw().DrawCross(Vector3f(-1.0f));
 		mWorld->GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
 		mWorld->GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
-		mWorld->GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -10, 10, 1, Colors::White);
 
-		if (Camera* mainCamera = Camera::GetMainCamera())
+		auto& entityManager = mWorld->GetEntityManager();
+		auto view = entityManager.View<en::CameraComponent>();
+		for (auto entt : view)
 		{
-			mWorld->GetDebugDraw().DrawFrustum(mainCamera->CreateFrustum(), Colors::Blue);
-			//mWorld->GetDebugDraw().DrawTransform(playerCamEntity.Get<TransformComponent>().GetGlobalMatrix());
-
-#ifdef ENLIVE_TOOL
-			if (ImGuiGame::IsMouseInView())
+			Entity entity(entityManager, entt);
+			if (entity.IsValid())
 			{
-				Vector3f mouseDir;
-				const Vector3f mousePos = mainCamera->ScreenToWorldPoint(ImGuiGame::GetMouseScreenCoordinates(), &mouseDir);
-				const Plane p(ENLIVE_DEFAULT_UP, 0.0f);
-				const Ray r(mousePos, mouseDir);
-				F32 t;
-				if (r.Intersects(p, &t))
-				{
-					const Vector3f point = r.GetPoint(t);
-					mWorld->GetDebugDraw().DrawLine(mousePos, point, Colors::Green);
-					mWorld->GetDebugDraw().DrawSphere(point, 0.05f, Colors::Green);
-				}
-				else
-				{
-					mWorld->GetDebugDraw().DrawLine(mousePos, r.GetPoint(100.0f), Colors::Red);
-				}
+				auto& cam = entity.Get<en::CameraComponent>();
+				mWorld->GetDebugDraw().DrawFrustum(cam.CreateFrustum());
 			}
-#endif // ENLIVE_TOOL
 		}
+
 #endif // ENLIVE_DEBUG
 	}
 };
@@ -134,7 +177,7 @@ public:
 	bool Serialize(Serializer& serializer, const char* name) override;
 	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
-	void Update(Time dt) override
+	void Update() override
 	{
 		auto& entityManager = mWorld->GetEntityManager();
 		auto view = entityManager.View<TransformComponent, StupidShipComponent>();
@@ -143,7 +186,7 @@ public:
 			Entity entity(entityManager, entt);
 			if (entity.IsValid())
 			{
-				entity.Get<TransformComponent>().Rotate(Matrix3f::RotationY(180.0f * dt.AsSeconds()));
+				entity.Get<TransformComponent>().Rotate(Matrix3f::RotationY(180.0f * Time::GetDeltaTime().AsSeconds()));
 			}
 		}
 	}
@@ -174,7 +217,7 @@ public:
 	bool Serialize(Serializer& serializer, const char* name) override;
 	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
-	void Update(Time dt) override
+	void Update() override
 	{
 		if (EventSystem::IsButtonActive("action") || EventSystem::IsButtonActive("jactionP1"))
 		{
@@ -193,7 +236,7 @@ public:
 				const F32 leftMvt = -Controller::GetAxis(0, 0);
 				const F32 deltaYaw = Controller::GetAxis(0, 3);
 				const F32 deltaPitch = Controller::GetAxis(0, 4);
-				const F32 dtSeconds = dt.AsSeconds();
+				const F32 dtSeconds = Time::GetDeltaTime().AsSeconds();
 
 				TransformComponent& playerTransform = entity.Get<TransformComponent>();
 

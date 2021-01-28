@@ -8,6 +8,10 @@
 #include <Enlivengine/Utils/XmlSerializer.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
 
+#ifdef ENLIVE_TOOL
+#include <Enlivengine/Tools/ImGuiEditor.hpp>
+#endif // ENLIVE_TOOL
+
 #include <filesystem>
 
 namespace en
@@ -70,6 +74,10 @@ bool WorldFileManager::LoadWorld(const std::string& worldName)
 
 bool WorldFileManager::SaveCurrentWorld()
 {
+#ifdef ENLIVE_TOOL
+	enAssert(ImGuiEditor::IsStopped());
+#endif // ENLIVE_TOOL
+
 	if (World* world = Universe::GetCurrentWorld())
 	{
 		const std::string& worldName = world->GetName();

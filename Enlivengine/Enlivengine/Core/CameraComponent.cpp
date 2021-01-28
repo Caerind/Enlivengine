@@ -29,19 +29,6 @@ CameraComponent& CameraComponent::operator=(CameraComponent&& other) noexcept
 	return *this;
 }
 
-void CameraComponent::Apply() const
-{
-	Camera::Apply();
-	if (GetProjection() == Camera::ProjectionMode::Perspective)
-	{
-		bgfx::setViewTransform(GetViewID(), GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
-	}
-	else
-	{
-		bgfx::setViewTransform(GetViewID(), GetViewMatrix().GetData(), GetProjectionMatrix().GetData());
-	}
-}
-
 Frustum CameraComponent::CreateFrustum() const
 {
 	return Camera::CreateFrustum().Transform(GetEntityMatrix());

@@ -14,8 +14,8 @@ namespace en
 SystemManager::SystemManager(World& world)
 	: mWorld(world)
 	, mSystems()
-	, mPhysicSystems()
-	, mRenderSystems()
+	, mPhysicSystem(nullptr)
+	, mRenderSystem(nullptr)
 {
 }
 
@@ -27,33 +27,44 @@ SystemManager::~SystemManager()
 	}
 }
 
-void SystemManager::UpdatePhysic(Time dt)
+void SystemManager::UpdatePhysic()
 {
 	ENLIVE_PROFILE_FUNCTION();
-	for (PhysicSystemBase* system : mPhysicSystems)
+	if (mPhysicSystem != nullptr)
 	{
-		ENLIVE_PROFILE_SCOPE(system->GetName());
-		system->UpdatePhysic(dt);
+		mPhysicSystem->UpdatePhysic();
 	}
 }
 
-void SystemManager::Update(Time dt)
+void SystemManager::Update()
 {
 	ENLIVE_PROFILE_FUNCTION();
 	for (System* system : mSystems)
 	{
 		ENLIVE_PROFILE_SCOPE(system->GetName());
-		system->Update(dt);
+		system->Update();
+	}
+}
+
+void SystemManager::UpdateTool()
+{
+	ENLIVE_PROFILE_FUNCTION();
+	for (System* system : mSystems)
+	{
+		if ((system->GetFlags() & static_cast<U32>(System::Flags::UpdateOnTool)) > 0)
+		{
+			ENLIVE_PROFILE_SCOPE(system->GetName());
+			system->Update();
+		}
 	}
 }
 
 void SystemManager::Render()
 {
 	ENLIVE_PROFILE_FUNCTION();
-	for (RenderSystemBase* system : mRenderSystems)
+	if (mRenderSystem != nullptr)
 	{
-		ENLIVE_PROFILE_SCOPE(system->GetName());
-		system->Render();
+		mRenderSystem->Render();
 	}
 }
 

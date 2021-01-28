@@ -7,6 +7,7 @@
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
 #include <Enlivengine/Graphics/Camera.hpp>
 #include <Enlivengine/Tools/ImGuiToolManager.hpp>
+#include <Enlivengine/Tools/ImGuiEditor.hpp>
 #include <Enlivengine/Window/EventSystem.hpp>
 #include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Engine/WorldFileManager.hpp>
@@ -14,11 +15,6 @@
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
 #include <Enlivengine/Window/Keyboard.hpp>
 #endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
-
-#ifdef ENLIVE_TOOL
-#include <Enlivengine/Tools/ImGuiEditor.hpp>
-#include <Enlivengine/Tools/ImGuiGame.hpp>
-#endif // ENLIVE_TOOL
 
 #include <Enlivengine/Graphics/DebugDraw.hpp>
 #include <Enlivengine/Graphics/Sprite.hpp>
@@ -50,67 +46,46 @@ int Engine::Main(int argc, char** argv)
 
 	if (Engine::Init(argc, argv))
 	{
-		Time dt;
-		while (Engine::Update(dt))
+		while (Engine::Update())
 		{
 			if (World* world = Universe::GetCurrentWorld())
 			{
-				// Update
-				{
-					world->UpdatePhysic(dt);
-					world->Update(dt);
-
 #ifdef ENLIVE_TOOL
-					if (ImGuiEditor::IsViewVisible())
-					{
-						ImGuiEditor::UpdateCamera(dt);
-					}
+				if (ImGuiEditor::IsPlaying())
 #endif // ENLIVE_TOOL
-				}
-
-
-				// Render
 				{
+					world->UpdatePhysic();
+					world->Update();
+				}
 #ifdef ENLIVE_TOOL
-					if (ImGuiGame::IsViewVisible())
-					{
-						if (Camera* mainCamera = Camera::GetMainCamera())
-						{
-							mainCamera->Apply();
-							world->Render();
-							world->GetDebugDraw().Render();
-						}
-					}
-
-					if (ImGuiEditor::IsViewVisible())
-					{
-						ImGuiEditor::GetCamera().Apply();
-						world->Render();
-						world->GetDebugDraw().Render();
-					}
-					world->GetDebugDraw().Clear();
+				else
+				{
+					world->UpdateTool();
+				}
 #endif // ENLIVE_TOOL
 
-#ifdef ENLIVE_RELEASE
-					if (Camera* mainCamera = Camera::GetMainCamera())
-					{
-						mainCamera->Apply();
-						world->Render();
-#ifdef ENLIVE_DEBUG
-						world->GetDebugDraw().Render();
-						world->GetDebugDraw().Clear();
-#endif // ENLIVE_DEBUG
-					}
-#endif // ENLIVE_RELEASE
-				}
+				world->Render();
+			}
+			else
+			{
+				const bgfx::ViewId mainViewID = 0;
+#ifdef ENLIVE_TOOL
+				Framebuffer& framebuffer = ImGuiEditor::GetFramebuffer();
+#else
+				Framebuffer& framebuffer = Framebuffer::GetDefaultFramebuffer();
+#endif // ENLIVE_TOOL
+				bgfx::setViewClear(mainViewID, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, Colors::DarkGray.ToRGBA(), 1.0f, 0);
+				bgfx::setViewTransform(mainViewID, Matrix4f::Identity().GetData(), Matrix4f::Identity().GetData());
+				bgfx::setViewRect(mainViewID, 0, 0, static_cast<U16>(framebuffer.GetSize().x), static_cast<U16>(framebuffer.GetSize().y));
+				bgfx::setViewFrameBuffer(mainViewID, framebuffer.GetHandle());
+				bgfx::touch(mainViewID);
 			}
 
 			BgfxWrapper::Frame();
 		}
 
-		if (World* world = Universe::GetCurrentWorld())
+		if (Universe::GetCurrentWorld() != nullptr)
 		{
-			world->GetEntityManager().ClearEntities();
 			WorldFileManager::UnloadCurrentWorld();
 		}
 
@@ -255,7 +230,7 @@ Window& Engine::GetWindow()
 	return GetInstance().mWindow;
 }
 
-bool Engine::Update(Time& dt)
+bool Engine::Update()
 {
 	Engine& engine = GetInstance();
 	enAssert(engine.mInitialized);
@@ -276,12 +251,12 @@ bool Engine::Update(Time& dt)
 
 	if (!engine.mWindow.ShouldClose())
 	{
-		dt = engine.mDTClock.Restart();
+		Time::SetDeltaTime(engine.mDTClock.Restart());
 
 		EventSystem::Update();
 
 #ifdef ENLIVE_ENABLE_IMGUI
-		ImGuiToolManager::Update(engine.mWindow, dt);
+		ImGuiToolManager::Update(engine.mWindow);
 #endif // ENLIVE_ENABLE_IMGUI
 
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG

@@ -24,7 +24,7 @@ public:
 	static bool LoadFromFile(const std::string& filename);
 	static bool SaveToFile(const std::string& filename);
 
-	static void Update(Window& window, const Time& dt);
+	static void Update(Window& window);
 
 	static void RegisterTool(ImGuiTool& tool);
 

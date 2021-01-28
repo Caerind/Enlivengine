@@ -19,7 +19,6 @@
 #include <Enlivengine/Tools/ImGuiDemoWindow.hpp>
 #include <Enlivengine/Tools/ImGuiEditor.hpp>
 #include <Enlivengine/Tools/ImGuiEntityBrowser.hpp>
-#include <Enlivengine/Tools/ImGuiGame.hpp>
 #include <Enlivengine/Tools/ImGuiInputEditor.hpp>
 #include <Enlivengine/Tools/ImGuiLogger.hpp>
 #include <Enlivengine/Tools/ImGuiMemoryDebugger.hpp>
@@ -146,7 +145,7 @@ bool ImGuiToolManager::SaveToFile(const std::string& filename)
 	return true;
 }
 
-void ImGuiToolManager::Update(Window& window, const Time& dt)
+void ImGuiToolManager::Update(Window& window)
 {
 	ENLIVE_PROFILE_FUNCTION();
 
@@ -163,7 +162,7 @@ void ImGuiToolManager::Update(Window& window, const Time& dt)
 	if (imgui.mRunning)
 	{
 		const Vector2u windowSize = window.GetSize();
-		ImGuiWrapper::BeginFrame(250, windowSize.x, windowSize.y, dt.AsSeconds());
+		ImGuiWrapper::BeginFrame(250, windowSize.x, windowSize.y, Time::GetDeltaTime().AsSeconds());
 		imgui.ImGuiMain();
 		imgui.ImGuiTools();
 		ImGuiWrapper::EndFrame();
@@ -197,7 +196,6 @@ void ImGuiToolManager::RegisterTools()
 {
 #ifdef ENLIVE_TOOL
 	RegisterTool(ImGuiEditor::GetInstance());
-	RegisterTool(ImGuiGame::GetInstance());
 #endif // ENLIVE_TOOL
 
 	RegisterTool(ImGuiLogger::GetInstance());

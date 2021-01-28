@@ -13,6 +13,7 @@
 
 #include <Enlivengine/Utils/XmlSerializer.hpp>
 #include <Enlivengine/Tools/ImGuiObjectEditor.hpp>
+#include <Enlivengine/Tools/ImGuiEditor.hpp>
 
 namespace en
 {
@@ -66,7 +67,7 @@ void ImGuiWorlds::CurrentWorld()
 			ImGui::SameLine();
 			if (ImGui::Button(ICON_FA_UPLOAD))
 			{
-				WorldFileManager::UnloadCurrentWorld(true); // TODO : Do we really want to save here ?
+				WorldFileManager::UnloadCurrentWorld();
 				ImGui::Unindent();
 				return;
 			}
@@ -78,10 +79,14 @@ void ImGuiWorlds::CurrentWorld()
 			ImGuiObjectEditor systemEditor;
 			worldModified = GenericEdit(systemEditor, "Systems", world.GetSystemManager());
 
-			if (worldModified)
+#ifdef ENLIVE_TOOL
+			if (worldModified && ImGuiEditor::IsStopped())
 			{
 				WorldFileManager::SaveCurrentWorld();
 			}
+#else
+			ENLIVE_UNUSED(worldModified);
+#endif // ENLIVE_TOOL
 		}
 		else
 		{

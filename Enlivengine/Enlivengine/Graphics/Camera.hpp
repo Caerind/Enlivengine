@@ -27,11 +27,9 @@ public:
 	Camera& operator=(Camera&& other) noexcept;
 	Camera& operator=(const Camera& other) = delete;
 
-	virtual void Apply() const;
-
 	virtual Frustum CreateFrustum() const;
 
-	virtual Vector3f ScreenToWorldPoint(const Vector2i& screenCoordinates, Vector3f* outDirection = nullptr) const;
+	virtual Vector3f ScreenToWorldPoint(const Vector2u& fbSize, const Vector2i& screenCoordinates, Vector3f* outDirection = nullptr) const;
 
     // Projection
 
@@ -58,6 +56,9 @@ public:
 	void SetSize(F32 size);
 	F32 GetSize() const;
 
+	void SetAspect(F32 aspect);
+	F32 GetAspect() const;
+
     const Matrix4f& GetProjectionMatrix() const;
 
     // View
@@ -82,14 +83,14 @@ public:
 	void SetViewport(const Rectf& viewport);
 	const Rectf& GetViewport() const;
 
-	void SetFramebuffer(Framebuffer* framebuffer);
-	Framebuffer* GetFramebuffer() const;
-
-	bgfx::ViewId GetViewID() const;
-
 	// Camera
-	static void SetMainCamera(Camera* camera);
+
+	void SetMainCamera(bool mainCamera);
+	bool IsMainCamera() const;
+	bool IsCurrentMainCamera() const;
 	static Camera* GetMainCamera();
+
+	// Common
 
 	bool Serialize(Serializer& serializer, const char* name);
 	bool Edit(ObjectEditor& objectEditor, const char* name);
@@ -97,7 +98,6 @@ public:
 protected:
 	void UpdateProjectionMatrix() const;
 	void UpdateViewMatrix() const;
-	F32 GetAspect() const;
 
     struct PerspectiveData
 	{
@@ -124,12 +124,11 @@ protected:
 		OrthographicData orthographic;
 	} mProjectionData;
 	Color mClearColor;
-	Framebuffer* mFramebuffer;
-	enSlotType(Framebuffer, OnResized) mFramebufferResized;
-	bgfx::ViewId mViewId;
+	F32 mAspect;
 	ProjectionMode mProjectionMode;
 	mutable bool mProjectionDirty;
 	mutable bool mViewDirty;
+	bool mMainCamera;
 
 	static bgfx::ViewId sViewIdCounter;
 
