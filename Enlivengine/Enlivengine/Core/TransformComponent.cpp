@@ -119,12 +119,27 @@ void TransformComponent::SetTransform(const Vector3f& translation, const Matrix3
 	MarkGlobalMatrixAsDirty();
 }
 
+bool TransformComponent::CanAttach(const Entity& childEntity) const
+{
+	if (mEntity != childEntity && mEntity.IsValid() && childEntity.IsValid() && childEntity.Has<TransformComponent>())
+	{
+		return !IsChildOrSubchild(childEntity);
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void TransformComponent::AttachChild(const Entity& childEntity)
 {
 	enAssert(childEntity != mEntity);
 	enAssert(mEntity.IsValid());
 	enAssert(childEntity.IsValid());
 	enAssert(childEntity.Has<TransformComponent>());
+
+	enAssert(CanAttach(childEntity));
+
 	TransformComponent& childTransform = const_cast<TransformComponent&>(childEntity.Get<TransformComponent>());
 
 	// Skip if already the parent
@@ -137,7 +152,7 @@ void TransformComponent::AttachChild(const Entity& childEntity)
 	if (childTransform.mParent.IsValid())
 	{
 		enAssert(childTransform.mParent.Has<TransformComponent>());
-		enAssert(childTransform.mParent.Get<TransformComponent>().HasChild(childEntity));
+		enAssert(childTransform.mParent.Get<TransformComponent>().IsChild(childEntity));
 		childTransform.mParent.Get<TransformComponent>().DetachChild(childEntity);
 	}
 
@@ -155,6 +170,7 @@ void TransformComponent::DetachChild(const Entity& childEntity)
 	enAssert(mEntity.IsValid());
 	enAssert(childEntity.IsValid());
 	enAssert(childEntity.Has<TransformComponent>());
+	enAssert(IsChild(childEntity));
 	TransformComponent& childTransform = const_cast<TransformComponent&>(childEntity.Get<TransformComponent>());
 
 	// It should be the parent
@@ -178,7 +194,7 @@ void TransformComponent::DetachChild(const Entity& childEntity)
 	enAssert(false); // Was not a stored child on parent's side
 }
 
-bool TransformComponent::HasChild(const Entity& childEntity) const
+bool TransformComponent::IsChild(const Entity& childEntity) const
 {
 	const U32 childrenCount = GetChildrenCount();
 	for (U32 i = 0; i < childrenCount; ++i)
@@ -186,6 +202,27 @@ bool TransformComponent::HasChild(const Entity& childEntity) const
 		if (mChildren[i] == childEntity)
 		{
 			return true;
+		}
+	}
+	return false;
+}
+
+bool TransformComponent::IsChildOrSubchild(const Entity& childEntity) const
+{
+	const U32 childrenCount = GetChildrenCount();
+	for (U32 i = 0; i < childrenCount; ++i)
+	{
+		if (mChildren[i] == childEntity)
+		{
+			return true;
+		}
+		else
+		{
+			const TransformComponent& childTransform = mChildren[i].Get<TransformComponent>();
+			if (childTransform.IsChildOrSubchild(childEntity))
+			{
+				return true;
+			}
 		}
 	}
 	return false;
@@ -204,19 +241,25 @@ Entity TransformComponent::GetChild(U32 index) const
 
 void TransformComponent::AttachToParent(const Entity& parentEntity)
 {
-	enAssert(mEntity.IsValid());
 	enAssert(parentEntity.IsValid());
 	enAssert(parentEntity.Has<TransformComponent>());
-
 	const_cast<TransformComponent&>(parentEntity.Get<TransformComponent>()).AttachChild(mEntity);
+	enAssert(parentEntity.Get<TransformComponent>().IsChild(mEntity));
+	enAssert(mParent == parentEntity);
 }
 
 void TransformComponent::DetachFromParent()
 {
 	if (mEntity.IsValid() && mParent.IsValid())
 	{
+#ifdef ENLIVE_ENABLE_ASSERT
+		Entity parent = mParent;
+#endif // ENLIVE_ENABLE_ASSERT
 		enAssert(mParent.Has<TransformComponent>());
+		enAssert(mParent.Get<TransformComponent>().IsChild(mEntity));
 		const_cast<TransformComponent&>(mParent.Get<TransformComponent>()).DetachChild(mEntity);
+		enAssert(!mParent.IsValid());
+		enAssert(!parent.Get<TransformComponent>().IsChild(mEntity));
 	}
 }
 
@@ -282,7 +325,8 @@ bool TransformComponent::Serialize(Serializer& serializer, const char* name)
 	{
 		bool ret = true;
 		ret = GenericSerialization(serializer, "transform", mLocalTransform) && ret;
-		// TODO : Serialize Parent/Children
+		ret = GenericSerialization(serializer, "parent", mParent) && ret;
+		ret = GenericSerialization(serializer, "children", mChildren) && ret;
 		ret = serializer.EndClass() && ret;
 
 		MarkGlobalMatrixAsDirty();
@@ -301,7 +345,6 @@ bool TransformComponent::Edit(ObjectEditor& objectEditor, const char* name)
 	{
 		bool ret = false;
 		ret = GenericEdit(objectEditor, "Transform", mLocalTransform) || ret;
-		// TODO : Serialize Parent/Children
 		objectEditor.EndClass();
 
 		if (ret)
@@ -315,6 +358,11 @@ bool TransformComponent::Edit(ObjectEditor& objectEditor, const char* name)
 	{
 		return false;
 	}
+}
+
+const Entity& TransformComponent::GetEntity() const
+{
+	return mEntity;
 }
 
 void TransformComponent::UpdateGlobalMatrix() const

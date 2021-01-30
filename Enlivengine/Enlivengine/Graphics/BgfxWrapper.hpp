@@ -2,10 +2,14 @@
 
 #include <bgfx/bgfx.h>
 
-#include <Enlivengine/Window/Window.hpp>
+#include <Enlivengine/Math/Color.hpp>
 
 namespace en
 {
+
+class Window;
+class Framebuffer;
+
 class BgfxWrapper
 {
 public:
@@ -14,6 +18,8 @@ public:
     static bool Release();
 
     static void Frame();
+
+    static void ClearFramebuffer(Framebuffer& framebuffer, const Color& color = Colors::Black, const bgfx::ViewId& viewId = 0);
 
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
     static void ToggleDisplayStats();

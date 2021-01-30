@@ -7,7 +7,9 @@ namespace en
 
 System::System()
 	: mWorld(nullptr)
-	, mFlags(static_cast<U32>(Flags::None))
+#ifdef ENLIVE_TOOL
+	, mUpdateOnTool(false)
+#endif // ENLIVE_TOOL
 {
 }
 
@@ -19,10 +21,12 @@ void System::Update()
 {
 }
 
-U32 System::GetFlags() const
+#ifdef ENLIVE_TOOL
+bool System::IsUpdateOnTool() const
 {
-	return mFlags;
+	return mUpdateOnTool;
 }
+#endif // ENLIVE_TOOL
 
 void System::SetWorld(World* world)
 {

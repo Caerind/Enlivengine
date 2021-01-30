@@ -27,6 +27,36 @@ SystemManager::~SystemManager()
 	}
 }
 
+bool SystemManager::HasPhysicSystem() const
+{
+	return mPhysicSystem != nullptr;
+}
+
+PhysicSystemBase* SystemManager::GetPhysicSystem()
+{
+	return mPhysicSystem;
+}
+
+const PhysicSystemBase* SystemManager::GetPhysicSystem() const
+{
+	return mPhysicSystem;
+}
+
+bool SystemManager::HasRenderSystem() const
+{
+	return mRenderSystem != nullptr;
+}
+
+RenderSystemBase* SystemManager::GetRenderSystem()
+{
+	return mRenderSystem;
+}
+
+const RenderSystemBase* SystemManager::GetRenderSystem() const
+{
+	return mRenderSystem;
+}
+
 void SystemManager::UpdatePhysic()
 {
 	ENLIVE_PROFILE_FUNCTION();
@@ -46,19 +76,6 @@ void SystemManager::Update()
 	}
 }
 
-void SystemManager::UpdateTool()
-{
-	ENLIVE_PROFILE_FUNCTION();
-	for (System* system : mSystems)
-	{
-		if ((system->GetFlags() & static_cast<U32>(System::Flags::UpdateOnTool)) > 0)
-		{
-			ENLIVE_PROFILE_SCOPE(system->GetName());
-			system->Update();
-		}
-	}
-}
-
 void SystemManager::Render()
 {
 	ENLIVE_PROFILE_FUNCTION();
@@ -67,6 +84,21 @@ void SystemManager::Render()
 		mRenderSystem->Render();
 	}
 }
+
+#ifdef ENLIVE_TOOL
+void SystemManager::UpdateTool()
+{
+	ENLIVE_PROFILE_FUNCTION();
+	for (System* system : mSystems)
+	{
+		if (system->IsUpdateOnTool())
+		{
+			ENLIVE_PROFILE_SCOPE(system->GetName());
+			system->Update();
+		}
+	}
+}
+#endif // ENLIVE_TOOL
 
 bool SystemManager::Serialize(Serializer& serializer, const char* name)
 {

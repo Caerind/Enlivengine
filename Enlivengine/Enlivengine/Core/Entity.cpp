@@ -53,6 +53,16 @@ U32 Entity::GetID() const
 	return static_cast<U32>(entt::to_integral(mEntity));
 }
 
+U32 Entity::GetIndex() const
+{
+	return static_cast<U32>(GetRegistry().entity(mEntity));
+}
+
+U32 Entity::GetVersion() const
+{
+	return static_cast<U32>(GetRegistry().version(mEntity));
+}
+
 void Entity::Destroy()
 {
 	enAssert(IsValid());
@@ -114,70 +124,69 @@ const World& Entity::GetWorld() const
 
 bool Entity::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.BeginClass(name, TypeInfo<Entity>::GetName(), TypeInfo<Entity>::GetHash()))
+	if (serializer.IsReading())
 	{
-		bool ret = true;
-
-		if (serializer.IsReading())
+		U32 id = 0;
+		if (serializer.Serialize(name, id))
 		{
-			const auto& componentInfos = ComponentFactory::GetComponentInfos();
-			const auto endItr = componentInfos.cend();
-			for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
-			{
-				const auto& ci = itr->second;
-				if (serializer.HasNode(ci.name))
-				{
-					ci.add(*this);
-					ret = ci.serialize(serializer, *this) && ret;
-				}
-			}
-		}
-		else if (serializer.IsWriting())
-		{
-			const auto& componentInfos = ComponentFactory::GetComponentInfos();
-			const auto endItr = componentInfos.cend();
-			for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
-			{
-				const auto& ci = itr->second;
-				if (ci.has(*this))
-				{
-					ret = ci.serialize(serializer, *this) && ret;
-				}
-			}
+			mEntity = entt::entity(id);
+			return true;
 		}
 		else
-		{ 
-			enAssert(false);
-			ret = false;
+		{
+			return false;
 		}
-
-		ret = serializer.EndClass() && ret;
-		return ret;
+	}
+	else if (serializer.IsWriting())
+	{
+		U32 id = GetID();
+		return serializer.Serialize(name, id);
 	}
 	else
 	{
+		enAssert(false);
 		return false;
 	}
 }
 
 bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 {
-	if (objectEditor.BeginClass(name, TypeInfo<Entity>::GetName(), TypeInfo<Entity>::GetHash()))
+#ifdef ENLIVE_ENABLE_IMGUI
+	if (objectEditor.IsImGuiEditor())
 	{
 		bool ret = false;
-		if (IsValid())
+
+		bool collaspindHeaderOpen = false;
+		if (GetWorld().IsSelected(*this) && GetWorld().GetSelectedEntityCount() == 1)
 		{
-#ifdef ENLIVE_ENABLE_IMGUI
-			if (objectEditor.IsImGuiEditor())
+			ImGui::Text("%s", name);
+			collaspindHeaderOpen = true;
+			ImGui::Indent();
+		}
+		else
+		{
+			collaspindHeaderOpen = ImGui::CollapsingHeader(name);
+			if (collaspindHeaderOpen)
+			{
+				ImGui::Indent();
+			}
+		}
+
+		if (collaspindHeaderOpen)
+		{
+			if (IsValid())
 			{
 				const U32 entityID = GetID();
-				ImGui::Text("%s (ID: %d)", name, entityID);
-
+				ImGui::Text("ID: %d, Index:%d, Version:%d", entityID, GetIndex(), GetVersion());
 				ImGui::SameLine();
 				bool destroyed = false;
 				if (ImGui::SmallButton(ICON_FA_BAN))
 				{
 					destroyed = true;
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Destroy");
 				}
 
 				ImGui::PushID(entityID);
@@ -244,21 +253,19 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 					Destroy();
 				}
 			}
-#endif // ENLIVE_ENABLE_IMGUI
 		}
 		else
 		{
-#ifdef ENLIVE_ENABLE_IMGUI
-			if (objectEditor.IsImGuiEditor())
-			{
-				ImGui::Text("Invalid entity");
-			}
-#endif // ENLIVE_ENABLE_IMGUI
+			ImGui::Text("Invalid entity");
 		}
-		objectEditor.EndClass();
+		objectEditor.EndClass(); // The BeginClass is done in collaspingHeaderOpen
 		return ret;
 	}
 	else
+#else
+	ENLIVE_UNUSED(objectEditor);
+	ENLIVE_UNUSED(name);
+#endif // ENLIVE_ENABLE_IMGUI
 	{
 		return false;
 	}

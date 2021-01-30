@@ -24,8 +24,11 @@ public:
 	
 	void UpdatePhysic();
 	void Update();
-	void UpdateTool();
 	void Render();
+
+#ifdef ENLIVE_TOOL
+	void UpdateTool();
+#endif // ENLIVE_TOOL
 
 	const std::string& GetName() const;
 
@@ -34,6 +37,7 @@ public:
 	bool IsDebugRendering() const;
 	DebugDraw& GetDebugDraw();
 
+	U32 GetSelectedEntityCount() const;
 	bool IsSelected(const Entity& entity) const;
 	bool SelectEntity(const Entity& entity);
 	bool UnselectEntity(const Entity& entity);

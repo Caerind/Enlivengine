@@ -46,9 +46,11 @@ public:
 	void SetTransform(const Vector3f& translation, const Matrix3f& rotation, const Vector3f& scale = Vector3f(1.0f));
 
 	// Children
+	bool CanAttach(const Entity& childEntity) const;
 	void AttachChild(const Entity& childEntity);
 	void DetachChild(const Entity& childEntity);
-	bool HasChild(const Entity& childEntity) const;
+	bool IsChild(const Entity& childEntity) const;
+	bool IsChildOrSubchild(const Entity& childEntity) const;
 	U32 GetChildrenCount() const;
 	Entity GetChild(U32 index) const;
 
@@ -72,6 +74,9 @@ public:
 	bool Initialize(const Entity& entity);
 	bool Serialize(Serializer& serializer, const char* name);
 	bool Edit(ObjectEditor& objectEditor, const char* name);
+
+	// Entity
+	const Entity& GetEntity() const;
 
 private:
 	void UpdateGlobalMatrix() const;

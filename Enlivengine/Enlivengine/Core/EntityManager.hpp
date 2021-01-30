@@ -54,6 +54,9 @@ public:
 private:
 	World& mWorld;
 	entt::registry mRegistry;
+
+	static constexpr const char* kManagedEntityName = "ManagedEntity";
+	static constexpr U32 kManagedEntityHash = en::Hash::SlowHash(kManagedEntityName);
 };
 
 } // namespace en

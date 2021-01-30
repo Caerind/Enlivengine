@@ -123,7 +123,9 @@ class DebugSystem : public System
 public:
 	DebugSystem() : System()
 	{
-		mFlags = static_cast<U32>(Flags::UpdateOnTool);
+#ifdef ENLIVE_TOOL
+		mUpdateOnTool = true;
+#endif // ENLIVE_TOOL
 	}
 
 	const char* GetName() const override;
@@ -141,7 +143,7 @@ public:
 		for (auto entt : view)
 		{
 			Entity entity(entityManager, entt);
-			if (entity.IsValid())
+			if (entity.IsValid() && mWorld->IsSelected(entity))
 			{
 				auto& cam = entity.Get<en::CameraComponent>();
 				mWorld->GetDebugDraw().DrawFrustum(cam.CreateFrustum());

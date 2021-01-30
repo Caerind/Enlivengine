@@ -102,6 +102,8 @@ void ImGuiEntityBrowser::Display()
 
 		if (ImGui::Begin("EntityEditor"))
 		{
+			ImGuiObjectEditor objectEditor;
+
 			const auto& selectedEntities = world->GetSelectedEntities();
 			U32 selectedEntitiesCount = static_cast<U32>(selectedEntities.size());
 			if (selectedEntitiesCount > 0)
@@ -112,14 +114,9 @@ void ImGuiEntityBrowser::Display()
 					bool selected = true;
 					if (entity.IsValid())
 					{
-						const char* entityName = entity.GetName();
-						if (entityName == nullptr || strlen(entityName) == 0)
-						{
-							entityName = kUnknownEntityName;
-						}
-
-						ImGuiObjectEditor objectEditor;
-						GenericEdit(objectEditor, entityName, entity);
+						std::string entityName;
+						GetEntityName(entity, entityName);
+						GenericEdit(objectEditor, entityName.c_str(), entity);
 					}
 					else
 					{
@@ -157,18 +154,25 @@ void ImGuiEntityBrowser::Display()
 	}
 }
 
+void ImGuiEntityBrowser::GetEntityName(const Entity& entity, std::string& name)
+{
+	name = std::string(entity.GetName());
+	if (name.size() == 0)
+	{
+		name = std::string(kUnknownEntityName);
+	}
+	const std::string idString = ToString(entity.GetID());
+	name += " (" + idString + ")";
+}
+
 void ImGuiEntityBrowser::DisplayEntity(Entity& entity, World* world)
 {
 	ImGui::PushID(entity.GetID());
-	
-	// Name
-	const char* entityName = entity.GetName();
-	if (entityName == nullptr || strlen(entityName) == 0)
-	{
-		entityName = kUnknownEntityName;
-	}
 
-	if (ImGui::Button(entityName))
+	std::string entityName;
+	GetEntityName(entity, entityName);
+
+	if (ImGui::Button(entityName.c_str()))
 	{
 		if (!Keyboard::IsControlHold())
 		{
@@ -184,18 +188,30 @@ void ImGuiEntityBrowser::DisplayEntity(Entity& entity, World* world)
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 		{
 			ImGui::SetDragDropPayload("ENTITY_DRAG_N_DROP", &entity, sizeof(Entity));
-			ImGui::Text("%s", entityName);
+			ImGui::Text("%s", entityName.c_str());
 			ImGui::EndDragDropSource();
 		}
 
-		if (ImGui::BeginDragDropTarget())
+		if (const ImGuiPayload* payloadBeforeAccept = ImGui::GetDragDropPayload())
 		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_DRAG_N_DROP"))
+			if (payloadBeforeAccept->IsDataType("ENTITY_DRAG_N_DROP"))
 			{
-				enAssert(payload->DataSize == sizeof(Entity));
-				transform.AttachChild(*(Entity*)payload->Data);
+				enAssert(payloadBeforeAccept->DataSize == sizeof(Entity));
+				const Entity childBeforeAccept = *(Entity*)payloadBeforeAccept->Data;
+				if (transform.CanAttach(childBeforeAccept))
+				{
+					if (ImGui::BeginDragDropTarget())
+					{
+						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_DRAG_N_DROP"))
+						{
+							enAssert(payload->DataSize == sizeof(Entity));
+							const Entity child = *(Entity*)payload->Data;
+							transform.AttachChild(child);
+						}
+						ImGui::EndDragDropTarget();
+					}
+				}
 			}
-			ImGui::EndDragDropTarget();
 		}
 
 		if (transform.GetChildrenCount() > 0)

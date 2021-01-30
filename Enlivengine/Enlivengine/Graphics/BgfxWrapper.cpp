@@ -7,6 +7,9 @@
 
 #include <Enlivengine/Platform/PlatformDetection.hpp>
 #include <Enlivengine/Utils/Assert.hpp>
+#include <Enlivengine/Math/Matrix4.hpp>
+
+#include <Enlivengine/Window/Window.hpp>
 
 #include <Enlivengine/Graphics/Framebuffer.hpp>
 
@@ -181,6 +184,15 @@ bool BgfxWrapper::Release()
 void BgfxWrapper::Frame()
 {
 	bgfx::frame();
+}
+
+void BgfxWrapper::ClearFramebuffer(Framebuffer& framebuffer, const Color& color, const bgfx::ViewId& viewId)
+{
+	bgfx::setViewClear(viewId, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, color.ToRGBA(), 1.0f, 0);
+	bgfx::setViewTransform(viewId, Matrix4f::Identity().GetData(), Matrix4f::Identity().GetData());
+	bgfx::setViewRect(viewId, 0, 0, static_cast<U16>(framebuffer.GetSize().x), static_cast<U16>(framebuffer.GetSize().y));
+	bgfx::setViewFrameBuffer(viewId, framebuffer.GetHandle());
+	bgfx::touch(viewId);
 }
 
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG

@@ -35,8 +35,11 @@ public:
 
 	void UpdatePhysic();
 	void Update();
-	void UpdateTool();
 	void Render();
+
+#ifdef ENLIVE_TOOL
+	void UpdateTool();
+#endif // ENLIVE_TOOL
 
 	bool Serialize(Serializer& serializer, const char* name);
 	bool Edit(ObjectEditor& objectEditor, const char* name);

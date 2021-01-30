@@ -21,16 +21,16 @@ class System
 		virtual bool Serialize(Serializer& serializer, const char* name) = 0;
 		virtual bool Edit(ObjectEditor& objectEditor, const char* name) = 0;
 
-		enum class Flags
-		{
-			None = 0,
-			UpdateOnTool = 1 << 0
-		};
-		U32 GetFlags() const;
-		
+#ifdef ENLIVE_TOOL
+		bool IsUpdateOnTool() const;
+#endif // ENLIVE_TOOL
+
 	protected:
 		World* mWorld;
-		U32 mFlags;
+
+#ifdef ENLIVE_TOOL
+		bool mUpdateOnTool;
+#endif // ENLIVE_TOOL
 
 	private:
 		friend class World;

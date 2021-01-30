@@ -30,6 +30,8 @@ public:
 
 	bool IsValid() const;
 	U32 GetID() const;
+	U32 GetIndex() const;
+	U32 GetVersion() const;
 	void Destroy();
 
 	const char* GetName() const;

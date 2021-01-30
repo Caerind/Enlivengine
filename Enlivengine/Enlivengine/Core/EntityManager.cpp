@@ -3,6 +3,8 @@
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
+#include <Enlivengine/Core/ComponentFactory.hpp>
+
 namespace en
 {
 
@@ -51,6 +53,8 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 	if (serializer.BeginClass(name, TypeInfo<EntityManager>::GetName(), TypeInfo<EntityManager>::GetHash()))
 	{
 		bool ret = true;
+		const auto& componentInfos = ComponentFactory::GetComponentInfos();
+		const auto endItr = componentInfos.cend();
 
 		if (serializer.IsReading())
 		{
@@ -64,7 +68,25 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 					Entity entity = CreateEntity();
 					if (entity.IsValid())
 					{
-						ret = GenericSerialization(serializer, entityName.c_str(), entity) && ret;
+						if (serializer.BeginClass(entityName.c_str(), kManagedEntityName, kManagedEntityHash))
+						{
+							U32 id = 0;
+							ret = GenericSerialization(serializer, "id", id) && ret;
+							for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
+							{
+								const auto& ci = itr->second;
+								if (serializer.HasNode(ci.name))
+								{
+									ci.add(entity);
+									ret = ci.serialize(serializer, entity) && ret;
+								}
+							}
+							ret = serializer.EndClass() && ret;
+						}
+						else
+						{
+							ret = false;
+						}
 					}
 					else
 					{
@@ -83,13 +105,29 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 		{
 			ret = GenericSerialization(serializer, "size", GetEntityCount()) && ret;
 			U32 i = 0;
-			mRegistry.each([&ret, &serializer, &i, this](auto entt)
+			mRegistry.each([&ret, &serializer, &i, &componentInfos, &endItr, this](auto entt)
 			{
 				Entity entity(*this, entt);
 				if (entity.IsValid())
 				{
 					const std::string entityName = "Entity_" + ToString(i);
-					ret = GenericSerialization(serializer, entityName.c_str(), entity) && ret;
+					if (serializer.BeginClass(entityName.c_str(), kManagedEntityName, kManagedEntityHash))
+					{
+						ret = GenericSerialization(serializer, "id", entity.GetID()) && ret;
+						for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
+						{
+							const auto& ci = itr->second;
+							if (ci.has(entity))
+							{
+								ret = ci.serialize(serializer, entity) && ret;
+							}
+						}
+						ret = serializer.EndClass() && ret;
+					}
+					else
+					{
+						ret = false;
+					}
 					i++;
 				}
 				else

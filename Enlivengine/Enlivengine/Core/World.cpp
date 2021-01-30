@@ -55,15 +55,17 @@ void World::Update()
 	mSystemManager.Update();
 }
 
-void World::UpdateTool()
-{
-	mSystemManager.UpdateTool();
-}
-
 void World::Render()
 {
 	mSystemManager.Render();
 }
+
+#ifdef ENLIVE_TOOL
+void World::UpdateTool()
+{
+	mSystemManager.UpdateTool();
+}
+#endif // ENLIVE_TOOL
 
 const std::string& World::GetName() const
 {
@@ -84,6 +86,11 @@ bool World::IsDebugRendering() const
 DebugDraw& World::GetDebugDraw()
 {
 	return mDebugDraw;
+}
+
+U32 World::GetSelectedEntityCount() const
+{
+	return static_cast<U32>(mSelectedEntities.size());
 }
 
 bool World::IsSelected(const Entity& entity) const
