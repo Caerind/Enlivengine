@@ -31,9 +31,21 @@ jobs:
             cc: clang,
             cxx: clang++
           }
-        config: [Debug, RelWithDebInfo, Release]
+        config:
+        - {
+            name: "Tool",
+            cfg: Debug 
+          }
+        - {
+            name: "Debug",
+            cfg: RelWithDebInfo
+          }
+        - {
+            name: "Release",
+            cfg: Release
+          }
           
-    name: ${{ matrix.platform.name }}-${{ matrix.config }}
+    name: ${{ matrix.platform.name }}-${{ matrix.config.name }}
     runs-on: ${{ matrix.platform.image }}
     
     steps:
@@ -46,10 +58,10 @@ jobs:
       run: bash ./EnlivengineEnv/GenerateProject.sh ${{ matrix.platform.cc }} ${{ matrix.platform.cxx }}
       
     - name: BuildMain
-      run: bash ./EnlivengineEnv/BuildMain.sh ${{ matrix.config }}
+      run: bash ./EnlivengineEnv/BuildMain.sh ${{ matrix.config.cfg }}
       
     - name: Tests
-      run: bash ./EnlivengineEnv/Tests.sh ${{ matrix.config }}
+      run: bash ./EnlivengineEnv/Tests.sh ${{ matrix.config.cfg }}
       
     - name: Deploy
       uses: SamKirkland/FTP-Deploy-Action@4.0.0
@@ -58,5 +70,7 @@ jobs:
         port: ${{ secrets.deploy_port }}
         username: ${{ secrets.deploy_username }}
         password: ${{ secrets.deploy_password }}
-        local-dir: build/EnlivengineExamples/${{ matrix.config }}/
-        server-dir: ${{ matrix.platform }}/${{ matrix.config }}/
+        
+        
+        #local-dir: "./build/EnlivengineExamples/${{ matrix.config.cfg }}/"
+        #server-dir: "./$GITHUB_REF-${{ matrix.platform.name }}-${{ matrix.config.name }}-$GITHUB_RUN_ID/"
