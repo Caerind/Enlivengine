@@ -12,26 +12,29 @@ jobs:
         platform:
         - {
             name: "Windows MSVC",
-            os: windows-latest,
+            image: windows-latest,
+            os: windows,
             cc: cl,
             cxx: cl
           }
         - {
             name: "Ubuntu GCC",
-            os: ubuntu-latest,
+            image: ubuntu-latest,
+            os: ubuntu,
             cc: gcc-9,
             cxx: g++-9
           }
         - {
             name: "MacOS Clang",
-            os: macos-latest,
+            image: macos-latest,
+            os: macos,
             cc: clang,
             cxx: clang++
           }
         config: [Debug, RelWithDebInfo, Release]
           
     name: ${{ matrix.platform.name }}-${{ matrix.config }}
-    runs-on: ${{ matrix.platform.os }}
+    runs-on: ${{ matrix.platform.image }}
     
     steps:
     - uses: actions/checkout@v2
@@ -47,3 +50,13 @@ jobs:
       
     - name: Tests
       run: bash ./EnlivengineEnv/Tests.sh ${{ matrix.config }}
+      
+    - name: Deploy
+      uses: SamKirkland/FTP-Deploy-Action@4.0.0
+      with:
+        server: ${{ secrets.deploy_server }}
+        port: ${{ secrets.deploy_port }}
+        username: ${{ secrets.deploy_username }}
+        password: ${{ secrets.deploy_password }}
+        local-dir: ./build/EnlivengineExamples/${{ matrix.config }}/
+        server-dir: ./${{ matrix.platform }}/${{ matrix.config }}/
