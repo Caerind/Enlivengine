@@ -1,11 +1,11 @@
 # See: https://github.com/cristianadam/HelloWorld/blob/master/.github/workflows/build_cmake.yml
     
-name: CMake
+name: CI
 
 on: [push]
 
 jobs:
-  build:
+  ci:
     strategy:
       fail-fast: false
       matrix:
@@ -58,5 +58,5 @@ jobs:
         port: ${{ secrets.deploy_port }}
         username: ${{ secrets.deploy_username }}
         password: ${{ secrets.deploy_password }}
-        local-dir: ./build/EnlivengineExamples/${{ matrix.config }}/
-        server-dir: ./${{ matrix.platform }}/${{ matrix.config }}/
+        local-dir: build/EnlivengineExamples/${{ matrix.config }}/
+        server-dir: ${{ matrix.platform }}/${{ matrix.config }}/
