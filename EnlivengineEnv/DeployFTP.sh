@@ -50,6 +50,21 @@ fi
 
 distant_filename="$distantPath$project-$branch-$config-$version-$platform$extension"
 
+# Debug
+echo $local_filename
+echo $distant_filename
+echo server="$server"
+echo port="$port"
+echo username="$username"
+echo password="$password"
+echo project="$project"
+echo branch="$branch"
+echo config="$config"
+echo version="$version"
+echo localPath="$localPath"
+echo localConfig="$localConfig"
+echo distantPath="$distantPath"
+
 curl -u $username:$password -T $local_filename ftp://$server:$port/$distant_filename
 
 
