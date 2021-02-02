@@ -1,9 +1,9 @@
 #!/bin/bash
 
-server=$1
-port=$2
-username=$3
-password=$4
+server="${1}"
+port="${2}"
+username="${3}"
+password="${4}"
 
 project="${5}"
 branch="${6}"
@@ -44,44 +44,19 @@ fi
 
 distant_filename="$distantPath$project-$branch-$config-$version-$platform$extension"
 
-
-echo 1 "${1}"
-echo 2 "${2}"
-echo 3 "${3}"
-echo 4 "${4}"
-echo 5 "${5}"
-echo 6 "${6}"
-echo 7 "${7}"
-echo 8 "${8}"
-echo 9 "${9}"
-echo 10 "${10}"
-echo 11 "${11}"
-
-echo 1 $server
-echo 2 $port
-echo 3 $username
-echo 4 $password
-echo 5 $project
-echo 6 $branch
-echo 7 $config
-echo 8 $version
-echo 9 $localPath
-echo 10 $localConfig
-echo 11 $distantPath
-
-
+echo 1:server: "${1}"
+echo 2:port: "${2}"
+echo 3:username: "${3}"
+echo 4:password: "${4}"
+echo 5:project: "${5}"
+echo 6:branch: "${6}"
+echo 7:config: "${7}"
+echo 8:version: "${8}"
+echo 9:localPath: "${9}"
+echo 10:localConfig: "${10}"
+echo 11:distantPath: "${11}"
 echo $local_filename
 echo $distant_filename
-echo pwd
-pwd
-echo ls -al
-ls -al
-echo ls -al build
-ls -al build
-echo ls -al build/$localPath
-ls -al build/$localPath
-echo ls -al build/$localPath/$localConfig
-ls -al build/$localPath/$localConfig
 
 curl -u $username:$password -T $local_filename ftp://$server:$port/$distant_filename
 
