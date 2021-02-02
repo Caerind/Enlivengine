@@ -5,12 +5,13 @@ port=$2
 username=$3
 password=$4
 
-project=$5
-branch=$6
-config=$7
-version=$8
-localPath=$9
+project="${5}"
+branch="${6}"
+config="${7}"
+version="${8}"
+localPath="${9}"
 localConfig="${10}"
+distantPath="${11}"
 
 # Platform detection
 platform='unknown'
@@ -29,7 +30,7 @@ elif [[ "$OSTYPE" == "win32" ]]; then
 else
 	echo "OSTYPE == ${OSTYPE} not reconized, assuming it's windows"
 	platform='windows'
-fi
+fi 
 
 extension=""
 local_filename=""
@@ -41,7 +42,16 @@ else
     local_filename="./build/$localPath/$project$extension"
 fi
 
-distant_filename="$project-$branch-$config-$version-$platform$extension"
+distant_filename="distantPath$project-$branch-$config-$version-$platform$extension"
+
+
+echo $local_filename
+echo $distant_filename
+echo pwd
+echo ls -al
+echo ls -al build
+echo ls -al build/$localPath
+echo ls -al build/$localPath/$localConfig
 
 curl -u $username:$password -T $local_filename ftp://$server:$port/$distant_filename
 
