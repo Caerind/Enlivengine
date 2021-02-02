@@ -42,16 +42,16 @@ else
     local_filename="./build/$localPath/$project$extension"
 fi
 
-distant_filename="distantPath$project-$branch-$config-$version-$platform$extension"
+distant_filename="$distantPath$project-$branch-$config-$version-$platform$extension"
 
 
 echo $local_filename
 echo $distant_filename
-echo pwd
-echo ls -al
-echo ls -al build
-echo ls -al build/$localPath
-echo ls -al build/$localPath/$localConfig
+pwd
+ls -al
+ls -al build
+ls -al build/$localPath
+ls -al build/$localPath/$localConfig
 
 curl -u $username:$password -T $local_filename ftp://$server:$port/$distant_filename
 
