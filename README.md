@@ -1,6 +1,6 @@
 # Enlivengine
 
-![Build](https://github.com/Caerind/Enlivengine/workflows/ci/badge.svg?branch=master)
+![CI](https://github.com/Caerind/Enlivengine/workflows/CI/badge.svg?branch=master)
 
 My new engine using C++17, SDL & Bgfx
 
