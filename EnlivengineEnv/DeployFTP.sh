@@ -32,6 +32,12 @@ else
 	platform='windows'
 fi 
 
+# Branch detection
+branchBreaker="/"
+if [[ "$branch" == *"$branchBreaker"* ]]; then
+	branch="${6##*/}"
+fi
+
 extension=""
 local_filename=""
 if [[ "$platform" == "windows" ]]; then
@@ -43,20 +49,6 @@ else
 fi
 
 distant_filename="$distantPath$project-$branch-$config-$version-$platform$extension"
-
-echo 1:server: "${1}"
-echo 2:port: "${2}"
-echo 3:username: "${3}"
-echo 4:password: "${4}"
-echo 5:project: "${5}"
-echo 6:branch: "${6}"
-echo 7:config: "${7}"
-echo 8:version: "${8}"
-echo 9:localPath: "${9}"
-echo 10:localConfig: "${10}"
-echo 11:distantPath: "${11}"
-echo $local_filename
-echo $distant_filename
 
 curl -u $username:$password -T $local_filename ftp://$server:$port/$distant_filename
 

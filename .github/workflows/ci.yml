@@ -64,4 +64,4 @@ jobs:
       run: bash ./EnlivengineEnv/Tests.sh ${{ matrix.config.cfg }}
       
     - name: Deploy 3DSceneExample
-      run: bash ./EnlivengineEnv/DeployFTP.sh ${{ secrets.deploy_server }} ${{ secrets.deploy_port }} ${{ secrets.deploy_username }} ${{ secrets.deploy_password }} "3DSceneExample" $(echo ${GITHUB_REF#refs/heads/}) ${{ matrix.config.name }} ${{ github.run_id }} "EnlivengineExamples" ${{ matrix.config.cfg }} "builds/"
+      run: bash ./EnlivengineEnv/DeployFTP.sh ${{ secrets.deploy_server }} ${{ secrets.deploy_port }} ${{ secrets.deploy_username }} ${{ secrets.deploy_password }} "3DSceneExample" ${{ github.ref }} ${{ matrix.config.name }} ${{ github.run_id }} "EnlivengineExamples" ${{ matrix.config.cfg }} "builds/"
