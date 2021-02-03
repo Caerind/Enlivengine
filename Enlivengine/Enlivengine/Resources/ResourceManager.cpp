@@ -1,5 +1,7 @@
 #include <Enlivengine/Resources/ResourceManager.hpp>
 
+#include <filesystem>
+
 #include <Enlivengine/Utils/Enums.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
 
