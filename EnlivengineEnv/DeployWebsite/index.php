@@ -9,9 +9,23 @@
 		public $config;
 		public $platform;
 		public $path;
+		public $datetime;
 	}
 	
 	$builds = array();
+	
+	function remove_extension($filename) 
+	{
+		$pos = strrpos($filename, '.');
+		if ($pos === false) 
+		{
+			return $filename;
+		} 
+		else 
+		{
+			return substr($filename, 0, $pos);
+		}
+	}
 
 	$files = scandir($buildDir);
 	foreach ($files as $file) 
@@ -26,8 +40,9 @@
 			$b->branch = $values[1];
 			$b->config = $values[2];
 			$b->version = $values[3];
-			$b->platform = $values[4]; // TODO : Remove extension
+			$b->platform = remove_extension($values[4]);
 			$b->path = $buildDir . '/' . $file;
+			$b->datetime = date("d-m-Y H:i", filectime($b->path));
 		
 			array_push($builds, $b);
 		}
@@ -58,6 +73,7 @@
           <th data-field="project" data-sortable="true">Project</th>
           <th data-field="branch" data-sortable="true">Branch</th>
           <th data-field="version" data-sortable="true">Version</th>
+          <th data-field="date" data-sortable="true">Date</th>
           <th data-field="platform" data-sortable="true">Platform</th>
           <th data-field="config" data-sortable="true">Config</th>
 		  <th>Link</th>
@@ -74,6 +90,7 @@
 				<td><?php echo $build->project; ?></td>
 				<td><?php echo $build->branch; ?></td>
 				<td><?php echo $build->version; ?></td>
+				<td><?php echo $build->datetime; ?></td>
 				<td><?php echo $build->platform; ?></td>
 				<td><?php echo $build->config; ?></td>
 				<td><a href="<?php echo $build->path; ?>">Link</a></td>
