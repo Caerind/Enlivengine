@@ -48,7 +48,7 @@ bool WorldFileManager::LoadWorld(const std::string& worldName)
 	if (std::filesystem::exists(path))
 	{
 		XmlSerializer worldReader;
-		if (worldReader.Open(path.string(), Serializer::Mode::Read))
+		if (worldReader.Open(path.generic_string(), Serializer::Mode::Read))
 		{
 			if (GenericSerialization(worldReader, "World", *world))
 			{
@@ -84,7 +84,7 @@ bool WorldFileManager::SaveCurrentWorld()
 		const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + worldName + ".world");
 
 		XmlSerializer worldWriter;
-		if (worldWriter.Open(path.string(), Serializer::Mode::Write))
+		if (worldWriter.Open(path.generic_string(), Serializer::Mode::Write))
 		{
 			bool correctlySerialized = GenericSerialization(worldWriter, "World", *world);
 			bool correctlyClosed = worldWriter.Close();

@@ -13,6 +13,8 @@ namespace en
 class PathManager
 {
 public:
+	static const std::string& GetCurrentPath();
+
 	static void SetExecutablePath(const char* executablePath);
 	static const std::string& GetExecutablePath();
 
@@ -28,8 +30,6 @@ public:
 
 	static void SetScreenshotPath(const std::string& screenshotPath);
 	static const std::string& GetScreenshotPath();
-
-	static std::string GetAbsolutePath(const std::string& path);
 
 private:
 	static PathManager& GetInstance();

@@ -85,15 +85,18 @@ bgfx::ShaderHandle Shader::CreateModule(const char* filename)
 {
 	if (filename == nullptr || strlen(filename) == 0)
 	{
+		enLogError(LogChannel::Graphics, "Invalid empty shader filename");
 		return BGFX_INVALID_HANDLE;
 	}
 
 	std::string shaderPath = PathManager::GetShadersPathForRenderer(bgfx::getRendererType());
 	if (shaderPath.size() == 0)
 	{
+		enLogError(LogChannel::Graphics, "Can't get shaders path for renderer: {}", Enum::GetValueName<bgfx::RendererType::Enum>(bgfx::getRendererType()));
 		return BGFX_INVALID_HANDLE;
 	}
 
+	shaderPath.append("/");
 	shaderPath.append(filename);
 
 #ifdef ENLIVE_COMPILER_MSVC
@@ -104,6 +107,7 @@ bgfx::ShaderHandle Shader::CreateModule(const char* filename)
 #endif // ENLIVE_COMPILER_MSVC
 	if (file == nullptr)
 	{
+		enLogError(LogChannel::Graphics, "Invalid shader file: {}", shaderPath);
 		return BGFX_INVALID_HANDLE;
 	}
 	fseek(file, 0, SEEK_END);

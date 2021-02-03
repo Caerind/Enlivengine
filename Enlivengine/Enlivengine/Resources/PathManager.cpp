@@ -7,14 +7,26 @@
 namespace en
 {
 
+const std::string& PathManager::GetCurrentPath()
+{
+	static std::string path = "";
+	if (path.size() == 0)
+	{
+		path = std::filesystem::current_path().generic_string();
+		path.append("/");
+	}
+	return path;
+}
+
 void PathManager::SetExecutablePath(const char* executablePath)
 {
 	PathManager& instance = GetInstance();
-	if (executablePath != nullptr)
+	if (executablePath != nullptr && strlen(executablePath) > 0)
 	{
 		instance.mExecutablePath = executablePath;
 		const std::filesystem::path cleanExePath = instance.mExecutablePath;
 		instance.mExecutablePath = cleanExePath.parent_path().generic_string();
+		instance.mExecutablePath.append("/");
 	}
 	else
 	{
@@ -29,35 +41,27 @@ const std::string& PathManager::GetExecutablePath()
 
 bool PathManager::AutoDetectAssetsPath()
 {
-	PathManager& instance = GetInstance();
-
 	for (U32 i = 0; i < 5; ++i)
 	{
 		std::string backfolder = "";
 		for (U32 j = 0; j < i; ++j)
 		{
-			backfolder += "/..";
+			backfolder += "../";
 		}
-		std::filesystem::path tempAssetsPath = std::filesystem::path(instance.mExecutablePath + backfolder + "/Assets");
+
+		std::filesystem::path tempAssetsPath = std::filesystem::path(GetCurrentPath() + backfolder + "Assets").lexically_normal();
 		if (std::filesystem::exists(tempAssetsPath))
 		{
-			if (i == 0)
-			{
-				SetAssetsPath("Assets/");
-			}
-			else
-			{
-				SetAssetsPath(backfolder.substr(4) + "/Assets/");
-			}
+			SetAssetsPath(tempAssetsPath.generic_string() + "/");
 			return true;
 		}
 	}
 
 #if defined(ENLIVE_RELEASE)
-	std::filesystem::path tempAssetsPath = std::filesystem::path(instance.mExecutablePath + "/Assets");
+	std::filesystem::path tempAssetsPath = std::filesystem::path(GetCurrentPath() + "Assets");
 	if (std::filesystem::exists(tempAssetsPath))
 	{
-		SetAssetsPath("Assets/");
+		SetAssetsPath(tempAssetsPath.generic_string() + "/");
 		return true;
 	}
 #endif // ENLIVE_RELEASE 
@@ -77,47 +81,37 @@ const std::string& PathManager::GetAssetsPath()
 
 bool PathManager::AutoDetectShadersPath()
 {
-	PathManager& instance = GetInstance();
-
 	for (U32 i = 0; i < 5; ++i)
 	{
 		std::string backfolder = "";
 		for (U32 j = 0; j < i; ++j)
 		{
-			backfolder += "/..";
+			backfolder += "../";
 		}
-		std::filesystem::path tempShadersPath = std::filesystem::path(instance.mExecutablePath + backfolder + "/Shaders");
+		std::filesystem::path tempShadersPath = std::filesystem::path(GetCurrentPath() + backfolder + "Shaders").lexically_normal();
 		if (std::filesystem::exists(tempShadersPath))
 		{
-			if (i == 0)
-			{
-				SetShadersPath("Shaders/");
-				instance.mShadersPath = "Shaders/";
-			}
-			else
-			{
-				SetShadersPath(backfolder.substr(4) + "/Shaders/");
-			}
+			SetShadersPath(tempShadersPath.generic_string() + "/");
 			return true;
 		}
 	}
 
-#if defined(ENLIVE_RELEASE)
-	std::filesystem::path tempAssetsPath = std::filesystem::path(instance.mExecutablePath + "/Assets/Shaders");
-	if (std::filesystem::exists(tempAssetsPath))
+	std::filesystem::path tempShadersPath = std::filesystem::path(GetAssetsPath() + "Shaders");
+	if (std::filesystem::exists(tempShadersPath))
 	{
-		SetShadersPath("Assets/Shaders/");
+		SetShadersPath(tempShadersPath.generic_string() + "/");
 		return true;
 	}
-#endif // ENLIVE_RELEASE
 
 	return false;
 }
 
 void PathManager::SetShadersPath(const std::string& shadersPath)
 {
-	GetInstance().mShadersPath = shadersPath;
-	GetInstance().mShadersPathRenderer.clear();
+	PathManager& instance = GetInstance();
+
+	instance.mShadersPath = shadersPath;
+	instance.mShadersPathRenderer.clear();
 }
 
 const std::string& PathManager::GetShadersPath()
@@ -128,6 +122,7 @@ const std::string& PathManager::GetShadersPath()
 const std::string& PathManager::GetShadersPathForRenderer(bgfx::RendererType::Enum renderer)
 {
 	PathManager& instance = GetInstance();
+
 	if (instance.mShadersPathRenderer.size() > 0)
 	{
 		return instance.mShadersPathRenderer;
@@ -177,18 +172,6 @@ void PathManager::SetScreenshotPath(const std::string& screenshotPath)
 const std::string& PathManager::GetScreenshotPath()
 {
 	return GetInstance().mScreenshotPath;
-}
-
-std::string PathManager::GetAbsolutePath(const std::string& path)
-{
-	std::filesystem::path p = path;
-	if (!p.is_absolute())
-	{
-		p = std::filesystem::absolute(p);
-	}
-	std::string result = p.string();
-	std::replace(result.begin(), result.end(), '\\', '/');
-	return result;
 }
 
 PathManager& PathManager::GetInstance()

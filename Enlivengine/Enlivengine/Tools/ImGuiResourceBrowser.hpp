@@ -44,7 +44,7 @@ private:
 	char mIdentifierBuffer[kBufferSize];
 	char mFilenameBuffer[kBufferSize];
 
-	Array<ResourceInfo> mResourceInfos;
+	std::vector<ResourceInfo> mResourceInfos;
 
 	struct ResourceSpecific
 	{
