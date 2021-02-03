@@ -96,7 +96,6 @@ bgfx::ShaderHandle Shader::CreateModule(const char* filename)
 		return BGFX_INVALID_HANDLE;
 	}
 
-	shaderPath.append("/");
 	shaderPath.append(filename);
 
 #ifdef ENLIVE_COMPILER_MSVC
