@@ -208,8 +208,9 @@ public:
 		mSize = 0;
 	}
 
-	constexpr void Sort() { std::sort(begin(), end()); }
-	template <typename Predicate> constexpr void Sort(Predicate predicate) { std::sort(begin(), end(), predicate); }
+	// TODO : Seems broken ?
+	//constexpr void Sort() { std::sort(begin(), end()); }
+	//template <typename Predicate> constexpr void Sort(Predicate predicate) { std::sort(begin(), end(), predicate); }
 
 	constexpr T& operator[](U32 index) { enAssert(index < mSize); return mArray[index]; }
 	constexpr const T& operator[](U32 index) const { enAssert(index < mSize); return mArray[index]; }

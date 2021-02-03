@@ -87,7 +87,7 @@ bool ResourcePtr<T>::Edit(ObjectEditor& objectEditor, const char* name)
 #ifdef ENLIVE_ENABLE_IMGUI
 	if (objectEditor.IsImGuiEditor())
 	{
-		Array<ResourceInfo> resourceInfos;
+		std::vector<ResourceInfo> resourceInfos;
 		ResourceManager::GetInstance().GetResourceInfosOfType<T>(resourceInfos);
 
 		static const char* nullResourceIdentifier = "@Null";
@@ -97,7 +97,8 @@ bool ResourcePtr<T>::Edit(ObjectEditor& objectEditor, const char* name)
 		if (HasValidID())
 		{
 			bool found = false;
-			for (U32 i = 0; i < resourceInfos.Size() && !found; ++i)
+			const U32 size = static_cast<U32>(resourceInfos.size());
+			for (U32 i = 0; i < size && !found; ++i)
 			{
 				if (resourceInfos[i].id == GetID())
 				{
@@ -137,7 +138,8 @@ bool ResourcePtr<T>::Edit(ObjectEditor& objectEditor, const char* name)
 					ImGui::SetItemDefaultFocus();
 				}
 			}
-			for (U32 i = 0; i < resourceInfos.Size(); ++i)
+			const U32 size = static_cast<U32>(resourceInfos.size());
+			for (U32 i = 0; i < size; ++i)
 			{
 				bool selected = resourceInfos[i].id == GetID();
 				if (ImGui::Selectable(resourceInfos[i].identifier.c_str(), selected))
@@ -376,7 +378,7 @@ bool ResourceManager::InitializeClientResourceTypes()
 
 #ifdef ENLIVE_DEBUG
 template <typename T>
-void ResourceManager::GetResourceInfosOfType(Array<ResourceInfo>& resourceInfos)
+void ResourceManager::GetResourceInfosOfType(std::vector<ResourceInfo>& resourceInfos)
 {
 	if constexpr (Traits::IsVoid<T>::value)
 	{

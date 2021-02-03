@@ -114,7 +114,7 @@ public:
 
 			std::string GetFile() const
 			{
-				return std::filesystem::path(file).filename().string();
+				return std::filesystem::path(file).filename().generic_string();
 			}
 		};
 

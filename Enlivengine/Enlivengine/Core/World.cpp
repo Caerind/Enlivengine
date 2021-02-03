@@ -2,8 +2,6 @@
 
 #include <Enlivengine/Utils/Profiler.hpp>
 
-#include <Enlivengine/Resources/PathManager.hpp>
-
 #include <Enlivengine/Core/Entity.hpp>
 
 namespace en

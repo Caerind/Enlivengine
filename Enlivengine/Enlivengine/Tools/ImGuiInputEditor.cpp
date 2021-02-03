@@ -274,7 +274,7 @@ bool ImGuiInputEditor::LoadInputsFromFile()
 	if (std::filesystem::exists(path))
 	{
 		XmlSerializer xml;
-		if (!xml.Open(path.string(), Serializer::Mode::Read))
+		if (!xml.Open(path.generic_string(), Serializer::Mode::Read))
 		{
 			return false;
 		}
@@ -310,7 +310,7 @@ bool ImGuiInputEditor::SaveInputsToFile()
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "inputs.data");
 
 	XmlSerializer xml;
-	if (xml.Open(path.string(), Serializer::Mode::Write))
+	if (xml.Open(path.generic_string(), Serializer::Mode::Write))
 	{
 		GenericSerialization(xml, "Buttons", EventSystem::GetButtons());
 		GenericSerialization(xml, "Axes", EventSystem::GetAxes());

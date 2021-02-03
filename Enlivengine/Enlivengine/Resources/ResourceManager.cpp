@@ -1,6 +1,7 @@
 #include <Enlivengine/Resources/ResourceManager.hpp>
 
 #include <Enlivengine/Utils/Enums.hpp>
+#include <Enlivengine/Resources/PathManager.hpp>
 
 namespace en
 {
@@ -14,6 +15,55 @@ ResourceLoadInfo::ResourceLoadInfo(Method pMethod, const std::string& pInfoStrin
 bool ResourceLoadInfo::IsFromFile() const
 {
 	return method == Method::File;
+}
+
+bool ResourceLoadInfo::Serialize(Serializer& serializer, const char* name)
+{
+	if (serializer.BeginClass(name, TypeInfo<ResourceLoadInfo>::GetName(), TypeInfo<ResourceLoadInfo>::GetHash()))
+	{
+		bool ret = true;
+
+		GenericSerialization(serializer, "method", method);
+
+		if (IsFromFile())
+		{
+			if (serializer.IsReading())
+			{
+				if (GenericSerialization(serializer, "path", infoString))
+				{
+					infoString = PathManager::GetAssetsPath() + infoString;
+				}
+				else
+				{
+					ret = false;
+				}
+			}
+			else if (serializer.IsWriting())
+			{
+				const std::string path = std::filesystem::path(infoString).lexically_relative(PathManager::GetAssetsPath()).generic_string(); 
+				if (!GenericSerialization(serializer, "path", path))
+				{
+					ret = false;
+				}
+			}
+			else
+			{
+				enAssert(false);
+				ret = false;
+			}
+		}
+		else
+		{
+			ret = GenericSerialization(serializer, "infoString", infoString) && ret;
+		}
+
+		ret = serializer.EndClass() && ret;
+		return ret;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 #ifdef ENLIVE_DEBUG
@@ -151,16 +201,16 @@ U32 ResourceManager::Count(U32 resourceType) const
 }
 
 #ifdef ENLIVE_DEBUG
-void ResourceManager::GetResourceInfosOfType(Array<ResourceInfo>& resourceInfos, U32 resourceType)
+void ResourceManager::GetResourceInfosOfType(std::vector<ResourceInfo>& resourceInfos, U32 resourceType)
 {
-	resourceInfos.Clear();
+	resourceInfos.clear();
 	for (auto itr = mResources.begin(); itr != mResources.end(); ++itr)
 	{
 		if (priv::BaseResource* r = itr->second.get())
 		{
 			if (r->GetResourceType() == resourceType)
 			{
-				resourceInfos.Add(r->GetResourceInfo());
+				resourceInfos.push_back(r->GetResourceInfo());
 			}
 		}
 		else
@@ -170,21 +220,21 @@ void ResourceManager::GetResourceInfosOfType(Array<ResourceInfo>& resourceInfos,
 	}
 }
 
-void ResourceManager::GetResourceInfos(Array<ResourceInfo>& resourceInfos)
+void ResourceManager::GetResourceInfos(std::vector<ResourceInfo>& resourceInfos)
 {
-	resourceInfos.Clear();
+	resourceInfos.clear();
 	for (auto itr = mResources.begin(); itr != mResources.end(); ++itr)
 	{
 		if (priv::BaseResource* r = itr->second.get())
 		{
-			resourceInfos.Add(r->GetResourceInfo());
+			resourceInfos.push_back(r->GetResourceInfo());
 		}
 		else
 		{
 			enLogError(LogChannel::Application, "Nullptr resource in ResourceManager");
 		}
 	}
-	resourceInfos.Sort([](const ResourceInfo& a, const ResourceInfo& b)
+	std::sort(resourceInfos.begin(), resourceInfos.end(), [](const ResourceInfo& a, const ResourceInfo& b)
 	{
 		if (a.type != b.type)
 		{
