@@ -44,6 +44,7 @@ DOCTEST_TEST_CASE("U32 array")
 	DOCTEST_CHECK(arr[2] == 6);
 	DOCTEST_CHECK(arr.Back() == 6);
 
+	/*
 	// Sort + access
 	arr.Sort();
 	DOCTEST_CHECK(arr[0] == 3);
@@ -53,6 +54,7 @@ DOCTEST_TEST_CASE("U32 array")
 	DOCTEST_CHECK(arr[0] == 10);
 	DOCTEST_CHECK(arr[1] == 6);
 	DOCTEST_CHECK(arr[2] == 3);
+	*/
 
 	// Copy + Equality
 	en::Array<en::U32> arr2;
