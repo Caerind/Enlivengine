@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <World type="en::World" hash="3748700136">
 	<EntityManager type="en::EntityManager" hash="1741196248">
-		<size>1</size>
+		<size>2</size>
 		<Entity_0 type="en::Entity" hash="2742466461">
-			<PlayerComponent type="PlayerComponent" hash="2771901145" />
+			<en::NameComponent type="en::NameComponent" hash="1007363028">
+				<name>PlayerSprite</name>
+			</en::NameComponent>
 			<en::RenderableComponent type="en::RenderableComponent" hash="2105190279" />
 			<en::SpriteComponent type="en::SpriteComponent" hash="642241994">
 				<sprite type="en::Sprite" hash="3292661911">
@@ -20,6 +22,37 @@
 					</textureRect>
 				</sprite>
 			</en::SpriteComponent>
+			<en::TransformComponent type="en::TransformComponent" hash="2679254095">
+				<transform type="en::Transform" hash="3048476028">
+					<position type="en::Vector3<en::F32>" hash="3762263698">
+						<x>-0.707915</x>
+						<y>-0.13253</y>
+						<z>2.9392</z>
+					</position>
+					<rotation type="en::Matrix3<en::F32>" hash="809589396">
+						<i0>1</i0>
+						<i1>0</i1>
+						<i2>0</i2>
+						<i3>0</i3>
+						<i4>-0.860619</i4>
+						<i5>-0.50925</i5>
+						<i6>0</i6>
+						<i7>0.50925</i7>
+						<i8>-0.860619</i8>
+					</rotation>
+					<scale type="en::Vector3<en::F32>" hash="3762263698">
+						<x>1</x>
+						<y>1</y>
+						<z>1</z>
+					</scale>
+				</transform>
+			</en::TransformComponent>
+		</Entity_0>
+		<Entity_1 type="en::Entity" hash="2742466461">
+			<en::NameComponent type="en::NameComponent" hash="1007363028">
+				<name>Player</name>
+			</en::NameComponent>
+			<PlayerComponent type="PlayerComponent" hash="2771901145" />
 			<en::CameraComponent type="en::CameraComponent" hash="226575676">
 				<Camera type="en::Camera" hash="2648522697">
 					<rotation type="en::Matrix3<en::F32>" hash="809589396">
@@ -59,9 +92,9 @@
 			<en::TransformComponent type="en::TransformComponent" hash="2679254095">
 				<transform type="en::Transform" hash="3048476028">
 					<position type="en::Vector3<en::F32>" hash="3762263698">
-						<x>0.846269</x>
+						<x>0</x>
 						<y>0</y>
-						<z>-1.61134</z>
+						<z>0</z>
 					</position>
 					<rotation type="en::Matrix3<en::F32>" hash="809589396">
 						<i0>1</i0>
@@ -81,7 +114,7 @@
 					</scale>
 				</transform>
 			</en::TransformComponent>
-		</Entity_0>
+		</Entity_1>
 	</EntityManager>
 	<SystemManager type="en::SystemManager" hash="2586247584">
 		<PlayerSystem type="PlayerSystem" hash="98119915" />

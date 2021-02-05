@@ -162,13 +162,27 @@ bool Entity::Serialize(Serializer& serializer, const char* name)
 
 bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 {
-	if (objectEditor.BeginClass(name, TypeInfo<Entity>::GetName(), TypeInfo<Entity>::GetHash()))
-	{
-		bool ret = false;
-		if (IsValid())
-		{
 #ifdef ENLIVE_ENABLE_IMGUI
-			if (objectEditor.IsImGuiEditor())
+	if (objectEditor.IsImGuiEditor())
+	{
+		bool collasping = false;
+		bool onlyEntitySelected = false;
+
+		World* world = (mManager != nullptr) ? &(mManager->GetWorld()) : nullptr;
+		if (world != nullptr && world->IsSelected(*this) && world->GetSelectedEntities().size() == 1)
+		{
+			collasping = true;
+			onlyEntitySelected = true;
+		}
+		else
+		{
+			collasping = objectEditor.BeginClass(name, TypeInfo<Entity>::GetName(), TypeInfo<Entity>::GetHash());
+		}
+
+		if (collasping)
+		{
+			bool ret = false;
+			if (IsValid())
 			{
 				const U32 entityID = GetID();
 				ImGui::Text("%s (ID: %d)", name, entityID);
@@ -181,6 +195,11 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 				}
 
 				ImGui::PushID(entityID);
+
+				if (onlyEntitySelected)
+				{
+					ImGui::Indent();
+				}
 
 				const auto& componentInfos = ComponentFactory::GetComponentInfos();
 				std::vector<U32> hasNot;
@@ -236,6 +255,11 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 						ImGui::EndPopup();
 					}
 				}
+				
+				if (onlyEntitySelected)
+				{
+					ImGui::Unindent();
+				}
 
 				ImGui::PopID();
 
@@ -244,24 +268,16 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 					Destroy();
 				}
 			}
-#endif // ENLIVE_ENABLE_IMGUI
-		}
-		else
-		{
-#ifdef ENLIVE_ENABLE_IMGUI
-			if (objectEditor.IsImGuiEditor())
+			else
 			{
 				ImGui::Text("Invalid entity");
 			}
-#endif // ENLIVE_ENABLE_IMGUI
+			objectEditor.EndClass();
+			return ret;
 		}
-		objectEditor.EndClass();
-		return ret;
 	}
-	else
-	{
-		return false;
-	}
+#endif // ENLIVE_ENABLE_IMGUI
+	return false;
 }
 
 const entt::entity& Entity::GetEntity() const
