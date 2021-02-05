@@ -74,6 +74,39 @@ const World& EntityManager::GetWorld() const
 	return mWorld;
 }
 
+
+// Used to display Entities in the same order
+// For serialization & edition
+namespace priv
+{
+	struct EntityUID
+	{
+		EntityUID(const Entity& e, U32 u) : entity(e), uid(u) {}
+
+		Entity entity;
+		U32 uid;
+	};
+
+	bool GetEntities(EntityManager& entityManager, std::vector<EntityUID>& entities)
+	{
+		entities.reserve(entityManager.GetEntityCount());
+		entityManager.Each([&entities, &entityManager](auto entt)
+		{
+			Entity entity(entityManager, entt);
+			if (entity.IsValid())
+			{
+				entities.push_back(EntityUID(entity, entity.GetUID()));
+			}
+		});
+		enAssert(entityManager.GetEntityCount() == static_cast<U32>(entities.size()));
+		std::sort(entities.begin(), entities.end(), [](const EntityUID& a, const EntityUID& b)
+		{
+				return a.uid < b.uid;
+		});
+		return true;
+	}
+}
+
 bool EntityManager::Serialize(Serializer& serializer, const char* name)
 {
 	if (serializer.BeginClass(name, TypeInfo<EntityManager>::GetName(), TypeInfo<EntityManager>::GetHash()))
@@ -111,23 +144,20 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 		}
 		else if (serializer.IsWriting())
 		{
-			ret = GenericSerialization(serializer, "size", GetEntityCount()) && ret;
-			U32 i = 0;
-			mRegistry.each([&ret, &serializer, &i, this](auto entt)
+			std::vector<priv::EntityUID> entities;
+			priv::GetEntities(*this, entities);
+
+			const U32 size = static_cast<U32>(entities.size());
+			enAssert(size == GetEntityCount());
+			ret = GenericSerialization(serializer, "size", size) && ret;
+			for (U32 i = 0; i < size; ++i)
 			{
-				Entity entity(*this, entt);
-				if (entity.IsValid())
-				{
-					const std::string entityName = "Entity_" + ToString(i);
-					ret = GenericSerialization(serializer, entityName.c_str(), entity) && ret;
-					i++;
-				}
-				else
-				{
-					enAssert(false);
-					ret = false;
-				}
-			});
+				Entity entity = entities[i].entity;
+				enAssert(entity.IsValid());
+
+				const std::string entityName = "Entity_" + ToString(i);
+				ret = GenericSerialization(serializer, entityName.c_str(), entity) && ret;
+			}
 		}
 		else
 		{
@@ -156,28 +186,33 @@ bool EntityManager::Edit(ObjectEditor& objectEditor, const char* name)
 				CreateEntity();
 				ret = true;
 			}
-			Each([this, &objectEditor, &ret](auto enttEntity)
+
+			std::vector<priv::EntityUID> entities;
+			priv::GetEntities(*this, entities);
+
+			const U32 size = static_cast<U32>(entities.size());
+			enAssert(size == GetEntityCount());
+			for (U32 i = 0; i < size; ++i)
 			{
-				Entity entity(*this, enttEntity);
-				if (entity.IsValid())
+				Entity entity = entities[i].entity;
+				enAssert(entity.IsValid());
+
+				ImGui::PushID(entity.GetID());
+				if (ImGui::Button("X"))
 				{
-					ImGui::PushID(entity.GetID());
-					if (ImGui::Button("X"))
+					DestroyEntity(entity);
+					ret = true;
+				}
+				else
+				{
+					ImGui::SameLine();
+					if (entity.Edit(objectEditor, entity.GetName()))
 					{
-						DestroyEntity(entity);
 						ret = true;
 					}
-					else
-					{
-						ImGui::SameLine();
-						if (entity.Edit(objectEditor, entity.GetName()))
-						{
-							ret = true;
-						}
-					}
-					ImGui::PopID();
 				}
-			});
+				ImGui::PopID();
+			}
 		}
 #endif // ENLIVE_ENABLE_IMGUI
 		objectEditor.EndClass();
