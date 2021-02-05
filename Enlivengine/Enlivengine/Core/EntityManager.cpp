@@ -9,12 +9,23 @@ namespace en
 EntityManager::EntityManager(World& world)
 	: mWorld(world)
 	, mRegistry()
+	, mUIDGenerator(0)
 {
 }
 
 Entity EntityManager::CreateEntity()
 {
-	return Entity(*this, mRegistry.create());
+	Entity entity(*this, mRegistry.create());
+	if (entity.IsValid())
+	{
+		UIDComponent& uidComponent = entity.Add<UIDComponent>();
+		uidComponent.mUID = mUIDGenerator++;
+		return entity;
+	}
+	else
+	{
+		return Entity();
+	}
 }
 
 void EntityManager::DestroyEntity(Entity& entity)
@@ -24,11 +35,6 @@ void EntityManager::DestroyEntity(Entity& entity)
 		mRegistry.destroy(entity.GetEntity());
 		entity.mEntity = entt::null;
 	}
-}
-
-void EntityManager::ClearEntities()
-{
-	mRegistry.clear();
 }
 
 U32 EntityManager::GetEntityCount() const
@@ -52,6 +58,8 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 	{
 		bool ret = true;
 
+		GenericSerialization(serializer, "uidGenerator", mUIDGenerator) && ret;
+
 		if (serializer.IsReading())
 		{
 			U32 size = 0;
@@ -61,7 +69,7 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 				const std::string entityName = "Entity_" + ToString(i);
 				if (serializer.HasNode(entityName.c_str()))
 				{
-					Entity entity = CreateEntity();
+					Entity entity = Entity(*this, mRegistry.create());
 					if (entity.IsValid())
 					{
 						ret = GenericSerialization(serializer, entityName.c_str(), entity) && ret;

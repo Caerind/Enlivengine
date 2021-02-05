@@ -4,6 +4,8 @@
 
 #include <Enlivengine/Utils/Meta.hpp>
 
+#include <Enlivengine/Core/UIDComponent.hpp>
+
 namespace en
 {
 
@@ -17,9 +19,9 @@ class EntityManager
 public:
 	EntityManager(World& world);
 
+	// Create entity and assign a new UID
 	Entity CreateEntity();
 	void DestroyEntity(Entity& entity);
-	void ClearEntities();
 
 	U32 GetEntityCount() const;
 
@@ -54,6 +56,7 @@ public:
 private:
 	World& mWorld;
 	entt::registry mRegistry;
+	UID mUIDGenerator;
 };
 
 } // namespace en
