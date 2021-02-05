@@ -15,6 +15,30 @@ EntityHandle::EntityHandle()
 {
 }
 
+EntityHandle::EntityHandle(EntityManager& entityManager, U32 uid /*= U32_Max*/)
+	: mManager(nullptr)
+	, mID(U32_Max)
+	, mUID(U32_Max)
+{
+	Set(entityManager, uid);
+}
+
+EntityHandle::EntityHandle(World& world, U32 uid /*= U32_Max*/)
+	: mManager(nullptr)
+	, mID(U32_Max)
+	, mUID(U32_Max)
+{
+	Set(world, uid);
+}
+
+EntityHandle::EntityHandle(const Entity& entity)
+	: mManager(nullptr)
+	, mID(U32_Max)
+	, mUID(U32_Max)
+{
+	Set(entity);
+}
+
 bool EntityHandle::operator==(const EntityHandle& other) const
 {
 	return mManager == other.mManager && mUID == other.mUID;
@@ -163,7 +187,7 @@ bool EntityHandle::Edit(ObjectEditor& objectEditor, const char* name)
 		}
 		else
 		{
-			entityName = "<Error>";
+			entityName = "<Invalid>";
 		}
 		ImGui::Text("%s : %s (UID: %d, ID: %d)", name, entityName, mUID, mID);
 #endif // ENLIVE_ENABLE_IMGUI

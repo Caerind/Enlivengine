@@ -103,7 +103,17 @@ void ImGuiEditor::Display()
 						mtxData
 					);
 
-					Matrix4f parentMtx = transform.HasParent() ? transform.GetParent().Get<TransformComponent>().GetGlobalMatrix() : Matrix4f::Identity();
+					Matrix4f parentMtx = Matrix4f::Identity();
+					if (transform.HasParent())
+					{
+						Entity parentEntity = transform.GetParent().Get();
+						if (parentEntity.IsValid())
+						{
+							enAssert(parentEntity.Has<TransformComponent>());
+							parentMtx = parentEntity.Get<TransformComponent>().GetGlobalMatrix();
+						}
+					}
+
 					world->GetDebugDraw().DrawTransform(parentMtx);
 					if (ImGuizmo::IsUsing())
 					{

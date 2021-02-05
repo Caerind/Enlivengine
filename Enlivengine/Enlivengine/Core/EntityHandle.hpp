@@ -12,6 +12,9 @@ class EntityHandle
 {
 public:
 	EntityHandle();
+	EntityHandle(EntityManager& entityManager, U32 uid = U32_Max);
+	EntityHandle(World& world, U32 uid = U32_Max);
+	explicit EntityHandle(const Entity& entity);
 
 	bool operator==(const EntityHandle& other) const;
 	bool operator!=(const EntityHandle& other) const;

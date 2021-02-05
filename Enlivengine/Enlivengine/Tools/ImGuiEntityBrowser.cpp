@@ -205,7 +205,7 @@ void ImGuiEntityBrowser::DisplayEntity(Entity& entity, World* world)
 			ImGui::Indent();
 			for (U32 i = 0; i < transform.GetChildrenCount(); ++i)
 			{
-				Entity child = transform.GetChild(i);
+				Entity child = transform.GetChild(i).Get();
 				if (child.IsValid())
 				{
 					DisplayEntity(child, world);
