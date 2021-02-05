@@ -42,6 +42,28 @@ U32 EntityManager::GetEntityCount() const
 	return static_cast<U32>(mRegistry.alive());
 }
 
+Entity EntityManager::GetEntityByUID(UID uid) const
+{
+	Entity resultEntity = Entity();
+	bool found = false;
+	mRegistry.each([&found, &resultEntity, &uid, this](auto entt)
+	{
+		if (!found)
+		{
+			Entity entity(const_cast<EntityManager&>(*this), entt);
+			enAssert(entity.IsValid());
+			enAssert(entity.Has<UIDComponent>());
+			UIDComponent& uidComponent = entity.Get<UIDComponent>();
+			if (uidComponent.GetUID() == uid)
+			{
+				resultEntity = entity;
+				found = true;
+			}
+		}
+	});
+	return resultEntity;
+}
+
 World& EntityManager::GetWorld()
 {
 	return mWorld;

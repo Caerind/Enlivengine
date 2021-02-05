@@ -4,6 +4,7 @@
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
+#include <Enlivengine/Core/UIDComponent.hpp>
 
 #include <Enlivengine/Core/ComponentFactory.hpp>
 
@@ -51,6 +52,12 @@ bool Entity::IsValid() const
 U32 Entity::GetID() const
 {
 	return static_cast<U32>(entt::to_integral(mEntity));
+}
+
+U32 Entity::GetUID() const
+{
+	enAssert(Has<UIDComponent>());
+	return static_cast<U32>(Get<UIDComponent>().GetUID());
 }
 
 void Entity::Destroy()

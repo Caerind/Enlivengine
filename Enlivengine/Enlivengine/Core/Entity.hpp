@@ -15,9 +15,6 @@ namespace en
 class EntityManager;
 class World;
 
-// This is only a handle of an entity in a registry
-// It does not create or destroy entity from registry
-// It is used for CustomEditor/Serialization and convenience
 class Entity
 {
 public:
@@ -30,6 +27,7 @@ public:
 
 	bool IsValid() const;
 	U32 GetID() const;
+	U32 GetUID() const;
 	void Destroy();
 
 	const char* GetName() const;
@@ -56,7 +54,6 @@ public:
 	bool HasManager() const;
 	EntityManager& GetManager();
 	const EntityManager& GetManager() const;
-
 	World& GetWorld();
 	const World& GetWorld() const;
 

@@ -25,6 +25,8 @@ public:
 
 	U32 GetEntityCount() const;
 
+	Entity GetEntityByUID(UID uid) const;
+
 	template <typename Func>
 	void Each(Func func) const
 	{
