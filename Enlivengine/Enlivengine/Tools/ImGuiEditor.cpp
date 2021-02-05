@@ -32,7 +32,7 @@ ImGuiEditor::ImGuiEditor()
 	, mGizmoOperation(GizmoOperation::Translate)
 	, mStatus(GameStatus::Stopped)
 {
-	mCamera.InitializePerspective(80.0f);
+	mCamera.InitializePerspective(80.0f, 0.1f, 1000.0f);
 	mCamera.InitializeView(Vector3f(-2.0f, 0.8f, 2.0f), Matrix3f::RotationY(-135.0f));
 
 	mFramebuffer.Create(Vector2u(840, 600), true);

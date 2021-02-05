@@ -9,6 +9,7 @@ CameraComponent::CameraComponent()
 	: Camera()
 	, mEntity()
 {
+	Camera::InitializePerspective(80.0f, 0.1f, 300.0f);
 }
 
 CameraComponent::~CameraComponent()
