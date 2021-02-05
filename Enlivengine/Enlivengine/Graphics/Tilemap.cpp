@@ -161,12 +161,25 @@ Rectf Tilemap::GetGlobalBounds() const
 	return GetLocalBounds();
 }
 
-void Tilemap::Render() const
+bool Tilemap::CanRender() const
 {
-	if (bgfx::isValid(mVertexBuffer) && bgfx::isValid(mIndexBuffer) && mTileset != nullptr && mTileset->GetTexture().IsValid())
+	if (bgfx::isValid(mVertexBuffer) && bgfx::isValid(mIndexBuffer) && mTileset != nullptr && mTileset->GetTexture().IsValid() && kShader.IsValid())
 	{
 		Texture& texture = mTileset->GetTexture().Get();
-		if (texture.IsValid() && kShader.IsValid())
+		if (texture.IsValid())
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void Tilemap::Render() const
+{
+	if (bgfx::isValid(mVertexBuffer) && bgfx::isValid(mIndexBuffer) && mTileset != nullptr && mTileset->GetTexture().IsValid() && kShader.IsValid())
+	{
+		Texture& texture = mTileset->GetTexture().Get();
+		if (texture.IsValid())
 		{
 			bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_BLEND_ALPHA_TO_COVERAGE);
 			bgfx::setIndexBuffer(mIndexBuffer);

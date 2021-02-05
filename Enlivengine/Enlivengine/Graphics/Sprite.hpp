@@ -30,6 +30,7 @@ public:
 	Rectf GetLocalBounds() const;
 	Rectf GetGlobalBounds() const;
 
+	bool CanRender() const;
 	void Render() const;
 
 private:
