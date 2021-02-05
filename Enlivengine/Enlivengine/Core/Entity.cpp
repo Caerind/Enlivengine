@@ -283,6 +283,9 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 			return ret;
 		}
 	}
+#else
+	ENLIVE_UNUSED(objectEditor);
+	ENLIVE_UNUSED(name);
 #endif // ENLIVE_ENABLE_IMGUI
 	return false;
 }

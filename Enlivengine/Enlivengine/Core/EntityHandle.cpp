@@ -172,6 +172,7 @@ bool EntityHandle::Serialize(Serializer& serializer, const char* name)
 
 bool EntityHandle::Edit(ObjectEditor& objectEditor, const char* name)
 {
+	ENLIVE_UNUSED(name);
 	if (objectEditor.IsImGuiEditor())
 	{
 #ifdef ENLIVE_ENABLE_IMGUI

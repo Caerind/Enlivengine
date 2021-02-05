@@ -37,6 +37,7 @@ bool UIDComponent::Serialize(Serializer& serializer, const char* name)
 
 bool UIDComponent::Edit(ObjectEditor& objectEditor, const char* name)
 {
+	ENLIVE_UNUSED(name);
 	if (objectEditor.IsImGuiEditor())
 	{
 #ifdef ENLIVE_ENABLE_IMGUI
