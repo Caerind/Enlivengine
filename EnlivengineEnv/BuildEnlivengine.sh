@@ -12,5 +12,7 @@ else
 	exit 3
 fi
 
-cmake --build build --config ${config}
+./EnlivengineEnv/Build.sh Enlivengine ${config} 
+./EnlivengineEnv/Build.sh EnlivengineTest ${config}
+./EnlivengineEnv/Build.sh 3DSceneExample ${config}
 
