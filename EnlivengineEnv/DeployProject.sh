@@ -94,4 +94,4 @@ echo localConfig="$localConfig"
 echo distantPath="$distantPath"
 
 
-./EnlivengineEnv/Deploy_SingleFile.sh $server $port $username $password $localFile $distantFile
+bash EnlivengineEnv/DeploySingleFile.sh $server $port $username $password $localFile $distantFile

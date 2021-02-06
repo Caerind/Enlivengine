@@ -53,7 +53,7 @@ fi
 
 # Path depending on platform/IDE
 if [[ "$platform" == "windows" ]]; then
-    powershell Compress-Archive build\* build.zip
+    powershell Compress-Archive 'build\*' build.zip -Force
 else
     zip -r build build.zip
 fi
@@ -73,6 +73,6 @@ else
 	exit 3
 fi
 
-distantFile="$distantPathprecompiled-$config-$platform.zip"
+distantFile="${distantPath}precompiled-$config-$platform.zip"
 
-./EnlivengineEnv/Deploy_SingleFile.sh $server $port $username $password build.zip $distantFile
+bash EnlivengineEnv/DeploySingleFile.sh $server $port $username $password build.zip $distantFile
