@@ -1,9 +1,10 @@
 # See: https://github.com/cristianadam/HelloWorld/blob/master/.github/workflows/build_cmake.yml
     
 name: "Precompile"
+
 on:
    schedule:
-   - cron: "*/10 * * * *"
+       - cron: "* * * * *"
 
 jobs:
   precompile:
@@ -45,7 +46,6 @@ jobs:
             name: "Release",
             cfg: Release
           }
-          
     name: ${{ matrix.platform.name }}-${{ matrix.config.name }}
     runs-on: ${{ matrix.platform.image }}
     
