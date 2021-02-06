@@ -1,56 +1,18 @@
-# See: https://github.com/cristianadam/HelloWorld/blob/master/.github/workflows/build_cmake.yml
-    
 name: "Precompile"
-
-on:
-   schedule:
-       - cron: "* * * * *"
+on: 
+  schedule:
+  - cron: '*/5 * * * *'
 
 jobs:
   precompile:
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-        - {
-            name: "Windows MSVC",
-            image: windows-latest,
-            os: windows,
-            cc: cl,
-            cxx: cl
-          }
-        - {
-            name: "Ubuntu GCC",
-            image: ubuntu-latest,
-            os: ubuntu,
-            cc: gcc-9,
-            cxx: g++-9
-          }
-        - {
-            name: "MacOS Clang",
-            image: macos-latest,
-            os: macos,
-            cc: clang,
-            cxx: clang++
-          }
-        config:
-        - {
-            name: "Tool",
-            cfg: Debug 
-          }
-        - {
-            name: "Debug",
-            cfg: RelWithDebInfo
-          }
-        - {
-            name: "Release",
-            cfg: Release
-          }
-    name: ${{ matrix.platform.name }}-${{ matrix.config.name }}
-    runs-on: ${{ matrix.platform.image }}
+    name: Debug
+    runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
     
+    - name: Install dependencies
+      run: bash ./EnlivengineEnv/Dependencies.sh
+      
     - name: TestZip
       run: zip testzip.zip README.md
