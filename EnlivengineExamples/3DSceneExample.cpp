@@ -1,6 +1,5 @@
 #include <Enlivengine/Engine.hpp>
 
-#include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Window/EventSystem.hpp>
 #include <Enlivengine/Window/Controller.hpp>
 #include <Enlivengine/Core/World.hpp>
