@@ -58,15 +58,17 @@ void ImGuiEntityBrowser::Display()
 				if (newEntity.IsValid())
 				{
 					newEntity.Add<NameComponent>(entityNameInput);
-
-					world->ClearSelectedEntities();
-					world->SelectEntity(newEntity);
 				}
 #ifdef ENLIVE_COMPILER_MSVC
 				strcpy_s(entityNameInput, "");
 #else
 				strcpy(entityNameInput, "");
 #endif // ENLIVE_COMPILER_MSVC
+			}
+			if (newEntity.IsValid())
+			{
+				world->ClearSelectedEntities();
+				world->SelectEntity(newEntity);
 			}
 		}
 
@@ -203,7 +205,7 @@ void ImGuiEntityBrowser::DisplayEntity(Entity& entity, World* world)
 			ImGui::Indent();
 			for (U32 i = 0; i < transform.GetChildrenCount(); ++i)
 			{
-				Entity child = transform.GetChild(i);
+				Entity child = transform.GetChild(i).Get();
 				if (child.IsValid())
 				{
 					DisplayEntity(child, world);

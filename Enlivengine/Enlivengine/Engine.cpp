@@ -21,6 +21,7 @@
 #include <Enlivengine/Graphics/Tilemap.hpp>
 
 #include <Enlivengine/Core/Components.hpp>
+#include <Enlivengine/Core/UIDComponent.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
 #include <Enlivengine/Core/PhysicComponent2D.hpp>

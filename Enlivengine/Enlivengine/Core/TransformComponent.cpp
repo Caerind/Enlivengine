@@ -29,7 +29,7 @@ TransformComponent::TransformComponent(TransformComponent&& other) noexcept
 	, mGlobalMatrixDirty(other.mGlobalMatrixDirty)
 {
 	other.mEntity = Entity();
-	other.mParent = Entity();
+	other.mParent = EntityHandle();
 	other.mChildren.clear();
 }
 
@@ -44,7 +44,7 @@ TransformComponent& TransformComponent::operator=(TransformComponent&& other) no
 		mChildren = std::move(other.mChildren);
 		mGlobalMatrixDirty = other.mGlobalMatrixDirty;
 		other.mEntity = Entity();
-		other.mParent = Entity();
+		other.mParent = EntityHandle();
 		other.mChildren.clear();
 	}
 	return *this;
@@ -128,26 +128,27 @@ void TransformComponent::AttachChild(const Entity& childEntity)
 	TransformComponent& childTransform = const_cast<TransformComponent&>(childEntity.Get<TransformComponent>());
 
 	// Skip if already the parent
-	if (childTransform.mParent == mEntity)
+	Entity parentEntity = childTransform.mParent.Get();
+	if (parentEntity == mEntity)
 	{
 		return;
 	}
 
 	// Detach the current parent of the child
-	if (childTransform.mParent.IsValid())
+	if (parentEntity.IsValid())
 	{
-		enAssert(childTransform.mParent.Has<TransformComponent>());
-		enAssert(childTransform.mParent.Get<TransformComponent>().HasChild(childEntity));
-		childTransform.mParent.Get<TransformComponent>().DetachChild(childEntity);
+		enAssert(parentEntity.Has<TransformComponent>());
+		enAssert(parentEntity.Get<TransformComponent>().HasChild(childEntity));
+		parentEntity.Get<TransformComponent>().DetachChild(childEntity);
 	}
 
 	// Set the new parent & matrix
 	const Matrix4f result = childTransform.GetGlobalMatrix() * GetGlobalMatrix().Inversed();
-	childTransform.mParent = mEntity;
+	childTransform.mParent.Set(mEntity);
 	childTransform.SetTransform(result.GetTranslation(), result.GetRotation(), result.GetScale());
 
 	// Store the child on parent's side
-	mChildren.push_back(childEntity);
+	mChildren.push_back(EntityHandle(childEntity));
 }
 
 void TransformComponent::DetachChild(const Entity& childEntity)
@@ -158,18 +159,20 @@ void TransformComponent::DetachChild(const Entity& childEntity)
 	TransformComponent& childTransform = const_cast<TransformComponent&>(childEntity.Get<TransformComponent>());
 
 	// It should be the parent
-	enAssert(childTransform.mParent == mEntity);
+	Entity parentEntity = childTransform.mParent.Get();
+	enAssert(parentEntity == mEntity);
 
 	// Reset the parent & matrix
 	const Matrix4f result = childTransform.GetGlobalMatrix();
-	childTransform.mParent = Entity();
+	childTransform.mParent = EntityHandle();
 	childTransform.SetTransform(result.GetTranslation(), result.GetRotation(), result.GetScale());
 
 	// Remove the child on parent's side
 	const U32 childrenCount = GetChildrenCount();
 	for (U32 i = 0; i < childrenCount; ++i)
 	{
-		if (mChildren[i] == childEntity)
+		Entity child = mChildren[i].Get();
+		if (child == childEntity)
 		{
 			mChildren.erase(mChildren.begin() + i);
 			return;
@@ -183,7 +186,8 @@ bool TransformComponent::HasChild(const Entity& childEntity) const
 	const U32 childrenCount = GetChildrenCount();
 	for (U32 i = 0; i < childrenCount; ++i)
 	{
-		if (mChildren[i] == childEntity)
+		Entity child = mChildren[i].Get();
+		if (child == childEntity)
 		{
 			return true;
 		}
@@ -196,7 +200,7 @@ U32 TransformComponent::GetChildrenCount() const
 	return static_cast<U32>(mChildren.size());
 }
 
-Entity TransformComponent::GetChild(U32 index) const
+const EntityHandle& TransformComponent::GetChild(U32 index) const
 {
 	enAssert(index < GetChildrenCount());
 	return mChildren[index];
@@ -213,10 +217,11 @@ void TransformComponent::AttachToParent(const Entity& parentEntity)
 
 void TransformComponent::DetachFromParent()
 {
-	if (mEntity.IsValid() && mParent.IsValid())
+	Entity parentEntity = mParent.Get();
+	if (mEntity.IsValid() && parentEntity.IsValid())
 	{
-		enAssert(mParent.Has<TransformComponent>());
-		const_cast<TransformComponent&>(mParent.Get<TransformComponent>()).DetachChild(mEntity);
+		enAssert(parentEntity.Has<TransformComponent>());
+		const_cast<TransformComponent&>(parentEntity.Get<TransformComponent>()).DetachChild(mEntity);
 	}
 }
 
@@ -225,7 +230,7 @@ bool TransformComponent::HasParent() const
 	return mParent.IsValid();
 }
 
-Entity TransformComponent::GetParent() const
+const EntityHandle& TransformComponent::GetParent() const
 {
 	return mParent;
 }
@@ -261,10 +266,11 @@ void TransformComponent::MarkGlobalMatrixAsDirty()
 	const U32 childrenCount = GetChildrenCount();
 	for (U32 i = 0; i < childrenCount; ++i)
 	{
-		if (mChildren[i].IsValid())
+		Entity child = mChildren[i].Get();
+		if (child.IsValid())
 		{
-			enAssert(mChildren[i].Has<TransformComponent>());
-			mChildren[i].Get<TransformComponent>().MarkGlobalMatrixAsDirty();
+			enAssert(child.Has<TransformComponent>());
+			child.Get<TransformComponent>().MarkGlobalMatrixAsDirty();
 		}
 	}
 }
@@ -282,10 +288,22 @@ bool TransformComponent::Serialize(Serializer& serializer, const char* name)
 	{
 		bool ret = true;
 		ret = GenericSerialization(serializer, "transform", mLocalTransform) && ret;
-		// TODO : Serialize Parent/Children
+		ret = GenericSerialization(serializer, "parent", mParent) && ret;
+		ret = GenericSerialization(serializer, "children", mChildren) && ret;
 		ret = serializer.EndClass() && ret;
 
-		MarkGlobalMatrixAsDirty();
+		if (serializer.IsReading())
+		{
+			enAssert(mEntity.HasManager());
+			EntityManager& entityManager = mEntity.GetManager();
+			mParent.Set(entityManager, mParent.GetUID());
+			for (auto& childHandle : mChildren)
+			{
+				childHandle.Set(entityManager, childHandle.GetUID());
+			}
+
+			MarkGlobalMatrixAsDirty();
+		}
 
 		return ret;
 	}
@@ -301,7 +319,24 @@ bool TransformComponent::Edit(ObjectEditor& objectEditor, const char* name)
 	{
 		bool ret = false;
 		ret = GenericEdit(objectEditor, "Transform", mLocalTransform) || ret;
-		// TODO : Serialize Parent/Children
+
+#ifdef ENLIVE_ENABLE_IMGUI
+		if (objectEditor.IsImGuiEditor())
+		{
+			if (ImGui::CollapsingHeader("Parent&Children"))
+			{
+				ImGui::Indent();
+#endif // ENLIVE_ENABLE_IMGUI
+
+				ret = GenericEdit(objectEditor, "Parent", mParent) || ret;
+				ret = GenericEdit(objectEditor, "Children", mChildren) || ret;
+
+#ifdef ENLIVE_ENABLE_IMGUI
+				ImGui::Unindent();
+			}
+		}
+#endif // ENLIVE_ENABLE_IMGUI
+
 		objectEditor.EndClass();
 
 		if (ret)
@@ -319,10 +354,11 @@ bool TransformComponent::Edit(ObjectEditor& objectEditor, const char* name)
 
 void TransformComponent::UpdateGlobalMatrix() const
 {
-	if (mParent.IsValid())
+	Entity parentEntity = mParent.Get();
+	if (parentEntity.IsValid())
 	{
-		enAssert(mParent.Has<TransformComponent>());
-		mGlobalMatrix = mLocalTransform.GetMatrix() * mParent.Get<TransformComponent>().GetGlobalMatrix();
+		enAssert(parentEntity.Has<TransformComponent>());
+		mGlobalMatrix = mLocalTransform.GetMatrix() * parentEntity.Get<TransformComponent>().GetGlobalMatrix();
 	}
 	else
 	{

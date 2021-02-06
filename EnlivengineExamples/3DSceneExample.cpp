@@ -85,15 +85,23 @@ public:
 				const Matrix4f matrix = (entity.Has<TransformComponent>()) ? entity.Get<TransformComponent>().GetGlobalMatrix() : Matrix4f::Identity();
 				if (entity.Has<SpriteComponent>())
 				{
-					bgfx::setTransform(matrix.GetData());
-					entity.Get<SpriteComponent>().sprite.Render();
-					render = true;
+					Sprite& sprite = entity.Get<SpriteComponent>().sprite;
+					if (sprite.CanRender())
+					{
+						bgfx::setTransform(matrix.GetData());
+						sprite.Render();
+						render = true;
+					}
 				}
 				if (entity.Has<TilemapComponent>())
 				{
-					bgfx::setTransform(matrix.GetData());
-					entity.Get<TilemapComponent>().tilemap.Render();
-					render = true;
+					Tilemap& tilemap = entity.Get<TilemapComponent>().tilemap;
+					if (tilemap.CanRender())
+					{
+						bgfx::setTransform(matrix.GetData());
+						entity.Get<TilemapComponent>().tilemap.Render();
+						render = true;
+					}
 				}
 				if (!render)
 				{
