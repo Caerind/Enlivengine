@@ -78,20 +78,4 @@ fi
 
 distantFile="$distantPath$project-$branch-$config-$version-$platform$extension"
 
-# Debug
-echo $localFile
-echo $distantFile
-echo server="$server"
-echo port="$port"
-echo username="$username"
-echo password="$password"
-echo project="$project"
-echo branch="$branch"
-echo config="$config"
-echo version="$version"
-echo localPath="$localPath"
-echo localConfig="$localConfig"
-echo distantPath="$distantPath"
-
-
 bash EnlivengineEnv/DeploySingleFile.sh $server $port $username $password $localFile $distantFile
