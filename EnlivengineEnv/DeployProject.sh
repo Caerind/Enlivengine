@@ -1,9 +1,37 @@
 #!/bin/bash
 
-server="${1}"
-port="${2}"
-username="${3}"
-password="${4}"
+server=""
+if [ ! -z "$1" ]; then
+	server="$1"
+else
+    echo "No [1:server] argument, aborting"
+	exit 3
+fi
+
+port=""
+if [ ! -z "$2" ]; then
+	port="$2"
+else
+    echo "No [2:port] argument, aborting"
+	exit 3
+fi
+
+username=""
+if [ ! -z "$3" ]; then
+	username="$3"
+else
+    echo "No [3:username] argument, aborting"
+	exit 3
+fi
+
+password=""
+if [ ! -z "$4" ]; then
+	password="$4"
+else
+    echo "No [4:password] argument, aborting"
+	exit 3
+fi
+
 
 project="${5}"
 branch="${6}"
@@ -39,20 +67,20 @@ if [[ "$branch" == *"$branchBreaker"* ]]; then
 fi
 
 extension=""
-local_filename=""
+localFile=""
 if [[ "$platform" == "windows" ]]; then
 	extension=".exe"
-    local_filename="./build/$localPath/$localConfig/$project$extension"
+    localFile="./build/$localPath$localConfig/$project$extension"
 else
 	extension=""
-    local_filename="./build/$localPath/$project$extension"
+    localFile="./build/$localPath$project$extension"
 fi
 
-distant_filename="$distantPath$project-$branch-$config-$version-$platform$extension"
+distantFile="$distantPath$project-$branch-$config-$version-$platform$extension"
 
 # Debug
-echo $local_filename
-echo $distant_filename
+echo $localFile
+echo $distantFile
 echo server="$server"
 echo port="$port"
 echo username="$username"
@@ -65,6 +93,5 @@ echo localPath="$localPath"
 echo localConfig="$localConfig"
 echo distantPath="$distantPath"
 
-curl -u $username:$password -T $local_filename ftp://$server:$port/$distant_filename
 
-
+./EnlivengineEnv/Deploy_SingleFile.sh $server $port $username $password $localFile $distantFile
