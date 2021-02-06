@@ -1,0 +1,18 @@
+name: Precompile
+
+on:
+  schedule:
+  - cron: "*/5 * * * *"
+
+jobs:
+  precompile:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Install dependencies
+      run: bash ./EnlivengineEnv/Dependencies.sh
+      
+    - name: TestZip
+      run: zip testzip.zip README.md
