@@ -68,13 +68,14 @@ void MetaEnumTest()
 	std::cout << "-- -- --" << std::endl;
 }
 
-
+#ifdef ENLIVE_ENABLE_LOG
 enum class LogChannelClient
 {
 	Gameplay1 = static_cast<en::U32>(en::LogChannel::Max),
 	Gameplay2,
 	Gameplay3
 };
+#endif // ENLIVE_ENABLE_LOG
 
 int main()
 {
