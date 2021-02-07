@@ -55,7 +55,7 @@ fi
 if [[ "$platform" == "windows" ]]; then
     powershell Compress-Archive 'build\*' build.zip -Force
 else
-    zip -r build build.zip
+    zip -r build.zip build
 fi
 
 distantPath=""
