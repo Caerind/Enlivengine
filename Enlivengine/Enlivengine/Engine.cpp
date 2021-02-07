@@ -12,6 +12,8 @@
 #include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Engine/WorldFileManager.hpp>
 
+#include <Enlivengine/Audio/AudioManager.hpp>
+
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
 #include <Enlivengine/Window/Keyboard.hpp>
 #endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
@@ -128,6 +130,13 @@ bool Engine::Init(int argc, char** argv)
 	}
 	enLogInfo(LogChannel::Global, "SDL initialized");
 
+	if (!AudioManager::GetInstance().Initialize())
+	{
+		enLogError(LogChannel::Global, "Can't initialize SoLoud");
+		return false;
+	}
+	enLogInfo(LogChannel::Global, "SoLoud initialized");
+
 	const bool windowCreated = engine.mWindow.Create("Enlivengine", 0);
 	if (!windowCreated)
 	{
@@ -230,6 +239,8 @@ bool Engine::Release()
 
 	engine.mWindow.Close();
 	engine.mWindow.Destroy();
+
+	AudioManager::GetInstance().Release();
 
 	if (SDLWrapper::IsInitialized())
 	{
