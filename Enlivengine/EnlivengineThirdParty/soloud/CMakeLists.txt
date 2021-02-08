@@ -28,6 +28,11 @@ add_library(SoLoud STATIC
 	${SRC_CORE}
 	${SRC_FILTER}
 )
+
+get_target_property(target_options SoLoud COMPILE_OPTIONS)
+list(REMOVE_ITEM target_options "-pedantic")
+set_property(TARGET SoLoud PROPERTY COMPILE_OPTIONS ${target_options})
+
 target_compile_definitions(SoLoud PUBLIC WITH_SDL2_STATIC)
 target_include_directories(SoLoud PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_link_libraries(SoLoud PUBLIC SDL2-static SDL2main)
