@@ -108,7 +108,7 @@ namespace SoLoud
 	typedef unsigned int result;
 	typedef unsigned int handle;
 	typedef double time;
-};
+}
 
 namespace SoLoud
 {
