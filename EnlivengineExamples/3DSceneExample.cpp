@@ -10,6 +10,9 @@
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
 #include <Enlivengine/Tools/ImGuiEditor.hpp>
 
+#include <Enlivengine/Audio/AudioManager.hpp>
+#include <soloud_speech.h>
+
 using namespace en;
 
 class RenderSystem : public RenderSystemBase
@@ -196,7 +199,18 @@ public:
 				entity.Get<TransformComponent>().Rotate(Matrix3f::RotationY(180.0f * Time::GetDeltaTime().AsSeconds()));
 			}
 		}
+
+		static bool played = false;
+		if (!played)
+		{
+			speech.setText("1 2 3");
+			AudioManager::GetInstance().PlaySource(speech);
+			played = true;
+		}
+
 	}
+
+	SoLoud::Speech speech;
 };
 ENLIVE_META_CLASS_BEGIN(StupidShipSystem, en::Type_ClassSerialization, en::Type_ClassEditor)
 ENLIVE_META_CLASS_END()

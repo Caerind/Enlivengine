@@ -14,7 +14,7 @@ bool SDLWrapper::Init()
 	U32 initFlags = 0;
 	initFlags |= SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC; // | SDL_INIT_TIMER | SDL_INIT_SENSOR | SDL_INIT_GAMECONTROLLER
     initFlags |= SDL_INIT_VIDEO;
-    initFlags |= SDL_INIT_AUDIO;
+    initFlags |= SDL_INIT_AUDIO; // Seems like we still need SDL AUDIO with SoLoud using the SDL backend (but not 100%, need to try)
 
     sdl.mInitialized = SDL_Init(initFlags) >= 0;
     if (sdl.mInitialized)

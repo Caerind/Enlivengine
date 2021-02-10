@@ -6,6 +6,8 @@
 #include <Enlivengine/Audio/MusicManager.hpp>
 #include <Enlivengine/Audio/SoundManager.hpp>
 
+#include <soloud.h>
+
 // TODO : Add more functions to manipulate Music/Sound by ID/UID
 
 namespace en
@@ -17,6 +19,16 @@ class AudioManager
 	ENLIVE_SINGLETON(AudioManager);
 
 public:
+	bool Initialize();
+	bool Release();
+	
+	// TODO : TEMP INTEGRATION SOLOUD
+	template <typename T>
+	void PlaySource(T& source)
+	{
+		mEngine.play(source);
+	}
+
 	// AudioManager
 	F32 GetGlobalVolume() const;
 	void SetGlobalVolume(F32 volume);
@@ -65,6 +77,7 @@ public:
 	void ReleaseSounds();
 
 private:
+	SoLoud::Soloud mEngine;
 	F32 mGlobalVolume;
 	bool mGlobalEnabled;
 	bool mPlaying;
