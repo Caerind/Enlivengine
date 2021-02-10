@@ -1,6 +1,5 @@
 #include <Enlivengine/Engine.hpp>
 
-#include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Window/EventSystem.hpp>
 #include <Enlivengine/Window/Controller.hpp>
 #include <Enlivengine/Core/World.hpp>
@@ -10,6 +9,9 @@
 #include <Enlivengine/Graphics/Camera.hpp>
 #include <Enlivengine/Graphics/BgfxWrapper.hpp>
 #include <Enlivengine/Tools/ImGuiEditor.hpp>
+
+#include <Enlivengine/Audio/AudioManager.hpp>
+#include <soloud_speech.h>
 
 using namespace en;
 
@@ -85,15 +87,23 @@ public:
 				const Matrix4f matrix = (entity.Has<TransformComponent>()) ? entity.Get<TransformComponent>().GetGlobalMatrix() : Matrix4f::Identity();
 				if (entity.Has<SpriteComponent>())
 				{
-					bgfx::setTransform(matrix.GetData());
-					entity.Get<SpriteComponent>().sprite.Render();
-					render = true;
+					Sprite& sprite = entity.Get<SpriteComponent>().sprite;
+					if (sprite.CanRender())
+					{
+						bgfx::setTransform(matrix.GetData());
+						sprite.Render();
+						render = true;
+					}
 				}
 				if (entity.Has<TilemapComponent>())
 				{
-					bgfx::setTransform(matrix.GetData());
-					entity.Get<TilemapComponent>().tilemap.Render();
-					render = true;
+					Tilemap& tilemap = entity.Get<TilemapComponent>().tilemap;
+					if (tilemap.CanRender())
+					{
+						bgfx::setTransform(matrix.GetData());
+						entity.Get<TilemapComponent>().tilemap.Render();
+						render = true;
+					}
 				}
 				if (!render)
 				{
@@ -191,7 +201,18 @@ public:
 				entity.Get<TransformComponent>().Rotate(Matrix3f::RotationY(180.0f * Time::GetDeltaTime().AsSeconds()));
 			}
 		}
+
+		static bool played = false;
+		if (!played)
+		{
+			speech.setText("1 2 3");
+			AudioManager::GetInstance().PlaySource(speech);
+			played = true;
+		}
+
 	}
+
+	SoLoud::Speech speech;
 };
 ENLIVE_META_CLASS_BEGIN(StupidShipSystem, en::Type_ClassSerialization, en::Type_ClassEditor)
 ENLIVE_META_CLASS_END()
@@ -290,6 +311,10 @@ bool PlayerSystem::Edit(ObjectEditor& objectEditor, const char* name)
 
 int main(int argc, char** argv)
 {
+#ifdef ENLIVE_ENABLE_LOG
+	FileLogger fileLogger("log.txt");
+#endif // ENLIVE_ENABLE_LOG
+
 	Engine::RegisterComponent<StupidShipComponent>();
 	Engine::RegisterComponent<PlayerComponent>();
 

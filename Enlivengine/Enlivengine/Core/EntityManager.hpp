@@ -4,6 +4,8 @@
 
 #include <Enlivengine/Utils/Meta.hpp>
 
+#include <Enlivengine/Core/UIDComponent.hpp>
+
 namespace en
 {
 
@@ -17,11 +19,13 @@ class EntityManager
 public:
 	EntityManager(World& world);
 
+	// Create entity and assign a new UID
 	Entity CreateEntity();
 	void DestroyEntity(Entity& entity);
-	void ClearEntities();
 
 	U32 GetEntityCount() const;
+
+	Entity GetEntityByUID(UID uid) const;
 
 	template <typename Func>
 	void Each(Func func) const
@@ -54,9 +58,7 @@ public:
 private:
 	World& mWorld;
 	entt::registry mRegistry;
-
-	static constexpr const char* kManagedEntityName = "ManagedEntity";
-	static constexpr U32 kManagedEntityHash = en::Hash::SlowHash(kManagedEntityName);
+	UID mUIDGenerator;
 };
 
 } // namespace en

@@ -11,12 +11,23 @@ namespace en
 EntityManager::EntityManager(World& world)
 	: mWorld(world)
 	, mRegistry()
+	, mUIDGenerator(0)
 {
 }
 
 Entity EntityManager::CreateEntity()
 {
-	return Entity(*this, mRegistry.create());
+	Entity entity(*this, mRegistry.create());
+	if (entity.IsValid())
+	{
+		UIDComponent& uidComponent = entity.Add<UIDComponent>();
+		uidComponent.mUID = mUIDGenerator++;
+		return entity;
+	}
+	else
+	{
+		return Entity();
+	}
 }
 
 void EntityManager::DestroyEntity(Entity& entity)
@@ -28,14 +39,31 @@ void EntityManager::DestroyEntity(Entity& entity)
 	}
 }
 
-void EntityManager::ClearEntities()
-{
-	mRegistry.clear();
-}
-
 U32 EntityManager::GetEntityCount() const
 {
 	return static_cast<U32>(mRegistry.alive());
+}
+
+Entity EntityManager::GetEntityByUID(UID uid) const
+{
+	Entity resultEntity = Entity();
+	bool found = false;
+	mRegistry.each([&found, &resultEntity, &uid, this](auto entt)
+	{
+		if (!found)
+		{
+			Entity entity(const_cast<EntityManager&>(*this), entt);
+			enAssert(entity.IsValid());
+			enAssert(entity.Has<UIDComponent>());
+			UIDComponent& uidComponent = entity.Get<UIDComponent>();
+			if (uidComponent.GetUID() == uid)
+			{
+				resultEntity = entity;
+				found = true;
+			}
+		}
+	});
+	return resultEntity;
 }
 
 World& EntityManager::GetWorld()
@@ -48,6 +76,39 @@ const World& EntityManager::GetWorld() const
 	return mWorld;
 }
 
+
+// Used to display Entities in the same order
+// For serialization & edition
+namespace priv
+{
+	struct EntityUID
+	{
+		EntityUID(const Entity& e, U32 u) : entity(e), uid(u) {}
+
+		Entity entity;
+		U32 uid;
+	};
+
+	bool GetEntities(EntityManager& entityManager, std::vector<EntityUID>& entities)
+	{
+		entities.reserve(entityManager.GetEntityCount());
+		entityManager.Each([&entities, &entityManager](auto entt)
+		{
+			Entity entity(entityManager, entt);
+			if (entity.IsValid())
+			{
+				entities.push_back(EntityUID(entity, entity.GetUID()));
+			}
+		});
+		enAssert(entityManager.GetEntityCount() == static_cast<U32>(entities.size()));
+		std::sort(entities.begin(), entities.end(), [](const EntityUID& a, const EntityUID& b)
+		{
+				return a.uid < b.uid;
+		});
+		return true;
+	}
+}
+
 bool EntityManager::Serialize(Serializer& serializer, const char* name)
 {
 	if (serializer.BeginClass(name, TypeInfo<EntityManager>::GetName(), TypeInfo<EntityManager>::GetHash()))
@@ -55,6 +116,8 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 		bool ret = true;
 		const auto& componentInfos = ComponentFactory::GetComponentInfos();
 		const auto endItr = componentInfos.cend();
+
+		GenericSerialization(serializer, "uidGenerator", mUIDGenerator) && ret;
 
 		if (serializer.IsReading())
 		{
@@ -65,7 +128,7 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 				const std::string entityName = "Entity_" + ToString(i);
 				if (serializer.HasNode(entityName.c_str()))
 				{
-					Entity entity = CreateEntity();
+					Entity entity = Entity(*this, mRegistry.create());
 					if (entity.IsValid())
 					{
 						if (serializer.BeginClass(entityName.c_str(), kManagedEntityName, kManagedEntityHash))
@@ -103,39 +166,20 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 		}
 		else if (serializer.IsWriting())
 		{
-			ret = GenericSerialization(serializer, "size", GetEntityCount()) && ret;
-			U32 i = 0;
-			mRegistry.each([&ret, &serializer, &i, &componentInfos, &endItr, this](auto entt)
+			std::vector<priv::EntityUID> entities;
+			priv::GetEntities(*this, entities);
+
+			const U32 size = static_cast<U32>(entities.size());
+			enAssert(size == GetEntityCount());
+			ret = GenericSerialization(serializer, "size", size) && ret;
+			for (U32 i = 0; i < size; ++i)
 			{
-				Entity entity(*this, entt);
-				if (entity.IsValid())
-				{
-					const std::string entityName = "Entity_" + ToString(i);
-					if (serializer.BeginClass(entityName.c_str(), kManagedEntityName, kManagedEntityHash))
-					{
-						ret = GenericSerialization(serializer, "id", entity.GetID()) && ret;
-						for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
-						{
-							const auto& ci = itr->second;
-							if (ci.has(entity))
-							{
-								ret = ci.serialize(serializer, entity) && ret;
-							}
-						}
-						ret = serializer.EndClass() && ret;
-					}
-					else
-					{
-						ret = false;
-					}
-					i++;
-				}
-				else
-				{
-					enAssert(false);
-					ret = false;
-				}
-			});
+				Entity entity = entities[i].entity;
+				enAssert(entity.IsValid());
+
+				const std::string entityName = "Entity_" + ToString(i);
+				ret = GenericSerialization(serializer, entityName.c_str(), entity) && ret;
+			}
 		}
 		else
 		{
@@ -164,28 +208,33 @@ bool EntityManager::Edit(ObjectEditor& objectEditor, const char* name)
 				CreateEntity();
 				ret = true;
 			}
-			Each([this, &objectEditor, &ret](auto enttEntity)
+
+			std::vector<priv::EntityUID> entities;
+			priv::GetEntities(*this, entities);
+
+			const U32 size = static_cast<U32>(entities.size());
+			enAssert(size == GetEntityCount());
+			for (U32 i = 0; i < size; ++i)
 			{
-				Entity entity(*this, enttEntity);
-				if (entity.IsValid())
+				Entity entity = entities[i].entity;
+				enAssert(entity.IsValid());
+
+				ImGui::PushID(entity.GetID());
+				if (ImGui::Button("X"))
 				{
-					ImGui::PushID(entity.GetID());
-					if (ImGui::Button("X"))
+					DestroyEntity(entity);
+					ret = true;
+				}
+				else
+				{
+					ImGui::SameLine();
+					if (entity.Edit(objectEditor, entity.GetName()))
 					{
-						DestroyEntity(entity);
 						ret = true;
 					}
-					else
-					{
-						ImGui::SameLine();
-						if (entity.Edit(objectEditor, entity.GetName()))
-						{
-							ret = true;
-						}
-					}
-					ImGui::PopID();
 				}
-			});
+				ImGui::PopID();
+			}
 		}
 #endif // ENLIVE_ENABLE_IMGUI
 		objectEditor.EndClass();

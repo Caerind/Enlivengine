@@ -4,6 +4,7 @@
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Components.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
+#include <Enlivengine/Core/UIDComponent.hpp>
 
 #include <Enlivengine/Core/ComponentFactory.hpp>
 
@@ -61,6 +62,12 @@ U32 Entity::GetIndex() const
 U32 Entity::GetVersion() const
 {
 	return static_cast<U32>(GetRegistry().version(mEntity));
+}
+  
+U32 Entity::GetUID() const
+{
+	enAssert(Has<UIDComponent>());
+	return static_cast<U32>(Get<UIDComponent>().GetUID());
 }
 
 void Entity::Destroy()
@@ -154,19 +161,24 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 #ifdef ENLIVE_ENABLE_IMGUI
 	if (objectEditor.IsImGuiEditor())
 	{
-		bool ret = false;
+		bool collasping = false;
+		bool onlyEntitySelected = false;
 
-		bool collaspindHeaderOpen = false;
-		if (GetWorld().IsSelected(*this) && GetWorld().GetSelectedEntityCount() == 1)
+		World* world = (mManager != nullptr) ? &(mManager->GetWorld()) : nullptr;
+		if (world != nullptr && world->IsSelected(*this) && world->GetSelectedEntities().size() == 1)
 		{
-			ImGui::Text("%s", name);
-			collaspindHeaderOpen = true;
-			ImGui::Indent();
+			collasping = true;
+			onlyEntitySelected = true;
 		}
 		else
 		{
-			collaspindHeaderOpen = ImGui::CollapsingHeader(name);
-			if (collaspindHeaderOpen)
+			collasping = objectEditor.BeginClass(name, TypeInfo<Entity>::GetName(), TypeInfo<Entity>::GetHash());
+		}
+
+		if (collasping)
+		{
+			bool ret = false;
+			if (IsValid())
 			{
 				ImGui::Indent();
 			}
@@ -190,6 +202,11 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 				}
 
 				ImGui::PushID(entityID);
+
+				if (onlyEntitySelected)
+				{
+					ImGui::Indent();
+				}
 
 				const auto& componentInfos = ComponentFactory::GetComponentInfos();
 				std::vector<U32> hasNot;
@@ -245,6 +262,11 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 						ImGui::EndPopup();
 					}
 				}
+				
+				if (onlyEntitySelected)
+				{
+					ImGui::Unindent();
+				}
 
 				ImGui::PopID();
 
@@ -253,22 +275,19 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 					Destroy();
 				}
 			}
+			else
+			{
+				ImGui::Text("Invalid entity");
+			}
+			objectEditor.EndClass();
+			return ret;
 		}
-		else
-		{
-			ImGui::Text("Invalid entity");
-		}
-		objectEditor.EndClass(); // The BeginClass is done in collaspingHeaderOpen
-		return ret;
 	}
-	else
 #else
 	ENLIVE_UNUSED(objectEditor);
 	ENLIVE_UNUSED(name);
 #endif // ENLIVE_ENABLE_IMGUI
-	{
-		return false;
-	}
+	return false;
 }
 
 const entt::entity& Entity::GetEntity() const

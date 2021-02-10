@@ -7,10 +7,22 @@ namespace en
 {
 
 AudioManager::AudioManager()
-	: mGlobalVolume(1.0f)
+	: mEngine()
+	, mGlobalVolume(1.0f)
 	, mGlobalEnabled(true)
 	, mPlaying(true)
 {
+}
+
+bool AudioManager::Initialize()
+{
+	return mEngine.init() == 0;
+}
+
+bool AudioManager::Release()
+{
+	mEngine.deinit();
+	return true;
 }
 
 F32 AudioManager::GetGlobalVolume() const

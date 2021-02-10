@@ -2,8 +2,6 @@
 
 #include <Enlivengine/Utils/Profiler.hpp>
 
-#include <Enlivengine/Resources/PathManager.hpp>
-
 #include <Enlivengine/Core/Entity.hpp>
 
 namespace en
@@ -150,6 +148,10 @@ const std::vector<entt::entity>& World::GetSelectedEntities() const
 	return mSelectedEntities;
 }
 
+U32 World::GetSelectedEntityCount() const
+{
+	return static_cast<U32>(mSelectedEntities.size());
+}
 #endif // ENLIVE_DEBUG
 
 bool World::Serialize(Serializer& serializer, const char* name)

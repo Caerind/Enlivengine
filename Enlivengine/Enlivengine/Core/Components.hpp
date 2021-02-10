@@ -17,14 +17,6 @@ struct NameComponent
 	std::string name;
 };
 
-struct UIDComponent
-{
-	UIDComponent() : id(0) {}
-	UIDComponent(U32 pId) : id(pId) {}
-
-	U32 id;
-};
-
 struct RenderableComponent
 {
 };
@@ -47,10 +39,6 @@ struct TilemapComponent
 
 ENLIVE_META_CLASS_BEGIN(en::NameComponent, en::Type_ClassSerialization, en::Type_ClassEditor)
 	ENLIVE_META_CLASS_MEMBER("name", &en::NameComponent::name)
-ENLIVE_META_CLASS_END()
-
-ENLIVE_META_CLASS_BEGIN(en::UIDComponent, en::Type_ClassSerialization, en::Type_ClassEditor)
-	ENLIVE_META_CLASS_MEMBER("id", &en::UIDComponent::id)
 ENLIVE_META_CLASS_END()
 	
 ENLIVE_META_CLASS_BEGIN(en::RenderableComponent, en::Type_ClassSerialization, en::Type_ClassEditor)

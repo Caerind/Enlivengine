@@ -110,12 +110,25 @@ Rectf Sprite::GetGlobalBounds() const
 	return GetLocalBounds();
 }
 
-void Sprite::Render() const
+bool Sprite::CanRender() const
 {
-	if (bgfx::isValid(mBuffer) && mTexture.IsValid())
+	if (bgfx::isValid(mBuffer) && mTexture.IsValid() && kShader.IsValid())
 	{
 		Texture& texture = mTexture.Get();
-		if (texture.IsValid() && kShader.IsValid())
+		if (texture.IsValid())
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void Sprite::Render() const
+{
+	if (bgfx::isValid(mBuffer) && mTexture.IsValid() && kShader.IsValid())
+	{
+		Texture& texture = mTexture.Get();
+		if (texture.IsValid())
 		{
 			// Common to all sprites
 			bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS | BGFX_STATE_BLEND_ALPHA_TO_COVERAGE);

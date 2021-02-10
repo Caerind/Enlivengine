@@ -12,6 +12,8 @@
 #include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Engine/WorldFileManager.hpp>
 
+#include <Enlivengine/Audio/AudioManager.hpp>
+
 #ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
 #include <Enlivengine/Window/Keyboard.hpp>
 #endif // ENLIVE_ENABLE_GRAPHICS_DEBUG
@@ -21,6 +23,7 @@
 #include <Enlivengine/Graphics/Tilemap.hpp>
 
 #include <Enlivengine/Core/Components.hpp>
+#include <Enlivengine/Core/UIDComponent.hpp>
 #include <Enlivengine/Core/CameraComponent.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
 #include <Enlivengine/Core/PhysicComponent2D.hpp>
@@ -78,9 +81,9 @@ int Engine::Main(int argc, char** argv)
 				Framebuffer& framebuffer = Framebuffer::GetDefaultFramebuffer();
 #endif // ENLIVE_TOOL
 				BgfxWrapper::ClearFramebuffer(framebuffer, Colors::DarkGray);
-
-				// TODO : Add text describing the issue
-			}
+        
+				// TODO : Add text describing the issue if any
+      }
 
 			BgfxWrapper::Frame();
 		}
@@ -107,49 +110,67 @@ bool Engine::Init(int argc, char** argv)
 	}
 	else
 	{
-		enLogWarning(LogChannel::Core, "No arg[0] for Engine::Init, using empty executable path");
+		enLogWarning(LogChannel::Global, "No arg[0] for Engine::Init, using empty executable path");
 		PathManager::SetExecutablePath("");
 	}
+	enLogInfo(LogChannel::Global, "ExecutablePath: {}", PathManager::GetExecutablePath());
+	enLogInfo(LogChannel::Global, "CurrentPath: {}", PathManager::GetCurrentPath());
+
 	const bool assetsPathFound = PathManager::AutoDetectAssetsPath();
 	if (!assetsPathFound)
 	{
-		enLogError(LogChannel::Core, "Can't find AssetsPath");
+		enLogError(LogChannel::Global, "Can't find AssetsPath");
 		return false;
 	}
-	const bool shadersPathFound = PathManager::AutoDetectShadersPath();
-	if (!shadersPathFound)
-	{
-		enLogError(LogChannel::Core, "Can't find ShadersPath");
-		return false;
-	}
+	enLogInfo(LogChannel::Global, "AssetsPath: {}", PathManager::GetAssetsPath());
 
 	if (!SDLWrapper::Init())
 	{
-		enLogError(LogChannel::Core, "Can't initialize SDL");
+		enLogError(LogChannel::Global, "Can't initialize SDL");
 		return false;
 	}
+	enLogInfo(LogChannel::Global, "SDL initialized");
+
+	if (!AudioManager::GetInstance().Initialize())
+	{
+		enLogError(LogChannel::Global, "Can't initialize SoLoud");
+		return false;
+	}
+	enLogInfo(LogChannel::Global, "SoLoud initialized");
 
 	const bool windowCreated = engine.mWindow.Create("Enlivengine", 0);
 	if (!windowCreated)
 	{
-		enLogError(LogChannel::Core, "Can't create window");
+		enLogError(LogChannel::Global, "Can't create window");
 		return false;
 	}
+	enLogInfo(LogChannel::Global, "Window created");
 
 	if (!BgfxWrapper::Init(engine.mWindow))
 	{
-		enLogError(LogChannel::Core, "Can't initialize Bgfx");
+		enLogError(LogChannel::Global, "Can't initialize Bgfx");
 		return false;
 	}
+	enLogInfo(LogChannel::Global, "Bgfx initialized");
+	enLogInfo(LogChannel::Global, "Renderer: {}", Enum::GetValueName<bgfx::RendererType::Enum>(bgfx::getRendererType()));
+
+	const bool shadersPathFound = PathManager::AutoDetectShadersPath();
+	if (!shadersPathFound)
+	{
+		enLogError(LogChannel::Global, "Can't find ShadersPath");
+		return false;
+	}
+	enLogInfo(LogChannel::Global, "ShadersPath: {}", PathManager::GetShadersPathForRenderer(bgfx::getRendererType()));
 
 	const bool spriteInit = Sprite::InitializeSprites();
 	const bool tilemapInit = Tilemap::InitializeTilemaps();
 	const bool debugDrawInit = DebugDraw::InitializeDebugDraws();
 	if (!spriteInit || !tilemapInit || !debugDrawInit)
 	{
-		enLogError(LogChannel::Core, "Can't initialize graphics resources");
+		enLogError(LogChannel::Global, "Can't initialize graphics resources");
 		return false;
 	}
+	enLogInfo(LogChannel::Global, "Shaders initialized");
 
 #ifdef ENLIVE_ENABLE_IMGUI
 	if (ImGuiWrapper::Init(PathManager::GetAssetsPath() + "imgui.ini"))
@@ -159,23 +180,25 @@ bool Engine::Init(int argc, char** argv)
 #ifdef ENLIVE_TOOL
 			if (!ImGuiToolManager::LoadFromFile(PathManager::GetAssetsPath() + "tools.json"))
 			{
-				enLogWarning(LogChannel::Core, "Can't load ImGui opened tools");
+				enLogWarning(LogChannel::Global, "Can't load ImGui opened tools");
 			}
 #endif // ENLIVE_TOOL
+			enLogInfo(LogChannel::Global, "ImGui initialized");
 		}
 		else
 		{
 #ifdef ENLIVE_TOOL
-			enLogError(LogChannel::Core, "Can't initialize ImGuiToolManager");
+			enLogError(LogChannel::Global, "Can't initialize ImGuiToolManager");
 			return false;
 #else
-			enLogWarning(LogChannel::Core, "Can't initialize ImGuiToolManager");
+			enLogWarning(LogChannel::Global, "Can't initialize ImGuiToolManager");
 #endif // ENLIVE_TOOL
 		}
 	}
 #endif // ENLIVE_ENABLE_IMGUI
 
 	engine.mInitialized = true;
+	enLogInfo(LogChannel::Global, "Engine initialized");
 
 	return true;
 }
@@ -217,6 +240,8 @@ bool Engine::Release()
 
 	engine.mWindow.Close();
 	engine.mWindow.Destroy();
+
+	AudioManager::GetInstance().Release();
 
 	if (SDLWrapper::IsInitialized())
 	{

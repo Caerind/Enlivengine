@@ -6,6 +6,7 @@
 
 #include <Enlivengine/Core/ComponentTraits.hpp>
 #include <Enlivengine/Core/Entity.hpp>
+#include <Enlivengine/Core/EntityHandle.hpp>
 
 // TODO : Ensure children/parent/entity are from the same world
 // TODO : What if children become invalid or loose its transform component
@@ -52,13 +53,13 @@ public:
 	bool IsChild(const Entity& childEntity) const;
 	bool IsChildOrSubchild(const Entity& childEntity) const;
 	U32 GetChildrenCount() const;
-	Entity GetChild(U32 index) const;
+	const EntityHandle& GetChild(U32 index) const;
 
 	// Parent
 	void AttachToParent(const Entity& parentEntity);
 	void DetachFromParent();
 	bool HasParent() const;
-	Entity GetParent() const;
+	const EntityHandle& GetParent() const;
 
 	// Global
 	const Matrix4f& GetGlobalMatrix() const;
@@ -86,8 +87,8 @@ private:
 	Transform mLocalTransform;
 	mutable Matrix4f mGlobalMatrix;
 	Entity mEntity;
-	Entity mParent;
-	std::vector<Entity> mChildren;
+	EntityHandle mParent;
+	std::vector<EntityHandle> mChildren;
 	mutable bool mGlobalMatrixDirty;
 };
 

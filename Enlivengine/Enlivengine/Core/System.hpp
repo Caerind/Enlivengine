@@ -24,9 +24,10 @@ class System
 #ifdef ENLIVE_TOOL
 		bool IsUpdateOnTool() const;
 #endif // ENLIVE_TOOL
-
+  
 	protected:
 		World* mWorld;
+		U32 mFlags;
 
 #ifdef ENLIVE_TOOL
 		bool mUpdateOnTool;

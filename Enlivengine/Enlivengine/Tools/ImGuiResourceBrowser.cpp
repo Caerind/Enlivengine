@@ -91,12 +91,12 @@ bool ImGuiResourceBrowser::LoadResourceInfosFromFile()
 	if (std::filesystem::exists(path))
 	{
 		XmlSerializer xml;
-		if (!xml.Open(path.string(), Serializer::Mode::Read))
+		if (!xml.Open(path.generic_string(), Serializer::Mode::Read))
 		{
 			return false;
 		}
 
-		Array<ResourceInfo> resourceInfos;
+		std::vector<ResourceInfo> resourceInfos;
 		if (GenericSerialization(xml, "Resources", mResourceInfos))
 		{
 			for (const ResourceInfo& resourceInfo : mResourceInfos)
@@ -132,7 +132,7 @@ bool ImGuiResourceBrowser::SaveResourceInfosToFile()
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "resources.data");
 
 	XmlSerializer xml;
-	if (xml.Open(path.string(), Serializer::Mode::Write))
+	if (xml.Open(path.generic_string(), Serializer::Mode::Write))
 	{
 		GenericSerialization(xml, "Resources", mResourceInfos);
 		return xml.Close();
@@ -157,7 +157,7 @@ void ImGuiResourceBrowser::AddNewResource()
 	static const std::string key = "ResourceBrowserFileDialogKey";
 	static const char* dialogTitle = "ResourceBrowser: Choose File";
 
-	const std::filesystem::path assetsPath = PathManager::GetAbsolutePath(PathManager::GetAssetsPath());
+	const std::filesystem::path assetsPath = PathManager::GetAssetsPath();
 
 	ImGui::Text("Add New Resource");
 	ImGui::Indent();
@@ -185,7 +185,7 @@ void ImGuiResourceBrowser::AddNewResource()
 	ImGui::InputText("Identitifer", mIdentifierBuffer, kBufferSize);
 	if (ImGui::Button("..."))
 	{
-		igfd::ImGuiFileDialog::Instance()->OpenDialog(key, dialogTitle, ".*", assetsPath.string());
+		igfd::ImGuiFileDialog::Instance()->OpenDialog(key, dialogTitle, ".*", assetsPath.generic_string());
 	}
 	ImGui::SameLine();
 	ImGui::InputText("Filename", mFilenameBuffer, kBufferSize);
@@ -194,8 +194,7 @@ void ImGuiResourceBrowser::AddNewResource()
 		if (igfd::ImGuiFileDialog::Instance()->IsOk)
 		{
 			std::filesystem::path filename = igfd::ImGuiFileDialog::Instance()->GetFirstSelected();
-			std::string relativeResult = filename.lexically_relative(assetsPath).string();
-			std::replace(relativeResult.begin(), relativeResult.end(), '\\', '/');
+			std::string relativeResult = filename.lexically_relative(assetsPath).generic_string();
 
 #ifdef ENLIVE_COMPILER_MSVC
 			strcpy_s(mFilenameBuffer, relativeResult.c_str());
@@ -263,7 +262,7 @@ void ImGuiResourceBrowser::DisplayResources()
 	ResourceManager::GetInstance().GetResourceInfos(mResourceInfos);
 
 	bool deletedSome = false;
-	U32 size = static_cast<U32>(mResourceInfos.Size());
+	U32 size = static_cast<U32>(mResourceInfos.size());
 	if (size > 0)
 	{
 		ImGui::Separator();
@@ -371,7 +370,7 @@ void ImGuiResourceBrowser::DisplayResources()
 						}
 					}
 
-					mResourceInfos.RemoveAtIndex(i);
+					mResourceInfos.erase(mResourceInfos.begin() + i);
 					size--;
 				}
 				else

@@ -45,7 +45,7 @@ bool Tileset::LoadFromFile(const std::string& filename)
 		xml.GetAttribute("spacing", mSpacing);
 		xml.GetAttribute("margin", mMargin);
 
-		mPath = std::filesystem::path(filename).remove_filename().string();
+		mPath = std::filesystem::path(filename).remove_filename().generic_string();
 
 		if (xml.ReadNode("image"))
 		{

@@ -75,7 +75,7 @@ void SystemManager::Update()
 		system->Update();
 	}
 }
-
+  
 void SystemManager::Render()
 {
 	ENLIVE_PROFILE_FUNCTION();

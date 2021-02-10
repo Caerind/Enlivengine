@@ -217,7 +217,7 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 	if (std::filesystem::exists(path))
 	{
 		XmlSerializer xml;
-		if (!xml.Open(path.string(), Serializer::Mode::Read))
+		if (!xml.Open(path.generic_string(), Serializer::Mode::Read))
 		{
 			return false;
 		}
@@ -250,7 +250,7 @@ bool ImGuiWorlds::SaveWorldsToFile()
 	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + "worlds.data");
 
 	XmlSerializer xml;
-	if (xml.Open(path.string(), Serializer::Mode::Write))
+	if (xml.Open(path.generic_string(), Serializer::Mode::Write))
 	{
 		GenericSerialization(xml, "Worlds", mWorlds);
 

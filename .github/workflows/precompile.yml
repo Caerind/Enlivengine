@@ -1,0 +1,64 @@
+name: Precompile
+
+on:
+  schedule:
+  - cron: "0 4,16 * * *"
+
+jobs:
+  precompile:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - {
+            name: "Windows MSVC",
+            image: windows-latest,
+            os: windows,
+            cc: cl,
+            cxx: cl
+          }
+        - {
+            name: "Ubuntu GCC",
+            image: ubuntu-latest,
+            os: ubuntu,
+            cc: gcc-9,
+            cxx: g++-9
+          }
+        - {
+            name: "MacOS Clang",
+            image: macos-latest,
+            os: macos,
+            cc: clang,
+            cxx: clang++
+          }
+        config:
+        - {
+            name: "Tool",
+            cfg: Debug 
+          }
+        - {
+            name: "Debug",
+            cfg: RelWithDebInfo
+          }
+        - {
+            name: "Release",
+            cfg: Release
+          }
+          
+    name: ${{ matrix.platform.name }}-${{ matrix.config.name }}
+    runs-on: ${{ matrix.platform.image }}
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: InstallDependencies
+      run: bash ./EnlivengineEnv/InstallDependencies.sh
+      
+    - name: GenerateProject
+      run: bash ./EnlivengineEnv/GenerateProject.sh ${{ matrix.platform.cc }} ${{ matrix.platform.cxx }}
+      
+    - name: BuildAll
+      run: bash ./EnlivengineEnv/BuildAll.sh ${{ matrix.config.cfg }}
+    
+    - name: DeployBuildFolder
+      run: bash ./EnlivengineEnv/DeployPrecompiled.sh ${{ secrets.deploy_server }} ${{ secrets.deploy_port }} ${{ secrets.deploy_username }} ${{ secrets.deploy_password }} ${{ secrets.deploy_distantPathPrecompiled }} ${{ matrix.config.name }}

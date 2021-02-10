@@ -132,7 +132,7 @@ bool Animation::LoadFromFile(const std::string& filename)
 					AddClip(name, from, to, direction);
 				}
 
-				std::string path = std::filesystem::path(filename).remove_filename().string();
+				std::string path = std::filesystem::path(filename).remove_filename().generic_string();
 				const std::string filepath = path + meta["image"].get<std::string>();
 				/*
 				// TODO : ANIMATION UPDATE

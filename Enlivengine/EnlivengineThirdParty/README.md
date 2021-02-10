@@ -14,6 +14,9 @@
 # Window
 - https://www.libsdl.org/  
 
+# Audio
+- https://github.com/jarikomppa/soloud
+
 # Graphics
 - https://github.com/bkaradzic/bgfx  
 

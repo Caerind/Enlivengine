@@ -389,7 +389,7 @@ bool Camera::Serialize(Serializer& serializer, const char* name)
 			{
 				ret = false;
 			}
-
+      
 			mViewDirty = true;
 			mProjectionDirty = true;
 		}
@@ -433,7 +433,7 @@ bool Camera::Edit(ObjectEditor& objectEditor, const char* name)
 		ret = GenericEdit(objectEditor, "ClearColor", mClearColor) || ret;
 		ret = GenericEdit(objectEditor, "Viewport", mViewport) || ret;
 		//ret = GenericEdit(objectEditor, "Aspect", mAspect) || ret;
-
+    
 		bool mainCamera = mMainCamera;
 		if (GenericEdit(objectEditor, "MainCamera", mainCamera))
 		{

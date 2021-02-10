@@ -119,7 +119,7 @@ World* WorldFileManager::LoadWorld_Internal(const std::string& worldName)
 	if (std::filesystem::exists(path))
 	{
 		XmlSerializer worldReader;
-		if (worldReader.Open(path.string(), Serializer::Mode::Read))
+		if (worldReader.Open(path.generic_string(), Serializer::Mode::Read))
 		{
 			if (GenericSerialization(worldReader, "World", *world))
 			{

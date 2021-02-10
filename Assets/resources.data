@@ -1,14 +1,34 @@
 <?xml version="1.0"?>
-<Resources type="en::Array<en::ResourceInfo>" hash="450972212">
-	<size>1</size>
+<Resources type="std::vector<en::ResourceInfo>" hash="3021662304">
+	<size>3</size>
 	<Resources_0 type="en::ResourceInfo" hash="1031480020">
 		<id>109796557</id>
 		<type>2</type>
 		<identifier>ship</identifier>
 		<loadInfo type="en::ResourceLoadInfo" hash="4273027252">
 			<method>File</method>
-			<infoString>../../Assets/ship_default.png</infoString>
+			<path>ship_default.png</path>
 		</loadInfo>
 		<loaded>true</loaded>
 	</Resources_0>
+	<Resources_1 type="en::ResourceInfo" hash="1031480020">
+		<id>1638674918</id>
+		<type>2</type>
+		<identifier>fieldstone</identifier>
+		<loadInfo type="en::ResourceLoadInfo" hash="4273027252">
+			<method>File</method>
+			<path>fieldstone-rgba.dds</path>
+		</loadInfo>
+		<loaded>true</loaded>
+	</Resources_1>
+	<Resources_2 type="en::ResourceInfo" hash="1031480020">
+		<id>2105559457</id>
+		<type>2</type>
+		<identifier>fieldstone-n</identifier>
+		<loadInfo type="en::ResourceLoadInfo" hash="4273027252">
+			<method>File</method>
+			<path>fieldstone-n.dds</path>
+		</loadInfo>
+		<loaded>true</loaded>
+	</Resources_2>
 </Resources>

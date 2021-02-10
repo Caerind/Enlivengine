@@ -56,6 +56,8 @@ struct ResourceLoadInfo
 
 	bool IsFromFile() const;
 
+	bool Serialize(Serializer& serializer, const char* name);
+
 	Method method;
 	std::string infoString;
 };
@@ -254,9 +256,9 @@ public:
 	bool InitializeClientResourceTypes();
 
 #ifdef ENLIVE_DEBUG
-	template <typename T = void> void GetResourceInfosOfType(Array<ResourceInfo>& resourceInfos);
-	void GetResourceInfosOfType(Array<ResourceInfo>& resourceInfos, U32 resourceType);
-	void GetResourceInfos(Array<ResourceInfo>& resourceInfos);
+	template <typename T = void> void GetResourceInfosOfType(std::vector<ResourceInfo>& resourceInfos);
+	void GetResourceInfosOfType(std::vector<ResourceInfo>& resourceInfos, U32 resourceType);
+	void GetResourceInfos(std::vector<ResourceInfo>& resourceInfos);
 	template <typename T> std::string_view GetResourceTypeName() const;
 	std::string_view GetResourceTypeName(U32 resourceType) const;
 	U32 GetResourceTypeCount() const;
@@ -286,7 +288,7 @@ private:
 
 ENLIVE_DEFINE_ENUM_INFO(en::ResourceLoadInfo::Method)
 
-ENLIVE_META_CLASS_BEGIN(en::ResourceLoadInfo, en::Type_ClassSerialization, en::Type_ClassEditor)
+ENLIVE_META_CLASS_BEGIN(en::ResourceLoadInfo, en::Type_CustomSerialization, en::Type_ClassEditor)
 	ENLIVE_META_CLASS_MEMBER("method", &en::ResourceLoadInfo::method),
 	ENLIVE_META_CLASS_MEMBER("infoString", &en::ResourceLoadInfo::infoString)
 ENLIVE_META_CLASS_END()
