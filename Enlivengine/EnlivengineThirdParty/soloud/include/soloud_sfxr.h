@@ -154,6 +154,6 @@ namespace SoLoud
 		result loadPreset(int aPresetNo, int aRandSeed);
 		virtual AudioSourceInstance *createInstance();
 	};
-};
+}
 
 #endif

@@ -88,7 +88,7 @@ namespace SoLoud
 
 	// Convert to 16-bit and interlace samples in a buffer. From 11112222 to 12121212
 	void interlace_samples_s16(const float *aSourceBuffer, short *aDestBuffer, unsigned int aSamples, unsigned int aChannels, unsigned int aStride);
-};
+}
 
 #define FOR_ALL_VOICES_PRE \
 		handle *h_ = NULL; \

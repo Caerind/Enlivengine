@@ -69,6 +69,6 @@ namespace SoLoud
 		virtual AudioSourceInstance *createInstance();
 		time getLength();
 	};
-};
+}
 
 #endif

@@ -46,6 +46,6 @@ namespace SoLoud
 		// Generic (slower) power of two IFFT. Buffer is overwritten.
 		void ifft(float *aBuffer, unsigned int aBufferLength);
 	};
-};
+}
 
 #endif

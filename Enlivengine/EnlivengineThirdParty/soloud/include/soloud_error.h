@@ -37,5 +37,6 @@ namespace SoLoud
 		NOT_IMPLEMENTED   = 6, // Feature not implemented
 		UNKNOWN_ERROR     = 7  // Other error
 	};
-};
+}
+
 #endif

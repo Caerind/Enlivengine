@@ -103,6 +103,6 @@ namespace SoLoud
 		unsigned char	m_regs[MAX_REGS];		
 		unsigned char 	m_noise[8192];
 	};
-};
+}
 
 #endif

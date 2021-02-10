@@ -101,6 +101,6 @@ namespace SoLoud
 	public:
 		result parse(File *aFile);
 	};
-};
+}
 
 #endif

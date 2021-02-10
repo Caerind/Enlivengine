@@ -85,6 +85,6 @@ namespace SoLoud
 		result openToMem(const char *aFilename);
 		result openFileToMem(File *aFile);
 	};
-};
+}
 
 #endif

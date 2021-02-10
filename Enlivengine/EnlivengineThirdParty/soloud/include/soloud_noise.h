@@ -69,6 +69,6 @@ namespace SoLoud
 		virtual AudioSourceInstance *createInstance();
 		float mOctaveScale[10];
 	};
-};
+}
 
 #endif

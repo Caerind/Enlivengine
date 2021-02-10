@@ -58,6 +58,6 @@ namespace SoLoud
 		// Get the current fading value
 		float get(time aCurrentTime);
 	}; 
-};
+}
 
 #endif 

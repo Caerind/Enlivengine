@@ -67,6 +67,6 @@ namespace SoLoud
 		void findQueueHandle();
 		
 	};
-};
+}
 
 #endif

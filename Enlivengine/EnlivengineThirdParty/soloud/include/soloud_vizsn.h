@@ -79,6 +79,6 @@ namespace SoLoud
 	public:
 		virtual AudioSourceInstance *createInstance();
 	};
-};
+}
 
 #endif

@@ -74,6 +74,6 @@ namespace SoLoud
 		virtual result rewind();
 		virtual bool hasEnded();
 	};
-};
+}
 
 #endif

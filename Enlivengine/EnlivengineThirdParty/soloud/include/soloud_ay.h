@@ -65,6 +65,6 @@ namespace SoLoud
 		result loadMem(const unsigned char* aMem, unsigned int aLength, bool aCopy, bool aTakeOwnership);
 		virtual AudioSourceInstance *createInstance();
 	};
-};
+}
 
 #endif
