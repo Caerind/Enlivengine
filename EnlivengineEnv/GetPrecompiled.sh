@@ -32,6 +32,22 @@ else
 	exit 3
 fi
 
+distantPath=""
+if [ ! -z "$5" ]; then
+	distantPath="$5"
+else
+    echo "No [5:distantPath] argument, aborting"
+	exit 3
+fi
+
+config=""
+if [ ! -z "$6" ]; then
+	config="$6"
+else
+    echo "No [6:config] argument, aborting"
+	exit 3
+fi
+
 # Platform detection
 platform='unknown'
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -51,28 +67,13 @@ else
 	platform='windows'
 fi 
 
-# Path depending on platform/IDE
-if [[ "$platform" == "windows" ]]; then
-    powershell Compress-Archive build\* build.zip -Force
-else
-    zip -r build.zip build
-fi
-
-distantPath=""
-if [ ! -z "$5" ]; then
-	distantPath="$5"
-else
-    echo "No [5:distantPath] argument, aborting"
-	exit 3
-fi
-config=""
-if [ ! -z "$6" ]; then
-	config="$6"
-else
-    echo "No [6:config] argument, aborting"
-	exit 3
-fi
-
 distantFile="${distantPath}precompiled-$config-$platform.zip"
 
-bash EnlivengineEnv/DeploySingleFile.sh $server $port $username $password build.zip $distantFile
+bash EnlivengineEnv/GetSingleFile.sh $server $port $username $password build.zip $distantFile 
+
+# Path depending on platform/IDE
+if [[ "$platform" == "windows" ]]; then
+    powershell Expand-Archive build.zip .
+else
+    unzip build.zip
+fi
