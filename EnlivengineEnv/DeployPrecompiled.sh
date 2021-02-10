@@ -53,7 +53,7 @@ fi
 
 # Path depending on platform/IDE
 if [[ "$platform" == "windows" ]]; then
-    powershell Compress-Archive 'build\*' build.zip -Force
+    powershell Compress-Archive build\* build.zip -Force
 else
     zip -r build.zip build
 fi
