@@ -69,11 +69,11 @@ fi
 
 distantFile="${distantPath}precompiled-$config-$platform.zip"
 
-bash EnlivengineEnv/GetSingleFile.sh $server $port $username $password build.zip $distantFile 
+bash EnlivengineEnv/GetSingleFile.sh $server $port $username $password precompiled.zip $distantFile 
 
 # Path depending on platform/IDE
 if [[ "$platform" == "windows" ]]; then
-    powershell Expand-Archive build.zip .
+    powershell Expand-Archive precompiled.zip .
 else
-    unzip build.zip
+    unzip precompiled.zip
 fi
