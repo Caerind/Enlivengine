@@ -114,8 +114,6 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 	if (serializer.BeginClass(name, TypeInfo<EntityManager>::GetName(), TypeInfo<EntityManager>::GetHash()))
 	{
 		bool ret = true;
-		const auto& componentInfos = ComponentFactory::GetComponentInfos();
-		const auto endItr = componentInfos.cend();
 
 		GenericSerialization(serializer, "uidGenerator", mUIDGenerator) && ret;
 
