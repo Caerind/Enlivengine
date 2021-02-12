@@ -32,6 +32,21 @@ else
 	exit 3
 fi
 
+distantPath=""
+if [ ! -z "$5" ]; then
+	distantPath="$5"
+else
+    echo "No [5:distantPath] argument, aborting"
+	exit 3
+fi
+config=""
+if [ ! -z "$6" ]; then
+	config="$6"
+else
+    echo "No [6:config] argument, aborting"
+	exit 3
+fi
+
 # Platform detection
 platform='unknown'
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -51,28 +66,39 @@ else
 	platform='windows'
 fi 
 
-# Path depending on platform/IDE
+# Precompiled
+path_shaderc=""
+path_texturec=""
+extension=""
 if [[ "$platform" == "windows" ]]; then
-    powershell Compress-Archive build\* build.zip -Force
+    path_shaderc="build/Enlivengine/EnlivengineThirdParty/bgfx/${config}/shaderc.exe"
+    path_texturec="build/Enlivengine/EnlivengineThirdParty/bgfx/${config}/texturec.exe"
+	extension=".exe"
 else
-    zip -r build.zip build
+    path_shaderc="build/Enlivengine/EnlivengineThirdParty/bgfx/shaderc"
+    path_texturec="build/Enlivengine/EnlivengineThirdParty/bgfx/texturec"
 fi
 
-distantPath=""
-if [ ! -z "$5" ]; then
-	distantPath="$5"
-else
-    echo "No [5:distantPath] argument, aborting"
-	exit 3
+if [ ! -x $path_shaderc ]; then
+	echo "Shaderc isn't available"
+	exit
 fi
-config=""
-if [ ! -z "$6" ]; then
-	config="$6"
+if [ ! -x $path_texturec ]; then
+	echo "Texturec isn't available"
+	exit
+fi
+
+mkdir -p precompiled
+mv $path_shaderc precompiled/shaderc$extension
+mv $path_texturec precompiled/texturec$extension
+
+# Path depending on platform/IDE
+if [[ "$platform" == "windows" ]]; then
+    powershell Compress-Archive precompiled\* precompiled.zip -Force
 else
-    echo "No [6:config] argument, aborting"
-	exit 3
+    zip -r precompiled.zip precompiled
 fi
 
 distantFile="${distantPath}precompiled-$config-$platform.zip"
 
-bash EnlivengineEnv/DeploySingleFile.sh $server $port $username $password build.zip $distantFile
+bash EnlivengineEnv/DeploySingleFile.sh $server $port $username $password precompiled.zip $distantFile
