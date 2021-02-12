@@ -147,11 +147,6 @@ const std::vector<entt::entity>& World::GetSelectedEntities() const
 {
 	return mSelectedEntities;
 }
-
-U32 World::GetSelectedEntityCount() const
-{
-	return static_cast<U32>(mSelectedEntities.size());
-}
 #endif // ENLIVE_DEBUG
 
 bool World::Serialize(Serializer& serializer, const char* name)

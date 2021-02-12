@@ -43,7 +43,6 @@ public:
 	bool UnselectEntity(const Entity& entity);
 	void ClearSelectedEntities();
 	const std::vector<entt::entity>& GetSelectedEntities() const;
-	U32 GetSelectedEntityCount() const;
 #endif // ENLIVE_DEBUG
 
 	bool Serialize(Serializer& serializer, const char* name);

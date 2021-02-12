@@ -131,27 +131,48 @@ const World& Entity::GetWorld() const
 
 bool Entity::Serialize(Serializer& serializer, const char* name)
 {
-	if (serializer.IsReading())
+	if (serializer.BeginClass(name, TypeInfo<Entity>::GetName(), TypeInfo<Entity>::GetHash()))
 	{
-		U32 id = 0;
-		if (serializer.Serialize(name, id))
+		bool ret = true;
+
+		if (serializer.IsReading())
 		{
-			mEntity = entt::entity(id);
-			return true;
+			const auto& componentInfos = ComponentFactory::GetComponentInfos();
+			const auto endItr = componentInfos.cend();
+			for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
+			{
+				const auto& ci = itr->second;
+				if (serializer.HasNode(ci.name))
+				{
+					ci.add(*this);
+					ret = ci.serialize(serializer, *this) && ret;
+				}
+			}
+		}
+		else if (serializer.IsWriting())
+		{
+			const auto& componentInfos = ComponentFactory::GetComponentInfos();
+			const auto endItr = componentInfos.cend();
+			for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
+			{
+				const auto& ci = itr->second;
+				if (ci.has(*this))
+				{
+					ret = ci.serialize(serializer, *this) && ret;
+				}
+			}
 		}
 		else
 		{
-			return false;
+			enAssert(false);
+			ret = false;
 		}
-	}
-	else if (serializer.IsWriting())
-	{
-		U32 id = GetID();
-		return serializer.Serialize(name, id);
+
+		ret = serializer.EndClass() && ret;
+		return ret;
 	}
 	else
 	{
-		enAssert(false);
 		return false;
 	}
 }
@@ -159,6 +180,7 @@ bool Entity::Serialize(Serializer& serializer, const char* name)
 bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 {
 #ifdef ENLIVE_ENABLE_IMGUI
+	bool ret = false;
 	if (objectEditor.IsImGuiEditor())
 	{
 		bool collasping = false;
@@ -177,14 +199,13 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 
 		if (collasping)
 		{
-			bool ret = false;
 			if (IsValid())
 			{
 				ImGui::Indent();
 			}
 		}
 
-		if (collaspindHeaderOpen)
+		if (collasping)
 		{
 			if (IsValid())
 			{

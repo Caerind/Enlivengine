@@ -131,25 +131,7 @@ bool EntityManager::Serialize(Serializer& serializer, const char* name)
 					Entity entity = Entity(*this, mRegistry.create());
 					if (entity.IsValid())
 					{
-						if (serializer.BeginClass(entityName.c_str(), kManagedEntityName, kManagedEntityHash))
-						{
-							U32 id = 0;
-							ret = GenericSerialization(serializer, "id", id) && ret;
-							for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
-							{
-								const auto& ci = itr->second;
-								if (serializer.HasNode(ci.name))
-								{
-									ci.add(entity);
-									ret = ci.serialize(serializer, entity) && ret;
-								}
-							}
-							ret = serializer.EndClass() && ret;
-						}
-						else
-						{
-							ret = false;
-						}
+						ret = GenericSerialization(serializer, entityName.c_str(), entity) && ret;
 					}
 					else
 					{

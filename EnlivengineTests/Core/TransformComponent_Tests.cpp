@@ -49,27 +49,27 @@ DOCTEST_TEST_CASE("TransformComponent - Simple Children/Parent")
 
 	// Attach
 	DOCTEST_CHECK(!transformComponentA.IsChild(entityB));
-	DOCTEST_CHECK(transformComponentB.GetParent() != entityA);
+	DOCTEST_CHECK(transformComponentB.GetParent().Get() != entityA);
 	transformComponentA.AttachChild(entityB);
 	DOCTEST_CHECK(!transformComponentA.HasParent());
-	DOCTEST_CHECK(transformComponentA.GetParent() == en::Entity());
+	DOCTEST_CHECK(transformComponentA.GetParent().Get() == en::Entity());
 	DOCTEST_CHECK(transformComponentA.IsChild(entityB));
 	DOCTEST_CHECK(transformComponentA.GetChildrenCount() == 1);
 	DOCTEST_CHECK(transformComponentB.HasParent());
-	DOCTEST_CHECK(transformComponentB.GetParent() == entityA);
+	DOCTEST_CHECK(transformComponentB.GetParent().Get() == entityA);
 	DOCTEST_CHECK(!transformComponentB.IsChild(entityA));
 	DOCTEST_CHECK(transformComponentB.GetChildrenCount() == 0);
 
 	// Detach
 	DOCTEST_CHECK(transformComponentA.IsChild(entityB));
-	DOCTEST_CHECK(transformComponentB.GetParent() == entityA);
+	DOCTEST_CHECK(transformComponentB.GetParent().Get() == entityA);
 	transformComponentA.DetachChild(entityB);
 	DOCTEST_CHECK(!transformComponentA.HasParent());
-	DOCTEST_CHECK(transformComponentA.GetParent() == en::Entity());
+	DOCTEST_CHECK(transformComponentA.GetParent().Get() == en::Entity());
 	DOCTEST_CHECK(!transformComponentA.IsChild(entityB));
 	DOCTEST_CHECK(transformComponentA.GetChildrenCount() == 0);
 	DOCTEST_CHECK(!transformComponentB.HasParent());
-	DOCTEST_CHECK(transformComponentB.GetParent() != entityA);
+	DOCTEST_CHECK(transformComponentB.GetParent().Get() != entityA);
 	DOCTEST_CHECK(!transformComponentB.IsChild(entityA));
 	DOCTEST_CHECK(transformComponentB.GetChildrenCount() == 0);
 }
