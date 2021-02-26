@@ -18,6 +18,7 @@ class EntityManager
 {
 public:
 	EntityManager(World& world);
+	~EntityManager();
 
 	// Create entity and assign a new UID
 	Entity CreateEntity();

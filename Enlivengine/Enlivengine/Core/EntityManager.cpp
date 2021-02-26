@@ -15,6 +15,11 @@ EntityManager::EntityManager(World& world)
 {
 }
 
+EntityManager::~EntityManager()
+{
+	mRegistry.clear();
+}
+
 Entity EntityManager::CreateEntity()
 {
 	Entity entity(*this, mRegistry.create());
