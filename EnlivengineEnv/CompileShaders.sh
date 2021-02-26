@@ -19,22 +19,20 @@ else
 	platform='windows'
 fi
 
-# Path depending on platform/IDE
+path_shaderc=""
+mkdir -p gfxcompilers
 if [[ "$platform" == "windows" ]]; then
-    path_shaderc="./build/Enlivengine/EnlivengineThirdParty/bgfx/Debug/shaderc.exe" # default path for Visual Studio users
-else
-    path_shaderc="./build/Enlivengine/EnlivengineThirdParty/bgfx/shaderc" # for Linux/Unix GCC users
-fi
-
-# Check if shaderc exists, if not then try to build
-if [ ! -x $path_shaderc ]; then
-	cmake --build build --target shaderc
-	
-	# Check if shaderc exists a second time, if not exit
-	if [ ! -x $path_shaderc ]; then
-		echo "Shaderc isn't available"
-		exit
+	if [ ! -x "build/Enlivengine/EnlivengineThirdParty/bgfx/Debug/shaderc.exe" ]; then
+		cmake --build build --target shaderc
 	fi
+	path_shaderc="gfxcompilers/shaderc.exe"
+	cp build/Enlivengine/EnlivengineThirdParty/bgfx/Debug/shaderc.exe $path_shaderc
+else
+	if [ ! -x "build/Enlivengine/EnlivengineThirdParty/bgfx/shaderc" ]; then
+		cmake --build build --target shaderc
+	fi
+	path_shaderc="gfxcompilers/shaderc"
+	cp build/Enlivengine/EnlivengineThirdParty/bgfx/shaderc $path_shaderc
 fi
 
 output_path="build/Shaders"

@@ -78,8 +78,6 @@ DOCTEST_TEST_CASE("TransformComponent - CanAttach")
 {
 	en::World world("Test");
 
-	printf("DebuggingGCC-0\n");
-
 	en::Entity entityA = world.GetEntityManager().CreateEntity();
 	DOCTEST_CHECK(entityA.IsValid());
 	en::Entity entityB = world.GetEntityManager().CreateEntity();
@@ -93,8 +91,6 @@ DOCTEST_TEST_CASE("TransformComponent - CanAttach")
 	en::Entity entityF = world.GetEntityManager().CreateEntity();
 	DOCTEST_CHECK(entityF.IsValid());
 
-	printf("DebuggingGCC-1\n");
-
 	// Creating many components can invalidate reference
 	// Don't store references to components and use Get instead
 	entityA.Add<en::TransformComponent>();
@@ -103,60 +99,47 @@ DOCTEST_TEST_CASE("TransformComponent - CanAttach")
 	entityD.Add<en::TransformComponent>();
 	entityE.Add<en::TransformComponent>();
 
-	printf("DebuggingGCC-2\n");
-
 	en::TransformComponent& transformComponentA = entityA.Get<en::TransformComponent>();
 	DOCTEST_CHECK(entityA == transformComponentA.GetEntity());
 	DOCTEST_CHECK(!transformComponentA.HasParent());
 	DOCTEST_CHECK(transformComponentA.GetChildrenCount() == 0);
-	printf("DebuggingGCC-2A\n");
 
 	en::TransformComponent& transformComponentB = entityB.Get<en::TransformComponent>();
 	DOCTEST_CHECK(entityB == transformComponentB.GetEntity());
 	DOCTEST_CHECK(!transformComponentB.HasParent());
 	DOCTEST_CHECK(transformComponentB.GetChildrenCount() == 0);
-	printf("DebuggingGCC-2B\n");
 
 	en::TransformComponent& transformComponentC = entityC.Get<en::TransformComponent>();
 	DOCTEST_CHECK(entityC == transformComponentC.GetEntity());
 	DOCTEST_CHECK(!transformComponentC.HasParent());
 	DOCTEST_CHECK(transformComponentC.GetChildrenCount() == 0);
-	printf("DebuggingGCC-2C\n");
 
 	en::TransformComponent& transformComponentD = entityD.Get<en::TransformComponent>();
 	DOCTEST_CHECK(entityD == transformComponentD.GetEntity());
 	DOCTEST_CHECK(!transformComponentD.HasParent());
 	DOCTEST_CHECK(transformComponentD.GetChildrenCount() == 0);
-	printf("DebuggingGCC-2D\n");
 
 	en::TransformComponent& transformComponentE = entityE.Get<en::TransformComponent>();
 	DOCTEST_CHECK(entityE == transformComponentE.GetEntity());
 	DOCTEST_CHECK(!transformComponentE.HasParent());
 	DOCTEST_CHECK(transformComponentE.GetChildrenCount() == 0);
-	printf("DebuggingGCC-2E\n");
 
 	// A
 	// - B
 	//   - C
 	// - D
 	//   - E
-	printf("DebuggingGCC-3\n");
 	DOCTEST_CHECK(!transformComponentA.CanAttach(entityF));
-	printf("DebuggingGCC-3B\n");
 	DOCTEST_CHECK(transformComponentA.CanAttach(entityB));
 	transformComponentA.AttachChild(entityB);
-	printf("DebuggingGCC-3D\n");
 	DOCTEST_CHECK(transformComponentA.CanAttach(entityD));
 	transformComponentA.AttachChild(entityD);
-	printf("DebuggingGCC-3C\n");
 	DOCTEST_CHECK(transformComponentB.CanAttach(entityC));
 	transformComponentB.AttachChild(entityC);
-	printf("DebuggingGCC-3E\n");
 	DOCTEST_CHECK(transformComponentD.CanAttach(entityE));
 	transformComponentD.AttachChild(entityE);
 
 
-	printf("DebuggingGCC-4A\n");
 	DOCTEST_CHECK(!transformComponentA.CanAttach(entityA));
 	DOCTEST_CHECK(!transformComponentA.CanAttach(entityB));
 	DOCTEST_CHECK(!transformComponentA.CanAttach(entityC));
@@ -164,7 +147,6 @@ DOCTEST_TEST_CASE("TransformComponent - CanAttach")
 	DOCTEST_CHECK(!transformComponentA.CanAttach(entityE));
 	DOCTEST_CHECK(!transformComponentA.CanAttach(entityF));
 
-	printf("DebuggingGCC-4B\n");
 	DOCTEST_CHECK(transformComponentB.CanAttach(entityA));
 	DOCTEST_CHECK(!transformComponentB.CanAttach(entityB));
 	DOCTEST_CHECK(!transformComponentB.CanAttach(entityC));
@@ -172,7 +154,6 @@ DOCTEST_TEST_CASE("TransformComponent - CanAttach")
 	DOCTEST_CHECK(transformComponentB.CanAttach(entityE));
 	DOCTEST_CHECK(!transformComponentB.CanAttach(entityF));
 
-	printf("DebuggingGCC-4C\n");
 	DOCTEST_CHECK(transformComponentC.CanAttach(entityA));
 	DOCTEST_CHECK(transformComponentC.CanAttach(entityB));
 	DOCTEST_CHECK(!transformComponentC.CanAttach(entityC));
@@ -180,7 +161,6 @@ DOCTEST_TEST_CASE("TransformComponent - CanAttach")
 	DOCTEST_CHECK(transformComponentC.CanAttach(entityE));
 	DOCTEST_CHECK(!transformComponentC.CanAttach(entityF));
 
-	printf("DebuggingGCC-4D\n");
 	DOCTEST_CHECK(transformComponentD.CanAttach(entityA));
 	DOCTEST_CHECK(transformComponentD.CanAttach(entityB));
 	DOCTEST_CHECK(transformComponentD.CanAttach(entityC));
@@ -188,7 +168,6 @@ DOCTEST_TEST_CASE("TransformComponent - CanAttach")
 	DOCTEST_CHECK(!transformComponentD.CanAttach(entityE));
 	DOCTEST_CHECK(!transformComponentD.CanAttach(entityF));
 
-	printf("DebuggingGCC-4E\n");
 	DOCTEST_CHECK(transformComponentE.CanAttach(entityA));
 	DOCTEST_CHECK(transformComponentE.CanAttach(entityB));
 	DOCTEST_CHECK(transformComponentE.CanAttach(entityC));
