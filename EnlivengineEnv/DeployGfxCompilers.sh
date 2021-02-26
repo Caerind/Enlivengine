@@ -39,10 +39,7 @@ else
     echo "No [5:distantPath] argument, aborting"
 	exit 3
 fi
-<<<<<<< HEAD:EnlivengineEnv/DeployGfxCompilers.sh
 
-=======
->>>>>>> 688a00261e3f985955d92eeb869fcc37dd7e61ea:EnlivengineEnv/DeployPrecompiled.sh
 config=""
 if [ ! -z "$6" ]; then
 	config="$6"
@@ -70,58 +67,45 @@ else
 	platform='windows'
 fi 
 
-<<<<<<< HEAD:EnlivengineEnv/DeployGfxCompilers.sh
 # Path depending on platform/IDE
-mkdir -p gfxcompilers
-if [[ "$platform" == "windows" ]]; then
-	cp "build/Enlivengine/EnlivengineThirdParty/bgfx/${config}/geometryc.exe" "gfxcompilers/geometryc.exe"
-	cp "build/Enlivengine/EnlivengineThirdParty/bgfx/${config}/shaderc.exe" "gfxcompilers/shaderc.exe"
-	cp "build/Enlivengine/EnlivengineThirdParty/bgfx/${config}/texturec.exe" "gfxcompilers/texturec.exe"
-    powershell Compress-Archive gfxcompilers\* gfxcompilers.zip -Force
-else
-	cp "build/Enlivengine/EnlivengineThirdParty/bgfx/geometryc" "gfxcompilers/geometryc"
-	cp "build/Enlivengine/EnlivengineThirdParty/bgfx/shaderc" "gfxcompilers/shaderc"
-	cp "build/Enlivengine/EnlivengineThirdParty/bgfx/texturec" "gfxcompilers/texturec"
-    zip -r gfxcompilers.zip gfxcompilers
-=======
-# Precompiled
+path_geometryc=""
 path_shaderc=""
 path_texturec=""
 extension=""
 if [[ "$platform" == "windows" ]]; then
+    path_geometryc="build/Enlivengine/EnlivengineThirdParty/bgfx/${config}/geometryc.exe"
     path_shaderc="build/Enlivengine/EnlivengineThirdParty/bgfx/${config}/shaderc.exe"
     path_texturec="build/Enlivengine/EnlivengineThirdParty/bgfx/${config}/texturec.exe"
 	extension=".exe"
 else
+    path_geometryc="build/Enlivengine/EnlivengineThirdParty/bgfx/geometryc"
     path_shaderc="build/Enlivengine/EnlivengineThirdParty/bgfx/shaderc"
     path_texturec="build/Enlivengine/EnlivengineThirdParty/bgfx/texturec"
+	extension=""
 fi
 
+if [ ! -x $path_geometryc ]; then
+	echo "Geometryc isn't available"
+fi
 if [ ! -x $path_shaderc ]; then
 	echo "Shaderc isn't available"
-	exit
 fi
 if [ ! -x $path_texturec ]; then
 	echo "Texturec isn't available"
-	exit
 fi
 
-mkdir -p precompiled
-mv $path_shaderc precompiled/shaderc$extension
-mv $path_texturec precompiled/texturec$extension
+mkdir -p gfxcompilers
+cp $path_geometryc gfxcompilers/geometryc$extension
+cp $path_shaderc gfxcompilers/shaderc$extension
+cp $path_texturec gfxcompilers/texturec$extension
 
 # Path depending on platform/IDE
 if [[ "$platform" == "windows" ]]; then
-    powershell Compress-Archive precompiled\* precompiled.zip -Force
+    powershell Compress-Archive gfxcompilers\* gfxcompilers.zip -Force
 else
-    zip -r precompiled.zip precompiled
->>>>>>> 688a00261e3f985955d92eeb869fcc37dd7e61ea:EnlivengineEnv/DeployPrecompiled.sh
+    zip -r gfxcompilers.zip gfxcompilers
 fi
 
 distantFile="${distantPath}gfxcompilers-$config-$platform.zip"
 
-<<<<<<< HEAD:EnlivengineEnv/DeployGfxCompilers.sh
 bash EnlivengineEnv/DeploySingleFile.sh $server $port $username $password gfxcompilers.zip $distantFile
-=======
-bash EnlivengineEnv/DeploySingleFile.sh $server $port $username $password precompiled.zip $distantFile
->>>>>>> 688a00261e3f985955d92eeb869fcc37dd7e61ea:EnlivengineEnv/DeployPrecompiled.sh
