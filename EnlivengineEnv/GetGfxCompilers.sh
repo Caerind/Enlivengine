@@ -69,6 +69,7 @@ fi
 
 distantFile="${distantPath}gfxcompilers-$config-$platform.zip"
 
+<<<<<<< HEAD:EnlivengineEnv/GetGfxCompilers.sh
 bash EnlivengineEnv/GetSingleFile.sh $server $port $username $password gfxcompilers.zip $distantFile 
 
 # Path depending on platform/IDE
@@ -76,4 +77,13 @@ if [[ "$platform" == "windows" ]]; then
     powershell Expand-Archive gfxcompilers.zip .
 else
     unzip gfxcompilers.zip
+=======
+bash EnlivengineEnv/GetSingleFile.sh $server $port $username $password precompiled.zip $distantFile 
+
+# Path depending on platform/IDE
+if [[ "$platform" == "windows" ]]; then
+    powershell Expand-Archive precompiled.zip .
+else
+    unzip precompiled.zip
+>>>>>>> 688a00261e3f985955d92eeb869fcc37dd7e61ea:EnlivengineEnv/GetPrecompiled.sh
 fi
