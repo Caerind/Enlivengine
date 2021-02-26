@@ -41,8 +41,8 @@ public:
     void SetProjection(ProjectionMode projection);
     ProjectionMode GetProjection() const;
 
-    void InitializePerspective(F32 fov, F32 nearPlane = 0.1f, F32 farPlane = 100.0f);
-	void InitializeOrthographic(F32 size, F32 nearPlane = 0.1f, F32 farPlane = 100.0f);
+    void InitializePerspective(F32 fov = 80.0f, F32 nearPlane = 0.1f, F32 farPlane = 300.0f);
+	void InitializeOrthographic(F32 size, F32 nearPlane = 0.1f, F32 farPlane = 300.0f);
 
 	void SetNearPlane(F32 nearPlane);
 	F32 GetNearPlane() const;

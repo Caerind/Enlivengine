@@ -32,7 +32,7 @@ ImGuiEditor::ImGuiEditor()
 	, mGizmoOperation(GizmoOperation::Translate)
 	, mStatus(GameStatus::Stopped)
 {
-	mCamera.InitializePerspective(80.0f, 0.1f, 1000.0f);
+	mCamera.InitializePerspective(80.0f, 0.1f, 10000.0f);
 	mCamera.InitializeView(Vector3f(-2.0f, 0.8f, 2.0f), Matrix3f::RotationY(-135.0f));
 
 	mFramebuffer.Create(Vector2u(840, 600), true);
@@ -113,7 +113,7 @@ void ImGuiEditor::Display()
 							parentMtx = parentEntity.Get<TransformComponent>().GetGlobalMatrix();
 						}
 					}
-
+          
 					world->GetDebugDraw().DrawTransform(parentMtx);
 					if (ImGuizmo::IsUsing())
 					{
@@ -410,7 +410,7 @@ bool ImGuiEditor::StartGame()
 	{
 		const std::string worldName = world->GetName();
 
-		WorldFileManager::UnloadCurrentWorld(true); // TODO : Save ?
+		WorldFileManager::UnloadCurrentWorld();
 
 		// Reload the same world
 		if (WorldFileManager::LoadWorld(worldName))

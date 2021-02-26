@@ -54,6 +54,16 @@ U32 Entity::GetID() const
 	return static_cast<U32>(entt::to_integral(mEntity));
 }
 
+U32 Entity::GetIndex() const
+{
+	return static_cast<U32>(GetRegistry().entity(mEntity));
+}
+
+U32 Entity::GetVersion() const
+{
+	return static_cast<U32>(GetRegistry().version(mEntity));
+}
+  
 U32 Entity::GetUID() const
 {
 	enAssert(Has<UIDComponent>());
@@ -153,7 +163,7 @@ bool Entity::Serialize(Serializer& serializer, const char* name)
 			}
 		}
 		else
-		{ 
+		{
 			enAssert(false);
 			ret = false;
 		}
@@ -170,6 +180,7 @@ bool Entity::Serialize(Serializer& serializer, const char* name)
 bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 {
 #ifdef ENLIVE_ENABLE_IMGUI
+	bool ret = false;
 	if (objectEditor.IsImGuiEditor())
 	{
 		bool collasping = false;
@@ -188,17 +199,27 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 
 		if (collasping)
 		{
-			bool ret = false;
+			if (IsValid())
+			{
+				ImGui::Indent();
+			}
+		}
+
+		if (collasping)
+		{
 			if (IsValid())
 			{
 				const U32 entityID = GetID();
-				ImGui::Text("%s (ID: %d)", name, entityID);
-
+				ImGui::Text("ID: %d, Index:%d, Version:%d", entityID, GetIndex(), GetVersion());
 				ImGui::SameLine();
 				bool destroyed = false;
 				if (ImGui::SmallButton(ICON_FA_BAN))
 				{
 					destroyed = true;
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Destroy");
 				}
 
 				ImGui::PushID(entityID);

@@ -24,6 +24,7 @@ public:
 	void Display() override;
 
 private:
+	void GetEntityName(const Entity& entity, std::string& name);
 	void DisplayEntity(Entity& entity, World* world);
 };
 

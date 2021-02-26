@@ -19,11 +19,7 @@ namespace en
 
 bool WorldFileManager::CreateWorld(const std::string& worldName)
 {
-	if (Universe::GetCurrentWorld() != nullptr)
-	{
-		UnloadCurrentWorld();
-	}
-	enAssert(Universe::GetCurrentWorld() == nullptr);
+	UnloadCurrentWorld();
 
 	World* world = new World(worldName);
 	Universe::SetCurrentWorld(world);
@@ -34,42 +30,32 @@ bool WorldFileManager::CreateWorld(const std::string& worldName)
 
 bool WorldFileManager::LoadWorld(const std::string& worldName)
 {
-	if (Universe::GetCurrentWorld() != nullptr)
-	{
-		UnloadCurrentWorld();
-	}
-	enAssert(Universe::GetCurrentWorld() == nullptr);
+	UnloadCurrentWorld(); // Unload the current world first
 
-	World* world = new World(worldName);
-	Universe::SetCurrentWorld(world);
-	enAssert(world != nullptr);
-
-	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + worldName + ".world");
-	if (std::filesystem::exists(path))
+	if (World* world = LoadWorld_Internal(worldName))
 	{
-		XmlSerializer worldReader;
-		if (worldReader.Open(path.generic_string(), Serializer::Mode::Read))
-		{
-			if (GenericSerialization(worldReader, "World", *world))
-			{
-				enLogInfo(LogChannel::Core, "World {} is correctly loaded", worldName);
-				return true;
-			}
-			else
-			{
-				enLogWarning(LogChannel::Core, "World {} isn't correctly loaded", worldName, path.string());
-			}
-		}
-		else
-		{
-			enLogError(LogChannel::Core, "Can't open world {} : {}", worldName, path.string());
-		}
+		Universe::SetCurrentWorld(world);
+		return true;
 	}
 	else
 	{
-		enLogError(LogChannel::Core, "World {} doesn't exist : {}", worldName, path.string());
+		return false;
 	}
-	return false;
+}
+
+bool WorldFileManager::LoadWorldTransition(const std::string& worldName)
+{
+	if (World* world = LoadWorld_Internal(worldName))
+	{
+		UnloadCurrentWorld(); // Unload the current world only if we succeed to load the new world
+
+		Universe::SetCurrentWorld(world);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool WorldFileManager::SaveCurrentWorld()
@@ -80,52 +66,25 @@ bool WorldFileManager::SaveCurrentWorld()
 
 	if (World* world = Universe::GetCurrentWorld())
 	{
-		const std::string& worldName = world->GetName();
-		const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + worldName + ".world");
-
-		XmlSerializer worldWriter;
-		if (worldWriter.Open(path.generic_string(), Serializer::Mode::Write))
-		{
-			bool correctlySerialized = GenericSerialization(worldWriter, "World", *world);
-			bool correctlyClosed = worldWriter.Close();
-
-			if (correctlySerialized && correctlyClosed)
-			{
-				enLogInfo(LogChannel::Core, "World {} is correctly saved", worldName);
-				return true;
-			}
-			else
-			{
-				enLogError(LogChannel::Core, "World {} file can't be saved : {}", worldName, path.string());
-			}
-		}
-		else
-		{
-			enLogError(LogChannel::Core, "Can't save world {} : {}", worldName, path.string());
-		}
+		return SaveWorld_Internal(world);
 	}
 	else
 	{
-		enAssert(false);
+		return false;
 	}
-	return false;
 }
 
-bool WorldFileManager::UnloadCurrentWorld(bool save /*= false*/)
+bool WorldFileManager::UnloadCurrentWorld()
 {
-	World* world = Universe::GetCurrentWorld();
-	enAssert(world != nullptr);
-
-	bool correctlySaved = true; // If we don't want to save, assume we correctly saved
-	if (save)
+	if (World* world = Universe::GetCurrentWorld())
 	{
-		correctlySaved = SaveCurrentWorld();
+		UnloadWorld_Internal(world);
+		return true;
 	}
-
-	delete world;
-	Universe::SetCurrentWorld(nullptr);
-
-	return correctlySaved;
+	else
+	{
+		return false;
+	}
 }
 
 bool WorldFileManager::RemoveWorld(const std::string& worldName)
@@ -146,6 +105,81 @@ bool WorldFileManager::RemoveWorld(const std::string& worldName)
 	{
 		return true;
 	}
+}
+
+World* WorldFileManager::LoadWorld_Internal(const std::string& worldName)
+{
+	World* world = new World(worldName);
+	if (world == nullptr)
+	{
+		return nullptr;
+	}
+
+	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + worldName + ".world");
+	if (std::filesystem::exists(path))
+	{
+		XmlSerializer worldReader;
+		if (worldReader.Open(path.generic_string(), Serializer::Mode::Read))
+		{
+			if (GenericSerialization(worldReader, "World", *world))
+			{
+				enLogInfo(LogChannel::Core, "World {} is correctly loaded", worldName);
+			}
+			else
+			{
+				enLogWarning(LogChannel::Core, "World {} isn't correctly loaded", worldName, path.string());
+			}
+			return world;
+		}
+		else
+		{
+			enLogError(LogChannel::Core, "Can't open world {} : {}", worldName, path.string());
+		}
+	}
+	else
+	{
+		enLogError(LogChannel::Core, "World {} doesn't exist : {}", worldName, path.string());
+	}
+	return nullptr;
+}
+
+bool WorldFileManager::SaveWorld_Internal(World* world)
+{
+	enAssert(world != nullptr);
+
+	const std::string& worldName = world->GetName();
+	const std::filesystem::path path = std::string(PathManager::GetAssetsPath() + worldName + ".world");
+
+	XmlSerializer worldWriter;
+	if (worldWriter.Open(path.string(), Serializer::Mode::Write))
+	{
+		bool correctlySerialized = GenericSerialization(worldWriter, "World", *world);
+		bool correctlyClosed = worldWriter.Close();
+
+		if (correctlySerialized && correctlyClosed)
+		{
+			enLogInfo(LogChannel::Core, "World {} is correctly saved", worldName);
+			return true;
+		}
+		else
+		{
+			enLogError(LogChannel::Core, "World {} file can't be saved : {}", worldName, path.string());
+			return false;
+		}
+	}
+	else
+	{
+		enLogError(LogChannel::Core, "Can't save world {} : {}", worldName, path.string());
+		return false;
+	}
+}
+
+void WorldFileManager::UnloadWorld_Internal(World* world)
+{
+	enAssert(world != nullptr);
+
+	delete world;
+	Universe::SetCurrentWorld(nullptr);
 }
 
 } // namespace en

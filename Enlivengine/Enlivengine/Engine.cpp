@@ -51,7 +51,8 @@ int Engine::Main(int argc, char** argv)
 	{
 		while (Engine::Update())
 		{
-			if (World* world = Universe::GetCurrentWorld())
+			World* world = Universe::GetCurrentWorld();
+			if (world != nullptr)
 			{
 #ifdef ENLIVE_TOOL
 				if (ImGuiEditor::IsPlaying())
@@ -66,23 +67,23 @@ int Engine::Main(int argc, char** argv)
 					world->UpdateTool();
 				}
 #endif // ENLIVE_TOOL
+			}
 
+			if (world != nullptr && world->GetSystemManager().HasRenderSystem())
+			{
 				world->Render();
 			}
 			else
 			{
-				const bgfx::ViewId mainViewID = 0;
 #ifdef ENLIVE_TOOL
 				Framebuffer& framebuffer = ImGuiEditor::GetFramebuffer();
 #else
 				Framebuffer& framebuffer = Framebuffer::GetDefaultFramebuffer();
 #endif // ENLIVE_TOOL
-				bgfx::setViewClear(mainViewID, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, Colors::DarkGray.ToRGBA(), 1.0f, 0);
-				bgfx::setViewTransform(mainViewID, Matrix4f::Identity().GetData(), Matrix4f::Identity().GetData());
-				bgfx::setViewRect(mainViewID, 0, 0, static_cast<U16>(framebuffer.GetSize().x), static_cast<U16>(framebuffer.GetSize().y));
-				bgfx::setViewFrameBuffer(mainViewID, framebuffer.GetHandle());
-				bgfx::touch(mainViewID);
-			}
+				BgfxWrapper::ClearFramebuffer(framebuffer, Colors::DarkGray);
+        
+				// TODO : Add text describing the issue if any
+      }
 
 			BgfxWrapper::Frame();
 		}

@@ -3,6 +3,8 @@
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
 
+#include <Enlivengine/Core/ComponentFactory.hpp>
+
 namespace en
 {
 
@@ -11,6 +13,11 @@ EntityManager::EntityManager(World& world)
 	, mRegistry()
 	, mUIDGenerator(0)
 {
+}
+
+EntityManager::~EntityManager()
+{
+	mRegistry.clear();
 }
 
 Entity EntityManager::CreateEntity()

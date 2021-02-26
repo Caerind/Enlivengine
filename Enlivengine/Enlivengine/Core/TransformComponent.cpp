@@ -119,12 +119,27 @@ void TransformComponent::SetTransform(const Vector3f& translation, const Matrix3
 	MarkGlobalMatrixAsDirty();
 }
 
+bool TransformComponent::CanAttach(const Entity& childEntity) const
+{
+	if (mEntity != childEntity && mEntity.IsValid() && childEntity.IsValid() && childEntity.Has<TransformComponent>())
+	{
+		return !IsChildOrSubchild(childEntity);
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void TransformComponent::AttachChild(const Entity& childEntity)
 {
 	enAssert(childEntity != mEntity);
 	enAssert(mEntity.IsValid());
 	enAssert(childEntity.IsValid());
 	enAssert(childEntity.Has<TransformComponent>());
+
+	enAssert(CanAttach(childEntity));
+
 	TransformComponent& childTransform = const_cast<TransformComponent&>(childEntity.Get<TransformComponent>());
 
 	// Skip if already the parent
@@ -138,7 +153,7 @@ void TransformComponent::AttachChild(const Entity& childEntity)
 	if (parentEntity.IsValid())
 	{
 		enAssert(parentEntity.Has<TransformComponent>());
-		enAssert(parentEntity.Get<TransformComponent>().HasChild(childEntity));
+		enAssert(parentEntity.Get<TransformComponent>().IsChild(childEntity));
 		parentEntity.Get<TransformComponent>().DetachChild(childEntity);
 	}
 
@@ -156,6 +171,7 @@ void TransformComponent::DetachChild(const Entity& childEntity)
 	enAssert(mEntity.IsValid());
 	enAssert(childEntity.IsValid());
 	enAssert(childEntity.Has<TransformComponent>());
+	enAssert(IsChild(childEntity));
 	TransformComponent& childTransform = const_cast<TransformComponent&>(childEntity.Get<TransformComponent>());
 
 	// It should be the parent
@@ -181,15 +197,40 @@ void TransformComponent::DetachChild(const Entity& childEntity)
 	enAssert(false); // Was not a stored child on parent's side
 }
 
-bool TransformComponent::HasChild(const Entity& childEntity) const
+bool TransformComponent::IsChild(const Entity& childEntity) const
 {
 	const U32 childrenCount = GetChildrenCount();
 	for (U32 i = 0; i < childrenCount; ++i)
 	{
 		Entity child = mChildren[i].Get();
-		if (child == childEntity)
+		if (child.IsValid() && child == childEntity)
 		{
 			return true;
+		}
+	}
+	return false;
+}
+
+bool TransformComponent::IsChildOrSubchild(const Entity& childEntity) const
+{
+	const U32 childrenCount = GetChildrenCount();
+	for (U32 i = 0; i < childrenCount; ++i)
+	{
+		Entity child = mChildren[i].Get();
+		if (child.IsValid())
+		{
+			if (child == childEntity)
+			{
+				return true;
+			}
+			else
+			{
+				const TransformComponent& childTransform = child.Get<TransformComponent>();
+				if (childTransform.IsChildOrSubchild(childEntity))
+				{
+					return true;
+				}
+			}
 		}
 	}
 	return false;
@@ -208,11 +249,13 @@ const EntityHandle& TransformComponent::GetChild(U32 index) const
 
 void TransformComponent::AttachToParent(const Entity& parentEntity)
 {
-	enAssert(mEntity.IsValid());
 	enAssert(parentEntity.IsValid());
 	enAssert(parentEntity.Has<TransformComponent>());
-
 	const_cast<TransformComponent&>(parentEntity.Get<TransformComponent>()).AttachChild(mEntity);
+	enAssert(parentEntity.Get<TransformComponent>().IsChild(mEntity));
+	enAssert(mParent.IsValid());
+	enAssert(mParent.Get().IsValid());
+	enAssert(mParent.Get() == parentEntity);
 }
 
 void TransformComponent::DetachFromParent()
@@ -221,7 +264,10 @@ void TransformComponent::DetachFromParent()
 	if (mEntity.IsValid() && parentEntity.IsValid())
 	{
 		enAssert(parentEntity.Has<TransformComponent>());
+		enAssert(parentEntity.Get<TransformComponent>().IsChild(mEntity));
 		const_cast<TransformComponent&>(parentEntity.Get<TransformComponent>()).DetachChild(mEntity);
+		enAssert(!mParent.IsValid());
+		enAssert(!parentEntity.Get<TransformComponent>().IsChild(mEntity));
 	}
 }
 
@@ -350,6 +396,11 @@ bool TransformComponent::Edit(ObjectEditor& objectEditor, const char* name)
 	{
 		return false;
 	}
+}
+
+const Entity& TransformComponent::GetEntity() const
+{
+	return mEntity;
 }
 
 void TransformComponent::UpdateGlobalMatrix() const
