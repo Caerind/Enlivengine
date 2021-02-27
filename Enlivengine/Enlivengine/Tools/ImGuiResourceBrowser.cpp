@@ -13,6 +13,7 @@
 
 #include <Enlivengine/Graphics/Texture.hpp>
 #include <Enlivengine/Audio/AudioManager.hpp>
+#include <Enlivengine/Audio/AudioSourceWav.hpp>
 #include <Enlivengine/Tiled/Tileset.hpp>
 #include <Enlivengine/Tiled/Map.hpp>
 #include <Enlivengine/Animation/Animation.hpp>
@@ -307,8 +308,8 @@ void ImGuiResourceBrowser::DisplayResources()
 					ImGui::Dummy(ImVec2(4, 0));
 					ImGui::SameLine();
 				}
-
-				if (!resourceInfo.loaded && resourceInfo.type != static_cast<U32>(ResourceType::Music)) // TODO : Remove special case for Music
+				// TODO : Remove special case for Music
+				if (!resourceInfo.loaded /*&& resourceInfo.type != static_cast<U32>(ResourceType::Music)*/) 
 				{
 					ImGui::Text(ICON_FA_EXCLAMATION);
 					if (ImGui::IsItemHovered())
@@ -344,7 +345,8 @@ void ImGuiResourceBrowser::DisplayResources()
 				}
 				ImGui::SameLine();
 
-				if (resourceInfo.loaded || resourceInfo.type == static_cast<U32>(ResourceType::Music)) // TODO : Remove special case for Music
+				// TODO : Remove special case for Music
+				if (resourceInfo.loaded /* || resourceInfo.type == static_cast<U32>(ResourceType::Music)*/)
 				{
 					const auto itr = mResourceSpecifics.find(resourceInfo.type);
 					if (itr != mResourceSpecifics.end())
@@ -360,14 +362,14 @@ void ImGuiResourceBrowser::DisplayResources()
 						deletedSome = true;
 
 						// TODO : Remove special case for Sound
-						if (resourceInfo.type == static_cast<U32>(ResourceType::Sound))
+						/*if (resourceInfo.type == static_cast<U32>(ResourceType::Sound))
 						{
 							AudioManager::GetInstance().ReleaseSound(resourceInfo.id);
 						}
 						else
-						{
+						{*/
 							ResourceManager::GetInstance().Release(resourceInfo.id, resourceInfo.type);
-						}
+						//}
 					}
 
 					mResourceInfos.erase(mResourceInfos.begin() + i);
@@ -430,11 +432,23 @@ void ImGuiResourceBrowser::RegisterResourceSpecifics()
 	// Font
 	// TODO : Font Preview
 
-	// Music
-	// TODO : Music Preview
-
-	// Sound
-	// TODO : Sound Preview
+	// AudioSourceNav
+	RegisterResourceSpecific<AudioSourceWav>(
+		[](const std::string& identifier, const std::string& filename)
+		{
+			return ResourceManager::GetInstance().Create(identifier, AudioSourceWavLoader::FromFile(filename)).IsValid();
+		},
+		[](const ResourceInfo& resourceInfo)
+		{
+			ENLIVE_UNUSED(resourceInfo);
+			ImGui::Text(ICON_FA_PLAY);
+			if (ImGui::IsItemClicked())
+			{
+				// TODO : Play AudioSourceWav
+			}
+			ImGui::SameLine();
+		}
+		);
 
 	// Tileset
 	// TODO : Tileset Preview

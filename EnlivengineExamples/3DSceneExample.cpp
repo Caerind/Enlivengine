@@ -11,7 +11,8 @@
 #include <Enlivengine/Tools/ImGuiEditor.hpp>
 
 #include <Enlivengine/Audio/AudioManager.hpp>
-#include <soloud_speech.h>
+#include <Enlivengine/Audio/AudioSourceWav.hpp>
+#include <Enlivengine/Audio/AudioSourceSpeech.hpp>
 
 using namespace en;
 
@@ -205,14 +206,15 @@ public:
 		static bool played = false;
 		if (!played)
 		{
-			speech.setText("1 2 3");
+			speech.SetText("1, 2, 3");
 			AudioManager::GetInstance().PlaySource(speech);
+			AudioManager::GetInstance().PlaySource(ResourceManager::GetInstance().Get<AudioSourceWav>("theme").Get());
 			played = true;
 		}
 
 	}
 
-	SoLoud::Speech speech;
+	AudioSourceSpeech speech;
 };
 ENLIVE_META_CLASS_BEGIN(StupidShipSystem, en::Type_ClassSerialization, en::Type_ClassEditor)
 ENLIVE_META_CLASS_END()
