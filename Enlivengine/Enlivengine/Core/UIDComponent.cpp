@@ -12,6 +12,10 @@ UIDComponent::UIDComponent()
 {
 }
 
+UIDComponent::~UIDComponent()
+{
+}
+
 UIDComponent::UIDComponent(UIDComponent&& other) noexcept
 	: mUID(other.mUID)
 {
