@@ -14,6 +14,7 @@ class UIDComponent
 {
 public:
 	UIDComponent();
+	~UIDComponent();
 
 	UIDComponent(UIDComponent&& other) noexcept;
 	UIDComponent(const UIDComponent&) = delete;
@@ -27,7 +28,6 @@ public:
 	bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
-	friend class Entity;
 	friend class EntityManager;
 
 	UID mUID;
