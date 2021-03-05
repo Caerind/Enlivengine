@@ -44,6 +44,12 @@ public:
 		Scale
 	};
 
+	enum class GizmoMode
+	{
+		Local,
+		Global
+	};
+
 	static bool IsPlaying();
 	static bool IsPaused();
 	static bool IsStopped();
@@ -62,6 +68,7 @@ private:
 	bool mShowManipulator;
 	bool mShowDebug;
 	GizmoOperation mGizmoOperation;
+	GizmoMode mGizmoMode;
 
 	enum class GameStatus
 	{
@@ -76,5 +83,6 @@ private:
 } // namespace en
 
 ENLIVE_DEFINE_ENUM_INFO(en::ImGuiEditor::GizmoOperation)
+ENLIVE_DEFINE_ENUM_INFO(en::ImGuiEditor::GizmoMode)
 
 #endif // ENLIVE_ENABLE_IMGUI && defined(ENLIVE_TOOL)

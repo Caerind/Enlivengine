@@ -86,6 +86,14 @@ void ImGuiEditor::Display()
 			default: enAssert(false); break;
 			}
 
+			ImGuizmo::MODE gizmoMode = ImGuizmo::LOCAL;
+			switch (mGizmoMode)
+			{
+			case GizmoMode::Local: gizmoMode = ImGuizmo::LOCAL; break;
+			case GizmoMode::Global: gizmoMode = ImGuizmo::WORLD; break;
+			default: enAssert(false); break;
+			}
+
 			const auto& selectedEntities = world->GetSelectedEntities();
 			if (selectedEntities.size() == 1)
 			{
@@ -99,7 +107,7 @@ void ImGuiEditor::Display()
 						mCamera.GetViewMatrix().GetData(),
 						mCamera.GetProjectionMatrix().GetData(),
 						gizmoOperation,
-						ImGuizmo::LOCAL,
+						gizmoMode,
 						mtxData
 					);
 
@@ -211,8 +219,20 @@ void ImGuiEditor::Display()
 				mEditConfig = !mEditConfig;
 			}
 			
-			ImGui::PushItemWidth(130);
-			GenericEdit(objectEditor, "", mGizmoOperation);
+			ImGui::PushItemWidth(100);
+			GenericEdit(objectEditor, "##GizmoOperation", mGizmoOperation);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Gizmo operation");
+			}
+			ImGui::PopItemWidth();
+
+			ImGui::PushItemWidth(80);
+			GenericEdit(objectEditor, "##GizmoMode", mGizmoMode);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Gizmo mode");
+			}
 			ImGui::PopItemWidth();
 		}
 
