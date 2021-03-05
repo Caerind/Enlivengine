@@ -302,7 +302,7 @@ void ImGuiEditor::Display()
 
 void ImGuiEditor::UpdateCamera()
 {
-	if (Keyboard::IsControlHold())
+	if (Keyboard::IsAltHold())
 	{
 		Mouse::SetRelativeMode(true);
 

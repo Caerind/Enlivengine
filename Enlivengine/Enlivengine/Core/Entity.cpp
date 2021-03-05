@@ -184,32 +184,52 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 	if (objectEditor.IsImGuiEditor())
 	{
 		bool collasping = false;
-		bool onlyEntitySelected = false;
+
+		const bool wasValidAtBegining = IsValid();
+		if (wasValidAtBegining)
+		{
+			ImGui::PushID(GetID());
+		}
+
+		const bool unselect = ImGui::Button("X");
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Unselect");
+		}
+
+		if (wasValidAtBegining)
+		{
+			ImGui::PopID();
+		}
+
+		ImGui::SameLine();
 
 		World* world = (mManager != nullptr) ? &(mManager->GetWorld()) : nullptr;
 		if (world != nullptr && world->IsSelected(*this) && world->GetSelectedEntities().size() == 1)
 		{
 			collasping = true;
-			onlyEntitySelected = true;
+			ImGui::Text("%s", name);
 		}
 		else
 		{
-			collasping = objectEditor.BeginClass(name, TypeInfo<Entity>::GetName(), TypeInfo<Entity>::GetHash());
+			collasping = ImGui::CollapsingHeader(name);
 		}
 
-		if (collasping)
+		if (unselect)
 		{
-			if (IsValid())
+			if (world != nullptr && world->IsSelected(*this))
 			{
-				ImGui::Indent();
+				world->UnselectEntity(*this);
 			}
 		}
-
-		if (collasping)
+		else if (collasping)
 		{
+			ImGui::Indent();
+
 			if (IsValid())
 			{
 				const U32 entityID = GetID();
+				ImGui::PushID(entityID);
 				ImGui::Text("ID: %d, Index:%d, Version:%d", entityID, GetIndex(), GetVersion());
 				ImGui::SameLine();
 				bool destroyed = false;
@@ -220,13 +240,6 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::SetTooltip("Destroy");
-				}
-
-				ImGui::PushID(entityID);
-
-				if (onlyEntitySelected)
-				{
-					ImGui::Indent();
 				}
 
 				const auto& componentInfos = ComponentFactory::GetComponentInfos();
@@ -283,11 +296,6 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 						ImGui::EndPopup();
 					}
 				}
-				
-				if (onlyEntitySelected)
-				{
-					ImGui::Unindent();
-				}
 
 				ImGui::PopID();
 
@@ -295,12 +303,13 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 				{
 					Destroy();
 				}
+
+				ImGui::Unindent();
 			}
 			else
 			{
 				ImGui::Text("Invalid entity");
 			}
-			objectEditor.EndClass();
 			return ret;
 		}
 	}

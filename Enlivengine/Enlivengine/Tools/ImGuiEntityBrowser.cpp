@@ -67,7 +67,10 @@ void ImGuiEntityBrowser::Display()
 			}
 			if (newEntity.IsValid())
 			{
-				world->ClearSelectedEntities();
+				if (!Keyboard::IsControlHold())
+				{
+					world->ClearSelectedEntities();
+				}
 				world->SelectEntity(newEntity);
 			}
 		}
@@ -106,37 +109,28 @@ void ImGuiEntityBrowser::Display()
 		{
 			ImGuiObjectEditor objectEditor;
 
-			const auto& selectedEntities = world->GetSelectedEntities();
-			U32 selectedEntitiesCount = static_cast<U32>(selectedEntities.size());
-			if (selectedEntitiesCount > 0)
+			if (world->GetSelectedEntityCount() > 0)
 			{
-				for (U32 i = 0; i < selectedEntitiesCount; )
+				for (U32 i = 0; i < world->GetSelectedEntityCount(); )
 				{
-					Entity entity(world->GetEntityManager(), selectedEntities[i]);
+					Entity entity(world->GetEntityManager(), world->GetSelectedEntities()[i]);
 					bool selected = true;
 					if (entity.IsValid())
 					{
+						U32 previousSelectedCount = world->GetSelectedEntityCount();
 						std::string entityName;
 						GetEntityName(entity, entityName);
 						GenericEdit(objectEditor, entityName.c_str(), entity);
+						selected = true
+							&& previousSelectedCount == world->GetSelectedEntityCount() // Same count + index check
+							&& entity == Entity(world->GetEntityManager(), world->GetSelectedEntities()[i]); // Is still here
 					}
 					else
 					{
-						selected = false;
+						enAssert(false);
 					}
 
-					if (!selected)
-					{
-						if (world->UnselectEntity(entity))
-						{
-							selectedEntitiesCount--;
-						}
-						else
-						{
-							i++;
-						}
-					}
-					else
+					if (selected)
 					{
 						i++;
 					}
