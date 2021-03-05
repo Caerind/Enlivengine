@@ -64,6 +64,7 @@ public:
 		RShift,
 		RAlt,
 		RSystem,
+		Application,
 		Menu,
 		LBracket,
 		RBracket,

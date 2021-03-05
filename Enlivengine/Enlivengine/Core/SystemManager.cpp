@@ -167,7 +167,12 @@ bool SystemManager::Edit(ObjectEditor& objectEditor, const char* name)
 				if (si.has(mWorld))
 				{
 					ImGui::PushID(itr->first);
-					if (ImGui::Button("-"))
+					const bool buttonPressed = ImGui::Button("X");
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::SetTooltip("Remove");
+					}
+					if (buttonPressed)
 					{
 						si.remove(mWorld);
 						ret = true;

@@ -73,22 +73,27 @@ bool ImGuiInputEditor::Buttons()
 	static char newButtonName[kBufferSize] = "";
 	static EventSystem::EventButton newButton;
 
-	ImGui::InputText("Name##NewButton", newButtonName, kBufferSize);
-	
 	ImGuiObjectEditor objectEditor;
-	GenericEdit(objectEditor, "New button", newButton);
 
-	// Capturing system
+	if (ImGui::CollapsingHeader("New button"))
 	{
-		static bool capturing = false;
-		static bool capturingFrameOne = false;
-		if (capturing && !capturingFrameOne)
-		{
-			ImGui::DisabledButton("Capturing...");
+		ImGui::Indent();
 
-			const EventSystem::EventButton& buttonCapture = EventSystem::GetLastButton();
-			switch (buttonCapture.type)
+		ImGui::InputText("Name##NewButton", newButtonName, kBufferSize);
+
+		GenericEdit(objectEditor, "New button", newButton);
+
+		// Capturing system
+		{
+			static bool capturing = false;
+			static bool capturingFrameOne = false;
+			if (capturing && !capturingFrameOne)
 			{
+				ImGui::DisabledButton("Capturing...");
+
+				const EventSystem::EventButton& buttonCapture = EventSystem::GetLastButton();
+				switch (buttonCapture.type)
+				{
 				case EventSystem::EventButton::Type::KeyboardKey:
 				{
 					if (Keyboard::IsPressed(static_cast<Keyboard::Key>(buttonCapture.buttonIdentifier)) && Keyboard::AreModifiersHold(buttonCapture.extraInfo))
@@ -113,49 +118,52 @@ bool ImGuiInputEditor::Buttons()
 						capturing = false;
 					}
 				} break;
+				}
+			}
+			else
+			{
+				if (ImGui::Button("Capture"))
+				{
+					capturing = true;
+					capturingFrameOne = true;
+				}
+			}
+			if (capturingFrameOne)
+			{
+				capturingFrameOne = false;
+			}
+		}
+
+		bool validNewInput = true;
+
+		const U32 nameLength = static_cast<U32>(strlen(newButtonName));
+		if (nameLength <= 0 || nameLength > kBufferSize)
+		{
+			validNewInput = false;
+		}
+
+		if (validNewInput)
+		{
+			if (ImGui::Button("Create##NewButton"))
+			{
+				EventSystem::AddButton(newButtonName, newButton.type, newButton.buttonIdentifier, newButton.extraInfo, newButton.action);
+
+				modified = true;
+
+#ifdef ENLIVE_COMPILER_MSVC
+				strcpy_s(newButtonName, "");
+#else
+				strcpy(newButtonName, "");
+#endif // ENLIVE_COMPILER_MSVC
+				newButton = EventSystem::EventButton();
 			}
 		}
 		else
 		{
-			if (ImGui::Button("Capture"))
-			{
-				capturing = true;
-				capturingFrameOne = true;
-			}
+			ImGui::DisabledButton("Create##NewButton");
 		}
-		if (capturingFrameOne)
-		{
-			capturingFrameOne = false;
-		}
-	}
 
-	bool validNewInput = true;
-
-	const U32 nameLength = static_cast<U32>(strlen(newButtonName));
-	if (nameLength <= 0 || nameLength > kBufferSize)
-	{
-		validNewInput = false;
-	}
-
-	if (validNewInput)
-	{
-		if (ImGui::Button("Create##NewButton"))
-		{
-			EventSystem::AddButton(newButtonName, newButton.type, newButton.buttonIdentifier, newButton.extraInfo, newButton.action);
-
-			modified = true;
-
-#ifdef ENLIVE_COMPILER_MSVC
-			strcpy_s(newButtonName, "");
-#else
-			strcpy(newButtonName, "");
-#endif // ENLIVE_COMPILER_MSVC
-			newButton = EventSystem::EventButton();
-		}
-	}
-	else
-	{
-		ImGui::DisabledButton("Create##NewButton");
+		ImGui::Unindent();
 	}
 
 	ImGui::Separator();
@@ -166,9 +174,13 @@ bool ImGuiInputEditor::Buttons()
 
 		ImGui::PushID(i);
 		bool queryRemoval = false;
-		if (ImGui::Button("-"))
+		if (ImGui::Button("X"))
 		{
 			queryRemoval = true;
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Remove");
 		}
 		ImGui::SameLine();
 
@@ -200,38 +212,46 @@ bool ImGuiInputEditor::Axes()
 	static char newAxisName[kBufferSize] = "";
 	static EventSystem::EventAxis newAxis;
 
-	ImGui::InputText("Name##NewAxis", newAxisName, kBufferSize);
-
 	ImGuiObjectEditor objectEditor;
-	GenericEdit(objectEditor, "New axis", newAxis);
 
-	bool validNewInput = true;
-
-	const U32 nameLength = static_cast<U32>(strlen(newAxisName));
-	if (nameLength <= 0 || nameLength >= 255)
+	if (ImGui::CollapsingHeader("New axis"))
 	{
-		validNewInput = false;
-	}
+		ImGui::Indent();
 
-	if (validNewInput)
-	{
-		if (ImGui::Button("Create##NewAxis"))
+		ImGui::InputText("Name##NewAxis", newAxisName, kBufferSize);
+
+		GenericEdit(objectEditor, "New axis", newAxis);
+
+		bool validNewInput = true;
+
+		const U32 nameLength = static_cast<U32>(strlen(newAxisName));
+		if (nameLength <= 0 || nameLength >= 255)
 		{
-			EventSystem::AddAxis(newAxisName, newAxis.type, newAxis.axisIdentifier, newAxis.extraInfo);
+			validNewInput = false;
+		}
 
-			modified = true;
+		if (validNewInput)
+		{
+			if (ImGui::Button("Create##NewAxis"))
+			{
+				EventSystem::AddAxis(newAxisName, newAxis.type, newAxis.axisIdentifier, newAxis.extraInfo);
+
+				modified = true;
 
 #ifdef ENLIVE_COMPILER_MSVC
-			strcpy_s(newAxisName, "");
+				strcpy_s(newAxisName, "");
 #else
-			strcpy(newAxisName, "");
+				strcpy(newAxisName, "");
 #endif // ENLIVE_COMPILER_MSVC
-			newAxis = EventSystem::EventAxis();
+				newAxis = EventSystem::EventAxis();
+			}
 		}
-	}
-	else
-	{
-		ImGui::DisabledButton("Create##NewAxis");
+		else
+		{
+			ImGui::DisabledButton("Create##NewAxis");
+		}
+
+		ImGui::Unindent();
 	}
 
 	ImGui::Separator();
@@ -242,9 +262,13 @@ bool ImGuiInputEditor::Axes()
 
 		ImGui::PushID(i);
 		bool queryRemoval = false;
-		if (ImGui::Button("-"))
+		if (ImGui::Button("X"))
 		{
 			queryRemoval = true;
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Remove");
 		}
 		ImGui::SameLine();
 

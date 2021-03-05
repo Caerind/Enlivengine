@@ -160,75 +160,92 @@ void ImGuiResourceBrowser::AddNewResource()
 
 	const std::filesystem::path assetsPath = PathManager::GetAssetsPath();
 
-	ImGui::Text("Add New Resource");
-	ImGui::Indent();
+	if (ImGui::CollapsingHeader("New Resource"))
+	{
+		ImGui::Indent();
 
-	const std::string currentLabel = std::string(ResourceManager::GetInstance().GetResourceTypeName(mResourceType));
-	if (ImGui::BeginCombo("Type", currentLabel.c_str()))
-	{
-		const U32 resourceTypeCount = ResourceManager::GetInstance().GetResourceTypeCount();
-		for (U32 i = 1; i < resourceTypeCount; ++i)
+		const std::string currentLabel = std::string(ResourceManager::GetInstance().GetResourceTypeName(mResourceType));
+		if (ImGui::BeginCombo("Type", currentLabel.c_str()))
 		{
-			const std::string label = std::string(ResourceManager::GetInstance().GetResourceTypeName(i));
-			bool selected = (i == mResourceType);
-			if (ImGui::Selectable(label.c_str(), selected))
+			const U32 resourceTypeCount = ResourceManager::GetInstance().GetResourceTypeCount();
+			for (U32 i = 1; i < resourceTypeCount; ++i)
 			{
-				mResourceType = i;
-				selected = true;
+				const std::string label = std::string(ResourceManager::GetInstance().GetResourceTypeName(i));
+				bool selected = (i == mResourceType);
+				if (ImGui::Selectable(label.c_str(), selected))
+				{
+					mResourceType = i;
+					selected = true;
+				}
+				if (selected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
 			}
-			if (selected)
-			{
-				ImGui::SetItemDefaultFocus();
-			}
+			ImGui::EndCombo();
 		}
-		ImGui::EndCombo();
-	}
-	ImGui::InputText("Identitifer", mIdentifierBuffer, kBufferSize);
-	if (ImGui::Button("..."))
-	{
-		igfd::ImGuiFileDialog::Instance()->OpenDialog(key, dialogTitle, ".*", assetsPath.generic_string());
-	}
-	ImGui::SameLine();
-	ImGui::InputText("Filename", mFilenameBuffer, kBufferSize);
-	if (igfd::ImGuiFileDialog::Instance()->FileDialog(key))
-	{
-		if (igfd::ImGuiFileDialog::Instance()->IsOk)
+		ImGui::InputText("Identitifer", mIdentifierBuffer, kBufferSize);
+		if (ImGui::Button("..."))
 		{
-			std::filesystem::path filename = igfd::ImGuiFileDialog::Instance()->GetFirstSelected();
-			std::string relativeResult = filename.lexically_relative(assetsPath).generic_string();
+			igfd::ImGuiFileDialog::Instance()->OpenDialog(key, dialogTitle, ".*", assetsPath.generic_string());
+		}
+		ImGui::SameLine();
+		ImGui::InputText("Filename", mFilenameBuffer, kBufferSize);
+		if (igfd::ImGuiFileDialog::Instance()->FileDialog(key))
+		{
+			if (igfd::ImGuiFileDialog::Instance()->IsOk)
+			{
+				std::filesystem::path filename = igfd::ImGuiFileDialog::Instance()->GetFirstSelected();
+				std::string relativeResult = filename.lexically_relative(assetsPath).generic_string();
 
 #ifdef ENLIVE_COMPILER_MSVC
-			strcpy_s(mFilenameBuffer, relativeResult.c_str());
+				strcpy_s(mFilenameBuffer, relativeResult.c_str());
 #else
-			strcpy(mFilenameBuffer, relativeResult.c_str());
+				strcpy(mFilenameBuffer, relativeResult.c_str());
 #endif // ENLIVE_COMPILER_MSVC
+			}
+			igfd::ImGuiFileDialog::Instance()->CloseDialog(key);
 		}
-		igfd::ImGuiFileDialog::Instance()->CloseDialog(key);
-	}
-	if (mResourceType != 0 && strlen(mIdentifierBuffer) > 0 && strlen(mFilenameBuffer) > 0)
-	{
-		const auto itr = mResourceSpecifics.find(mResourceType);
-		const bool registeredResourceType = itr != mResourceSpecifics.end();
-		const bool resourceTypeCompatibleExtension = true; // TODO : Check that ResourceType is compatible with the extension of the file
-
-		if (registeredResourceType && resourceTypeCompatibleExtension)
+		if (mResourceType != 0 && strlen(mIdentifierBuffer) > 0 && strlen(mFilenameBuffer) > 0)
 		{
-			if (ImGui::Button("Add"))
-			{
-				std::string resourceIdentifier(mIdentifierBuffer);
-				std::string resourceFilename(PathManager::GetAssetsPath() + mFilenameBuffer);
-				itr->second.loader(resourceIdentifier, resourceFilename);
+			const auto itr = mResourceSpecifics.find(mResourceType);
+			const bool registeredResourceType = itr != mResourceSpecifics.end();
+			const bool resourceTypeCompatibleExtension = true; // TODO : Check that ResourceType is compatible with the extension of the file
 
-				ResourceManager::GetInstance().GetResourceInfos(mResourceInfos);
-				SaveResourceInfosToFile();
+			if (registeredResourceType && resourceTypeCompatibleExtension)
+			{
+				if (ImGui::Button("Add"))
+				{
+					std::string resourceIdentifier(mIdentifierBuffer);
+					std::string resourceFilename(PathManager::GetAssetsPath() + mFilenameBuffer);
+					itr->second.loader(resourceIdentifier, resourceFilename);
+
+					ResourceManager::GetInstance().GetResourceInfos(mResourceInfos);
+					SaveResourceInfosToFile();
 
 #ifdef ENLIVE_COMPILER_MSVC
-				strcpy_s(mIdentifierBuffer, "");
-				strcpy_s(mFilenameBuffer, "");
+					strcpy_s(mIdentifierBuffer, "");
+					strcpy_s(mFilenameBuffer, "");
 #else
-				strcpy(mIdentifierBuffer, "");
-				strcpy(mFilenameBuffer, "");
+					strcpy(mIdentifierBuffer, "");
+					strcpy(mFilenameBuffer, "");
 #endif // ENLIVE_COMPILER_MSVC
+				}
+			}
+			else
+			{
+				ImGui::DisabledButton("Add");
+				if (ImGui::IsItemHovered())
+				{
+					if (!registeredResourceType)
+					{
+						ImGui::SetTooltip("This resource type is not registered to the ResourceBrowser");
+					}
+					else if (!resourceTypeCompatibleExtension)
+					{
+						ImGui::SetTooltip("Type and extension are not compatible");
+					}
+				}
 			}
 		}
 		else
@@ -236,26 +253,11 @@ void ImGuiResourceBrowser::AddNewResource()
 			ImGui::DisabledButton("Add");
 			if (ImGui::IsItemHovered())
 			{
-				if (!registeredResourceType)
-				{
-					ImGui::SetTooltip("This resource type is not registered to the ResourceBrowser");
-				}
-				else if (!resourceTypeCompatibleExtension)
-				{
-					ImGui::SetTooltip("Type and extension are not compatible");
-				}
+				ImGui::SetTooltip("Invalid input");
 			}
 		}
+		ImGui::Unindent();
 	}
-	else
-	{
-		ImGui::DisabledButton("Add");
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Invalid input");
-		}
-	}
-	ImGui::Unindent();
 }
 
 void ImGuiResourceBrowser::DisplayResources()

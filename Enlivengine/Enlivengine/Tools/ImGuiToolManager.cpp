@@ -153,7 +153,7 @@ void ImGuiToolManager::Update(Window& window)
 	enAssert(imgui.mInitialized);
 
 #if defined(ENLIVE_RELEASE) && defined(ENLIVE_DEBUG)
-	if (Keyboard::IsPressed(Keyboard::Key::F1) && Keyboard::IsControlHold())
+	if (Keyboard::IsPressed(Keyboard::Key::Application))
 	{
 		imgui.mRunning = !imgui.mRunning;
 	}

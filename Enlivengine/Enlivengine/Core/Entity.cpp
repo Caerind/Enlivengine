@@ -191,7 +191,7 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 			ImGui::PushID(GetID());
 		}
 
-		const bool unselect = ImGui::Button("X");
+		const bool unselect = ImGui::Button("-");
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetTooltip("Unselect");
@@ -230,7 +230,7 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 			{
 				const U32 entityID = GetID();
 				ImGui::PushID(entityID);
-				ImGui::Text("ID: %d, Index:%d, Version:%d", entityID, GetIndex(), GetVersion());
+				ImGui::Text("UID: %d, ID: %d, Index:%d, Version:%d", GetUID(), entityID, GetIndex(), GetVersion());
 				ImGui::SameLine();
 				bool destroyed = false;
 				if (ImGui::SmallButton(ICON_FA_BAN))
@@ -248,10 +248,24 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 				for (auto itr = componentInfos.cbegin(); itr != endItr; ++itr)
 				{
 					const auto& ci = itr->second;
+
+					const bool isUIDComponent = itr->first == TypeInfo<UIDComponent>::GetHash();
+					if (isUIDComponent)
+					{
+						enAssert(ci.has(*this));
+						continue;
+					}
+
 					if (ci.has(*this))
 					{
 						ImGui::PushID(itr->first);
-						if (ImGui::Button("-"))
+
+						const bool buttonPressed = ImGui::Button("X");
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::SetTooltip("Remove");
+						}
+						if (buttonPressed)
 						{
 							ci.remove(*this);
 							ret = true;
@@ -264,6 +278,7 @@ bool Entity::Edit(ObjectEditor& objectEditor, const char* name)
 								ret = true;
 							}
 						}
+
 						ImGui::PopID();
 					}
 					else

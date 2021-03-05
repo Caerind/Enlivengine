@@ -292,6 +292,7 @@ Keyboard::Key Keyboard::GetKeyFromSDLKey(SDL_Scancode scancode)
 	case SDL_SCANCODE_RSHIFT: return Key::RShift; break;
 	case SDL_SCANCODE_RALT: return Key::RAlt; break;
 	case SDL_SCANCODE_RGUI: return Key::RSystem; break;
+	case SDL_SCANCODE_APPLICATION: return Key::Application; break;
 	case SDL_SCANCODE_MENU: return Key::Menu; break;
 	case SDL_SCANCODE_LEFTBRACKET: return Key::LBracket; break;
 	case SDL_SCANCODE_RIGHTBRACKET: return Key::RBracket; break;
