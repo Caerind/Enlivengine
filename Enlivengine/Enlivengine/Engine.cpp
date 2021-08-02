@@ -131,10 +131,7 @@ bool Engine::Init(int argc, char** argv)
 	}
 	enLogInfo(LogChannel::Global, "SDL initialized");
 
-	if (!AudioManager::GetInstance().Initialize())
-	{
-		return false;
-	}
+	AudioManager::GetInstance().Initialize();
 
 	const bool windowCreated = engine.mWindow.Create("Enlivengine", 0);
 	if (!windowCreated)
