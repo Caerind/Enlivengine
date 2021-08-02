@@ -1,5 +1,7 @@
 #include <Enlivengine/Audio/AudioManager.hpp>
 
+#include <Enlivengine/Utils/Log.hpp>
+
 namespace en
 {
 
@@ -10,7 +12,18 @@ AudioManager::AudioManager()
 
 bool AudioManager::Initialize()
 {
-	return mEngine.init() == 0;
+	// Initialize SoLoud
+	const auto result = mEngine.init();
+	if (result == 0)
+	{
+		enLogInfo(LogChannel::Global, "SoLoud initialized");
+		return true;
+	}
+	else
+	{
+		enLogError(LogChannel::Global, "Can't initialize SoLoud (error {})", result);
+		return false;
+	}
 }
 
 bool AudioManager::Release()

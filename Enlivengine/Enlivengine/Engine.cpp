@@ -133,10 +133,8 @@ bool Engine::Init(int argc, char** argv)
 
 	if (!AudioManager::GetInstance().Initialize())
 	{
-		enLogError(LogChannel::Global, "Can't initialize SoLoud");
 		return false;
 	}
-	enLogInfo(LogChannel::Global, "SoLoud initialized");
 
 	const bool windowCreated = engine.mWindow.Create("Enlivengine", 0);
 	if (!windowCreated)
