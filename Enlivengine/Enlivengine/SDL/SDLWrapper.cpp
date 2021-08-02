@@ -19,12 +19,14 @@ bool SDLWrapper::Init()
     sdl.mInitialized = SDL_Init(initFlags) >= 0;
     if (sdl.mInitialized)
     {
-        sdl.mInitFlags = initFlags;
+		sdl.mInitFlags = initFlags;
+		enLogInfo(LogChannel::Global, "SDL initialized");
         return true;
     }
     else
     {
-        sdl.mInitFlags = 0;
+		sdl.mInitFlags = 0;
+		enLogError(LogChannel::Global, "Can't initialize SDL");
         return false;
     }
 }

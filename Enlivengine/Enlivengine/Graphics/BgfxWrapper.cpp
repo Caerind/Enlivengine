@@ -132,6 +132,7 @@ bool BgfxWrapper::Init(Window& window)
     case SDL_SYSWM_UNKNOWN:
     default:
     {
+		enLogError(LogChannel::Global, "Unknown SDL platform : {}", Enum::GetValueName<SDL_SYSWM_TYPE>(wmi.subsystem));
         enAssert(false);
         return false;
     }

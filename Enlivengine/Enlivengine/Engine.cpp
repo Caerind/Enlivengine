@@ -126,10 +126,8 @@ bool Engine::Init(int argc, char** argv)
 
 	if (!SDLWrapper::Init())
 	{
-		enLogError(LogChannel::Global, "Can't initialize SDL");
 		return false;
 	}
-	enLogInfo(LogChannel::Global, "SDL initialized");
 
 	AudioManager::GetInstance().Initialize();
 
