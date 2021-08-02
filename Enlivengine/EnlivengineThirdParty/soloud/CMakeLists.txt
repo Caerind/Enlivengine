@@ -1,6 +1,9 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.0)
 
-project(SoLoud)
+project(SoLoud
+	VERSION 1.0
+    DESCRIPTION "SoLoud"
+	LANGUAGES CXX)
 
 # AudioSource
 file(GLOB_RECURSE SRC_AUDIOSOURCE "src/audiosource/*")
