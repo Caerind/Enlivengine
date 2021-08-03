@@ -17,11 +17,13 @@ class AudioManager
 public:
 	bool Initialize();
 	bool Release();
+	bool IsInitialized() const;
 	
 	void PlaySource(AudioSource& source);
 
 private:
 	SoLoud::Soloud mEngine;
+	bool mInitialized;
 };
 
 } // namespace en

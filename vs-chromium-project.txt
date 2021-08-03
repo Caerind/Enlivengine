@@ -19,6 +19,7 @@
 [SearchableFiles.ignore]
 bin/
 obj/
+build/
 *.pdb
 *.exe
 *.dll
@@ -27,6 +28,8 @@ obj/
 
 [SourceExplorer.ignore]
 bin/
+obj/
+build/
 *.pdb
 *.dll
 *.log

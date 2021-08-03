@@ -1557,7 +1557,7 @@ elseif(WINDOWS)
 
   # Libraries for Win32 native and MinGW
   if(NOT WINDOWS_STORE)
-    list(APPEND EXTRA_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32)
+    list(APPEND EXTRA_LIBS vcruntime user32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32)
   endif()
 
   # TODO: in configure.ac the check for timers is set on
@@ -2381,12 +2381,14 @@ endif()
 
 ##### Uninstall target #####
 
-if(NOT TARGET uninstall)
-  configure_file(
-      "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
-      "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-      IMMEDIATE @ONLY)
-
-  add_custom_target(uninstall
-      COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-endif()
+# Caerind : I removed it because it bothered me :)
+#			There is probably a cleaner way to remove it
+#if(NOT TARGET uninstall)
+#  configure_file(
+#      "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+#      "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+#      IMMEDIATE @ONLY)
+#
+#  add_custom_target(uninstall
+#      COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+#endif()

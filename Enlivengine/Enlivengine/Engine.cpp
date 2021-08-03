@@ -126,17 +126,10 @@ bool Engine::Init(int argc, char** argv)
 
 	if (!SDLWrapper::Init())
 	{
-		enLogError(LogChannel::Global, "Can't initialize SDL");
 		return false;
 	}
-	enLogInfo(LogChannel::Global, "SDL initialized");
 
-	if (!AudioManager::GetInstance().Initialize())
-	{
-		enLogError(LogChannel::Global, "Can't initialize SoLoud");
-		return false;
-	}
-	enLogInfo(LogChannel::Global, "SoLoud initialized");
+	AudioManager::GetInstance().Initialize();
 
 	const bool windowCreated = engine.mWindow.Create("Enlivengine", 0);
 	if (!windowCreated)
