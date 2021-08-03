@@ -142,55 +142,56 @@ bool Engine::Init(int argc, char** argv)
 		enLogInfo(LogChannel::Global, "Window created");
 	}
 
-	if (!BgfxWrapper::Init(engine.mWindow))
+	if (BgfxWrapper::Init(engine.mWindow))
 	{
-		return false;
-	}
-
-	const bool shadersPathFound = PathManager::AutoDetectShadersPath();
-	if (!shadersPathFound)
-	{
-		enLogWarning(LogChannel::Global, "Can't find ShadersPath");
-	}
-	enLogInfo(LogChannel::Global, "ShadersPath: {}", PathManager::GetShadersPathForRenderer(bgfx::getRendererType()));
-
-	const bool spriteInit = Sprite::InitializeSprites();
-	const bool tilemapInit = Tilemap::InitializeTilemaps();
-	const bool debugDrawInit = DebugDraw::InitializeDebugDraws();
-	if (!spriteInit || !tilemapInit || !debugDrawInit)
-	{
-		enLogWarning(LogChannel::Global, "Can't initialize graphics resources");
-	}
-	else if (spriteInit && tilemapInit && debugDrawInit)
-	{
-		enLogInfo(LogChannel::Global, "All graphics resources initialized");
-	}
-	else
-	{
-		enLogWarning(LogChannel::Global, "Some graphics resources aren't initialized");
-	}
-
-#ifdef ENLIVE_ENABLE_IMGUI
-	if (ImGuiWrapper::Init(PathManager::GetAssetsPath() + "imgui.ini"))
-	{
-		if (ImGuiToolManager::Initialize())
+		const bool shadersPathFound = PathManager::AutoDetectShadersPath();
+		if (shadersPathFound)
 		{
-#ifdef ENLIVE_TOOL
-			ImGuiToolManager::LoadFromFile(PathManager::GetAssetsPath() + "tools.json");
-#endif // ENLIVE_TOOL
-			enLogInfo(LogChannel::Global, "ImGui initialized");
+			enLogInfo(LogChannel::Global, "ShadersPath: {}", PathManager::GetShadersPathForRenderer(bgfx::getRendererType()));
+
+			const bool spriteInit = Sprite::InitializeSprites();
+			const bool tilemapInit = Tilemap::InitializeTilemaps();
+			const bool debugDrawInit = DebugDraw::InitializeDebugDraws();
+			if (!spriteInit || !tilemapInit || !debugDrawInit)
+			{
+				enLogWarning(LogChannel::Global, "Can't initialize graphics resources");
+			}
+			else if (spriteInit && tilemapInit && debugDrawInit)
+			{
+				enLogInfo(LogChannel::Global, "All graphics resources initialized");
+			}
+			else
+			{
+				enLogWarning(LogChannel::Global, "Some graphics resources aren't initialized");
+			}
 		}
 		else
 		{
-#ifdef ENLIVE_TOOL
-			enLogError(LogChannel::Global, "Can't initialize ImGuiToolManager");
-			return false;
-#else
-			enLogWarning(LogChannel::Global, "Can't initialize ImGuiToolManager");
-#endif // ENLIVE_TOOL
+			enLogWarning(LogChannel::Global, "Can't find ShadersPath");
 		}
-	}
+
+#ifdef ENLIVE_ENABLE_IMGUI
+		if (ImGuiWrapper::Init(PathManager::GetAssetsPath() + "imgui.ini"))
+		{
+			if (ImGuiToolManager::Initialize())
+			{
+#ifdef ENLIVE_TOOL
+				ImGuiToolManager::LoadFromFile(PathManager::GetAssetsPath() + "tools.json");
+#endif // ENLIVE_TOOL
+				enLogInfo(LogChannel::Global, "ImGui initialized");
+			}
+			else
+			{
+#ifdef ENLIVE_TOOL
+				enLogError(LogChannel::Global, "Can't initialize ImGuiToolManager");
+				return false;
+#else
+				enLogWarning(LogChannel::Global, "Can't initialize ImGuiToolManager");
+#endif // ENLIVE_TOOL
+			}
+		}
 #endif // ENLIVE_ENABLE_IMGUI
+	}
 
 	engine.mInitialized = true;
 	enLogInfo(LogChannel::Global, "Engine initialized");
