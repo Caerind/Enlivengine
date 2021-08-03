@@ -207,9 +207,6 @@ int main(int argc, char** argv)
 #ifdef SDL_VIDEO_DRIVER_VIVANTE
 	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_VIVANTE");
 #endif
-#ifdef USING_GENERATED_CONFIG_H
-	enLogInfo(en::LogChannel::System, "USING_GENERATED_CONFIG_H");
-#endif
 
 	enLogInfo(en::LogChannel::System, "================================================");
 	enLogInfo(en::LogChannel::System, "Config:");
@@ -267,12 +264,6 @@ int main(int argc, char** argv)
 	enLogInfo(en::LogChannel::System, "ExecutablePath: {}", en::PathManager::GetExecutablePath());
 	enLogInfo(en::LogChannel::System, "CurrentPath: {}", en::PathManager::GetCurrentPath());
 
-
-	enLogInfo(en::LogChannel::System, "================================================");
-	enLogInfo(en::LogChannel::System, "Engine init/release:");
-	en::Engine::Init(argc, argv);
-	enLogInfo(en::LogChannel::System, "Engine::IsInitialized: {}", en::Engine::IsInitialized());
-	en::Engine::Release();
 
 	enLogInfo(en::LogChannel::System, "================================================");
 	
