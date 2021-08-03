@@ -8,7 +8,14 @@
 #include <Enlivengine/Platform/Debugger.hpp>
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Utils/Log.hpp>
+
+
+#ifdef ENLIVE_PLATFORM_LINUX
+#define SDL_VIDEO_DRIVER_X11
+#include <SDL_config_pandora.h>
+#endif
 #include <SDL_config.h>
+
 
 #include <Enlivengine/Resources/PathManager.hpp>
 #include <Enlivengine/Engine.hpp>
