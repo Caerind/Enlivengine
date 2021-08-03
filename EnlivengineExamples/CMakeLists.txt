@@ -1,4 +1,9 @@
 
+source_group("" FILES PlatformExample.cpp)
+add_executable(PlatformExample PlatformExample.cpp)
+target_link_libraries(PlatformExample PRIVATE Enlivengine)
+set_target_properties(PlatformExample PROPERTIES FOLDER "EnlivengineExamples")
+
 source_group("" FILES SystemExample.cpp)
 add_executable(SystemExample SystemExample.cpp)
 target_link_libraries(SystemExample PRIVATE Enlivengine)

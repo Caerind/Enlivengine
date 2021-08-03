@@ -83,6 +83,7 @@
 		    #define ENLIVE_PLATFORM_LITTLE_ENDIAN
 		    #define ENLIVE_PLATFORM_DESCRIPTION "iPhone simulator on x86"
 		#elif defined(__x86_64) || defined(__amd64)
+			#define ENLIVE_PLATFORM_IPHONE_SIMULATOR
             #define ENLIVE_PROCESSOR_X86_64
             #define ENLIVE_PLATFORM_LITTLE_ENDIAN
 		    #define ENLIVE_PLATFORM_DESCRIPTION "iPhone simulator on x64"
