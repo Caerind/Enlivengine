@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_syswm.h>
+#include <Enlivengine/SDL/SDLWrapper.hpp>
 
 #include <bgfx/platform.h>
 
@@ -33,7 +34,8 @@ bool BgfxWrapper::Init(Window& window)
     SDL_SysWMinfo wmi;
     SDL_VERSION(&wmi.version);
     if (!SDL_GetWindowWMInfo(window.mWindow, &wmi))
-    {
+	{
+		enLogError(LogChannel::Global, "Can't get SDL WM Info : {}", SDLWrapper::GetError());
         return false;
     }
 
@@ -133,7 +135,6 @@ bool BgfxWrapper::Init(Window& window)
     default:
     {
 		enLogError(LogChannel::Global, "Unknown SDL platform : {}", Enum::GetValueName<SDL_SYSWM_TYPE>(wmi.subsystem));
-        enAssert(false);
         return false;
     }
     }
