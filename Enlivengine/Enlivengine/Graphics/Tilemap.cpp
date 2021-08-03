@@ -47,6 +47,11 @@ Tilemap::Tilemap(Tilemap&& other)
 
 Tilemap::~Tilemap()
 {
+	if (!BgfxWrapper::IsInitialized())
+	{
+		return;
+	}
+
 	if (bgfx::isValid(mVertexBuffer))
 	{
 		bgfx::destroy(mVertexBuffer);
@@ -163,7 +168,7 @@ Rectf Tilemap::GetGlobalBounds() const
 
 bool Tilemap::CanRender() const
 {
-	if (bgfx::isValid(mVertexBuffer) && bgfx::isValid(mIndexBuffer) && mTileset != nullptr && mTileset->GetTexture().IsValid() && kShader.IsValid())
+	if (BgfxWrapper::IsInitialized() && bgfx::isValid(mVertexBuffer) && bgfx::isValid(mIndexBuffer) && mTileset != nullptr && mTileset->GetTexture().IsValid() && kShader.IsValid())
 	{
 		Texture& texture = mTileset->GetTexture().Get();
 		if (texture.IsValid())
@@ -176,7 +181,7 @@ bool Tilemap::CanRender() const
 
 void Tilemap::Render() const
 {
-	if (bgfx::isValid(mVertexBuffer) && bgfx::isValid(mIndexBuffer) && mTileset != nullptr && mTileset->GetTexture().IsValid() && kShader.IsValid())
+	if (BgfxWrapper::IsInitialized() && bgfx::isValid(mVertexBuffer) && bgfx::isValid(mIndexBuffer) && mTileset != nullptr && mTileset->GetTexture().IsValid() && kShader.IsValid())
 	{
 		Texture& texture = mTileset->GetTexture().Get();
 		if (texture.IsValid())
@@ -238,6 +243,11 @@ void Tilemap::UpdateTileTexCoords(U32 tileIndex)
 
 void Tilemap::UpdateVertexBuffer()
 {
+	if (!BgfxWrapper::IsInitialized())
+	{
+		return;
+	}
+
 	// TODO : Use dynamic vertex buffer instead ?
 	// TODO : => Give the choise to the user using template boolean parameter
 	if (bgfx::isValid(mVertexBuffer))
@@ -255,11 +265,11 @@ void Tilemap::UpdateVertexBuffer()
 
 void Tilemap::UpdateIndexBuffer()
 {
-	if (bgfx::isValid(mIndexBuffer))
+	if (BgfxWrapper::IsInitialized() && bgfx::isValid(mIndexBuffer))
 	{
 		bgfx::destroy(mIndexBuffer);
-		mIndexBuffer = BGFX_INVALID_HANDLE;
 	}
+	mIndexBuffer = BGFX_INVALID_HANDLE;
 
 	if (mSize.x > 0 && mSize.y > 0)
 	{
@@ -275,8 +285,12 @@ void Tilemap::UpdateIndexBuffer()
 			}
 			mIndices[i] = kIndices[j] + k;
 		}
-		mIndexBuffer = bgfx::createIndexBuffer(bgfx::makeRef(mIndices.data(), indiceCount * sizeof(U16)));
-		enAssert(bgfx::isValid(mIndexBuffer));
+
+		if (BgfxWrapper::IsInitialized())
+		{
+			mIndexBuffer = bgfx::createIndexBuffer(bgfx::makeRef(mIndices.data(), indiceCount * sizeof(U16)));
+			enAssert(bgfx::isValid(mIndexBuffer));
+		}
 	}
 	else
 	{
@@ -286,6 +300,8 @@ void Tilemap::UpdateIndexBuffer()
 
 bool Tilemap::InitializeTilemaps()
 {
+	enAssert(BgfxWrapper::IsInitialized());
+
 	Vertex::kLayout
 		.begin()
 		.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
@@ -310,6 +326,11 @@ bool Tilemap::InitializeTilemaps()
 
 bool Tilemap::ReleaseTilemaps()
 {
+	if (!BgfxWrapper::IsInitialized())
+	{
+		return true;
+	}
+
 	if (bgfx::isValid(kUniformTexture))
 	{
 		bgfx::destroy(kUniformTexture);

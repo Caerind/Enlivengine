@@ -16,7 +16,7 @@ bool SDLWrapper::Init()
     initFlags |= SDL_INIT_VIDEO;
     initFlags |= SDL_INIT_AUDIO; // Seems like we still need SDL AUDIO with SoLoud using the SDL backend (but not 100%, need to try)
 
-    sdl.mInitialized = SDL_Init(initFlags) >= 0;
+    sdl.mInitialized = SDL_Init(initFlags) == 0;
     if (sdl.mInitialized)
     {
 		sdl.mInitFlags = initFlags;
@@ -26,7 +26,7 @@ bool SDLWrapper::Init()
     else
     {
 		sdl.mInitFlags = 0;
-		enLogError(LogChannel::Global, "Can't initialize SDL");
+		enLogError(LogChannel::Global, "Can't initialize SDL : {}", GetError());
         return false;
     }
 }

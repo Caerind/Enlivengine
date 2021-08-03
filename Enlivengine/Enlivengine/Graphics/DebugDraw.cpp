@@ -19,6 +19,11 @@ DebugDraw::DebugDraw()
 
 DebugDraw::~DebugDraw()
 {
+	if (!BgfxWrapper::IsInitialized())
+	{
+		return;
+	}
+
 	if (bgfx::isValid(mBuffer))
 	{
 		bgfx::destroy(mBuffer);
@@ -180,7 +185,7 @@ void DebugDraw::DrawSphere(const Sphere& sphere, const Color& color /*= Colors::
 
 void DebugDraw::Render()
 {
-	if (mVertexCount > 0 && kShader.IsValid())
+	if (BgfxWrapper::IsInitialized() && mVertexCount > 0 && kShader.IsValid())
 	{
 		if (bgfx::isValid(mBuffer))
 		{
@@ -212,6 +217,8 @@ void DebugDraw::AddVertex(const Vector3f& pos, const Color& color)
 
 bool DebugDraw::InitializeDebugDraws()
 {
+	enAssert(BgfxWrapper::IsInitialized());
+
 	Vertex::kLayout
 		.begin()
 		.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
@@ -229,6 +236,11 @@ bool DebugDraw::InitializeDebugDraws()
 
 bool DebugDraw::ReleaseDebugDraws()
 {
+	if (!BgfxWrapper::IsInitialized())
+	{
+		return true;
+	}
+
 	kShader.Destroy();
 	return true;
 }

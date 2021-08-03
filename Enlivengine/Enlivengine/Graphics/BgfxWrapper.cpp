@@ -149,7 +149,8 @@ bool BgfxWrapper::Init(Window& window)
     bgfx::renderFrame();
 
     if (!bgfx::init(init))
-    {
+	{
+		enLogError(LogChannel::Global, "Can't initialize Bgfx");
         return false;
     }
 
@@ -160,6 +161,9 @@ bool BgfxWrapper::Init(Window& window)
 #ifdef ENLIVE_DEBUG
     bgfx::setDebug(BGFX_DEBUG_TEXT);
 #endif // ENLIVE_DEBUG
+
+	enLogInfo(LogChannel::Global, "Bgfx initialized");
+	enLogInfo(LogChannel::Global, "Renderer: {}", Enum::GetValueName<bgfx::RendererType::Enum>(bgfx::getRendererType()));
 
     bgfx.mInitialized = true;
     return true;

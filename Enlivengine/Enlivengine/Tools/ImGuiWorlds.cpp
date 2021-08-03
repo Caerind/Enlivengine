@@ -228,6 +228,7 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 			return false;
 		}
 
+		/*
 		std::string currentWorldName = "";
 		if (GenericSerialization(xml, "CurrentWorld", currentWorldName))
 		{
@@ -236,6 +237,7 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 				WorldFileManager::LoadWorld(currentWorldName);
 			}
 		}
+		*/
 
 		return true;
 	}

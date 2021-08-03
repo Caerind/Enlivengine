@@ -134,24 +134,23 @@ bool Engine::Init(int argc, char** argv)
 	const bool windowCreated = engine.mWindow.Create("Enlivengine", 0);
 	if (!windowCreated)
 	{
-		enLogError(LogChannel::Global, "Can't create window");
+		enLogError(LogChannel::Global, "Can't create window : {}", SDLWrapper::GetError());
 		return false;
 	}
-	enLogInfo(LogChannel::Global, "Window created");
+	else
+	{
+		enLogInfo(LogChannel::Global, "Window created");
+	}
 
 	if (!BgfxWrapper::Init(engine.mWindow))
 	{
-		enLogError(LogChannel::Global, "Can't initialize Bgfx");
 		return false;
 	}
-	enLogInfo(LogChannel::Global, "Bgfx initialized");
-	enLogInfo(LogChannel::Global, "Renderer: {}", Enum::GetValueName<bgfx::RendererType::Enum>(bgfx::getRendererType()));
 
 	const bool shadersPathFound = PathManager::AutoDetectShadersPath();
 	if (!shadersPathFound)
 	{
-		enLogError(LogChannel::Global, "Can't find ShadersPath");
-		return false;
+		enLogWarning(LogChannel::Global, "Can't find ShadersPath");
 	}
 	enLogInfo(LogChannel::Global, "ShadersPath: {}", PathManager::GetShadersPathForRenderer(bgfx::getRendererType()));
 
@@ -160,10 +159,16 @@ bool Engine::Init(int argc, char** argv)
 	const bool debugDrawInit = DebugDraw::InitializeDebugDraws();
 	if (!spriteInit || !tilemapInit || !debugDrawInit)
 	{
-		enLogError(LogChannel::Global, "Can't initialize graphics resources");
-		return false;
+		enLogWarning(LogChannel::Global, "Can't initialize graphics resources");
 	}
-	enLogInfo(LogChannel::Global, "Shaders initialized");
+	else if (spriteInit && tilemapInit && debugDrawInit)
+	{
+		enLogInfo(LogChannel::Global, "All graphics resources initialized");
+	}
+	else
+	{
+		enLogWarning(LogChannel::Global, "Some graphics resources aren't initialized");
+	}
 
 #ifdef ENLIVE_ENABLE_IMGUI
 	if (ImGuiWrapper::Init(PathManager::GetAssetsPath() + "imgui.ini"))
