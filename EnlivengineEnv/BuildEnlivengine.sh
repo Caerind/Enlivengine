@@ -14,5 +14,6 @@ fi
 
 cmake --build build --target Enlivengine --config ${config}
 cmake --build build --target EnlivengineTests --config ${config}
+cmake --build build --target PlatformExample --config ${config}
 cmake --build build --target 3DSceneExample --config ${config}
 
