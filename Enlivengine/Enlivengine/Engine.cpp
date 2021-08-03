@@ -171,10 +171,7 @@ bool Engine::Init(int argc, char** argv)
 		if (ImGuiToolManager::Initialize())
 		{
 #ifdef ENLIVE_TOOL
-			if (!ImGuiToolManager::LoadFromFile(PathManager::GetAssetsPath() + "tools.json"))
-			{
-				enLogWarning(LogChannel::Global, "Can't load ImGui opened tools");
-			}
+			ImGuiToolManager::LoadFromFile(PathManager::GetAssetsPath() + "tools.json");
 #endif // ENLIVE_TOOL
 			enLogInfo(LogChannel::Global, "ImGui initialized");
 		}

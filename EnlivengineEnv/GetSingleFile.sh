@@ -16,38 +16,22 @@ else
 	exit 3
 fi
 
-username=""
-if [ ! -z "$3" ]; then
-	username="$3"
-else
-    echo "No [3:username] argument, aborting"
-	exit 3
-fi
-
-password=""
-if [ ! -z "$4" ]; then
-	password="$4"
-else
-    echo "No [4:password] argument, aborting"
-	exit 3
-fi
-
 localFile=""
-if [ ! -z "$5" ]; then
-	localFile="$5"
+if [ ! -z "$3" ]; then
+	localFile="$3"
 else
-    echo "No [5:localFile] argument, aborting"
+    echo "No [3:localFile] argument, aborting"
 	exit 3
 fi
 
 distantFile=""
-if [ ! -z "$6" ]; then
-	distantFile="$6"
+if [ ! -z "$4" ]; then
+	distantFile="$4"
 else
-    echo "No [6:distantFile] argument, aborting"
+    echo "No [4:distantFile] argument, aborting"
 	exit 3
 fi
 
-curl -u $username:$password ftp://$server:$port/$distantFile -o $localFile
+curl http://$server:$port/$distantFile -o $localFile
 
 

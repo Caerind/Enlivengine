@@ -36,7 +36,7 @@ else
 fi
 
 # Ensures shaders are compiled, folders and files are existing, ...
-./EnlivengineEnv/CompileShaders.sh
+bash EnlivengineEnv/CompileShaders.sh
 
 compiledShadersPath="Enlivengine/Enlivengine/Graphics/CompiledShaders/"
 
