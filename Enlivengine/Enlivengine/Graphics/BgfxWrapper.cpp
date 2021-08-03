@@ -39,95 +39,95 @@ bool BgfxWrapper::Init(Window& window)
 
     switch (wmi.subsystem)
     {
-#ifdef ENLIVE_PLATFORM_WINDOWS
+#ifdef SDL_VIDEO_DRIVER_WINDOWS
     case SDL_SYSWM_WINDOWS:
 	{
 		init.platformData.ndt = nullptr;
 		init.platformData.nwh = wmi.info.win.window;
         break;
     }
-#endif // ENLIVE_PLATFORM_WINDOWS
+#endif // SDL_VIDEO_DRIVER_WINDOWS
 
-#ifdef ENLIVE_PLATFORM_WINRT
+#ifdef SDL_VIDEO_DRIVER_WINRT
     case SDL_SYSWM_WINRT:
     {
 		init.platformData.ndt = nullptr;
 		init.platformData.nwh = wmi.info.winrt.window;
         break;
     }
-#endif // ENLIVE_PLATFORM_WINRT
+#endif // SDL_VIDEO_DRIVER_WINRT
 
-#ifdef ENLIVE_PLATFORM_X11
+#ifdef SDL_VIDEO_DRIVER_X11
     case SDL_SYSWM_X11:
     {
 		init.platformData.ndt = wmi.info.x11.display;
 		init.platformData.nwh = (void*)(uintptr_t)wmi.info.x11.window;
         break;
     }
-#endif // ENLIVE_PLATFORM_X11
+#endif // SDL_VIDEO_DRIVER_X11
 
-#ifdef ENLIVE_PLATFORM_DIRECTFB
+#ifdef SDL_VIDEO_DRIVER_DIRECTFB
 	case SDL_SYSWM_DIRECTFB:
 	{
 		init.platformData.ndt = nullptr;
 		init.platformData.nwh = wmi.info.dfb.window;
 		break;
 	}
-#endif // ENLIVE_PLATFORM_DIRECTFB
+#endif // SDL_VIDEO_DRIVER_DIRECTFB
 
-#ifdef ENLIVE_PLATFORM_COCOA // OSX
+#ifdef SDL_VIDEO_DRIVER_COCOA // OSX
 	case SDL_SYSWM_COCOA:
 	{
 		init.platformData.ndt = nullptr;
 		init.platformData.nwh = wmi.info.cocoa.window;
 		break;
 	}
-#endif // ENLIVE_PLATFORM_COCOA
+#endif // SDL_VIDEO_DRIVER_COCOA
 
-#ifdef ENLIVE_PLATFORM_UIKIT // iOS
+#ifdef SDL_VIDEO_DRIVER_UIKIT // iOS
 	case SDL_SYSWM_UIKIT:
 	{
 		init.platformData.ndt = nullptr;
 		init.platformData.nwh = wmi.info.uikit.window;
 		break;
 	}
-#endif // ENLIVE_PLATFORM_UIKIT
+#endif // SDL_VIDEO_DRIVER_UIKIT
 
-#ifdef ENLIVE_PLATFORM_WAYLAND
+#ifdef SDL_VIDEO_DRIVER_WAYLAND
 	case SDL_SYSWM_WAYLAND:
 	{
 		init.platformData.ndt = nullptr;
 		init.platformData.nwh = (void*)(uintptr_t)wmi.info.wl.display;
 		break;
 	}
-#endif // ENLIVE_PLATFORM_WAYLAND
+#endif // SDL_VIDEO_DRIVER_WAYLAND
 
-#ifdef ENLIVE_PLATFORM_MIR
+#ifdef SDL_VIDEO_DRIVER_MIR
 	case SDL_SYSWM_MIR:
 	{
 		init.platformData.ndt = nullptr;
 		init.platformData.nwh = nullptr;
 		break;
 	}
-#endif // ENLIVE_PLATFORM_MIR
+#endif // SDL_VIDEO_DRIVER_MIR
 
-#ifdef ENLIVE_PLATFORM_ANDROID
+#ifdef SDL_VIDEO_DRIVER_ANDROID
 	case SDL_SYSWM_ANDROID:
 	{
 		init.platformData.ndt = nullptr;
 		init.platformData.nwh = wmi.info.android.window;
 		break;
 	}
-#endif // ENLIVE_PLATFORM_ANDROID
+#endif // SDL_VIDEO_DRIVER_ANDROID
 
-#ifdef ENLIVE_PLATFORM_VIVANTE // Steamlink
+#ifdef SDL_VIDEO_DRIVER_VIVANTE // Steamlink
     case SDL_SYSWM_VIVANTE:
 	{
 		init.platformData.ndt = wmi.info.vivante.display;
 		init.platformData.nwh = (void*)(uintptr_t)wmi.info.vivante.window;
 		break;
 	}
-#endif // ENLIVE_PLATFORM_VIVANTE
+#endif // SDL_VIDEO_DRIVER_VIVANTE
 
     case SDL_SYSWM_UNKNOWN:
     default:
