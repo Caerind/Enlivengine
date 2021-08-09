@@ -53,13 +53,13 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: InstallDependencies
-      run: bash ./EnlivengineEnv/InstallDependencies.sh
+      run: bash Enlivengine/EnlivengineEnv/InstallDependencies.sh
       
     - name: GenerateProject
-      run: bash ./EnlivengineEnv/GenerateProject.sh ${{ matrix.platform.cc }} ${{ matrix.platform.cxx }}
+      run: bash Enlivengine/EnlivengineEnv/GenerateProject.sh ${{ matrix.platform.cc }} ${{ matrix.platform.cxx }}
       
     - name: BuildAll
-      run: bash ./EnlivengineEnv/BuildAll.sh ${{ matrix.config.cfg }}
+      run: bash Enlivengine/EnlivengineEnv/BuildAll.sh ${{ matrix.config.cfg }}
     
     - name: DeployGfxCompilers
-      run: bash ./EnlivengineEnv/DeployWebsite/DeployGfxCompilers.sh ${{ secrets.deploy_server }} ${{ secrets.deploy_port }} ${{ secrets.deploy_username }} ${{ secrets.deploy_password }} ${{ secrets.deploy_distantPathPrecompiled }} ${{ matrix.config.name }}
+      run: bash Enlivengine/EnlivengineEnv/DeployWebsite/DeployGfxCompilers.sh ${{ secrets.deploy_server }} ${{ secrets.deploy_port }} ${{ secrets.deploy_username }} ${{ secrets.deploy_password }} ${{ secrets.deploy_distantPathPrecompiled }} ${{ matrix.config.name }}
