@@ -96,11 +96,22 @@ bool PathManager::AutoDetectShadersPath()
 		}
 	}
 
-	std::filesystem::path tempShadersPath = std::filesystem::path(GetAssetsPath() + "Shaders");
-	if (std::filesystem::exists(tempShadersPath))
 	{
-		SetShadersPath(tempShadersPath.generic_string() + "/");
-		return true;
+		std::filesystem::path tempShadersPath = std::filesystem::path(GetCurrentPath() + "build/Shaders");
+		if (std::filesystem::exists(tempShadersPath))
+		{
+			SetShadersPath(tempShadersPath.generic_string() + "/");
+			return true;
+		}
+	}
+
+	{
+		std::filesystem::path tempShadersPath = std::filesystem::path(GetAssetsPath() + "Shaders");
+		if (std::filesystem::exists(tempShadersPath))
+		{
+			SetShadersPath(tempShadersPath.generic_string() + "/");
+			return true;
+		}
 	}
 
 	return false;
