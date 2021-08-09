@@ -78,4 +78,4 @@ fi
 
 distantFile="$distantPath$project-$branch-$config-$version-$platform$extension"
 
-bash EnlivengineEnv/DeployWebsite/DeploySingleFile.sh $server $port $username $password $localFile $distantFile
+bash Enlivengine/EnlivengineEnv/DeployWebsite/DeploySingleFile.sh $server $port $username $password $localFile $distantFile

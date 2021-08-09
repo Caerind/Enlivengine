@@ -14,6 +14,3 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
 add_subdirectory(Enlivengine)
-
-add_subdirectory(EnlivengineExamples)
-add_subdirectory(EnlivengineTests)

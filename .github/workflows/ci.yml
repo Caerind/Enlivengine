@@ -57,17 +57,17 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: InstallDependencies
-      run: bash ./EnlivengineEnv/InstallDependencies.sh
+      run: bash Enlivengine/EnlivengineEnv/InstallDependencies.sh
       
     - name: GenerateProject
-      run: bash ./EnlivengineEnv/GenerateProject.sh ${{ matrix.platform.cc }} ${{ matrix.platform.cxx }}
+      run: bash Enlivengine/EnlivengineEnv/GenerateProject.sh ${{ matrix.platform.cc }} ${{ matrix.platform.cxx }}
       
     - name: BuildEnlivengine
-      run: bash ./EnlivengineEnv/BuildEnlivengine.sh ${{ matrix.config.cfg }}
+      run: bash Enlivengine/EnlivengineEnv/BuildEnlivengine.sh ${{ matrix.config.cfg }}
       
     - name: RunTests
-      run: bash ./EnlivengineEnv/RunTests.sh ${{ matrix.config.cfg }}
+      run: bash Enlivengine/EnlivengineEnv/RunTests.sh ${{ matrix.config.cfg }}
       
     - name: Deploy 3DSceneExample
       continue-on-error: true
-      run: bash ./EnlivengineEnv/DeployWebsite/DeployProject.sh ${{ secrets.deploy_server }} ${{ secrets.deploy_port }} ${{ secrets.deploy_username }} ${{ secrets.deploy_password }} "3DSceneExample" ${{ github.ref }} ${{ matrix.config.name }} ${{ github.run_id }} "EnlivengineExamples/" ${{ matrix.config.cfg }} ${{ secrets.deploy_distantPath }}
+      run: bash Enlivengine/EnlivengineEnv/DeployWebsite/DeployProject.sh ${{ secrets.deploy_server }} ${{ secrets.deploy_port }} ${{ secrets.deploy_username }} ${{ secrets.deploy_password }} "3DSceneExample" ${{ github.ref }} ${{ matrix.config.name }} ${{ github.run_id }} "EnlivengineExamples/" ${{ matrix.config.cfg }} ${{ secrets.deploy_distantPath }}

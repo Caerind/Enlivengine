@@ -108,4 +108,4 @@ fi
 
 distantFile="${distantPath}gfxcompilers-$config-$platform.zip"
 
-bash EnlivengineEnv/DeployWebsite/DeploySingleFile.sh $server $port $username $password gfxcompilers.zip $distantFile
+bash Enlivengine/EnlivengineEnv/DeployWebsite/DeploySingleFile.sh $server $port $username $password gfxcompilers.zip $distantFile
