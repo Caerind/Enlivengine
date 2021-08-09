@@ -19,3 +19,6 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
 add_subdirectory(EnlivengineThirdParty)
 add_subdirectory(Enlivengine)
+
+add_subdirectory(EnlivengineTests)
+add_subdirectory(EnlivengineExamples)

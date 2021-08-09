@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -d "build" ]; then
-	bash EnlivengineEnv/GenerateProject.sh
+	bash Enlivengine/EnlivengineEnv/GenerateProject.sh
 fi
 
 config=""
