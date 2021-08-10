@@ -22,6 +22,10 @@ public:
 	static void SetAssetsPath(const std::string& assetsPath);
 	static const std::string& GetAssetsPath();
 
+	static bool AutoDetectTmpPath();
+	static void SetTmpPath(const std::string& tmpPath);
+	static const std::string& GetTmpPath();
+
 	static bool AutoDetectShadersPath();
 	static void SetShadersPath(const std::string& shadersPath);
 	static const std::string& GetShadersPath();
@@ -44,6 +48,7 @@ private:
 
 	std::string mExecutablePath;
 	std::string mAssetsPath;
+	std::string mTmpPath;
 	std::string mShadersPath;
 	std::string mShadersPathRenderer;
 	std::string mScreenshotPath;

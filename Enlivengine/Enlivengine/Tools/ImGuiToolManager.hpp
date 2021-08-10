@@ -24,6 +24,11 @@ public:
 	static bool LoadFromFile(const std::string& filename);
 	static bool SaveToFile(const std::string& filename);
 
+#ifdef ENLIVE_TOOL
+	static bool CreateDefaultToolsFile(const std::string& filename);
+	static bool CreateDefaultImGuiFile(const std::string& filename);
+#endif // ENLIVE_TOOL
+
 	static void Update(Window& window);
 
 	static void RegisterTool(ImGuiTool& tool);

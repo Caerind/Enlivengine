@@ -69,8 +69,8 @@ bool ImGuiWrapper::Init(const std::string& iniFilename /*= ""*/)
 
 	ImGuiIO& io = ImGui::GetIO();
 
-	io.DisplaySize = ImVec2(1280.0f, 720.0f);
-	io.DeltaTime = 1.0f / 60.0f; 
+	io.DisplaySize = ImVec2(k_ImDisplayWidth, k_ImDisplayHeight);
+	io.DeltaTime = k_ImDisplayDT;
 	io.IniFilename = imgui.mIniFilename.c_str();
 
 	// Style

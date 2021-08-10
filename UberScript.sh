@@ -25,6 +25,7 @@ InstallDependencies()
 
 GenerateProject()
 {
+	mkdir -p tmp
 	mkdir -p build
 	cmake -S . -B build
 }
