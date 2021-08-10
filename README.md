@@ -28,4 +28,6 @@ There are few others options availables that ease various tasks, you can check t
 bash UberScript.sh -h
 ```
 
-For the code itself, you can check the examples
+### Code
+
+For the code itself, you can check the [3DSceneExample](https://github.com/Caerind/Enlivengine/blob/master/Enlivengine/EnlivengineExamples/3DSceneExample.cpp)
