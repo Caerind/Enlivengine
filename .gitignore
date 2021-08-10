@@ -20,6 +20,7 @@
 [Bb]uild/
 [Bb]uildVS/
 [Bb]uildMinGW/
+[Tt][Mm][Pp]/
 [Gg]fx[Cc]ompilers/
 bld/
 [Bb]in/
@@ -247,7 +248,9 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
+# Enlivengine
 ./build
 EnlivengineDocs/html
 EnlivengineDocs/latex
 Enlivengine/EnlivengineThirdParty/bgfx/bgfx/examples/runtime/shaders
+vs-chromium-project.txt

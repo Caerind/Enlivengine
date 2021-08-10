@@ -313,10 +313,6 @@ bool PlayerSystem::Edit(ObjectEditor& objectEditor, const char* name)
 
 int main(int argc, char** argv)
 {
-#ifdef ENLIVE_ENABLE_LOG
-	FileLogger fileLogger("log.txt");
-#endif // ENLIVE_ENABLE_LOG
-
 	Engine::RegisterComponent<StupidShipComponent>();
 	Engine::RegisterComponent<PlayerComponent>();
 

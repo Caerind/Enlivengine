@@ -124,6 +124,14 @@ bool Engine::Init(int argc, char** argv)
 	}
 	enLogInfo(LogChannel::Global, "AssetsPath: {}", PathManager::GetAssetsPath());
 
+	const bool tmpPathFound = PathManager::AutoDetectTmpPath();
+	if (!tmpPathFound)
+	{
+		enLogError(LogChannel::Global, "Can't find TmpPath");
+		return false;
+	}
+	enLogInfo(LogChannel::Global, "TmpPath: {}", PathManager::GetTmpPath());
+
 	if (!SDLWrapper::Init())
 	{
 		return false;
@@ -171,24 +179,40 @@ bool Engine::Init(int argc, char** argv)
 		}
 
 #ifdef ENLIVE_ENABLE_IMGUI
-		if (ImGuiWrapper::Init(PathManager::GetAssetsPath() + "imgui.ini"))
+		const std::string imGuiToolsFilePath = PathManager::GetTmpPath() + "tools.json";
+#ifdef ENLIVE_TOOL
+		if (!std::filesystem::exists(imGuiToolsFilePath))
 		{
-			if (ImGuiToolManager::Initialize())
-			{
-#ifdef ENLIVE_TOOL
-				ImGuiToolManager::LoadFromFile(PathManager::GetAssetsPath() + "tools.json");
+			ImGuiToolManager::CreateDefaultToolsFile(imGuiToolsFilePath);
+		}
 #endif // ENLIVE_TOOL
-				enLogInfo(LogChannel::Global, "ImGui initialized");
-			}
-			else
-			{
+		if (ImGuiToolManager::Initialize())
+		{
 #ifdef ENLIVE_TOOL
-				enLogError(LogChannel::Global, "Can't initialize ImGuiToolManager");
-				return false;
+			ImGuiToolManager::LoadFromFile(imGuiToolsFilePath);
+#endif // ENLIVE_TOOL
+			enLogInfo(LogChannel::Global, "ImGui initialized");
+		}
+		else
+		{
+#ifdef ENLIVE_TOOL
+			enLogError(LogChannel::Global, "Can't initialize ImGuiToolManager");
+			return false;
 #else
-				enLogWarning(LogChannel::Global, "Can't initialize ImGuiToolManager");
+			enLogWarning(LogChannel::Global, "Can't initialize ImGuiToolManager");
 #endif // ENLIVE_TOOL
-			}
+		}
+
+		const std::string imGuiIniFilePath = PathManager::GetTmpPath() + "imgui.ini";
+#ifdef ENLIVE_TOOL
+		if (!std::filesystem::exists(imGuiIniFilePath))
+		{
+			ImGuiToolManager::CreateDefaultImGuiFile(imGuiIniFilePath);
+		}
+#endif // ENLIVE_TOOL
+		if (!ImGuiWrapper::Init(imGuiIniFilePath))
+		{
+			return false;
 		}
 #endif // ENLIVE_ENABLE_IMGUI
 	}
@@ -216,7 +240,7 @@ bool Engine::Release()
 		if (ImGuiToolManager::IsInitialized())
 		{
 #ifdef ENLIVE_TOOL
-			ImGuiToolManager::SaveToFile(PathManager::GetAssetsPath() + "tools.json");
+			ImGuiToolManager::SaveToFile(PathManager::GetTmpPath() + "tools.json");
 #endif // ENLIVE_TOOL
 			ImGuiToolManager::Release();
 		}

@@ -16,6 +16,28 @@ Used in :
 
 ## Getting started
 
-I won't detail this for now, as there still may be little modifications, but using the bash script in EnlivengineEnv/ should be relatively easy to build the engine.  
+### Build
 
-For the code itself, you can check the examples
+Using this command should initialize everything and build common things :
+```bash
+bash UberScript.sh -a
+```
+
+There are few others options availables that ease various tasks, you can check them using :
+```bash
+bash UberScript.sh -h
+```
+
+### Set up your project
+
+You can extend the engine for your game quite easily :
+  
+- Create a folder for your game
+- Add this folder to the main CMakeLists.txt
+- Add the build target in the Build() function in the UberScript
+- Register your components/systems before the Engine::main()
+
+
+### Code
+
+For the code itself, you can check the [3DSceneExample](https://github.com/Caerind/Enlivengine/blob/master/Enlivengine/EnlivengineExamples/3DSceneExample.cpp)

@@ -228,6 +228,7 @@ bool ImGuiWorlds::LoadWorldsFromFile()
 			return false;
 		}
 
+		// TODO : Serialize CurrentWorld ?
 		/*
 		std::string currentWorldName = "";
 		if (GenericSerialization(xml, "CurrentWorld", currentWorldName))
@@ -256,8 +257,11 @@ bool ImGuiWorlds::SaveWorldsToFile()
 	{
 		GenericSerialization(xml, "Worlds", mWorlds);
 
+		// TODO : Serialize CurrentWorld ?
+		/*
 		const World* world = Universe::GetCurrentWorld();
 		GenericSerialization(xml, "CurrentWorld", (world != nullptr) ? world->GetName() : "");
+		*/
 
 		return xml.Close();
 	}

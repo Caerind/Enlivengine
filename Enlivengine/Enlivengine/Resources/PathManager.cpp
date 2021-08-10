@@ -79,6 +79,46 @@ const std::string& PathManager::GetAssetsPath()
 	return GetInstance().mAssetsPath;
 }
 
+bool PathManager::AutoDetectTmpPath()
+{
+	for (U32 i = 0; i < 5; ++i)
+	{
+		std::string backfolder = "";
+		for (U32 j = 0; j < i; ++j)
+		{
+			backfolder += "../";
+		}
+
+		std::filesystem::path tempAssetsPath = std::filesystem::path(GetCurrentPath() + backfolder + "tmp").lexically_normal();
+		if (std::filesystem::exists(tempAssetsPath))
+		{
+			SetTmpPath(tempAssetsPath.generic_string() + "/");
+			return true;
+		}
+	}
+
+#if defined(ENLIVE_RELEASE)
+	std::filesystem::path tempAssetsPath = std::filesystem::current_path().generic_string();
+	if (std::filesystem::exists(tempAssetsPath))
+	{
+		SetTmpPath(tempAssetsPath.generic_string() + "/");
+		return true;
+	}
+#endif // ENLIVE_RELEASE 
+
+	return false;
+}
+
+void PathManager::SetTmpPath(const std::string& tmpPath)
+{
+	GetInstance().mTmpPath = tmpPath;
+}
+
+const std::string& PathManager::GetTmpPath()
+{
+	return GetInstance().mTmpPath;
+}
+
 bool PathManager::AutoDetectShadersPath()
 {
 	for (U32 i = 0; i < 5; ++i)
@@ -96,11 +136,22 @@ bool PathManager::AutoDetectShadersPath()
 		}
 	}
 
-	std::filesystem::path tempShadersPath = std::filesystem::path(GetAssetsPath() + "Shaders");
-	if (std::filesystem::exists(tempShadersPath))
 	{
-		SetShadersPath(tempShadersPath.generic_string() + "/");
-		return true;
+		std::filesystem::path tempShadersPath = std::filesystem::path(GetCurrentPath() + "build/Shaders");
+		if (std::filesystem::exists(tempShadersPath))
+		{
+			SetShadersPath(tempShadersPath.generic_string() + "/");
+			return true;
+		}
+	}
+
+	{
+		std::filesystem::path tempShadersPath = std::filesystem::path(GetAssetsPath() + "Shaders");
+		if (std::filesystem::exists(tempShadersPath))
+		{
+			SetShadersPath(tempShadersPath.generic_string() + "/");
+			return true;
+		}
 	}
 
 	return false;

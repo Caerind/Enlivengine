@@ -75,6 +75,10 @@ private:
 
 	friend void ImGui::PushFont(ImGui::Font::Enum font);
 	friend class ImGuiWrapperAllocatorAccess;
+
+	static constexpr F32 k_ImDisplayWidth{ 1280.0f };
+	static constexpr F32 k_ImDisplayHeight{ 720.0f };
+	static constexpr F32 k_ImDisplayDT{ 1.0f / 60.0f };
 };
 
 } // namespace en
