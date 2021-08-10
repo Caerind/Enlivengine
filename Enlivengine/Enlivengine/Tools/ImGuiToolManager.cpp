@@ -145,6 +145,105 @@ bool ImGuiToolManager::SaveToFile(const std::string& filename)
 	return true;
 }
 
+#ifdef ENLIVE_TOOL
+bool ImGuiToolManager::CreateDefaultToolsFile(const std::string& filename)
+{
+	std::ofstream file(filename);
+	if (!file)
+	{
+		return false;
+	}
+
+	file << "{" << std::endl;
+	file << "    \"" << ImGuiEditor::GetInstance().GetSaveName()			<< "\": true" << "," << std::endl;
+	file << "    \"" << ImGuiEntityBrowser::GetInstance().GetSaveName()		<< "\": true" << "," << std::endl;
+	file << "    \"" << ImGuiLogger::GetInstance().GetSaveName()			<< "\": true" << "," << std::endl;
+	file << "    \"" << ImGuiResourceBrowser::GetInstance().GetSaveName()	<< "\": true" << "," << std::endl;
+	file << "    \"" << ImGuiWorlds::GetInstance().GetSaveName()			<< "\": true" << std::endl;
+	file << "}" << std::endl;
+
+	file.close();
+
+	return true;
+}
+
+bool ImGuiToolManager::CreateDefaultImGuiFile(const std::string& filename)
+{
+	std::ofstream file(filename);
+	if (!file)
+	{
+		return false;
+	}
+
+	{
+		file << "[Window][DockSpaceViewport_11111111]" << std::endl;
+		file << "Pos=0,24" << std::endl;
+		file << "Size=1920,993" << std::endl;
+		file << "Collapsed=0" << std::endl;
+		file << std::endl;
+		file << "[Window][Debug##Default]" << std::endl;
+		file << "Pos=60,60" << std::endl;
+		file << "Size=400,400" << std::endl;
+		file << "Collapsed=0" << std::endl;
+		file << std::endl;
+	}
+	{
+		file << "[Window][" << ImGuiLogger::GetInstance().GetName() << "]" << std::endl;
+		file << "Pos=441,806" << std::endl;
+		file << "Size=1479,211" << std::endl;
+		file << "Collapsed=0" << std::endl;
+		file << "DockId=0x00000004,0" << std::endl;
+		file << std::endl;
+	}
+	{
+		file << "[Window][" << ImGuiResourceBrowser::GetInstance().GetName() << "]" << std::endl;
+		file << "Pos=0,24" << std::endl;
+		file << "Size=439,993" << std::endl;
+		file << "Collapsed=0" << std::endl;
+		file << "DockId=0x00000001,2" << std::endl;
+		file << std::endl;
+	}
+	{
+		file << "[Window][" << ImGuiEntityBrowser::GetInstance().GetName() << "]" << std::endl;
+		file << "Pos=0,24" << std::endl;
+		file << "Size=439,993" << std::endl;
+		file << "Collapsed=0" << std::endl;
+		file << "DockId=0x00000001,1" << std::endl;
+		file << std::endl;
+	}
+	{
+		file << "[Window][" << ImGuiWorlds::GetInstance().GetName() << "]" << std::endl;
+		file << "Pos=0,24" << std::endl;
+		file << "Size=439,993" << std::endl;
+		file << "Collapsed=0" << std::endl;
+		file << "DockId=0x00000001,0" << std::endl;
+		file << std::endl;
+	}
+	{
+		file << "[Window][" << ImGuiEditor::GetInstance().GetName() << "]" << std::endl;
+		file << "Pos=441,24" << std::endl;
+		file << "Size=1479,780" << std::endl;
+		file << "Collapsed=0" << std::endl;
+		file << "DockId=0x00000003,0" << std::endl;
+		file << std::endl;
+	}
+	{
+		file << "[Docking][Data]" << std::endl;
+		file << "DockSpace     ID=0x8B93E3BD Window=0xA787BDB4 Pos=0,24 Size=1920,993 Split=X" << std::endl;
+		file << "  DockNode    ID=0x00000001 Parent=0x8B93E3BD SizeRef=439,993 Selected=0x426E72EE" << std::endl;
+		file << "  DockNode    ID=0x00000002 Parent=0x8B93E3BD SizeRef=1479,993 Split=Y Selected=0xCB5DF48C" << std::endl;
+		file << "    DockNode  ID=0x00000003 Parent=0x00000002 SizeRef=1620,780 Selected=0xCB5DF48C" << std::endl;
+		file << "    DockNode  ID=0x00000004 Parent=0x00000002 SizeRef=1620,211 Selected=0x893FB60F" << std::endl;
+		file << std::endl;
+	}
+
+	file << std::endl;
+	file.close();
+
+	return true;
+}
+#endif // ENLIVE_TOOL
+
 void ImGuiToolManager::Update(Window& window)
 {
 	ENLIVE_PROFILE_FUNCTION();
