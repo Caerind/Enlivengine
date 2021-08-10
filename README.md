@@ -16,9 +16,16 @@ Used in :
 
 ## Getting started
 
-Using this command should build everything :
+### Build
+
+Using this command should initialize everything and build common things :
 ```bash
 bash UberScript.sh -a
+```
+
+There are few others options availables that ease various tasks, you can check them using :
+```bash
+bash UberScript.sh -h
 ```
 
 For the code itself, you can check the examples
