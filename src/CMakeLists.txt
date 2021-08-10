@@ -1,0 +1,3 @@
+add_subdirectory(EnlivengineThirdParty)
+
+add_subdirectory(Enlivengine)

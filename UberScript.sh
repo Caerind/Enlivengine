@@ -36,16 +36,16 @@ CompileShaders()
 {
 	path_shaderc=""
 	if [[ "$platform" == "windows" ]]; then
-		path_shaderc="build/Enlivengine/EnlivengineThirdParty/bgfx/Debug/shaderc.exe"
+		path_shaderc="./build/src/EnlivengineThirdParty/bgfx/Debug/shaderc.exe"
 	else
-		path_shaderc="build/Enlivengine/EnlivengineThirdParty/bgfx/shaderc"
+		path_shaderc="./build/src/EnlivengineThirdParty/bgfx/shaderc"
 	fi
 	if [ ! -x "$path_shaderc" ]; then
 		cmake --build build --target shaderc --config Debug
 	fi
 
 	output_path="build/Shaders"
-	path_bgfx_include="Enlivengine/EnlivengineThirdParty/bgfx/bgfx/src"
+	path_bgfx_include="src/EnlivengineThirdParty/bgfx/bgfx/src"
 
 	mkdir -p "$output_path"
 	mkdir -p "$output_path/dx9"
@@ -56,7 +56,7 @@ CompileShaders()
 	mkdir -p "$output_path/pssl"
 	mkdir -p "$output_path/spirv"
 	
-	all_vertex_shaders="`find Enlivengine/Enlivengine/Shaders -name *.vs`"
+	all_vertex_shaders="`find src/Enlivengine/Shaders -name *.vs`"
 	for vertex_shader in $all_vertex_shaders
 	do
 		basename="`basename $vertex_shader`"
@@ -65,31 +65,31 @@ CompileShaders()
 		#TODO: platform asm.js ?
 
 		# DX9
-		${path_shaderc} -f "${vertex_shader}" -o "${output_path}/dx9/${basenamewoext}.vs.bin" --platform windows -p vs_3_0 -O 3 --type vertex --verbose -i $path_bgfx_include
+		$path_shaderc -f "${vertex_shader}" -o "${output_path}/dx9/${basenamewoext}.vs.bin" --platform windows -p vs_3_0 -O 3 --type vertex --verbose -i $path_bgfx_include
 
 		# DX11
-		${path_shaderc} -f "${vertex_shader}" -o "${output_path}/dx11/${basenamewoext}.vs.bin" --platform windows -p vs_5_0 -O 3 --type vertex --verbose -i $path_bgfx_include
+		$path_shaderc -f "${vertex_shader}" -o "${output_path}/dx11/${basenamewoext}.vs.bin" --platform windows -p vs_5_0 -O 3 --type vertex --verbose -i $path_bgfx_include
 
 		# NACL
-		${path_shaderc} -f "${vertex_shader}" -o "${output_path}/essl/${basenamewoext}.vs.bin" --platform nacl --type vertex --verbose -i $path_bgfx_include
+		$path_shaderc -f "${vertex_shader}" -o "${output_path}/essl/${basenamewoext}.vs.bin" --platform nacl --type vertex --verbose -i $path_bgfx_include
 
 		# Android
-		${path_shaderc} -f "${vertex_shader}" -o "${output_path}/essl/${basenamewoext}.vs.bin" --platform android --type vertex --verbose -i $path_bgfx_include
+		$path_shaderc -f "${vertex_shader}" -o "${output_path}/essl/${basenamewoext}.vs.bin" --platform android --type vertex --verbose -i $path_bgfx_include
 
 		# GLSL
-		${path_shaderc} -f "${vertex_shader}" -o "${output_path}/glsl/${basenamewoext}.vs.bin" --platform linux -p 120 --type vertex --verbose -i $path_bgfx_include
+		$path_shaderc -f "${vertex_shader}" -o "${output_path}/glsl/${basenamewoext}.vs.bin" --platform linux -p 120 --type vertex --verbose -i $path_bgfx_include
 
 		# Metal
-		${path_shaderc} -f "${vertex_shader}" -o "${output_path}/metal/${basenamewoext}.vs.bin" --platform osx -p metal --type vertex --verbose -i $path_bgfx_include
+		$path_shaderc -f "${vertex_shader}" -o "${output_path}/metal/${basenamewoext}.vs.bin" --platform osx -p metal --type vertex --verbose -i $path_bgfx_include
 
 		# PSSL
-		${path_shaderc} -f "${vertex_shader}" -o "${output_path}/pssl/${basenamewoext}.vs.bin" --platform orbis -p pssl --type vertex --verbose -i $path_bgfx_include
+		$path_shaderc -f "${vertex_shader}" -o "${output_path}/pssl/${basenamewoext}.vs.bin" --platform orbis -p pssl --type vertex --verbose -i $path_bgfx_include
 
 		# Spirv
-		${path_shaderc} -f "${vertex_shader}" -o "${output_path}/spirv/${basenamewoext}.vs.bin" --platform linux -p spirv --type vertex --verbose -i $path_bgfx_include
+		$path_shaderc -f "${vertex_shader}" -o "${output_path}/spirv/${basenamewoext}.vs.bin" --platform linux -p spirv --type vertex --verbose -i $path_bgfx_include
 	done
 
-	all_fragment_shaders="`find Enlivengine/Enlivengine/Shaders -name *.fs`"
+	all_fragment_shaders="`find src/Enlivengine/Shaders -name *.fs`"
 	for fragment_shader in $all_fragment_shaders
 	do
 		basename="`basename $fragment_shader`"
@@ -98,28 +98,28 @@ CompileShaders()
 		#TODO: platform asm.js ?
 
 		# DX9
-		${path_shaderc} -f "${fragment_shader}" -o "${output_path}/dx9/${basenamewoext}.fs.bin" --platform windows -p ps_3_0 -O 3 --type fragment --verbose -i $path_bgfx_include
+		$path_shaderc -f "${fragment_shader}" -o "${output_path}/dx9/${basenamewoext}.fs.bin" --platform windows -p ps_3_0 -O 3 --type fragment --verbose -i $path_bgfx_include
 
 		# DX11
-		${path_shaderc} -f "${fragment_shader}" -o "${output_path}/dx11/${basenamewoext}.fs.bin" --platform windows -p ps_5_0 -O 3 --type fragment --verbose -i $path_bgfx_include
+		$path_shaderc -f "${fragment_shader}" -o "${output_path}/dx11/${basenamewoext}.fs.bin" --platform windows -p ps_5_0 -O 3 --type fragment --verbose -i $path_bgfx_include
 
 		# NACL
-		${path_shaderc} -f "${fragment_shader}" -o "${output_path}/essl/${basenamewoext}.fs.bin" --platform nacl --type fragment --verbose -i $path_bgfx_include
+		$path_shaderc -f "${fragment_shader}" -o "${output_path}/essl/${basenamewoext}.fs.bin" --platform nacl --type fragment --verbose -i $path_bgfx_include
 
 		# Android
-		${path_shaderc} -f "${fragment_shader}" -o "${output_path}/essl/${basenamewoext}.fs.bin" --platform android --type fragment --verbose -i $path_bgfx_include
+		$path_shaderc -f "${fragment_shader}" -o "${output_path}/essl/${basenamewoext}.fs.bin" --platform android --type fragment --verbose -i $path_bgfx_include
 
 		# GLSL
-		${path_shaderc} -f "${fragment_shader}" -o "${output_path}/glsl/${basenamewoext}.fs.bin" --platform linux -p 120 --type fragment --verbose -i $path_bgfx_include
+		$path_shaderc -f "${fragment_shader}" -o "${output_path}/glsl/${basenamewoext}.fs.bin" --platform linux -p 120 --type fragment --verbose -i $path_bgfx_include
 
 		# Metal
-		${path_shaderc} -f "${fragment_shader}" -o "${output_path}/metal/${basenamewoext}.fs.bin" --platform osx -p metal --type fragment --verbose -i $path_bgfx_include
+		$path_shaderc -f "${fragment_shader}" -o "${output_path}/metal/${basenamewoext}.fs.bin" --platform osx -p metal --type fragment --verbose -i $path_bgfx_include
 
 		# PSSL
-		${path_shaderc} -f "${fragment_shader}" -o "${output_path}/pssl/${basenamewoext}.fs.bin" --platform orbis -p pssl --type fragment --verbose -i $path_bgfx_include
+		$path_shaderc -f "${fragment_shader}" -o "${output_path}/pssl/${basenamewoext}.fs.bin" --platform orbis -p pssl --type fragment --verbose -i $path_bgfx_include
 
 		# Spirv
-		${path_shaderc} -f "${fragment_shader}" -o "${output_path}/spirv/${basenamewoext}.fs.bin" --platform linux -p spirv --type fragment --verbose -i $path_bgfx_include
+		$path_shaderc -f "${fragment_shader}" -o "${output_path}/spirv/${basenamewoext}.fs.bin" --platform linux -p spirv --type fragment --verbose -i $path_bgfx_include
 	done
 }
 
@@ -134,11 +134,11 @@ BuildEnlivengine()
 Tests()
 {
 	if [[ "$platform" == "windows" ]]; then
-		./build/Enlivengine/EnlivengineExamples/$config/PlatformExample.exe # default path for Visual Studio users
-		./build/Enlivengine/EnlivengineTests/$config/EnlivengineTests.exe # default path for Visual Studio users
+		./build/examples/$config/PlatformExample.exe # default path for Visual Studio users
+		./build/tests/$config/EnlivengineTests.exe # default path for Visual Studio users
 	else
-		./build/Enlivengine/EnlivengineExamples/PlatformExample.exe # for Linux/Unix GCC users
-		./build/Enlivengine/EnlivengineTests/EnlivengineTests # for Linux/Unix GCC users
+		./build/examples/PlatformExample.exe # for Linux/Unix GCC users
+		./build/tests/EnlivengineTests # for Linux/Unix GCC users
 	fi
 }
 
@@ -186,7 +186,7 @@ visual=false
 while getopts c:higsbtva option
 do
 	case $option in
-		c) config=${OPTARG};;
+		c) config=$OPTARG;;
 		h) help=true;;
 		i) install=true;;
 		g) generate=true;;
