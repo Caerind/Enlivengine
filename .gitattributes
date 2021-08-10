@@ -64,4 +64,4 @@
 
 
 # Ignore 3rd party from the languages statistics
-Enlivengine/EnlivengineThirdParty/* linguist-vendored=false
+Enlivengine/EnlivengineThirdParty/* linguist-vendored
