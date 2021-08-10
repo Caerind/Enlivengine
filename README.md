@@ -6,7 +6,7 @@
 
 My new engine using C++17, SDL & Bgfx
 
-Not really intended to be very stable yet
+Not really intended to be very stable yet (but soon)  
 
 Used in :
   -  [LudumDare45 : The Story Of Nothing](https://github.com/Caerind/LudumDare45)
