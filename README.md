@@ -18,6 +18,9 @@ Used in :
 
 ### Build
 
+On every platform, you will need CMake, Git, Bash and a C++ compiler.  
+The recommended setup is Windows with VisualStudio, but others should be supported.  
+
 Using this command should initialize everything and build common things :
 ```bash
 bash UberScript.sh -a
