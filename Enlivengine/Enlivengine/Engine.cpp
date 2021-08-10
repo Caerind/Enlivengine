@@ -142,74 +142,80 @@ bool Engine::Init(int argc, char** argv)
 	const bool windowCreated = engine.mWindow.Create("Enlivengine", 0);
 	if (!windowCreated)
 	{
-		enLogError(LogChannel::Global, "Can't create window");
+		enLogError(LogChannel::Global, "Can't create window : {}", SDLWrapper::GetError());
 		return false;
-	}
-	enLogInfo(LogChannel::Global, "Window created");
-
-	if (!BgfxWrapper::Init(engine.mWindow))
-	{
-		enLogError(LogChannel::Global, "Can't initialize Bgfx");
-		return false;
-	}
-	enLogInfo(LogChannel::Global, "Bgfx initialized");
-	enLogInfo(LogChannel::Global, "Renderer: {}", Enum::GetValueName<bgfx::RendererType::Enum>(bgfx::getRendererType()));
-
-	const bool shadersPathFound = PathManager::AutoDetectShadersPath();
-	if (!shadersPathFound)
-	{
-		enLogError(LogChannel::Global, "Can't find ShadersPath");
-		return false;
-	}
-	enLogInfo(LogChannel::Global, "ShadersPath: {}", PathManager::GetShadersPathForRenderer(bgfx::getRendererType()));
-
-	const bool spriteInit = Sprite::InitializeSprites();
-	const bool tilemapInit = Tilemap::InitializeTilemaps();
-	const bool debugDrawInit = DebugDraw::InitializeDebugDraws();
-	if (!spriteInit || !tilemapInit || !debugDrawInit)
-	{
-		enLogError(LogChannel::Global, "Can't initialize graphics resources");
-		return false;
-	}
-	enLogInfo(LogChannel::Global, "Shaders initialized");
-
-#ifdef ENLIVE_ENABLE_IMGUI
-	const std::string imGuiToolsFilePath = PathManager::GetTmpPath() + "tools.json";
-#ifdef ENLIVE_TOOL
-	if (!std::filesystem::exists(imGuiToolsFilePath))
-	{
-		ImGuiToolManager::CreateDefaultToolsFile(imGuiToolsFilePath);
-	}
-#endif // ENLIVE_TOOL
-	if (ImGuiToolManager::Initialize())
-	{
-#ifdef ENLIVE_TOOL
-		ImGuiToolManager::LoadFromFile(imGuiToolsFilePath);
-#endif // ENLIVE_TOOL
-		enLogInfo(LogChannel::Global, "ImGui initialized");
 	}
 	else
 	{
-#ifdef ENLIVE_TOOL
-		enLogError(LogChannel::Global, "Can't initialize ImGuiToolManager");
-		return false;
-#else
-		enLogWarning(LogChannel::Global, "Can't initialize ImGuiToolManager");
-#endif // ENLIVE_TOOL
+		enLogInfo(LogChannel::Global, "Window created");
 	}
 
-	const std::string imGuiIniFilePath = PathManager::GetTmpPath() + "imgui.ini";
+	if (BgfxWrapper::Init(engine.mWindow))
+	{
+		const bool shadersPathFound = PathManager::AutoDetectShadersPath();
+		if (shadersPathFound)
+		{
+			enLogInfo(LogChannel::Global, "ShadersPath: {}", PathManager::GetShadersPathForRenderer(bgfx::getRendererType()));
+
+			const bool spriteInit = Sprite::InitializeSprites();
+			const bool tilemapInit = Tilemap::InitializeTilemaps();
+			const bool debugDrawInit = DebugDraw::InitializeDebugDraws();
+			if (!spriteInit || !tilemapInit || !debugDrawInit)
+			{
+				enLogWarning(LogChannel::Global, "Can't initialize graphics resources");
+			}
+			else if (spriteInit && tilemapInit && debugDrawInit)
+			{
+				enLogInfo(LogChannel::Global, "All graphics resources initialized");
+			}
+			else
+			{
+				enLogWarning(LogChannel::Global, "Some graphics resources aren't initialized");
+			}
+		}
+		else
+		{
+			enLogWarning(LogChannel::Global, "Can't find ShadersPath");
+		}
+
+#ifdef ENLIVE_ENABLE_IMGUI
+		const std::string imGuiToolsFilePath = PathManager::GetTmpPath() + "tools.json";
 #ifdef ENLIVE_TOOL
-	if (!std::filesystem::exists(imGuiIniFilePath))
-	{
-		ImGuiToolManager::CreateDefaultImGuiFile(imGuiIniFilePath);
-	}
+		if (!std::filesystem::exists(imGuiToolsFilePath))
+		{
+			ImGuiToolManager::CreateDefaultToolsFile(imGuiToolsFilePath);
+		}
 #endif // ENLIVE_TOOL
-	if (!ImGuiWrapper::Init(imGuiIniFilePath))
-	{
-		return false;
-	}
+		if (ImGuiToolManager::Initialize())
+		{
+#ifdef ENLIVE_TOOL
+			ImGuiToolManager::LoadFromFile(imGuiToolsFilePath);
+#endif // ENLIVE_TOOL
+			enLogInfo(LogChannel::Global, "ImGui initialized");
+		}
+		else
+		{
+#ifdef ENLIVE_TOOL
+			enLogError(LogChannel::Global, "Can't initialize ImGuiToolManager");
+			return false;
+#else
+			enLogWarning(LogChannel::Global, "Can't initialize ImGuiToolManager");
+#endif // ENLIVE_TOOL
+		}
+
+		const std::string imGuiIniFilePath = PathManager::GetTmpPath() + "imgui.ini";
+#ifdef ENLIVE_TOOL
+		if (!std::filesystem::exists(imGuiIniFilePath))
+		{
+			ImGuiToolManager::CreateDefaultImGuiFile(imGuiIniFilePath);
+		}
+#endif // ENLIVE_TOOL
+		if (!ImGuiWrapper::Init(imGuiIniFilePath))
+		{
+			return false;
+		}
 #endif // ENLIVE_ENABLE_IMGUI
+	}
 
 	engine.mInitialized = true;
 	enLogInfo(LogChannel::Global, "Engine initialized");

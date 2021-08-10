@@ -2,6 +2,8 @@
 
 #include <cstdio>
 
+#include <Enlivengine/Graphics/BgfxWrapper.hpp>
+
 #include <Enlivengine/Utils/Assert.hpp>
 #include <Enlivengine/Resources/PathManager.hpp>
 
@@ -22,6 +24,11 @@ Shader::~Shader()
 
 bool Shader::Initialize(const char* vertexModule, const char* fragmentModule /*=nullptr*/)
 {
+	if (!BgfxWrapper::IsInitialized())
+	{
+		return true;
+	}
+
 	mVertexModule = CreateModule(vertexModule);
 	if (!bgfx::isValid(mVertexModule))
 	{
@@ -43,21 +50,23 @@ bool Shader::Initialize(const char* vertexModule, const char* fragmentModule /*=
 
 void Shader::Destroy()
 {
-	if (bgfx::isValid(mShaderProgram))
+	const bool bgfxInitialized = BgfxWrapper::IsInitialized();
+
+	if (bgfxInitialized && bgfx::isValid(mShaderProgram))
 	{
 		bgfx::destroy(mShaderProgram);
-		mShaderProgram = BGFX_INVALID_HANDLE;
 	}
-	if (bgfx::isValid(mVertexModule))
+	mShaderProgram = BGFX_INVALID_HANDLE;
+	if (bgfxInitialized && bgfx::isValid(mVertexModule))
 	{
 		bgfx::destroy(mVertexModule);
-		mVertexModule = BGFX_INVALID_HANDLE;
 	}
-	if (bgfx::isValid(mFragmentModule))
+	mVertexModule = BGFX_INVALID_HANDLE;
+	if (bgfxInitialized && bgfx::isValid(mFragmentModule))
 	{
 		bgfx::destroy(mFragmentModule);
-		mFragmentModule = BGFX_INVALID_HANDLE;
 	}
+	mFragmentModule = BGFX_INVALID_HANDLE;
 }
 
 bool Shader::IsValid() const
@@ -83,6 +92,12 @@ void Shader::Submit(bgfx::ViewId viewId)
 
 bgfx::ShaderHandle Shader::CreateModule(const char* filename)
 {
+	if (!BgfxWrapper::IsInitialized())
+	{
+		enLogError(LogChannel::Graphics, "Bgfx is not initialized");
+		return BGFX_INVALID_HANDLE;
+	}
+
 	if (filename == nullptr || strlen(filename) == 0)
 	{
 		enLogError(LogChannel::Graphics, "Invalid empty shader filename");

@@ -41,9 +41,15 @@ Sprite::Sprite(Sprite&& other)
 
 Sprite::~Sprite()
 {
+	if (!BgfxWrapper::IsInitialized())
+	{
+		return;
+	}
+
 	if (bgfx::isValid(mBuffer))
 	{
 		bgfx::destroy(mBuffer);
+		mBuffer = BGFX_INVALID_HANDLE;
 	}
 }
 
@@ -112,7 +118,7 @@ Rectf Sprite::GetGlobalBounds() const
 
 bool Sprite::CanRender() const
 {
-	if (bgfx::isValid(mBuffer) && mTexture.IsValid() && kShader.IsValid())
+	if (BgfxWrapper::IsInitialized() && bgfx::isValid(mBuffer) && mTexture.IsValid() && kShader.IsValid())
 	{
 		Texture& texture = mTexture.Get();
 		if (texture.IsValid())
@@ -125,7 +131,7 @@ bool Sprite::CanRender() const
 
 void Sprite::Render() const
 {
-	if (bgfx::isValid(mBuffer) && mTexture.IsValid() && kShader.IsValid())
+	if (BgfxWrapper::IsInitialized() && bgfx::isValid(mBuffer) && mTexture.IsValid() && kShader.IsValid())
 	{
 		Texture& texture = mTexture.Get();
 		if (texture.IsValid())
@@ -176,6 +182,11 @@ void Sprite::UpdateVertices()
 
 void Sprite::UpdateBuffer()
 {
+	if (!BgfxWrapper::IsInitialized())
+	{
+		return;
+	}
+
 	// TODO : Use dynamic vertex buffer instead ?
 	// TODO : => Give the choise to the user using template boolean parameter
 	if (bgfx::isValid(mBuffer))
@@ -187,6 +198,8 @@ void Sprite::UpdateBuffer()
 
 bool Sprite::InitializeSprites()
 {
+	enAssert(BgfxWrapper::IsInitialized());
+
 	Vertex::kLayout
 		.begin()
 		.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
@@ -218,6 +231,11 @@ bool Sprite::InitializeSprites()
 
 bool Sprite::ReleaseSprites()
 {
+	if (!BgfxWrapper::IsInitialized())
+	{
+		return true;
+	}
+
 	if (bgfx::isValid(kIndexBuffer))
 	{
 		bgfx::destroy(kIndexBuffer);

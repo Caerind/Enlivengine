@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_syswm.h>
+#include <Enlivengine/SDL/SDLWrapper.hpp>
 
 #include <bgfx/platform.h>
 
@@ -33,7 +34,8 @@ bool BgfxWrapper::Init(Window& window)
     SDL_SysWMinfo wmi;
     SDL_VERSION(&wmi.version);
     if (!SDL_GetWindowWMInfo(window.mWindow, &wmi))
-    {
+	{
+		enLogError(LogChannel::Global, "Can't get SDL WM Info : {}", SDLWrapper::GetError());
         return false;
     }
 
@@ -133,7 +135,6 @@ bool BgfxWrapper::Init(Window& window)
     default:
     {
 		enLogError(LogChannel::Global, "Unknown SDL platform : {}", Enum::GetValueName<SDL_SYSWM_TYPE>(wmi.subsystem));
-        enAssert(false);
         return false;
     }
     }
@@ -149,7 +150,8 @@ bool BgfxWrapper::Init(Window& window)
     bgfx::renderFrame();
 
     if (!bgfx::init(init))
-    {
+	{
+		enLogError(LogChannel::Global, "Can't initialize Bgfx");
         return false;
     }
 
@@ -160,6 +162,9 @@ bool BgfxWrapper::Init(Window& window)
 #ifdef ENLIVE_DEBUG
     bgfx::setDebug(BGFX_DEBUG_TEXT);
 #endif // ENLIVE_DEBUG
+
+	enLogInfo(LogChannel::Global, "Bgfx initialized");
+	enLogInfo(LogChannel::Global, "Renderer: {}", Enum::GetValueName<bgfx::RendererType::Enum>(bgfx::getRendererType()));
 
     bgfx.mInitialized = true;
     return true;

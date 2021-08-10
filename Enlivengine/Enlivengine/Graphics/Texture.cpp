@@ -5,6 +5,8 @@
 #include <bx/allocator.h>
 #include <bimg/decode.h>
 
+#include <Enlivengine/Graphics/BgfxWrapper.hpp>
+
 namespace en
 {
 
@@ -21,13 +23,13 @@ Texture::~Texture()
 
 bool Texture::Initialize(const char* filename, U64 flags)
 {
-	if (bgfx::isValid(mTexture))
-	{
-		bgfx::destroy(mTexture);
-	}
-
-	mTexture = BGFX_INVALID_HANDLE;
+	Destroy();
 	mInfo = bgfx::TextureInfo();
+
+	if (!BgfxWrapper::IsInitialized())
+	{
+		return true;
+	}
 
 #ifdef ENLIVE_COMPILER_MSVC
 	FILE* file;
@@ -97,7 +99,7 @@ bool Texture::Initialize(const char* filename, U64 flags)
 		);
 	}
 
-	if (bgfx::isValid(mTexture))
+	if (BgfxWrapper::IsInitialized() && bgfx::isValid(mTexture))
 	{
 		bgfx::setName(mTexture, filename);
 
@@ -122,11 +124,11 @@ bool Texture::Initialize(const char* filename, U64 flags)
 
 void Texture::Destroy()
 {
-	if (bgfx::isValid(mTexture))
+	if (BgfxWrapper::IsInitialized() && bgfx::isValid(mTexture))
 	{
 		bgfx::destroy(mTexture);
-		mTexture = BGFX_INVALID_HANDLE;
 	}
+	mTexture = BGFX_INVALID_HANDLE;
 }
 
 bool Texture::IsValid() const

@@ -7,12 +7,13 @@
 #include <Enlivengine/Platform/Endianness.hpp>
 #include <Enlivengine/Platform/Debugger.hpp>
 #include <Enlivengine/Platform/Time.hpp>
-
 #include <Enlivengine/Utils/Log.hpp>
-
 #include <SDL_config.h>
 
-int main()
+#include <Enlivengine/Resources/PathManager.hpp>
+#include <Enlivengine/Engine.hpp>
+
+int main(int argc, char** argv)
 {
 	enLogInfo(en::LogChannel::System, "================================================");
 	enLogInfo(en::LogChannel::System, "Platform:"); 
@@ -206,6 +207,62 @@ int main()
 #ifdef SDL_VIDEO_DRIVER_VIVANTE
 	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_VIVANTE");
 #endif
+
+	enLogInfo(en::LogChannel::System, "================================================");
+	enLogInfo(en::LogChannel::System, "Config:");
+#ifdef ENLIVE_TOOL
+	enLogInfo(en::LogChannel::System, "ENLIVE_TOOL");
+#endif
+#ifdef ENLIVE_RELEASE
+	enLogInfo(en::LogChannel::System, "ENLIVE_RELEASE");
+#endif
+#ifdef ENLIVE_DEBUG
+	enLogInfo(en::LogChannel::System, "ENLIVE_DEBUG");
+#endif
+#ifdef ENLIVE_ENABLE_ASSERT
+	enLogInfo(en::LogChannel::System, "ENLIVE_ENABLE_ASSERT");
+#endif
+#ifdef ENLIVE_ENABLE_LOG
+	enLogInfo(en::LogChannel::System, "ENLIVE_ENABLE_LOG");
+#endif
+#ifdef ENLIVE_ENABLE_PROFILE
+	enLogInfo(en::LogChannel::System, "ENLIVE_ENABLE_PROFILE");
+#endif
+#ifdef ENLIVE_ENABLE_IMGUI
+	enLogInfo(en::LogChannel::System, "ENLIVE_ENABLE_IMGUI");
+#endif
+#ifdef ENLIVE_ENABLE_GRAPHICS_DEBUG
+	enLogInfo(en::LogChannel::System, "ENLIVE_ENABLE_GRAPHICS_DEBUG");
+#endif
+#ifdef ENLIVE_ENABLE_DEBUG_MEMORY
+	enLogInfo(en::LogChannel::System, "ENLIVE_ENABLE_DEBUG_MEMORY");
+#endif
+#ifdef ENLIVE_ENABLE_DEFAULT_LOGGER
+	enLogInfo(en::LogChannel::System, "ENLIVE_ENABLE_DEFAULT_LOGGER");
+#endif
+#ifdef ENLIVE_ENABLE_DEFAULT_MALLOCATOR
+	enLogInfo(en::LogChannel::System, "ENLIVE_ENABLE_DEFAULT_MALLOCATOR");
+#endif
+#ifdef ENLIVE_NO_RENDER
+	enLogInfo(en::LogChannel::System, "ENLIVE_NO_RENDER");
+#endif
+#ifdef ENLIVE_ENABLE_DOUBLE_PRECISION
+	enLogInfo(en::LogChannel::System, "ENLIVE_ENABLE_DOUBLE_PRECISION");
+#endif
+
+	enLogInfo(en::LogChannel::System, "================================================");
+	enLogInfo(en::LogChannel::System, "Paths:");
+	if (argc >= 1)
+	{
+		en::PathManager::SetExecutablePath(argv[0]);
+	}
+	else
+	{
+		enLogWarning(en::LogChannel::System, "No arg[0], using empty executable path");
+		en::PathManager::SetExecutablePath("");
+	}
+	enLogInfo(en::LogChannel::System, "ExecutablePath: {}", en::PathManager::GetExecutablePath());
+	enLogInfo(en::LogChannel::System, "CurrentPath: {}", en::PathManager::GetCurrentPath());
 
 
 	enLogInfo(en::LogChannel::System, "================================================");
