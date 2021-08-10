@@ -16,6 +16,9 @@ Used in :
 
 ## Getting started
 
-I won't detail this for now, as there still may be little modifications, but using the bash script in EnlivengineEnv/ should be relatively easy to build the engine.  
+Using this command should build everything :
+```bash
+bash UberScript.sh -a
+```
 
 For the code itself, you can check the examples
