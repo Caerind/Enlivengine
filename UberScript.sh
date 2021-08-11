@@ -133,6 +133,10 @@ BuildEnlivengine()
 
 Tests()
 {
+	# Ensures they are both up to date
+	cmake --build build --target EnlivengineTests --config $config
+	cmake --build build --target PlatformExample --config $config
+	
 	if [[ "$platform" == "windows" ]]; then
 		./build/examples/$config/PlatformExample.exe # default path for Visual Studio users
 		./build/tests/$config/EnlivengineTests.exe # default path for Visual Studio users
@@ -182,19 +186,46 @@ build=false
 tests=false
 visual=false
 
+default=true
+
 # Options parsing
 while getopts c:higsbtva option
 do
 	case $option in
-		c) config=$OPTARG;;
-		h) help=true;;
-		i) install=true;;
-		g) generate=true;;
-		s) shaders=true;;
-		b) build=true;;
-		t) tests=true;;
-		v) visual=true;;
+		c) 
+			default=false
+			config=$OPTARG
+			;;
+		h) 
+			default=false
+			help=true
+			;;
+		i) 
+			default=false
+			install=true
+			;;
+		g) 
+			default=false
+			generate=true
+			;;
+		s) 
+			default=false
+			shaders=true
+			;;
+		b) 
+			default=false
+			build=true
+			;;
+		t) 
+			default=false
+			tests=true
+			;;
+		v) 
+			default=false
+			visual=true
+			;;
 		a) 
+			default=false
 			install=true
 			generate=true
 			shaders=true
@@ -205,6 +236,16 @@ do
 done
 #echo "=> $config"
 
+# If no arguments, consider it as -a
+if $default; then
+	install=true
+	generate=true
+	shaders=true
+	build=true
+	tests=true
+fi
+
+# Handle options
 if $help; then
 	Help
 fi

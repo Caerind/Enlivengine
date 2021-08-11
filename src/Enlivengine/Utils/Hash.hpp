@@ -44,10 +44,10 @@ public:
 		const U32 length = static_cast<U32>(str.size());
 		if (length > 0)
 		{
-			U32 h = 89;
+			U32 h = 5381;
 			for (U32 i = 0; i < length; ++i)
 			{
-				h = h * 33 + static_cast<U32>(str[i]);
+				h = h * 5 + static_cast<U32>(str[i]);
 			}
 			return h;
 		}
