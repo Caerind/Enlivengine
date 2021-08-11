@@ -41,10 +41,12 @@ const std::string& PathManager::GetExecutablePath()
 
 bool PathManager::AutoDetectAssetsPath()
 {
-	for (U32 i = 0; i < 5; ++i)
+	constexpr U32 kScanDepth = 5;
+
+	std::string backfolder = "";
+	for (U32 i = 0; i < kScanDepth; ++i)
 	{
-		std::string backfolder = "";
-		for (U32 j = 0; j < i; ++j)
+		if (i > 0)
 		{
 			backfolder += "../";
 		}
@@ -56,15 +58,31 @@ bool PathManager::AutoDetectAssetsPath()
 			return true;
 		}
 	}
-
-#if defined(ENLIVE_RELEASE)
-	std::filesystem::path tempAssetsPath = std::filesystem::path(GetCurrentPath() + "Assets");
-	if (std::filesystem::exists(tempAssetsPath))
+	
+#if defined(ENLIVE_TOOL)
+	// Start backward to get the examples at the root instead of the one in the build folder
+	for (I32 i = static_cast<I32>(kScanDepth); i > 0; --i) 
 	{
-		SetAssetsPath(tempAssetsPath.generic_string() + "/");
-		return true;
+		if (i < 5)
+		{
+			backfolder.resize(backfolder.size() - 3);
+		}
+
+		std::filesystem::path tempCurrentExamplesPath = std::filesystem::path(GetCurrentPath() + backfolder + "examples").lexically_normal();
+		if (std::filesystem::exists(tempCurrentExamplesPath))
+		{
+			SetAssetsPath(tempCurrentExamplesPath.generic_string() + "/");
+			return true;
+		}
+
+		std::filesystem::path tempExecutableExamplesPath = std::filesystem::path(GetExecutablePath() + backfolder + "examples").lexically_normal();
+		if (std::filesystem::exists(tempExecutableExamplesPath))
+		{
+			SetAssetsPath(tempExecutableExamplesPath.generic_string() + "/");
+			return true;
+		}
 	}
-#endif // ENLIVE_RELEASE 
+#endif // ENLIVE_TOOL 
 
 	return false;
 }

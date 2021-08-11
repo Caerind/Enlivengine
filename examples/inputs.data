@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<Buttons type="std::vector<en::EventSystem::EventButton>" hash="616188669">
+	<size>0</size>
+</Buttons>
+<Axes type="std::vector<en::EventSystem::EventAxis>" hash="1399036478">
+	<size>0</size>
+</Axes>

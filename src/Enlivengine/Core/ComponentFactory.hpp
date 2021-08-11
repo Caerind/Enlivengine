@@ -60,6 +60,7 @@ bool ComponentFactory::Register()
 	{
 		if constexpr (Traits::IsEmpty<T>::value)
 		{
+			ENLIVE_UNUSED(entity);
 			if (objectEditor.BeginClass(TypeInfo<T>::GetName(), TypeInfo<T>::GetName(), TypeInfo<T>::GetHash()))
 			{
 				objectEditor.EndClass();
@@ -92,6 +93,7 @@ bool ComponentFactory::Register()
 	{
 		if constexpr (Traits::IsEmpty<T>::value)
 		{
+			ENLIVE_UNUSED(entity);
 			if (serializer.BeginClass(TypeInfo<T>::GetName(), TypeInfo<T>::GetName(), TypeInfo<T>::GetHash()))
 			{
 				return serializer.EndClass();

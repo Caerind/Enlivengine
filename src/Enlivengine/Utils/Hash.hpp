@@ -20,10 +20,10 @@ public:
 	{ 
 		if (str != nullptr)
 		{
-			U32 h = 89;
+			U32 h = 5381;
 			while (*str != 0)
 			{
-				h = h * 33 + (*str++);
+				h = h * 5 + (*str++);
 			}
 			return h;
 		}
