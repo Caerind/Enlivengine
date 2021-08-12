@@ -21,3 +21,5 @@ add_subdirectory(src)
 
 add_subdirectory(tests)
 add_subdirectory(examples)
+
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT 3DSceneExample)
