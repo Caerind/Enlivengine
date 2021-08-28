@@ -9,6 +9,7 @@
 - https://github.com/zeux/pugixml  
 
 # Math
+- https://github.com/g-truc/glm  
 - https://github.com/Auburns/FastNoise  
 
 # Window

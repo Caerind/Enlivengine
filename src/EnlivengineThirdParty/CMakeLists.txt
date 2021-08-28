@@ -103,6 +103,23 @@ source_group("FastNoise" FILES ${SRC_FASTNOISE})
 file(GLOB_RECURSE SRC_FMT "fmt/*")
 source_group("fmt" FILES ${SRC_FMT})
 
+# glm
+	# detail
+	file(GLOB_RECURSE SRC_GLM_DETAIL "glm/detail/*")
+	source_group("glm/detail" FILES ${SRC_GLM_DETAIL})
+	# ext
+	file(GLOB_RECURSE SRC_GLM_EXT "glm/ext/*")
+	source_group("glm/ext" FILES ${SRC_GLM_EXT})
+	# gtc
+	file(GLOB_RECURSE SRC_GLM_GTC "glm/gtc/*")
+	source_group("glm/gtc" FILES ${SRC_GLM_GTC})
+	# gtx
+	file(GLOB_RECURSE SRC_GLM_GTX "glm/gtx/*")
+	source_group("glm/gtx" FILES ${SRC_GLM_GTX})
+	# simd
+	file(GLOB_RECURSE SRC_GLM_SIMD "glm/simd/*")
+	source_group("glm/simd" FILES ${SRC_GLM_SIMD})
+
 # IconFontCppHeaders
 file(GLOB_RECURSE SRC_ICONFONTCPPHEADERS "IconFontCppHeaders/*")
 source_group("IconFontCppHeaders" FILES ${SRC_ICONFONTCPPHEADERS})
@@ -151,6 +168,11 @@ add_library(EnlivengineThirdParty STATIC
 	${SRC_ENTT}
 	${SRC_FASTNOISE}
 	${SRC_FMT}
+	${SRC_GLM_DETAIL}
+	${SRC_GLM_EXT}
+	${SRC_GLM_GTC}
+	${SRC_GLM_GTX}
+	${SRC_GLM_SIMD}
 	${SRC_ICONFONTCPPHEADERS}
 	${SRC_IMGUI}
 	${SRC_IMGUIZMO}
