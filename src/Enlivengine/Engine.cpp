@@ -83,17 +83,10 @@ int Engine::Main(int argc, char** argv)
 				BgfxWrapper::ClearFramebuffer(framebuffer, Colors::DarkGray);
         
 				// TODO : Add text describing the issue if any
-      }
+			}
 
 			BgfxWrapper::Frame();
 		}
-
-		if (Universe::GetCurrentWorld() != nullptr)
-		{
-			WorldFileManager::UnloadCurrentWorld();
-		}
-
-		ResourceManager::GetInstance().ReleaseAll();
 	}
 	Engine::Release();
 	return 0;
@@ -217,6 +210,8 @@ bool Engine::Init(int argc, char** argv)
 #endif // ENLIVE_ENABLE_IMGUI
 	}
 
+	WorldFileManager::LoadPreviouslyLoadedWorldInfo();
+
 	engine.mInitialized = true;
 	enLogInfo(LogChannel::Global, "Engine initialized");
 
@@ -233,6 +228,11 @@ bool Engine::Release()
 	Engine& engine = GetInstance();
 
 	engine.mInitialized = false;
+
+	WorldFileManager::SaveCurrentLoadedWorldInfo();
+	WorldFileManager::UnloadCurrentWorld();
+
+	ResourceManager::GetInstance().ReleaseAll();
 
 #ifdef ENLIVE_ENABLE_IMGUI
 	if (ImGuiWrapper::IsInitialized())

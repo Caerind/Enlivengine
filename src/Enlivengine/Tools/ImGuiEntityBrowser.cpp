@@ -105,12 +105,12 @@ void ImGuiEntityBrowser::Display()
 			ImGui::EndDragDropTarget();
 		}
 
-		if (ImGui::Begin("EntityEditor"))
-		{
-			ImGuiObjectEditor objectEditor;
 
-			if (world->GetSelectedEntityCount() > 0)
+		if (world->GetSelectedEntityCount() > 0)
+		{
+			if (ImGui::Begin("EntityEditor"))
 			{
+				ImGuiObjectEditor objectEditor;
 				for (U32 i = 0; i < world->GetSelectedEntityCount(); )
 				{
 					Entity entity(world->GetEntityManager(), world->GetSelectedEntities()[i]);
@@ -135,13 +135,8 @@ void ImGuiEntityBrowser::Display()
 						i++;
 					}
 				}
+				ImGui::End();
 			}
-			else
-			{
-				ImGui::Text("No entity selected");
-			}
-
-			ImGui::End();
 		}
 	}
 	else

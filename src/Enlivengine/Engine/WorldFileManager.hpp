@@ -19,9 +19,12 @@ public:
 	static bool UnloadCurrentWorld();
 	static bool RemoveWorld(const std::string& worldName);
 
+	static void LoadPreviouslyLoadedWorldInfo();
+	static void SaveCurrentLoadedWorldInfo();
+
 private:
 	static World* LoadWorld_Internal(const std::string& worldName);
-	static bool SaveWorld_Internal(World* world);
+	static bool SaveWorld_Internal(const World* world);
 	static void UnloadWorld_Internal(World* world);
 };
 

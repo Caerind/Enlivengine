@@ -23,7 +23,7 @@ The recommended setup is Windows with VisualStudio, but others should be support
 
 Using this command should initialize everything and build common things :
 ```bash
-bash UberScript.sh -a
+bash UberScript.sh
 ```
 
 There are few others options availables that ease various tasks, you can check them using :

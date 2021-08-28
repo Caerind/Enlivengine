@@ -257,34 +257,38 @@ void ImGuiEditor::Display()
 		}
 
 		// ViewManipulator
-		if (mShowManipulator)
+		if (world != nullptr)
 		{
-			float manipulatorSize = 100;
-			float viewMtx[16];
-			float viewMtxR[16];
-			std::memcpy(viewMtx, mCamera.GetViewMatrix().GetData(), sizeof(float) * 16);
-			std::memcpy(viewMtxR, mCamera.GetViewMatrix().GetData(), sizeof(float) * 16);
-			ImGuizmo::ViewManipulate(viewMtx, 8.0f, ImVec2(mViewRect.GetMin().x + mViewRect.GetSize().x - manipulatorSize, mViewRect.GetMin().y), ImVec2(manipulatorSize, manipulatorSize), 0x10101010);
-			if (std::memcmp(viewMtx, viewMtxR, sizeof(float) * 16) != 0)
+			if (mShowManipulator)
 			{
-				const Matrix4f iMtx = Matrix4f::Identity().Set(viewMtx).Inversed();
-				const Matrix3f rot = Matrix3f(-1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f) * iMtx.GetRotation(); // Don't exactly know why, but it seems we need to negate X too...
+				float manipulatorSize = 100;
+				float viewMtx[16];
+				float viewMtxR[16];
+				std::memcpy(viewMtx, mCamera.GetViewMatrix().GetData(), sizeof(float) * 16);
+				std::memcpy(viewMtxR, mCamera.GetViewMatrix().GetData(), sizeof(float) * 16);
+				ImGuizmo::ViewManipulate(viewMtx, 8.0f, ImVec2(mViewRect.GetMin().x + mViewRect.GetSize().x - manipulatorSize, mViewRect.GetMin().y), ImVec2(manipulatorSize, manipulatorSize), 0x10101010);
+				if (std::memcmp(viewMtx, viewMtxR, sizeof(float) * 16) != 0)
+				{
+					const Matrix4f iMtx = Matrix4f::Identity().Set(viewMtx).Inversed();
+					const Matrix3f rot = Matrix3f(-1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f) * iMtx.GetRotation(); // Don't exactly know why, but it seems we need to negate X too...
 
-				mCamera.SetPosition(iMtx.GetTranslation());
-				mCamera.SetRotation(rot);
+					mCamera.SetPosition(iMtx.GetTranslation());
+					mCamera.SetRotation(rot);
+				}
 			}
-		}
 
-		UpdateCamera();
+			UpdateCamera();
+		}
 	}
 	
-	const Vector2u uWindowSize = Vector2u(windowSize);
-	if (uWindowSize != mFramebuffer.GetSize() && uWindowSize.x > 0 && uWindowSize.y > 0)
+	if (windowSize.x > 0 && windowSize.y > 0)
 	{
-		mFramebuffer.Resize(uWindowSize);
-	}
-	if (uWindowSize.x > 0 && uWindowSize.y > 0)
-	{
+		const Vector2u uWindowSize = Vector2u(windowSize);
+		if (uWindowSize != mFramebuffer.GetSize())
+		{
+			mFramebuffer.Resize(uWindowSize);
+		}
+
 		ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
 
 		mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...

@@ -64,7 +64,7 @@ bool WorldFileManager::SaveCurrentWorld()
 	enAssert(ImGuiEditor::IsStopped());
 #endif // ENLIVE_TOOL
 
-	if (World* world = Universe::GetCurrentWorld())
+	if (const World* world = Universe::GetCurrentWorld())
 	{
 		return SaveWorld_Internal(world);
 	}
@@ -89,10 +89,10 @@ bool WorldFileManager::UnloadCurrentWorld()
 
 bool WorldFileManager::RemoveWorld(const std::string& worldName)
 {
-	World* world = Universe::GetCurrentWorld();
+	const World* world = Universe::GetCurrentWorld();
 	if (world != nullptr && world->GetName() == worldName)
 	{
-		enLogError(LogChannel::Core, "Can't remove the currently loaded world {}", world->GetName());
+		enLogError(LogChannel::Core, "Can't remove the currently loaded world \"{}\"", world->GetName());
 		return false;
 	}
 
@@ -104,6 +104,46 @@ bool WorldFileManager::RemoveWorld(const std::string& worldName)
 	else
 	{
 		return true;
+	}
+}
+
+void WorldFileManager::LoadPreviouslyLoadedWorldInfo()
+{
+	const std::string filename = PathManager::GetTmpPath() + "previous_world.txt";
+	if (std::filesystem::exists(filename))
+	{
+		std::ifstream file(filename);
+		if (file)
+		{
+			std::string worldName;
+			file >> worldName;
+			file.close();
+
+			WorldFileManager::LoadWorld(worldName);
+		}
+	}
+}
+
+void WorldFileManager::SaveCurrentLoadedWorldInfo()
+{
+	const std::string filename = PathManager::GetTmpPath() + "previous_world.txt";
+	const World* world = Universe::GetCurrentWorld();
+	if (world == nullptr)
+	{
+		// No previous_world.txt file is present
+		if (std::filesystem::exists(filename))
+		{
+			std::filesystem::remove(filename);
+		}
+	}
+	else
+	{
+		std::ofstream file(filename);
+		if (file)
+		{
+			file << world->GetName() << std::endl;
+			file.close();
+		}
 	}
 }
 
@@ -123,27 +163,27 @@ World* WorldFileManager::LoadWorld_Internal(const std::string& worldName)
 		{
 			if (GenericSerialization(worldReader, "World", *world))
 			{
-				enLogInfo(LogChannel::Core, "World {} is correctly loaded", worldName);
+				enLogInfo(LogChannel::Core, "World \"{}\" is correctly loaded", worldName);
 			}
 			else
 			{
-				enLogWarning(LogChannel::Core, "World {} isn't correctly loaded", worldName, path.string());
+				enLogWarning(LogChannel::Core, "World \"{}\" isn't correctly loaded", worldName, path.string());
 			}
 			return world;
 		}
 		else
 		{
-			enLogError(LogChannel::Core, "Can't open world {} : {}", worldName, path.string());
+			enLogError(LogChannel::Core, "Can't open world \"{}\" : {}", worldName, path.string());
 		}
 	}
 	else
 	{
-		enLogError(LogChannel::Core, "World {} doesn't exist : {}", worldName, path.string());
+		enLogError(LogChannel::Core, "World \"{}\" doesn't exist : {}", worldName, path.string());
 	}
 	return nullptr;
 }
 
-bool WorldFileManager::SaveWorld_Internal(World* world)
+bool WorldFileManager::SaveWorld_Internal(const World* world)
 {
 	enAssert(world != nullptr);
 
@@ -158,12 +198,12 @@ bool WorldFileManager::SaveWorld_Internal(World* world)
 
 		if (correctlySerialized && correctlyClosed)
 		{
-			enLogInfo(LogChannel::Core, "World {} is correctly saved", worldName);
+			enLogInfo(LogChannel::Core, "World \"{}\" is correctly saved", worldName);
 			return true;
 		}
 		else
 		{
-			enLogError(LogChannel::Core, "World {} file can't be saved : {}", worldName, path.string());
+			enLogError(LogChannel::Core, "World \"{}\" file can't be saved : {}", worldName, path.string());
 			return false;
 		}
 	}
