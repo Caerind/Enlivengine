@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#define GLM_FORCE_SILENT_WARNINGS
+#include <glm/gtx/norm.hpp>
 #include <glm/gtx/fast_square_root.hpp>
 #include <glm/gtx/fast_trigonometry.hpp>
 

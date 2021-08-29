@@ -15,15 +15,15 @@ public:
 
 	// Constructors
 	constexpr Vector3() : Parent() {}
-	constexpr Vector3(const Vector3<T>& v) : Parent(v.x, v.y, v.z) {}
+	constexpr Vector3(const Vector3<T>& v) : Parent(static_cast<Parent>(v)) {}
 	constexpr explicit Vector3(T scalar) : Parent(scalar) {}
 	constexpr Vector3(T x, T y, T z) : Parent(x, y, z) {}
 	template <typename Other>
-	constexpr Vector3(const Vector3<Other>& v) : Parent(v.x, v.y, v.z) {}
+	constexpr Vector3(const Vector3<Other>& v) : Parent(static_cast<Vector3<Other>::Parent>(v)) {}
 	template <typename OtherA, typename OtherB, typename OtherC>
 	constexpr Vector3(OtherA x, OtherB y, OtherC z) : Parent(x, y, z) {}
 	constexpr Vector3(const Parent& parent) : Parent(parent) {}
-	constexpr Vector3(const Vector2<T>& v, T z) : Parent(v.x, v.y, z) {}
+	constexpr Vector3(const Vector2<T>& v, T z) : Parent(static_cast<Vector2<T>::Parent>(v), z) {}
 	~Vector3() = default;
 
 	// Operators
@@ -53,7 +53,7 @@ public:
 	constexpr bool operator>(const Vector3<T>& v) const { return !operator<=(v); }
 	constexpr bool operator>=(const Vector3<T>& v) const { return !operator<(v); }
 	constexpr bool IsZero() const { return operator==(Zero()); }
-	static constexpr bool Equals(const Vector2<T>& v1, const Vector2<T>& v2, T epsilon = T(Math::Epsilon)) { return Math::Equals(v1.x, v2.x, epsilon) && Math::Equals(v1.y, v2.y, epsilon) && Math::Equals(v1.z, v2.z, epsilon); }
+	static constexpr bool Equals(const Vector3<T>& v1, const Vector3<T>& v2, T epsilon = T(Math::Epsilon)) { return Math::Equals(v1.x, v2.x, epsilon) && Math::Equals(v1.y, v2.y, epsilon) && Math::Equals(v1.z, v2.z, epsilon); }
 
 	// Accessors
 	constexpr T& operator()(U32 i) { if (i == 0) return x; else if (i == 1) return y; return z; }

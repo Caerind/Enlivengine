@@ -15,11 +15,11 @@ public:
 
 	// Constructors
 	constexpr Vector2() : Parent() {}
-	constexpr Vector2(const Vector2<T>& v) : Parent(v.x, v.y) {}
+	constexpr Vector2(const Vector2<T>& v) : Parent(static_cast<Parent>(v)) {}
 	constexpr explicit Vector2(T scalar) : Parent(scalar) {}
 	constexpr Vector2(T x, T y) : Parent(x, y) {}
 	template <typename Other>
-	constexpr Vector2(const Vector2<Other>& v) : Parent(v.x, v.y) {}
+	constexpr Vector2(const Vector2<Other>& v) : Parent(static_cast<Vector2<Other>::Parent>(v)) {}
 	template <typename OtherA, typename OtherB>
 	constexpr Vector2(OtherA x, OtherB y) : Parent(x, y) {}
 	constexpr Vector2(const Parent& parent) : Parent(parent) {}
