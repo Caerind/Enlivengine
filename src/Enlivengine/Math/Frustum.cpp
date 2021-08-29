@@ -34,8 +34,8 @@ void Frustum::Build(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane, const Vect
 	const F32 farW = farH * aspect;
 
 	const Vector3f f((target - eye).Normalized());
-	const Vector3f s(handedness == Math::Handedness::Right ? Vector3f::CrossProduct(f, up).Normalized() : Vector3f::CrossProduct(up, f).Normalized());
-	const Vector3f u(handedness == Math::Handedness::Right ? Vector3f::CrossProduct(s, f) : Vector3f::CrossProduct(f, s));
+	const Vector3f s(handedness == Math::Handedness::Right ? Vector3f::Cross(f, up).Normalized() : Vector3f::Cross(up, f).Normalized());
+	const Vector3f u(handedness == Math::Handedness::Right ? Vector3f::Cross(s, f) : Vector3f::Cross(f, s));
 	const Vector3f nc(eye + f * nearPlane);
 	const Vector3f fc(eye + f * farPlane);
 
@@ -54,8 +54,8 @@ void Frustum::Build(F32 fov, F32 aspect, F32 nearPlane, F32 farPlane, const Vect
 void Frustum::Build(F32 left, F32 top, F32 right, F32 bottom, F32 nearPlane, F32 farPlane, const Vector3f& eye, const Vector3f& target, const Vector3f& up /*= ENLIVE_DEFAULT_UP*/, Math::Handedness handedness /*= ENLIVE_DEFAULT_HANDEDNESS*/)
 {
 	const Vector3f f((target - eye).Normalized());
-	const Vector3f s(handedness == Math::Handedness::Right ? Vector3f::CrossProduct(f, up).Normalized() : Vector3f::CrossProduct(up, f).Normalized());
-	const Vector3f u(handedness == Math::Handedness::Right ? Vector3f::CrossProduct(s, f) : Vector3f::CrossProduct(f, s));
+	const Vector3f s(handedness == Math::Handedness::Right ? Vector3f::Cross(f, up).Normalized() : Vector3f::Cross(up, f).Normalized());
+	const Vector3f u(handedness == Math::Handedness::Right ? Vector3f::Cross(s, f) : Vector3f::Cross(f, s));
 	const Vector3f nc(eye + f * nearPlane);
 	const Vector3f fc(eye + f * farPlane);
 

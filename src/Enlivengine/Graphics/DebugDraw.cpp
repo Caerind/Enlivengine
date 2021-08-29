@@ -118,12 +118,12 @@ void DebugDraw::DrawPoint(const Vector3f& point, const Color& color /*= Colors::
 
 void DebugDraw::DrawGrid(const Vector3f& point, const Vector3f& up, F32 begin, F32 end, F32 interval, const Color& color /*= Colors::Magenta*/)
 {
-	Vector3f right = up.CrossProduct(ENLIVE_DEFAULT_UP);
+	Vector3f right = up.Cross(ENLIVE_DEFAULT_UP);
 	if (right.GetSquaredLength() < 0.05f)
 	{
-		right = up.CrossProduct(ENLIVE_DEFAULT_RIGHT);
+		right = up.Cross(ENLIVE_DEFAULT_RIGHT);
 	}
-	const Vector3f forward = up.CrossProduct(right);
+	const Vector3f forward = up.Cross(right);
 
 	const Vector3f beginRight = begin * right + point;
 	const Vector3f endRight = end * right + point;

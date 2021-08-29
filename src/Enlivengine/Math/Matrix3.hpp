@@ -122,15 +122,15 @@ public:
 		const Vector3<T> c0(m.GetColumn(0));
 		const Vector3<T> c1(m.GetColumn(1));
 		const Vector3<T> c2(m.GetColumn(2));
-		out.data[0] = c0.DotProduct(r0);
-		out.data[1] = c1.DotProduct(r0);
-		out.data[2] = c2.DotProduct(r0);
-		out.data[3] = c0.DotProduct(r1);
-		out.data[4] = c1.DotProduct(r1);
-		out.data[5] = c2.DotProduct(r1);
-		out.data[6] = c0.DotProduct(r2);
-		out.data[7] = c1.DotProduct(r2);
-		out.data[8] = c2.DotProduct(r2);
+		out.data[0] = c0.Dot(r0);
+		out.data[1] = c1.Dot(r0);
+		out.data[2] = c2.Dot(r0);
+		out.data[3] = c0.Dot(r1);
+		out.data[4] = c1.Dot(r1);
+		out.data[5] = c2.Dot(r1);
+		out.data[6] = c0.Dot(r2);
+		out.data[7] = c1.Dot(r2);
+		out.data[8] = c2.Dot(r2);
 		return out;
 	}
 	constexpr Matrix3<T>& operator+=(const Matrix3<T> & m) { data[0] += m.data[0]; data[1] += m.data[1]; data[2] += m.data[2]; data[3] += m.data[3]; data[4] += m.data[4]; data[5] += m.data[5]; data[6] += m.data[6]; data[7] += m.data[7]; data[8] += m.data[8]; return *this; }
@@ -143,15 +143,15 @@ public:
 		const Vector3<T> c0(m.GetColumn(0));
 		const Vector3<T> c1(m.GetColumn(1));
 		const Vector3<T> c2(m.GetColumn(2));
-		data[0] = c0.DotProduct(r0);
-		data[1] = c1.DotProduct(r0);
-		data[2] = c2.DotProduct(r0);
-		data[3] = c0.DotProduct(r1);
-		data[4] = c1.DotProduct(r1);
-		data[5] = c2.DotProduct(r1);
-		data[6] = c0.DotProduct(r2);
-		data[7] = c1.DotProduct(r2);
-		data[8] = c2.DotProduct(r2);
+		data[0] = c0.Dot(r0);
+		data[1] = c1.Dot(r0);
+		data[2] = c2.Dot(r0);
+		data[3] = c0.Dot(r1);
+		data[4] = c1.Dot(r1);
+		data[5] = c2.Dot(r1);
+		data[6] = c0.Dot(r2);
+		data[7] = c1.Dot(r2);
+		data[8] = c2.Dot(r2);
 		return *this;
 	}
 
@@ -281,9 +281,9 @@ public:
 	constexpr Vector3<T> TransformDirection(const Vector3<T>& direction) const
 	{
 		Vector3<T> out;
-		out.x = GetColumn(0).DotProduct(direction);
-		out.y = GetColumn(1).DotProduct(direction);
-		out.z = GetColumn(2).DotProduct(direction);
+		out.x = GetColumn(0).Dot(direction);
+		out.y = GetColumn(1).Dot(direction);
+		out.z = GetColumn(2).Dot(direction);
 		return out;
 	}
 

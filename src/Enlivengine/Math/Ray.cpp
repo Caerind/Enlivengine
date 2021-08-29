@@ -102,7 +102,7 @@ bool Ray::Intersects(const Frustum& frustum, F32* distance /*= nullptr*/) const
 
 bool Ray::Intersects(const Plane& plane, F32* distance /*= nullptr*/) const
 {
-	const F32 den = mDirection.DotProduct(plane.GetNormal());
+	const F32 den = mDirection.Dot(plane.GetNormal());
 	if (Math::Equals(den, 0.0f))
 	{
 		if (distance != nullptr)
@@ -111,7 +111,7 @@ bool Ray::Intersects(const Plane& plane, F32* distance /*= nullptr*/) const
 		}
 		return false;
 	}
-	const F32 nom = mOrigin.DotProduct(plane.GetNormal()) + plane.GetConstant();
+	const F32 nom = mOrigin.Dot(plane.GetNormal()) + plane.GetConstant();
 	const F32 t = -(nom / den);
 	const bool result = t >= 0.0f;
 	if (distance != nullptr)
@@ -169,7 +169,7 @@ bool Ray::Intersects(const Ray& ray, F32* distance /*= nullptr*/, F32* distanceO
 
 bool Ray::Intersects(const Sphere& sphere, F32* distance /*= nullptr*/) const
 {
-	const F32 i = mDirection.DotProduct(sphere.GetCenter() - mOrigin);
+	const F32 i = mDirection.Dot(sphere.GetCenter() - mOrigin);
 	if (i < 0.0f)
 	{
 		if (distance != nullptr)

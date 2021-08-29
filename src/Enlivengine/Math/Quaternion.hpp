@@ -103,14 +103,14 @@ public:
 
 	constexpr Quaternion<T>& operator=(const Quaternion<T>& q) { v = q.v; s = q.s; return *this; }
 
-	constexpr Quaternion<T> operator*(const Quaternion<T>& q) const { return Quaternion<T>(s * q.v + q.s * v + v.CrossProduct(q.v), s * q.s - v.DotProduct(q.v)); }
+	constexpr Quaternion<T> operator*(const Quaternion<T>& q) const { return Quaternion<T>(s * q.v + q.s * v + v.Cross(q.v), s * q.s - v.Dot(q.v)); }
 	constexpr Quaternion<T>& operator*=(const Quaternion<T>& q)
 	{
 		Quaternion<T> p(*this);
 		v = p.s * q.v;
 		v += q.s * p.v;
-		v += p.v.CrossProduct(q.v);
-		s = p.s * q.s - p.v.DotProduct(q.v);
+		v += p.v.Cross(q.v);
+		s = p.s * q.s - p.v.Dot(q.v);
 		return *this;
 	}
 	inline Quaternion<T> operator*(const T& s) const
@@ -137,7 +137,7 @@ public:
 	constexpr Vector3<T> Rotate(const Vector3<T>& vector) const
 	{
 		T ss = s + s;
-		return ss * (v.CrossProduct(vector)) + (ss * s - T(1)) * vector + T(2) * (v.DotProduct(vector)) * vector;
+		return ss * (v.Cross(vector)) + (ss * s - T(1)) * vector + T(2) * (v.Dot(vector)) * vector;
 	}
 
 	constexpr bool operator==(const Quaternion<T>& other) const { return v == other.v && Math::Equals(s, other.s); }
@@ -159,7 +159,7 @@ public:
 	}
 	constexpr Quaternion<T> Inversed() const { return Quaternion<T>(*this).Inverse(); }
 
-	constexpr T DotProduct(const Quaternion<T>& q) const { return v.DotProduct(q.v) + s * q.s; }
+	constexpr T DotProduct(const Quaternion<T>& q) const { return v.Dot(q.v) + s * q.s; }
 	constexpr T GetSquaredLength() const { return DotProduct(*this); }
 	inline T GetLength() const { return Math::FastSqrt(GetSquaredLength()); }
 	inline Quaternion<T>& Normalize(T* oldLength = nullptr)
@@ -257,7 +257,7 @@ public:
 	{
 		const Vector3<T> v1 = start.Normalized();
 		const Vector3<T> v2 = end.Normalized();
-		const T dot = v1.DotProduct(v2);
+		const T dot = v1.Dot(v2);
 		if (dot >= T(0.99999847691))
 		{
 			return Quaternion<T>::Identity();
@@ -266,7 +266,7 @@ public:
 		{
 			return Quaternion<T>(0, axis);
 		}
-		const Vector3<T> cross = v1.CrossProduct(v2);
+		const Vector3<T> cross = v1.Cross(v2);
 		return Quaternion<T>(cross, dot + T(1)).Normalize();
 	}
 

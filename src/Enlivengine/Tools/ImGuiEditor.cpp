@@ -331,7 +331,7 @@ void ImGuiEditor::UpdateCamera()
 
 			Vector3f movement;
 			movement += 3.0f * forward * mvtUnit * dtSeconds;
-			movement -= 3.0f * left * mvtUnit.CrossProduct(ENLIVE_DEFAULT_UP) * dtSeconds;
+			movement -= 3.0f * left * mvtUnit.Cross(ENLIVE_DEFAULT_UP) * dtSeconds;
 			mCamera.Move(movement);
 		}
 
@@ -344,7 +344,7 @@ void ImGuiEditor::UpdateCamera()
 			}
 			if (!Math::Equals(deltaPitch, 0.0f))
 			{
-				//mCamera.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
+				//mCamera.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.Cross(ENLIVE_DEFAULT_UP)));
 			}
 		}
 	}

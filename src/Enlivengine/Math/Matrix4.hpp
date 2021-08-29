@@ -393,26 +393,17 @@ public:
 	constexpr Vector3<T> TransformPoint(const Vector3<T>& point) const
 	{
 		Vector3<T> out;
-		out.x = Vector3<T>(data[0], data[4], data[8]).DotProduct(point) + data[12];
-		out.y = Vector3<T>(data[1], data[5], data[9]).DotProduct(point) + data[13];
-		out.z = Vector3<T>(data[2], data[6], data[10]).DotProduct(point) + data[14];
-		return out;
-	}
-	constexpr Vector4<T> Transform4(const Vector4<T>& vector) const
-	{
-		Vector4<T> out;
-		out.x = Vector4<T>(data[0], data[4], data[8], data[12]).DotProduct(vector);
-		out.y = Vector4<T>(data[1], data[5], data[9], data[13]).DotProduct(vector);
-		out.z = Vector4<T>(data[2], data[6], data[10], data[14]).DotProduct(vector);
-		out.w = Vector4<T>(data[3], data[7], data[11], data[15]).DotProduct(vector);
+		out.x = Vector3<T>(data[0], data[4], data[8]).Dot(point) + data[12];
+		out.y = Vector3<T>(data[1], data[5], data[9]).Dot(point) + data[13];
+		out.z = Vector3<T>(data[2], data[6], data[10]).Dot(point) + data[14];
 		return out;
 	}
 	constexpr Vector3<T> TransformDirection(const Vector3<T>& direction) const
 	{
 		Vector3<T> out;
-		out.x = Vector3<T>(data[0], data[4], data[8]).DotProduct(direction);
-		out.y = Vector3<T>(data[1], data[5], data[9]).DotProduct(direction);
-		out.z = Vector3<T>(data[2], data[6], data[10]).DotProduct(direction);
+		out.x = Vector3<T>(data[0], data[4], data[8]).Dot(direction);
+		out.y = Vector3<T>(data[1], data[5], data[9]).Dot(direction);
+		out.z = Vector3<T>(data[2], data[6], data[10]).Dot(direction);
 		return out;
 	}
 
@@ -656,11 +647,11 @@ public:
 	static inline Matrix4<T> LookAt(const Vector3<T> & eye, const Vector3<T> & target, const Vector3<T> & up, Math::Handedness handedness)
 	{
 		const Vector3<T> f((target - eye).Normalized());
-		const Vector3<T> s(handedness == Math::Handedness::Right ? Vector3f::CrossProduct(f, up).Normalized() : Vector3f::CrossProduct(up, f).Normalized());
-		const Vector3<T> u(handedness == Math::Handedness::Right ? Vector3f::CrossProduct(s, f) : Vector3f::CrossProduct(f, s));
+		const Vector3<T> s(handedness == Math::Handedness::Right ? Vector3f::Cross(f, up).Normalized() : Vector3f::Cross(up, f).Normalized());
+		const Vector3<T> u(handedness == Math::Handedness::Right ? Vector3f::Cross(s, f) : Vector3f::Cross(f, s));
 		const T factor = (handedness == Math::Handedness::Right ? -1.0f : 1.0f);
 
-		return Matrix4<T>(s.x, u.x, factor * f.x, T(0), s.y, u.y, factor * f.y, T(0), s.z, u.z, factor * f.z, T(0), -s.DotProduct(eye), -u.DotProduct(eye), -factor * f.DotProduct(eye), T(1));
+		return Matrix4<T>(s.x, u.x, factor * f.x, T(0), s.y, u.y, factor * f.y, T(0), s.z, u.z, factor * f.z, T(0), -s.Dot(eye), -u.Dot(eye), -factor * f.Dot(eye), T(1));
 	}
 
 	static constexpr Matrix4<T> Zero() { return Matrix4<T>(T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0)); }

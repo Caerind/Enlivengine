@@ -276,7 +276,7 @@ public:
 
 					Vector3f movement;
 					movement += 3.0f * forwardMvt * mvtUnit * dtSeconds;
-					movement -= 3.0f * leftMvt * mvtUnit.CrossProduct(ENLIVE_DEFAULT_UP) * dtSeconds;
+					movement -= 3.0f * leftMvt * mvtUnit.Cross(ENLIVE_DEFAULT_UP) * dtSeconds;
 					playerTransform.Move(movement);
 				}
 
@@ -289,7 +289,7 @@ public:
 					}
 					if (!Math::Equals(deltaPitch, 0.0f))
 					{
-						//playerTransform.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
+						//playerTransform.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.Cross(ENLIVE_DEFAULT_UP)));
 					}
 				}
 			}
