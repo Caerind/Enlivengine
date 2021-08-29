@@ -141,7 +141,7 @@ Tests()
 		./build/examples/$config/PlatformExample.exe # default path for Visual Studio users
 		./build/tests/$config/EnlivengineTests.exe # default path for Visual Studio users
 	else
-		./build/examples/PlatformExample.exe # for Linux/Unix GCC users
+		./build/examples/PlatformExample # for Linux/Unix GCC users
 		./build/tests/EnlivengineTests # for Linux/Unix GCC users
 	fi
 }

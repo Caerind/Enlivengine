@@ -83,7 +83,9 @@ bool Animation::LoadFromFile(const std::string& filename)
 			{
 				for (auto& frame : itr.value())
 				{
-					const Rectu rect{ { frame["frame"]["x"].get<U32>(), frame["frame"]["y"].get<U32>() }, { frame["frame"]["w"].get<U32>(), frame["frame"]["h"].get<U32>() } };
+					const Vector2u pos(frame["frame"]["x"].get<U32>(), frame["frame"]["y"].get<U32>());
+					const Vector2u size(frame["frame"]["w"].get<U32>(), frame["frame"]["h"].get<U32>());
+					const Rectu rect{ pos, size };
 					const Time duration{ Time::Milliseconds(frame["duration"].get<I32>()) };
 					AddFrame(rect, duration);
 				}

@@ -10,7 +10,7 @@ class Rect
 {
 public:
 	constexpr Rect() : mMin(), mMax() {}
-	constexpr Rect(const Vector2<T>& min, const Vector2<T>& max) : mMin(min), mMax(min + max) {}
+	constexpr Rect(const Vector2<T>& min, const Vector2<T>& max) : mMin(min), mMax(max) {}
 	constexpr Rect(T minX, T minY, T sizeX, T sizeY) : mMin(minX, minY), mMax(minX + sizeX, minY + sizeY) {}
 
 	constexpr const Vector2<T>& GetMin() const { return mMin; }

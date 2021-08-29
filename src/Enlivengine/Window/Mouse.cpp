@@ -17,9 +17,9 @@ void Mouse::SetPositionGlobal(const Vector2i& mousePos)
 
 Vector2i Mouse::GetPositionGlobal()
 {
-	int x, y;
-	SDL_GetGlobalMouseState(&x, &y);
-	return Vector2i(static_cast<I32>(x), static_cast<I32>(y));
+	Vector2i v;
+	SDL_GetGlobalMouseState(&v.x, &v.y);
+	return v;
 }
 
 void Mouse::SetPositionCurrentWindow(const Vector2i& mousePos)
