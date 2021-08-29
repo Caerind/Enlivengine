@@ -52,14 +52,16 @@ public:
 	constexpr bool operator<=(const Vector3<T>& v) const { return x <= v.x && y <= v.y && z <= v.z; }
 	constexpr bool operator>(const Vector3<T>& v) const { return !operator<=(v); }
 	constexpr bool operator>=(const Vector3<T>& v) const { return !operator<(v); }
-	constexpr bool IsZero() const { return operator==(Zero()); }
-	static constexpr bool Equals(const Vector3<T>& v1, const Vector3<T>& v2, T epsilon = T(Math::Epsilon)) { return Math::Equals(v1.x, v2.x, epsilon) && Math::Equals(v1.y, v2.y, epsilon) && Math::Equals(v1.z, v2.z, epsilon); }
+	bool IsZero() const { return glm::isNull(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	static bool Equals(const Vector3<T>& v1, const Vector3<T>& v2, T epsilon = T(Math::Epsilon)) { return Math::Equals(v1.x, v2.x, epsilon) && Math::Equals(v1.y, v2.y, epsilon) && Math::Equals(v1.z, v2.z, epsilon); }
 
 	// Accessors
-	constexpr T& operator()(U32 i) { if (i == 0) return x; else if (i == 1) return y; return z; }
-	constexpr const T& operator()(U32 i) const { if (i == 0) return x; else if (i == 1) return y; return z; }
-	constexpr T& operator[](U32 i) { if (i == 0) return x; else if (i == 1) return y; return z; }
-	constexpr const T& operator[](U32 i) const { if (i == 0) return x; else if (i == 1) return y; return z; }
+	T& operator()(U32 i) { if (i == 0) return x; else if (i == 1) return y; return z; }
+	const T& operator()(U32 i) const { if (i == 0) return x; else if (i == 1) return y; return z; }
+	T& operator[](U32 i) { if (i == 0) return x; else if (i == 1) return y; return z; }
+	const T& operator[](U32 i) const { if (i == 0) return x; else if (i == 1) return y; return z; }
+	T* GetValuePtr() { return glm::value_ptr(static_cast<Parent>(*this)); }
+	const T* GetValuePtr() const { return glm::value_ptr(static_cast<Parent>(*this)); }
 
 	// Constants
 	static constexpr Vector3<T> Unit() { return Vector3<T>(1, 1, 1); }
@@ -69,19 +71,19 @@ public:
 	static constexpr Vector3<T> Zero() { return Vector3<T>(0, 0, 0); }
 
 	// Setters
-	constexpr void Set(const Vector3<T>& v) { Parent::operator=(static_cast<Parent>(v)); }
+	void Set(const Vector3<T>& v) { Parent::operator=(static_cast<Parent>(v)); }
 	template <typename Other>
-	constexpr void Set(const Vector3<Other>& v) { Parent::operator=(static_cast<Vector3<Other>::Parent>(v)); }
-	constexpr void Set(T scalar) { x = scalar; y = scalar; z = scalar; }
-	constexpr void Set(T _x, T _y, T _z) { x = _x; y = _y; z = _z; }
+	void Set(const Vector3<Other>& v) { Parent::operator=(static_cast<Vector3<Other>::Parent>(v)); }
+	void Set(T scalar) { x = scalar; y = scalar; z = scalar; }
+	void Set(T _x, T _y, T _z) { x = _x; y = _y; z = _z; }
 	template <typename OtherA, typename OtherB, typename OtherC>
-	constexpr void Set(OtherA _x, OtherB _y) { x = static_cast<T>(_x); y = static_cast<T>(_y); }
-	constexpr void Set(const Vector2<T>& v, T _z) { x = v.x; y = v.y; z = v.z; }
+	void Set(OtherA _x, OtherB _y, OtherC _z) { x = static_cast<T>(_x); y = static_cast<T>(_y); static_cast<T>(_z); }
+	void Set(const Vector2<T>& v, T _z) { x = v.x; y = v.y; z = _z; }
 
 	// Norm
 	T GetSquaredLength() const { return glm::length2(static_cast<Parent>(*this)); }
 	T GetLength() const { return glm::length(static_cast<Parent>(*this)); }
-	bool IsNormalized() const { return Math::Equals(GetSquaredLength(), T(1)); }
+	bool IsNormalized() const { return glm::isNormalized(static_cast<Parent>(*this), T(Math::Epsilon)); }
 	Vector3<T>& Normalize() { *this = Vector3(glm::normalize(static_cast<Parent>(*this))); return *this; }
 	Vector3<T> Normalized() const { return Vector3(glm::normalize(static_cast<Parent>(*this))); }
 
@@ -90,15 +92,18 @@ public:
 	static constexpr T Dot(const Vector3<T>& v1, const Vector3<T>& v2) { return glm::dot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
 	constexpr Vector3<T> Cross(const Vector3<T>& v) const { return Vector3(glm::cross(static_cast<Parent>(*this), static_cast<Parent>(v))); }
 	static constexpr Vector3<T> Cross(const Vector3<T>& v1, const Vector3<T>& v2) { return Vector3(glm::cross(static_cast<Parent>(v1), static_cast<Parent>(v2))); }
+	static bool AreCollinear(const Vector3<T>& v1, const Vector3<T>& v2) { return glm::areCollinear(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
+	static bool AreOrthogonal(const Vector3<T>& v1, const Vector3<T>& v2) { return glm::areOrthogonal(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
+	static bool AreOrthonormal(const Vector3<T>& v1, const Vector3<T>& v2) { return glm::areOrthonormal(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
 	
 	// Min/Max
-	constexpr Vector3<T>& Maximize(const Vector3<T>& v) { if (v.x > x) x = v.x; if (v.y > y) y = v.y; if (v.z > z) z = v.z; return *this; }
-	static constexpr Vector3<T> Maximum(const Vector3<T>& v1, const Vector3<T>& v2) { return Vector3<T>(Math::Max(v1.x, v2.x), Math::Max(v1.y, v2.y), Math::Max(v1.z, v2.z)); }
-	constexpr Vector3<T>& Minimize(const Vector3<T>& v) { if (v.x < x) x = v.x; if (v.y < y) y = v.y; if (v.z < z) z = v.z; return *this; }
-	static constexpr Vector3<T> Minimum(const Vector3<T>& v1, const Vector3<T>& v2) { return Vector3<T>(Math::Min(v1.x, v2.x), Math::Min(v1.y, v2.y), Math::Min(v1.z, v2.z)); }
+	Vector3<T>& Maximize(const Vector3<T>& v) { if (v.x > x) x = v.x; if (v.y > y) y = v.y; if (v.z > z) z = v.z; return *this; }
+	static Vector3<T> Maximum(const Vector3<T>& v1, const Vector3<T>& v2) { return Vector3<T>(Math::Max(v1.x, v2.x), Math::Max(v1.y, v2.y), Math::Max(v1.z, v2.z)); }
+	Vector3<T>& Minimize(const Vector3<T>& v) { if (v.x < x) x = v.x; if (v.y < y) y = v.y; if (v.z < z) z = v.z; return *this; }
+	static Vector3<T> Minimum(const Vector3<T>& v1, const Vector3<T>& v2) { return Vector3<T>(Math::Min(v1.x, v2.x), Math::Min(v1.y, v2.y), Math::Min(v1.z, v2.z)); }
 
 	// Lerp
-	static constexpr Vector3<T> Lerp(const Vector3<T>& v1, const Vector3<T>& v2, T percent) { return Vector3(glm::lerp(static_cast<Parent>(v1), static_cast<Parent>(v2), percent)); }
+	static Vector3<T> Lerp(const Vector3<T>& v1, const Vector3<T>& v2, T percent) { return Vector3(glm::lerp(static_cast<Parent>(v1), static_cast<Parent>(v2), percent)); }
 
 	// Subsets
 	constexpr Vector2<T> xy() const { return Vector2<T>(x, y); }

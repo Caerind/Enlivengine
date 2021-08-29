@@ -78,11 +78,11 @@ Frustum Camera::CreateFrustum() const
 	const F32 aspect = GetAspect();
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		return Frustum(mProjectionData.perspective.fov, aspect, mProjectionData.perspective.nearPlane, mProjectionData.perspective.farPlane, mPosition, mPosition + mRotation.TransformDirection(ENLIVE_DEFAULT_FORWARD), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+		return Frustum(mProjectionData.perspective.fov, aspect, mProjectionData.perspective.nearPlane, mProjectionData.perspective.farPlane, mPosition, mPosition + mRotation.GetForward(), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	}
 	else
 	{
-		return Frustum(-mProjectionData.orthographic.size * aspect, -mProjectionData.orthographic.size, mProjectionData.orthographic.size * aspect, mProjectionData.orthographic.size, mProjectionData.orthographic.nearPlane, mProjectionData.orthographic.farPlane, mPosition, mPosition + mRotation.TransformDirection(ENLIVE_DEFAULT_FORWARD), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+		return Frustum(-mProjectionData.orthographic.size * aspect, -mProjectionData.orthographic.size, mProjectionData.orthographic.size * aspect, mProjectionData.orthographic.size, mProjectionData.orthographic.nearPlane, mProjectionData.orthographic.farPlane, mPosition, mPosition + mRotation.GetForward(), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
 	}
 }
 

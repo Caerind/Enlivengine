@@ -515,6 +515,8 @@ public:
 	{
 		const Vector3<T> scale = GetScale();
 		Matrix3<T> result;
+		// TODO : GLM update
+		/*
 		result[0] = data[0] / scale.x;
 		result[1] = data[1] / scale.x;
 		result[2] = data[2] / scale.x;
@@ -524,11 +526,15 @@ public:
 		result[6] = data[8] / scale.z;
 		result[7] = data[9] / scale.z;
 		result[8] = data[10] / scale.z;
+		*/
 		return result;
 	}
 	inline Matrix4<T>& SetRotation(const Matrix3<T>& rotation)
 	{
 		const Vector3<T> scale = GetScale();
+		// TODO : GLM update
+		ENLIVE_UNUSED(rotation);
+		/*
 		data[0] = rotation[0] * scale.x;
 		data[1] = rotation[1] * scale.x;
 		data[2] = rotation[2] * scale.x;
@@ -538,6 +544,7 @@ public:
 		data[8] = rotation[6] * scale.z;
 		data[9] = rotation[7] * scale.z;
 		data[10] = rotation[8] * scale.z;
+		*/
 		return *this;
 	}
 	constexpr Matrix4<T>& ApplyRotation(const Matrix3<T>& rotation)
@@ -567,14 +574,16 @@ public:
 	constexpr Vector3f GetLeft() const { return TransformDirection(ENLIVE_DEFAULT_LEFT); }
 	constexpr Vector3f GetRight() const { return TransformDirection(ENLIVE_DEFAULT_RIGHT); }
 	
-	static constexpr Matrix4<T> Rotation(const Matrix3<T> & m) { return Matrix4<T>(m[0], m[1], m[2], T(0), m[3], m[4], m[5], T(0), m[6], m[7], m[8], T(0), T(0), T(0), T(0), T(1)); }
+	// TODO : GLM update
+	static constexpr Matrix4<T> Rotation(const Matrix3<T>& m) { ENLIVE_UNUSED(m); return Matrix4<T>(/*m[0], m[1], m[2], T(0), m[3], m[4], m[5], T(0), m[6], m[7], m[8], T(0), T(0), T(0), T(0), T(1)*/); }
 	static constexpr Matrix4<T> RotationX(const T & angle) { return RotationX(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }
 	static constexpr Matrix4<T> RotationY(const T & angle) { return RotationY(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }
 	static constexpr Matrix4<T> RotationZ(const T & angle) { return RotationZ(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }
 	static constexpr Matrix4<T> RotationX(const Vector2<T> & v) { return Matrix4<T>(T(1), T(0), T(0), T(0), T(0), v.x, -v.y, T(0), T(0), v.y, v.x, T(0), T(0), T(0), T(0), T(1)); }
 	static constexpr Matrix4<T> RotationY(const Vector2<T> & v) { return Matrix4<T>(v.x, T(0), v.y, T(0), T(0), T(1), T(0), T(0), -v.y, T(0), v.x, T(0), T(0), T(0), T(0), T(1)); }
 	static constexpr Matrix4<T> RotationZ(const Vector2<T> & v) { return Matrix4<T>(v.x, -v.y, T(0), T(0), v.y, v.x, T(0), T(0), T(0), T(0), T(1), T(0), T(0), T(0), T(0), T(1)); }
-	static inline Matrix4<T> RotationAxis(const Vector3<T>& axis, const T& angle) { return Rotation(Matrix3f::RotationAxis(axis, angle)); }
+	// TODO : GLM update
+	static inline Matrix4<T> RotationAxis(const Vector3<T>& axis, const T& angle) { ENLIVE_UNUSED(axis); ENLIVE_UNUSED(angle); return Identity(); /*return Rotation(Matrix3f::RotationAxis(axis, angle));*/ }
 	static constexpr Matrix4<T> Scale(const Vector3<T> & scale) { return Matrix4<T>(scale.x, T(0), T(0), T(0), T(0), scale.y, T(0), T(0), T(0), T(0), scale.z, T(0), T(0), T(0), T(0), T(1)); }
 	static constexpr Matrix4<T> Scale(const T & sx, const T & sy, const T & sz) { return Matrix4<T>(sx, T(0), T(0), T(0), T(0), sy, T(0), T(0), T(0), T(0), sz, T(0), T(0), T(0), T(0), T(1)); }
 	static constexpr Matrix4<T> Scale(const T & s) { return Matrix4<T>(s, T(0), T(0), T(0), T(0), s, T(0), T(0), T(0), T(0), s, T(0), T(0), T(0), T(0), T(1)); }
@@ -584,6 +593,11 @@ public:
 	static constexpr Matrix4<T> Transform(const Vector3<T>& translation, const Matrix3<T>& rotation, const Vector3<T>& scale = Vector3<T>(1.0f))
 	{
 		Matrix4<T> m;
+		// TODO : GLM update
+		ENLIVE_UNUSED(translation);
+		ENLIVE_UNUSED(rotation);
+		ENLIVE_UNUSED(scale);
+		/*
 		m[0] = scale.x * rotation[0];
 		m[1] = scale.x * rotation[1];
 		m[2] = scale.x * rotation[2];
@@ -596,6 +610,7 @@ public:
 		m[12] = translation.x;
 		m[13] = translation.y;
 		m[14] = translation.z;
+		*/
 		return m;
 	}
 	static constexpr Matrix4<T> Transform(const Vector3<T>& translation, const Quaternion<T>& rotation, const Vector3<T>& scale = Vector3<T>(1.0f))

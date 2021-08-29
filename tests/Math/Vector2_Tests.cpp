@@ -23,7 +23,11 @@ DOCTEST_TEST_CASE("Vector2")
 	DOCTEST_CHECK(vf3 == en::Vector2f(4.0f, 4.0f));
 	DOCTEST_CHECK(en::Vector2f::Equals(vf3, en::Vector2f(4.0f, 4.0f)));
 	en::Vector2f v1(3.0f, 7.0f);
+	DOCTEST_CHECK(en::Math::Equals(v1.x, 3.0f));
+	DOCTEST_CHECK(en::Math::Equals(v1.y, 7.0f));
 	en::Vector2f v2(5.0f, 11.0f);
+	DOCTEST_CHECK(en::Math::Equals(v2.x, 5.0f));
+	DOCTEST_CHECK(en::Math::Equals(v2.y, 11.0f));
 	DOCTEST_CHECK(v1 == (+v1));
 	DOCTEST_CHECK(-(v1.x) == (-v1).x);
 	DOCTEST_CHECK(-(v1.y) == (-v1).y);

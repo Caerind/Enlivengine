@@ -189,6 +189,9 @@ public:
 
 	inline void ToEulerAngles(Vector3<T>& vector) const
 	{
+		// TODO : GLM update
+		ENLIVE_UNUSED(vector);
+		/*
 		Matrix3<T> m;
 		ToMatrix3(m);
 		vector.y = Math::Asin(Math::Clamp(m[2], T(-1), T(1)));
@@ -202,6 +205,7 @@ public:
 			vector.x = Math::Atan2(m[4], m[7]);
 			vector.z = 0;
 		}
+		*/
 	}
 	inline Vector3<T> ToEulerAngles() const
 	{
@@ -224,9 +228,13 @@ public:
 		const T x2 = v.x * v.x; const T y2 = v.y * v.y; const T z2 = v.z * v.z;
 		const T xs = v.x * s;   const T ys = v.y * s;   const T zs = v.z * s;
 		const T xy = v.x * v.y; const T xz = v.x * v.z; const T yz = v.y * v.z;
+		// TODO : GLM update
+		ENLIVE_UNUSED(matrix);
+		/*
 		matrix.Set(1 - 2 * (y2 + z2), 2 * (xy - zs), 2 * (xz + ys),
 			2 * (xy + zs), 1 - 2 * (x2 + z2), 2 * (yz - xs),
 			2 * (xz - ys), 2 * (yz + xs), 1 - 2 * (x2 + y2));
+			*/
 	}
 	constexpr Matrix3<T> ToMatrix3() const
 	{

@@ -2,6 +2,10 @@
 
 #include <Enlivengine/Math/Math.hpp>
 
+#include <glm/gtx/vector_query.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/compatibility.hpp>
+
 namespace en
 {
 
@@ -51,14 +55,16 @@ public:
 	constexpr bool operator<=(const Vector2<T>& v) const { return x <= v.x && y <= v.y; }
 	constexpr bool operator>(const Vector2<T>& v) const { return !operator<=(v); }
 	constexpr bool operator>=(const Vector2<T>& v) const { return !operator<(v); }
-	constexpr bool IsZero() const { return operator==(Zero()); }
-	static constexpr bool Equals(const Vector2<T>& v1, const Vector2<T>& v2, T epsilon = T(Math::Epsilon)) { return Math::Equals(v1.x, v2.x, epsilon) && Math::Equals(v1.y, v2.y, epsilon); }
+	bool IsZero() const { return glm::isNull(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	static bool Equals(const Vector2<T>& v1, const Vector2<T>& v2, T epsilon = T(Math::Epsilon)) { return Math::Equals(v1.x, v2.x, epsilon) && Math::Equals(v1.y, v2.y, epsilon); }
 
 	// Accessors
-	constexpr T& operator()(U32 i) { if (i == 0) return x; return y; }
-	constexpr const T& operator()(U32 i) const { if (i == 0) return x; return y; }
-	constexpr T& operator[](U32 i) { if (i == 0) return x; return y; }
-	constexpr const T& operator[](U32 i) const { if (i == 0) return x; return y; }
+	T& operator()(U32 i) { if (i == 0) return x; return y; }
+	const T& operator()(U32 i) const { if (i == 0) return x; return y; }
+	T& operator[](U32 i) { if (i == 0) return x; return y; }
+	const T& operator[](U32 i) const { if (i == 0) return x; return y; }
+	T* GetValuePtr() { return glm::value_ptr(static_cast<Parent>(*this)); }
+	const T* GetValuePtr() const { return glm::value_ptr(static_cast<Parent>(*this)); }
 
 	// Constants
 	static constexpr Vector2<T> Unit() { return Vector2<T>(1, 1); }
@@ -67,40 +73,43 @@ public:
 	static constexpr Vector2<T> Zero() { return Vector2<T>(0, 0); }
 
 	// Setters
-	constexpr void Set(const Vector2<T>& v) { Parent::operator=(static_cast<Parent>(v)); }
+	void Set(const Vector2<T>& v) { Parent::operator=(static_cast<Parent>(v)); }
 	template <typename Other>
-	constexpr void Set(const Vector2<Other>& v) { Parent::operator=(static_cast<Vector2<Other>::Parent>(v)); }
-	constexpr void Set(T scalar) { x = scalar; y = scalar; }
-	constexpr void Set(T _x, T _y) { x = _x; y = _y; }
+	void Set(const Vector2<Other>& v) { Parent::operator=(static_cast<Vector2<Other>::Parent>(v)); }
+	void Set(T scalar) { x = scalar; y = scalar; }
+	void Set(T _x, T _y) { x = _x; y = _y; }
 	template <typename OtherA, typename OtherB>
-	constexpr void Set(OtherA _x, OtherB _y) { x = static_cast<T>(_x); y = static_cast<T>(_y); }
+	void Set(OtherA _x, OtherB _y) { x = static_cast<T>(_x); y = static_cast<T>(_y); }
 
 	// Norm
 	T GetSquaredLength() const { return glm::length2(static_cast<Parent>(*this)); }
 	T GetLength() const { return glm::length(static_cast<Parent>(*this)); }
-	bool IsNormalized() const { return Math::Equals(GetSquaredLength(), T(1)); }
+	bool IsNormalized() const { return glm::isNormalized(static_cast<Parent>(*this), T(Math::Epsilon)); }
 	Vector2<T>& Normalize() { *this = Vector2(glm::normalize(static_cast<Parent>(*this))); return *this; }
 	Vector2<T> Normalized() const { return Vector2(glm::normalize(static_cast<Parent>(*this))); }
 
 	// Operations
-	constexpr T Dot(const Vector2<T>& v) const { return glm::dot(*this, v); }
-	static constexpr T Dot(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::dot(v1, v2); }
+	constexpr T Dot(const Vector2<T>& v) const { return glm::dot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
+	static constexpr T Dot(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::dot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
+	static bool AreCollinear(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::areCollinear(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
+	static bool AreOrthogonal(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::areOrthogonal(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
+	static bool AreOrthonormal(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::areOrthonormal(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
 
 	// Min/Max
-	constexpr Vector2<T>& Maximize(const Vector2<T>& v) { if (v.x > x) x = v.x; if (v.y > y) y = v.y; return *this; }
-	static constexpr Vector2<T> Maximum(const Vector2<T>& v1, const Vector2<T>& v2) { return Vector2<T>(Math::Max(v1.x, v2.x), Math::Max(v1.y, v2.y)); }
-	constexpr Vector2<T>& Minimize(const Vector2<T>& v) { if (v.x < x) x = v.x; if (v.y < y) y = v.y; return *this; }
-	static constexpr Vector2<T> Minimum(const Vector2<T>& v1, const Vector2<T>& v2) { return Vector2<T>(Math::Min(v1.x, v2.x), Math::Min(v1.y, v2.y)); }
+	Vector2<T>& Maximize(const Vector2<T>& v) { if (v.x > x) x = v.x; if (v.y > y) y = v.y; return *this; }
+	static Vector2<T> Maximum(const Vector2<T>& v1, const Vector2<T>& v2) { return Vector2<T>(Math::Max(v1.x, v2.x), Math::Max(v1.y, v2.y)); }
+	Vector2<T>& Minimize(const Vector2<T>& v) { if (v.x < x) x = v.x; if (v.y < y) y = v.y; return *this; }
+	static Vector2<T> Minimum(const Vector2<T>& v1, const Vector2<T>& v2) { return Vector2<T>(Math::Min(v1.x, v2.x), Math::Min(v1.y, v2.y)); }
 
 	// Lerp
-	static constexpr Vector2<T> Lerp(const Vector2<T>& v1, const Vector2<T>& v2, T percent) { return Vector2(glm::lerp(static_cast<Parent>(v1), static_cast<Parent>(v2), percent)); }
+	static Vector2<T> Lerp(const Vector2<T>& v1, const Vector2<T>& v2, T percent) { return Vector2(glm::lerp(static_cast<Parent>(v1), static_cast<Parent>(v2), percent)); }
 
 	// PolarAngle
 	T GetPolarAngle() const { return Math::Atan2(x, y); }
 	Vector2<T>& SetPolarAngle(T angle) { const T length = GetLength(); x = Math::Cos(angle) * length; y = Math::Sin(angle) * length; return *this; }
 	static Vector2<T> Polar(T angle, T length = T(1)) { return Vector2<T>(Math::Cos(angle) * length, Math::Sin(angle) * length); }
-	Vector2<T>& Rotate(T angle) { const T c = Math::Cos(angle); const T s = Math::Sin(angle); const T tx = c * x - s * y; y = s * x + c * y; x = tx; return *this; }
-	Vector2<T> Rotated(const T& angle) const { const T c = Math::Cos(angle); const T s = Math::Sin(angle); return Vector2<T>(c * x - s * y, s * x + c * y); }
+	Vector2<T>& Rotate(T angle) { *this = Vector2(glm::rotate(static_cast<Parent>(*this), angle)); return *this; }
+	Vector2<T> Rotated(const T& angle) const { return Vector2(glm::rotate(static_cast<Parent>(*this), angle)); }
 
 	// Meta
 	bool Serialize(Serializer& serializer, const char* name);

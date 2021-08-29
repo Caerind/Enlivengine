@@ -52,14 +52,16 @@ public:
 	constexpr bool operator<=(const Vector4<T>& v) const { return x <= v.x && y <= v.y && z <= v.z; }
 	constexpr bool operator>(const Vector4<T>& v) const { return !operator<=(v); }
 	constexpr bool operator>=(const Vector4<T>& v) const { return !operator<(v); }
-	constexpr bool IsZero() const { return operator==(Zero()); }
-	static constexpr bool Equals(const Vector4<T>& v1, const Vector4<T>& v2, T epsilon = T(Math::Epsilon)) { return Math::Equals(v1.x, v2.x, epsilon) && Math::Equals(v1.y, v2.y, epsilon) && Math::Equals(v1.z, v2.z, epsilon) && Math::Equals(v1.w, v2.w, epsilon); }
+	bool IsZero() const { return glm::isNull(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	static bool Equals(const Vector4<T>& v1, const Vector4<T>& v2, T epsilon = T(Math::Epsilon)) { return Math::Equals(v1.x, v2.x, epsilon) && Math::Equals(v1.y, v2.y, epsilon) && Math::Equals(v1.z, v2.z, epsilon) && Math::Equals(v1.w, v2.w, epsilon); }
 
 	// Accessors
-	constexpr T& operator()(U32 i) { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
-	constexpr const T& operator()(U32 i) const { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
-	constexpr T& operator[](U32 i) { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
-	constexpr const T& operator[](U32 i) const { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
+	T& operator()(U32 i) { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
+	const T& operator()(U32 i) const { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
+	T& operator[](U32 i) { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
+	const T& operator[](U32 i) const { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
+	T* GetValuePtr() { return glm::value_ptr(static_cast<Parent>(*this)); }
+	const T* GetValuePtr() const { return glm::value_ptr(static_cast<Parent>(*this)); }
 
 	// Constants
 	static constexpr Vector4<T> Unit() { return Vector4<T>(1, 1, 1, 1); }
@@ -70,25 +72,28 @@ public:
 	static constexpr Vector4<T> Zero() { return Vector4<T>(0, 0, 0, 0); }
 
 	// Setters
-	constexpr void Set(const Vector4<T>& v) { Parent::operator=(static_cast<Parent>(v)); }
+	void Set(const Vector4<T>& v) { Parent::operator=(static_cast<Parent>(v)); }
 	template <typename Other>
-	constexpr void Set(const Vector4<Other>& v) { Parent::operator=(static_cast<Vector4<Other>::Parent>(v)); }
-	constexpr void Set(T scalar) { x = scalar; y = scalar; z = scalar; w = scalar; }
-	constexpr void Set(T _x, T _y, T _z, T _w) { x = _x; y = _y; z = _z; w = _w; }
+	void Set(const Vector4<Other>& v) { Parent::operator=(static_cast<Vector4<Other>::Parent>(v)); }
+	void Set(T scalar) { x = scalar; y = scalar; z = scalar; w = scalar; }
+	void Set(T _x, T _y, T _z, T _w) { x = _x; y = _y; z = _z; w = _w; }
 	template <typename OtherA, typename OtherB, typename OtherC, typename OtherD>
-	constexpr void Set(OtherA _x, OtherB _y) { x = static_cast<T>(_x); y = static_cast<T>(_y); w = static_cast<T>(_w); }
-	constexpr void Set(const Vector3<T>& v, T _w) { x = v.x; y = v.y; z = v.z; w = _w; }
+	void Set(OtherA _x, OtherB _y, OtherC _z, OtherD _w) { x = static_cast<T>(_x); y = static_cast<T>(_y); z = static_cast<T>(_z); w = static_cast<T>(_w); }
+	void Set(const Vector3<T>& v, T _w) { x = v.x; y = v.y; z = v.z; w = _w; }
 
 	// Norm
 	T GetSquaredLength() const { return glm::length2(static_cast<Parent>(*this)); }
 	T GetLength() const { return glm::length(static_cast<Parent>(*this)); }
-	bool IsNormalized() const { return Math::Equals(GetSquaredLength(), T(1)); }
+	bool IsNormalized() const { return glm::isNormalized(static_cast<Parent>(*this), T(Math::Epsilon)); }
 	Vector4<T>& Normalize() { *this = Vector4(glm::normalize(static_cast<Parent>(*this))); return *this; }
 	Vector4<T> Normalized() const { return Vector4(glm::normalize(static_cast<Parent>(*this))); }
 
 	// Operations
 	constexpr T Dot(const Vector4<T>& v) const { return glm::dot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
 	static constexpr T Dot(const Vector4<T>& v1, const Vector4<T>& v2) { return glm::dot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
+	static bool AreCollinear(const Vector4<T>& v1, const Vector4<T>& v2) { return glm::areCollinear(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
+	static bool AreOrthogonal(const Vector4<T>& v1, const Vector4<T>& v2) { return glm::areOrthogonal(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
+	static bool AreOrthonormal(const Vector4<T>& v1, const Vector4<T>& v2) { return glm::areOrthonormal(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
 
 	// Min/Max
 	constexpr Vector4<T>& Maximize(const Vector4<T>& v) { if (v.x > x) x = v.x; if (v.y > y) y = v.y; if (v.z > z) z = v.z; if (v.w > w) w = v.w; return *this; }

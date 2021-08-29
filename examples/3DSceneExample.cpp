@@ -313,6 +313,12 @@ bool PlayerSystem::Edit(ObjectEditor& objectEditor, const char* name)
 
 int main(int argc, char** argv)
 {
+	Vector3i a;
+	a++;
+	Vector3i b(2.f);
+	Vector3i c = b | a;
+	//printf("%s\n", ToString(c).c_str());
+
 	Engine::RegisterComponent<StupidShipComponent>();
 	Engine::RegisterComponent<PlayerComponent>();
 

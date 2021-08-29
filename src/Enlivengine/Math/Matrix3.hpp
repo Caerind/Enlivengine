@@ -2,342 +2,103 @@
 
 #include <Enlivengine/Math/Vector3.hpp>
 
-// TODO : Constexpr memcpy, swap
+#include <glm/gtc/matrix_access.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtx/matrix_query.hpp>
 
 namespace en
 {
 
-// 
-// Matrix layout :    
-// 
-// 0 1 2     a11 a12 a13
-// 3 4 5  =  a21 a22 a23
-// 6 7 8     a31 a32 a33
-//
-
 template <typename T>
-class Matrix3
+struct Matrix3 : public glm::mat<3, 3, T, glm::defaultp>
 {
 public:
-	static constexpr I32 Rows{ 3 };
-	static constexpr I32 Columns{ 3 };
-	static constexpr I32 Elements{ Rows * Columns };
+	using Parent = glm::mat<3, 3, T, glm::defaultp>;
+	using ElementType = T;
+	static constexpr U32 Rows{ 3 };
+	static constexpr U32 Columns{ 3 };
+	static constexpr U32 Elements{ Rows * Columns };
 
-	constexpr Matrix3() : data{ T(1), T(0), T(0), T(0), T(1), T(0), T(0), T(0), T(1) } {}
-	constexpr Matrix3(const Matrix3<T>& m) : data{ m.data[0], m.data[1], m.data[2], m.data[3], m.data[4], m.data[5], m.data[6], m.data[7], m.data[8] } {}
-	template <typename U>
-	constexpr Matrix3(const Matrix3<U>& m) : data{ static_cast<T>(m.data[0]), static_cast<T>(m.data[1]), static_cast<T>(m.data[2]), static_cast<T>(m.data[3]), static_cast<T>(m.data[4]), static_cast<T>(m.data[5]), static_cast<T>(m.data[6]), static_cast<T>(m.data[7]), static_cast<T>(m.data[8]) } {}
-	constexpr Matrix3(const T& a11, const T& a12, const T& a13, const T& a21, const T& a22, const T& a23, const T& a31, const T& a32, const T& a33) : data{ a11, a12, a13, a21, a22, a23, a31, a32, a33 } {}
+	// Constructors
+	constexpr Matrix3() : Parent() {}
+	constexpr Matrix3(const Matrix3<T>& m) : Parent(static_cast<Parent>(m)) {}
+	constexpr explicit Matrix3(T scalar) : Parent(scalar) {}
+	constexpr Matrix3(T x0, T y0, T z0, T x1, T y1, T z1, T x2, T y2, T z2) : Parent(x0, y0, z0, x1, y1, z1, x2, y2, z2) {}
+	constexpr Matrix3(const Vector3<T>& v0, const Vector3<T>& v1, const Vector3<T>& v2) : Parent(static_cast<Vector3<T>::Parent>(v0), static_cast<Vector3<T>::Parent>(v1), static_cast<Vector3<T>::Parent>(v2)) {}
+	template <typename U> 
+	constexpr Matrix3(const Matrix3<U>& m) : Parent(static_cast<Matrix3<U>::Parent>(m)) {}
+	constexpr Matrix3(const Parent& parent) : Parent(parent) {}
+	constexpr Matrix3(const glm::mat<4, 4, T, glm::defaultp>& m) : Parent(m) {}
 	~Matrix3() = default;
 
-	constexpr Matrix3<T>& Set(const Matrix3<T> & m)
-	{
-		data[0] = m.data[0];
-		data[1] = m.data[1];
-		data[2] = m.data[2];
-		data[3] = m.data[3];
-		data[4] = m.data[4];
-		data[5] = m.data[5];
-		data[6] = m.data[6];
-		data[7] = m.data[7];
-		data[8] = m.data[8];
-		return *this;
-	}
-	template <typename U>
-	constexpr Matrix3<T>& Set(const Matrix3<U> & m)
-	{
-		data[0] = static_cast<T>(m.data[0]);
-		data[1] = static_cast<T>(m.data[1]);
-		data[2] = static_cast<T>(m.data[2]);
-		data[3] = static_cast<T>(m.data[3]);
-		data[4] = static_cast<T>(m.data[4]);
-		data[5] = static_cast<T>(m.data[5]);
-		data[6] = static_cast<T>(m.data[6]);
-		data[7] = static_cast<T>(m.data[7]);
-		data[8] = static_cast<T>(m.data[8]);
-		return *this;
-	}
-	constexpr Matrix3<T>& Set(const T * a)
-	{
-		data[0] = a[0];
-		data[1] = a[1];
-		data[2] = a[2];
-		data[3] = a[3];
-		data[4] = a[4];
-		data[5] = a[5];
-		data[6] = a[6];
-		data[7] = a[7];
-		data[8] = a[8];
-		return *this;
-	}
-	constexpr Matrix3<T>& Set(const T & a11, const T & a12, const T & a13, const T & a21, const T & a22, const T & a23, const T & a31, const T & a32, const T & a33)
-	{
-		data[0] = a11;
-		data[1] = a12;
-		data[2] = a13;
-		data[3] = a21;
-		data[4] = a22;
-		data[5] = a23;
-		data[6] = a31;
-		data[7] = a32;
-		data[8] = a33;
-		return *this;
-	}
+	// Operators
+	constexpr Matrix3<T>& operator=(const Matrix3<T>& m) { Parent::operator=(static_cast<Parent>(m)); return *this; }
+	constexpr Matrix3<T> operator+() const { return Matrix3(+static_cast<Parent>(*this)); }
+	constexpr Matrix3<T> operator-() const { return Matrix3(-static_cast<Parent>(*this)); }
+	constexpr Matrix3<T>& operator+=(const Matrix3<T>& m) { Parent::operator+=(static_cast<Parent>(m)); return *this; }
+	constexpr Matrix3<T>& operator-=(const Matrix3<T>& m) { Parent::operator-=(static_cast<Parent>(m)); return *this; }
+	constexpr Matrix3<T>& operator*=(const Matrix3<T>& m) { Parent::operator*=(static_cast<Parent>(m)); return *this; }
+	constexpr Matrix3<T>& operator/=(const Matrix3<T>& m) { Parent::operator/=(static_cast<Parent>(m)); return *this; }
+	constexpr Matrix3<T> operator+(const Matrix3<T>& m) const { return Matrix3(static_cast<Parent>(*this) + static_cast<Parent>(m)); }
+	constexpr Matrix3<T> operator-(const Matrix3<T>& m) const { return Matrix3(static_cast<Parent>(*this) - static_cast<Parent>(m)); }
+	constexpr Matrix3<T> operator*(const Matrix3<T>& m) const { return Matrix3(static_cast<Parent>(*this) * static_cast<Parent>(m)); }
+	constexpr Matrix3<T> operator/(const Matrix3<T>& m) const { return Matrix3(static_cast<Parent>(*this) / static_cast<Parent>(m)); }
+	constexpr Matrix3<T>& operator+=(T scalar) { Parent::operator+=(scalar); return *this; }
+	constexpr Matrix3<T>& operator-=(T scalar) { Parent::operator-=(scalar); return *this; }
+	constexpr Matrix3<T>& operator*=(T scalar) { Parent::operator*=(scalar); return *this; }
+	constexpr Matrix3<T>& operator/=(T scalar) { Parent::operator/=(scalar); return *this; }
+	constexpr Matrix3<T> operator+(T scalar) const { return Matrix3(static_cast<Parent>(*this) + scalar); }
+	constexpr Matrix3<T> operator-(T scalar) const { return Matrix3(static_cast<Parent>(*this) - scalar); }
+	constexpr Matrix3<T> operator*(T scalar) const { return Matrix3(static_cast<Parent>(*this) * scalar); }
+	constexpr Matrix3<T> operator/(T scalar) const { return Matrix3(static_cast<Parent>(*this) / scalar); }
+	constexpr Vector3<T> operator*(const Vector3<T>& v) { return Vector3(static_cast<Parent>(*this) * static_cast<Vector3<T>::Parent>(v)); }
+	constexpr bool operator==(const Matrix3<T>& m) const { return static_cast<Parent>(*this) == static_cast<Parent>(m); }
+	constexpr bool operator!=(const Matrix3<T>& m) const { return static_cast<Parent>(*this) != static_cast<Parent>(m); }
+	bool IsIdentity() const { return glm::isIdentity(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	bool IsOrthogonal() const { return glm::isOrthogonal(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	bool IsNull() const { return glm::isNull(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	bool IsNormalized() const { return glm::isNormalized(static_cast<Parent>(*this), T(Math::Epsilon)); }
 
-	constexpr T& operator[](U32 i) { return data[i]; }
-	constexpr const T& operator[](U32 i) const { return data[i]; }
-	constexpr T& operator()(U32 row, U32 column) { return data[column + Columns * row]; }
-	constexpr const T& operator()(U32 row, U32 column) const { return data[column + Columns * row]; }
+	// Accessors
+	Vector3<T> GetColumn(U32 index) const { return Vector3(glm::column(static_cast<Parent>(*this), static_cast<int>(index))); }
+	Vector3<T> GetRow(U32 index) const { return Vector3(glm::row(static_cast<Parent>(*this), static_cast<int>(index))); }
+	void SetColumn(U32 index, const Vector3<T>& column) { *this = Matrix3(glm::column(static_cast<Parent>(*this), static_cast<int>(index), static_cast<Vector3<T>::Parent>(column))); }
+	void SetRow(U32 index, const Vector3<T>& row) { *this = Matrix3(glm::row(static_cast<Parent>(*this), static_cast<int>(index), static_cast<Vector3<T>::Parent>(row))); }
+	T* GetValuePtr() { return glm::value_ptr(static_cast<Parent>(*this)); }
+	const T* GetValuePtr() const { return glm::value_ptr(static_cast<Parent>(*this)); }
 
-	constexpr Vector3<T> GetColumn(U32 columnIndex) const { return Vector3<T>(data[columnIndex], data[columnIndex + Columns], data[columnIndex + Columns * 2]); }
-	constexpr Vector3<T> GetRow(U32 rowIndex) const { const U32 r = Columns * rowIndex; return Vector3<T>(data[r], data[r + 1], data[r + 2]); }
-	constexpr Matrix3<T>& SetColumn(U32 columnIndex, const Vector3<T> & column)
-	{
-		data[columnIndex] = column.x;
-		data[columnIndex + Columns * 1] = column.y;
-		data[columnIndex + Columns * 2] = column.z;
-		return *this;
-	}
-	constexpr Matrix3<T>& SetRow(U32 rowIndex, const Vector3<T> & row)
-	{
-		const U32 r = Columns * rowIndex;
-		data[r] = row.x;
-		data[r + 1] = row.y;
-		data[r + 2] = row.z;
-		return *this;
-	}
+	// Constants
+	static constexpr Matrix3<T> Identity() { return Matrix3(T(1)); }
+	static Matrix3<T> Diagonal(const Vector3<T>& v) { return Matrix3(glm::diagonal3x3(static_cast<Vector3<T>::Parent>(v))); }
 
-	constexpr Matrix3<T>& operator=(const Matrix3<T> & m) { return Set(m); }
-	constexpr const Matrix3<T>& operator+() const { return *this; }
-	constexpr Matrix3<T> operator-() const { return Matrix3<T>(-data[0], -data[1], -data[2], -data[3], -data[4], -data[5], -data[6], -data[7], -data[8]); }
+	// Operations
+	T GetTrace() const { return (*this)[0][0] + (*this)[1][1] + (*this)[2][2]; }
+	T GetDeterminant() const { return glm::determinant(static_cast<Parent>(*this)); }
+	//Matrix3<T>& AffineInverse() { *this = Matrix3(glm::affineInverse(static_cast<Parent>(*this))); return *this; }
+	//Matrix3<T> AffineInversed() { return Matrix3(glm::affineInverse(static_cast<Parent>(*this))); }
+	Matrix3<T>& Inverse() { *this = Matrix3(glm::inverse(static_cast<Parent>(*this))); return *this; }
+	Matrix3<T> Inversed() const { return Matrix3(glm::inverse(static_cast<Parent>(*this))); }
+	Matrix3<T>& Transpose() { *this = Matrix3(glm::transpose(static_cast<Parent>(*this))); return *this; }
+	Matrix3<T> Transposed() const { return Matrix3(glm::transpose(static_cast<Parent>(*this))); }
+	Matrix3<T>& InverseTranspose() { *this = Matrix3(glm::inverseTranspose(static_cast<Parent>(*this))); return *this; }
+	Matrix3<T> InverseTransposed() { return Matrix3(glm::inverseTranspose(static_cast<Parent>(*this))); }
 
-	constexpr Matrix3<T> operator+(const Matrix3<T> & m) const { return Matrix3<T>(data[0] + m.data[0], data[1] + m.data[1], data[2] + m.data[2], data[3] + m.data[3], data[4] + m.data[4], data[5] + m.data[5], data[6] + m.data[6], data[7] + m.data[7], data[8] + m.data[8]); }
-	constexpr Matrix3<T> operator-(const Matrix3<T> & m) const { return Matrix3<T>(data[0] - m.data[0], data[1] - m.data[1], data[2] - m.data[2], data[3] - m.data[3], data[4] - m.data[4], data[5] - m.data[5], data[6] - m.data[6], data[7] - m.data[7], data[8] - m.data[8]); }
-	constexpr Matrix3<T> operator*(const Matrix3<T> & m) const
-	{
-		Matrix3<T> out;
-		const Vector3<T> r0(GetRow(0));
-		const Vector3<T> r1(GetRow(1));
-		const Vector3<T> r2(GetRow(2));
-		const Vector3<T> c0(m.GetColumn(0));
-		const Vector3<T> c1(m.GetColumn(1));
-		const Vector3<T> c2(m.GetColumn(2));
-		out.data[0] = c0.Dot(r0);
-		out.data[1] = c1.Dot(r0);
-		out.data[2] = c2.Dot(r0);
-		out.data[3] = c0.Dot(r1);
-		out.data[4] = c1.Dot(r1);
-		out.data[5] = c2.Dot(r1);
-		out.data[6] = c0.Dot(r2);
-		out.data[7] = c1.Dot(r2);
-		out.data[8] = c2.Dot(r2);
-		return out;
-	}
-	constexpr Matrix3<T>& operator+=(const Matrix3<T> & m) { data[0] += m.data[0]; data[1] += m.data[1]; data[2] += m.data[2]; data[3] += m.data[3]; data[4] += m.data[4]; data[5] += m.data[5]; data[6] += m.data[6]; data[7] += m.data[7]; data[8] += m.data[8]; return *this; }
-	constexpr Matrix3<T>& operator-=(const Matrix3<T> & m) { data[0] -= m.data[0]; data[1] -= m.data[1]; data[2] -= m.data[2]; data[3] -= m.data[3]; data[4] -= m.data[4]; data[5] -= m.data[5]; data[6] -= m.data[6]; data[7] -= m.data[7]; data[8] -= m.data[8]; return *this; }
-	constexpr Matrix3<T>& operator*=(const Matrix3<T> & m)
-	{
-		const Vector3<T> r0(GetRow(0));
-		const Vector3<T> r1(GetRow(1));
-		const Vector3<T> r2(GetRow(2));
-		const Vector3<T> c0(m.GetColumn(0));
-		const Vector3<T> c1(m.GetColumn(1));
-		const Vector3<T> c2(m.GetColumn(2));
-		data[0] = c0.Dot(r0);
-		data[1] = c1.Dot(r0);
-		data[2] = c2.Dot(r0);
-		data[3] = c0.Dot(r1);
-		data[4] = c1.Dot(r1);
-		data[5] = c2.Dot(r1);
-		data[6] = c0.Dot(r2);
-		data[7] = c1.Dot(r2);
-		data[8] = c2.Dot(r2);
-		return *this;
-	}
+	constexpr Vector3<T> GetForward() const { return (*this) * (ENLIVE_DEFAULT_FORWARD); }
+	constexpr Vector3<T> GetBackward() const { return (*this) * (ENLIVE_DEFAULT_BACKWARD); }
+	constexpr Vector3<T> GetUp() const { return (*this) * (ENLIVE_DEFAULT_UP); }
+	constexpr Vector3<T> GetDown() const { return (*this) * (ENLIVE_DEFAULT_DOWN); }
+	constexpr Vector3<T> GetLeft() const { return (*this) * (ENLIVE_DEFAULT_LEFT); }
+	constexpr Vector3<T> GetRight() const { return (*this) * (ENLIVE_DEFAULT_RIGHT); }
 
-	constexpr Matrix3<T> operator*(const T & s) const { return Matrix3<T>(data[0] * s, data[1] * s, data[2] * s, data[3] * s, data[4] * s, data[5] * s, data[6] * s, data[7] * s, data[8] * s); }
-	constexpr Matrix3<T> operator/(const T & s) const { const T inv = T(1) / s;  return Matrix3<T>(data[0] * inv, data[1] * inv, data[2] * inv, data[3] * inv, data[4] * inv, data[5] * inv, data[6] * inv, data[7] * inv, data[8] * inv); }
-	constexpr Matrix3<T>& operator*=(const T & s) { data[0] *= s; data[1] *= s; data[2] *= s; data[3] *= s; data[4] *= s; data[5] *= s; data[6] *= s; data[7] *= s; data[8] *= s; return *this; }
-	constexpr Matrix3<T>& operator/=(const T & s) { const T inv = T(1) / s; data[0] *= inv; data[1] *= inv; data[2] *= inv; data[3] *= inv; data[4] *= inv; data[5] *= inv; data[6] *= inv; data[7] *= inv; data[8] *= inv; return *this; }
+	static Matrix3<T> RotationX(T angle) { return Rotation(angle, Vector3<T>::UnitX()); }
+	static Matrix3<T> RotationY(T angle) { return Rotation(angle, Vector3<T>::UnitY()); }
+	static Matrix3<T> RotationZ(T angle) { return Rotation(angle, Vector3<T>::UnitZ()); }
+	static Matrix3<T> Rotation(T angle, const Vector3<T>& axis) { return Matrix3(glm::rotate(angle, static_cast<Vector3<T>::Parent>(axis))); }
+	static Matrix3<T> Rotation(T angle, T axisX, T axisY, T axisZ) { return Matrix3(glm::rotate(angle, axisX, axisY, axisZ)); }
 
-	constexpr bool operator==(const Matrix3<T> & m) const
-	{
-		return Math::Equals(data[0], m.data[0])
-			&& Math::Equals(data[1], m.data[1])
-			&& Math::Equals(data[2], m.data[2])
-			&& Math::Equals(data[3], m.data[3])
-			&& Math::Equals(data[4], m.data[4])
-			&& Math::Equals(data[5], m.data[5])
-			&& Math::Equals(data[6], m.data[6])
-			&& Math::Equals(data[7], m.data[7])
-			&& Math::Equals(data[8], m.data[8]);
-	}
-	constexpr bool operator!=(const Matrix3<T> & m) const { return !operator==(m); }
-	constexpr bool IsIdentity() const { return operator==(Identity()); }
-
-	constexpr bool IsOrthonormal() const
-	{
-		return Math::Equals(T(1), GetRow(0).GetSquaredLength())
-			&& Math::Equals(T(1), GetRow(1).GetSquaredLength())
-			&& Math::Equals(T(1), GetRow(2).GetSquaredLength())
-			&& Math::Equals(T(1), GetColumn(0).GetSquaredLength())
-			&& Math::Equals(T(1), GetColumn(1).GetSquaredLength())
-			&& Math::Equals(T(1), GetColumn(2).GetSquaredLength());
-	}
-
-	constexpr T GetTrace() const { return data[0] + data[4] + data[8]; }
-	constexpr T GetDeterminant() const
-	{
-		const T det11 = data[4] * data[8] - data[5] * data[7];
-		const T det12 = data[3] * data[8] - data[5] * data[6];
-		const T det13 = data[3] * data[7] - data[4] * data[6];
-		return data[0] * det11 - data[1] * det12 + data[2] * det13;
-	}
-
-	constexpr Matrix3<T>& Inverse(bool* succeeded = nullptr)
-	{
-		const T det11 = data[4] * data[8] - data[5] * data[7];
-		const T det12 = data[3] * data[8] - data[5] * data[6];
-		const T det13 = data[3] * data[7] - data[4] * data[6];
-		const T det = data[0] * det11 - data[1] * det12 + data[2] * det13;
-		if (Math::Equals(det, T(0)))
-		{
-			if (succeeded != nullptr)
-			{
-				*succeeded = false;
-			}
-			return *this;
-		}
-
-		const T invDet = T(1) / det;
-
-		T inv[9];
-		inv[0] = det11 * invDet;
-		inv[1] = (data[2] * data[7] - data[1] * data[8]) * invDet;
-		inv[2] = (data[1] * data[5] - data[2] * data[4]) * invDet;
-		inv[3] = -det12 * invDet;
-		inv[4] = (data[0] * data[8] - data[2] * data[6]) * invDet;
-		inv[5] = (data[2] * data[3] - data[0] * data[5]) * invDet;
-		inv[6] = det13 * invDet;
-		inv[7] = (data[1] * data[6] - data[0] * data[7]) * invDet;
-		inv[8] = (data[0] * data[4] - data[1] * data[3]) * invDet;
-
-		if (succeeded != nullptr)
-		{
-			*succeeded = true;
-		}
-		return Set(inv);
-	}
-	constexpr Matrix3<T> Inversed(bool* succeeded = nullptr) const
-	{
-		const T det11 = data[4] * data[8] - data[5] * data[7];
-		const T det12 = data[3] * data[8] - data[5] * data[6];
-		const T det13 = data[3] * data[7] - data[4] * data[6];
-		const T det = data[0] * det11 - data[1] * det12 + data[2] * det13;
-		if (Math::Equals(det, T(0)))
-		{
-			if (succeeded != nullptr)
-			{
-				*succeeded = false;
-			}
-			return Identity();
-		}
-
-		const T invDet = T(1) / det;
-
-		Matrix3<T> out;
-		out.data[0] = det11 * invDet;
-		out.data[1] = (data[2] * data[7] - data[1] * data[8]) * invDet;
-		out.data[2] = (data[1] * data[5] - data[2] * data[4]) * invDet;
-		out.data[3] = -det12 * invDet;
-		out.data[4] = (data[0] * data[8] - data[2] * data[6]) * invDet;
-		out.data[5] = (data[2] * data[3] - data[0] * data[5]) * invDet;
-		out.data[6] = det13 * invDet;
-		out.data[7] = (data[1] * data[6] - data[0] * data[7]) * invDet;
-		out.data[8] = (data[0] * data[4] - data[1] * data[3]) * invDet;
-
-		if (succeeded != nullptr)
-		{
-			*succeeded = true;
-		}
-		return out;
-	}
-
-	constexpr Matrix3<T>& Transpose()
-	{
-		T temp = data[1];
-		data[1] = data[3];
-		data[3] = temp;
-		temp = data[2];
-		data[2] = data[6];
-		data[6] = temp;
-		temp = data[5];
-		data[5] = data[7];
-		data[7] = temp;
-		return *this;
-	}
-	constexpr Matrix3<T> Transposed() const { return Matrix3<T>(data[0], data[3], data[6], data[1], data[4], data[7], data[2], data[5], data[8]); }
-
-	constexpr Vector3<T> TransformDirection(const Vector3<T>& direction) const
-	{
-		Vector3<T> out;
-		out.x = GetColumn(0).Dot(direction);
-		out.y = GetColumn(1).Dot(direction);
-		out.z = GetColumn(2).Dot(direction);
-		return out;
-	}
-
-	constexpr Vector3f GetForward() const { return TransformDirection(ENLIVE_DEFAULT_FORWARD); }
-	constexpr Vector3f GetBackward() const { return TransformDirection(ENLIVE_DEFAULT_BACKWARD); }
-	constexpr Vector3f GetUp() const { return TransformDirection(ENLIVE_DEFAULT_UP); }
-	constexpr Vector3f GetDown() const { return TransformDirection(ENLIVE_DEFAULT_DOWN); }
-	constexpr Vector3f GetLeft() const { return TransformDirection(ENLIVE_DEFAULT_LEFT); }
-	constexpr Vector3f GetRight() const { return TransformDirection(ENLIVE_DEFAULT_RIGHT); }
-
-	static constexpr Matrix3<T> RotationX(const T & angle) { return RotationX(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }
-	static constexpr Matrix3<T> RotationY(const T & angle) { return RotationY(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }
-	static constexpr Matrix3<T> RotationZ(const T & angle) { return RotationZ(Vector2<T>(Math::Cos(angle), Math::Sin(angle))); }
-	static constexpr Matrix3<T> RotationX(const Vector2<T> & v) { return Matrix3<T>(T(1), T(0), T(0), T(0), v.x, -v.y, T(0), v.y, v.x); }
-	static constexpr Matrix3<T> RotationY(const Vector2<T> & v) { return Matrix3<T>(v.x, T(0), v.y, T(0), T(1), T(0), -v.y, T(0), v.x); }
-	static constexpr Matrix3<T> RotationZ(const Vector2<T> & v) { return Matrix3<T>(v.x, -v.y, T(0), v.y, v.x, T(0), T(0), T(0), T(1)); }
-
-	static inline Matrix3<T> RotationAxis(const Vector3<T>& axis, const T& angle)
-	{
-		const T length2 = axis.GetSquaredLength();
-		if (length2 < T(Math::Epsilon))
-		{
-			return Matrix3<T>::Identity();
-		}
-
-		const Vector3<T> n = axis * (1.f / Math::FastSqrt(length2));
-		const T s = Math::Sin(angle);
-		const T c = Math::Cos(angle);
-		const T k = 1.f - c;
-
-		const T xx = n.x * n.x * k + c;
-		const T yy = n.y * n.y * k + c;
-		const T zz = n.z * n.z * k + c;
-		const T xy = n.x * n.y * k;
-		const T yz = n.y * n.z * k;
-		const T zx = n.z * n.x * k;
-		const T xs = n.x * s;
-		const T ys = n.y * s;
-		const T zs = n.z * s;
-
-		return Matrix3<T>(xx, xy + zs, zx - ys, xy - zs, yy, yz + xs, zx + ys, yz - xs, zz); // Might be the translated
-	}
-
-	static constexpr Matrix3<T> Zero() { return Matrix3<T>(T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0), T(0)); }
-	static constexpr Matrix3<T> Identity() { return Matrix3<T>(T(1), T(0), T(0), T(0), T(1), T(0), T(0), T(0), T(1)); }
-
-	constexpr T* GetData() { return data; }
-	constexpr const T* GetData() const { return data; }
-
+	// Meta
 	bool Serialize(Serializer& serializer, const char* name);
 	bool Edit(ObjectEditor& objectEditor, const char* name);
-
-private:
-	T data[9];
 };
 
 template <typename T>
@@ -346,10 +107,13 @@ bool Matrix3<T>::Serialize(Serializer& serializer, const char* name)
 	if (serializer.BeginClass(name, TypeInfo<Matrix3<T>>::GetName(), TypeInfo<Matrix3<T>>::GetHash()))
 	{
 		bool ret = true;
-		for (U32 i = 0; i < Matrix3<T>::Elements; ++i)
+		for (U32 row = 0; row < Matrix3<T>::Rows; ++row)
 		{
-			const std::string childName("i" + std::to_string(i));
-			ret = GenericSerialization(serializer, childName.c_str(), data[i]) && ret;
+			for (U32 col = 0; col < Matrix3<T>::Columns; ++col)
+			{
+				const std::string childName("i" + std::to_string(row * Matrix3<T>::Rows + col));
+				ret = GenericSerialization(serializer, childName.c_str(), (*this)[col][row]) && ret;
+			}
 		}
 		ret = serializer.EndClass() && ret;
 		return ret;
@@ -366,13 +130,13 @@ bool Matrix3<T>::Edit(ObjectEditor& objectEditor, const char* name)
 	if (objectEditor.BeginClass(name, TypeInfo<Matrix3<T>>::GetName(), TypeInfo<Matrix3<T>>::GetHash()))
 	{
 		bool ret = false;
-		for (U32 i = 0; i < Matrix3<T>::Rows; ++i)
+		for (U32 row = 0; row < Matrix3<T>::Rows; ++row)
 		{
-			const std::string childName("Row_" + std::to_string(i));
-			Vector3<T> row = GetRow(i);
-			if (GenericEdit(objectEditor, childName.c_str(), row))
+			const std::string childName("Row_" + std::to_string(row));
+			Vector3<T> v = GetRow(row);
+			if (GenericEdit(objectEditor, childName.c_str(), v))
 			{
-				SetRow(i, row);
+				SetRow(row, v);
 				ret = true;
 			}
 		}
