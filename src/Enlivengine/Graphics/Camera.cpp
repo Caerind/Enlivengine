@@ -459,22 +459,24 @@ bool Camera::Edit(ObjectEditor& objectEditor, const char* name)
 
 void Camera::UpdateProjectionMatrix() const
 {
+	// TODO : Use this...
 	const bool homogenousDepth = bgfx::getCaps()->homogeneousDepth;
+
 	const F32 aspect = GetAspect();
 	if (mProjectionMode == ProjectionMode::Perspective)
 	{
-		mProjectionMatrix = Matrix4f::Perspective(mProjectionData.perspective.fov, aspect, mProjectionData.perspective.nearPlane, mProjectionData.perspective.farPlane, homogenousDepth, ENLIVE_DEFAULT_HANDEDNESS);
+		mProjectionMatrix = Matrix4f::Perspective(mProjectionData.perspective.fov, aspect, mProjectionData.perspective.nearPlane, mProjectionData.perspective.farPlane);
 	}
 	else
 	{
-		mProjectionMatrix = Matrix4f::Orthographic(-mProjectionData.orthographic.size * aspect, -mProjectionData.orthographic.size, mProjectionData.orthographic.size * aspect, mProjectionData.orthographic.size, mProjectionData.orthographic.nearPlane, mProjectionData.orthographic.farPlane, homogenousDepth, ENLIVE_DEFAULT_HANDEDNESS);
+		mProjectionMatrix = Matrix4f::Orthographic(-mProjectionData.orthographic.size * aspect, -mProjectionData.orthographic.size, mProjectionData.orthographic.size * aspect, mProjectionData.orthographic.size, mProjectionData.orthographic.nearPlane, mProjectionData.orthographic.farPlane);
 	}
 	mProjectionDirty = false;
 }
 
 void Camera::UpdateViewMatrix() const
 {
-	mViewMatrix = Matrix4f::LookAt(mPosition, mPosition + mRotation.GetForward(), ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+	mViewMatrix = Matrix4f::LookAt(mPosition, mPosition + mRotation.GetForward(), ENLIVE_DEFAULT_UP);
 	mViewDirty = false;
 }
 

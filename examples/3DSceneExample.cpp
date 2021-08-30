@@ -317,6 +317,8 @@ int main(int argc, char** argv)
 	a++;
 	Vector3i b(2.f);
 	Vector3i c = b | a;
+	Matrix3f m;
+	Vector3f d = m[0];
 	//printf("%s\n", ToString(c).c_str());
 
 	Engine::RegisterComponent<StupidShipComponent>();

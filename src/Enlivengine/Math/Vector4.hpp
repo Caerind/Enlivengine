@@ -11,6 +11,7 @@ struct Vector4 : public glm::vec<4, T, glm::defaultp>
 public:
 	using Parent = glm::vec<4, T, glm::defaultp>;
 	using ElementType = T;
+	static constexpr glm::qualifier Precision = glm::defaultp;
 	static constexpr U32 Dim = 4;
 
 	// Constructors
@@ -18,6 +19,7 @@ public:
 	constexpr Vector4(const Vector4<T>& v) : Parent(static_cast<Parent>(v)) {}
 	constexpr explicit Vector4(T scalar) : Parent(scalar) {}
 	constexpr Vector4(T x, T y, T z, T w) : Parent(x, y, z, w) {}
+	constexpr Vector4(const T* data) : Parent(data[0], data[1], data[2], data[3]) {}
 	template <typename Other>
 	constexpr Vector4(const Vector4<Other>& v) : Parent(static_cast<Vector4<Other>::Parent>(v)) {}
 	template <typename OtherA, typename OtherB, typename OtherC, typename OtherD>
@@ -60,8 +62,8 @@ public:
 	const T& operator()(U32 i) const { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
 	T& operator[](U32 i) { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
 	const T& operator[](U32 i) const { if (i == 0) return x; else if (i == 1) return y; else if (i == 2) return z; return w; }
-	T* GetValuePtr() { return glm::value_ptr(static_cast<Parent>(*this)); }
-	const T* GetValuePtr() const { return glm::value_ptr(static_cast<Parent>(*this)); }
+	T* GetData() { return const_cast<T*>(glm::value_ptr(static_cast<Parent>(*this))); }
+	const T* GetData() const { return glm::value_ptr(static_cast<Parent>(*this)); }
 
 	// Constants
 	static constexpr Vector4<T> Unit() { return Vector4<T>(1, 1, 1, 1); }
@@ -77,6 +79,7 @@ public:
 	void Set(const Vector4<Other>& v) { Parent::operator=(static_cast<Vector4<Other>::Parent>(v)); }
 	void Set(T scalar) { x = scalar; y = scalar; z = scalar; w = scalar; }
 	void Set(T _x, T _y, T _z, T _w) { x = _x; y = _y; z = _z; w = _w; }
+	void Set(const T* data) { x = data[0]; y = data[1]; z = data[2]; w = data[3]; }
 	template <typename OtherA, typename OtherB, typename OtherC, typename OtherD>
 	void Set(OtherA _x, OtherB _y, OtherC _z, OtherD _w) { x = static_cast<T>(_x); y = static_cast<T>(_y); z = static_cast<T>(_z); w = static_cast<T>(_w); }
 	void Set(const Vector3<T>& v, T _w) { x = v.x; y = v.y; z = v.z; w = _w; }
@@ -85,12 +88,18 @@ public:
 	T GetSquaredLength() const { return glm::length2(static_cast<Parent>(*this)); }
 	T GetLength() const { return glm::length(static_cast<Parent>(*this)); }
 	bool IsNormalized() const { return glm::isNormalized(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	Vector4<T>& FastNormalize() { *this = Vector4(glm::fastNormalize(static_cast<Parent>(*this))); return *this; }
+	Vector4<T> FastNormalized() const { return Vector4(glm::fastNormalize(static_cast<Parent>(*this))); }
 	Vector4<T>& Normalize() { *this = Vector4(glm::normalize(static_cast<Parent>(*this))); return *this; }
 	Vector4<T> Normalized() const { return Vector4(glm::normalize(static_cast<Parent>(*this))); }
 
 	// Operations
 	constexpr T Dot(const Vector4<T>& v) const { return glm::dot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
 	static constexpr T Dot(const Vector4<T>& v1, const Vector4<T>& v2) { return glm::dot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
+	T FastNormalizeDot(const Vector4<T>& v) const { return glm::fastNormalizeDot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
+	static T FastNormalizeDot(const Vector4<T>& v1, const Vector4<T>& v2) { return glm::fastNormalizeDot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
+	T NormalizeDot(const Vector4<T>& v) const { return glm::normalizeDot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
+	static T NormalizeDot(const Vector4<T>& v1, const Vector4<T>& v2) { return glm::normalizeDot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
 	static bool AreCollinear(const Vector4<T>& v1, const Vector4<T>& v2) { return glm::areCollinear(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
 	static bool AreOrthogonal(const Vector4<T>& v1, const Vector4<T>& v2) { return glm::areOrthogonal(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
 	static bool AreOrthonormal(const Vector4<T>& v1, const Vector4<T>& v2) { return glm::areOrthonormal(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }

@@ -43,7 +43,7 @@ const Matrix4f& CameraComponent::GetViewMatrix() const
 		const Matrix4f& entityMatrix = GetEntityMatrix();
 		const Vector3f position = entityMatrix.TransformPoint(GetPosition());
 		const Vector3f direction = entityMatrix.TransformDirection(GetRotation().GetForward());
-		mViewMatrix = Matrix4f::LookAt(position, position + direction, ENLIVE_DEFAULT_UP, ENLIVE_DEFAULT_HANDEDNESS);
+		mViewMatrix = Matrix4f::LookAt(position, position + direction, ENLIVE_DEFAULT_UP);
 	}
 	return mViewMatrix;
 }

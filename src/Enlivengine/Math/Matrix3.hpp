@@ -15,6 +15,10 @@ struct Matrix3 : public glm::mat<3, 3, T, glm::defaultp>
 public:
 	using Parent = glm::mat<3, 3, T, glm::defaultp>;
 	using ElementType = T;
+	static constexpr glm::qualifier Precision = glm::defaultp;
+	using ColumnType = Vector3<T>;
+	using RowType = Vector3<T>;
+	using TransposeType = Matrix3<T>;
 	static constexpr U32 Rows{ 3 };
 	static constexpr U32 Columns{ 3 };
 	static constexpr U32 Elements{ Rows * Columns };
@@ -24,11 +28,12 @@ public:
 	constexpr Matrix3(const Matrix3<T>& m) : Parent(static_cast<Parent>(m)) {}
 	constexpr explicit Matrix3(T scalar) : Parent(scalar) {}
 	constexpr Matrix3(T x0, T y0, T z0, T x1, T y1, T z1, T x2, T y2, T z2) : Parent(x0, y0, z0, x1, y1, z1, x2, y2, z2) {}
-	constexpr Matrix3(const Vector3<T>& v0, const Vector3<T>& v1, const Vector3<T>& v2) : Parent(static_cast<Vector3<T>::Parent>(v0), static_cast<Vector3<T>::Parent>(v1), static_cast<Vector3<T>::Parent>(v2)) {}
+	constexpr Matrix3(const T* data) : Parent(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]) {}
+	constexpr Matrix3(const Vector3<T>& col0, const Vector3<T>& col1, const Vector3<T>& col2) : Parent(static_cast<Vector3<T>::Parent>(col0), static_cast<Vector3<T>::Parent>(col1), static_cast<Vector3<T>::Parent>(col2)) {}
 	template <typename U> 
 	constexpr Matrix3(const Matrix3<U>& m) : Parent(static_cast<Matrix3<U>::Parent>(m)) {}
 	constexpr Matrix3(const Parent& parent) : Parent(parent) {}
-	constexpr Matrix3(const glm::mat<4, 4, T, glm::defaultp>& m) : Parent(m) {}
+	constexpr Matrix3(const glm::mat<4, 4, T, Precision>& m) : Parent(m) {}
 	~Matrix3() = default;
 
 	// Operators
@@ -51,7 +56,7 @@ public:
 	constexpr Matrix3<T> operator-(T scalar) const { return Matrix3(static_cast<Parent>(*this) - scalar); }
 	constexpr Matrix3<T> operator*(T scalar) const { return Matrix3(static_cast<Parent>(*this) * scalar); }
 	constexpr Matrix3<T> operator/(T scalar) const { return Matrix3(static_cast<Parent>(*this) / scalar); }
-	constexpr Vector3<T> operator*(const Vector3<T>& v) { return Vector3(static_cast<Parent>(*this) * static_cast<Vector3<T>::Parent>(v)); }
+	constexpr Vector3<T> operator*(const Vector3<T>& v) const { return Vector3(static_cast<Parent>(*this) * static_cast<Vector3<T>::Parent>(v)); }
 	constexpr bool operator==(const Matrix3<T>& m) const { return static_cast<Parent>(*this) == static_cast<Parent>(m); }
 	constexpr bool operator!=(const Matrix3<T>& m) const { return static_cast<Parent>(*this) != static_cast<Parent>(m); }
 	bool IsIdentity() const { return glm::isIdentity(static_cast<Parent>(*this), T(Math::Epsilon)); }
@@ -64,8 +69,8 @@ public:
 	Vector3<T> GetRow(U32 index) const { return Vector3(glm::row(static_cast<Parent>(*this), static_cast<int>(index))); }
 	void SetColumn(U32 index, const Vector3<T>& column) { *this = Matrix3(glm::column(static_cast<Parent>(*this), static_cast<int>(index), static_cast<Vector3<T>::Parent>(column))); }
 	void SetRow(U32 index, const Vector3<T>& row) { *this = Matrix3(glm::row(static_cast<Parent>(*this), static_cast<int>(index), static_cast<Vector3<T>::Parent>(row))); }
-	T* GetValuePtr() { return glm::value_ptr(static_cast<Parent>(*this)); }
-	const T* GetValuePtr() const { return glm::value_ptr(static_cast<Parent>(*this)); }
+	T* GetData() { return const_cast<T*>(glm::value_ptr(static_cast<Parent>(*this))); }
+	const T* GetData() const { return glm::value_ptr(static_cast<Parent>(*this)); }
 
 	// Constants
 	static constexpr Matrix3<T> Identity() { return Matrix3(T(1)); }
@@ -83,6 +88,7 @@ public:
 	Matrix3<T>& InverseTranspose() { *this = Matrix3(glm::inverseTranspose(static_cast<Parent>(*this))); return *this; }
 	Matrix3<T> InverseTransposed() { return Matrix3(glm::inverseTranspose(static_cast<Parent>(*this))); }
 
+	// Directions
 	constexpr Vector3<T> GetForward() const { return (*this) * (ENLIVE_DEFAULT_FORWARD); }
 	constexpr Vector3<T> GetBackward() const { return (*this) * (ENLIVE_DEFAULT_BACKWARD); }
 	constexpr Vector3<T> GetUp() const { return (*this) * (ENLIVE_DEFAULT_UP); }
@@ -90,11 +96,16 @@ public:
 	constexpr Vector3<T> GetLeft() const { return (*this) * (ENLIVE_DEFAULT_LEFT); }
 	constexpr Vector3<T> GetRight() const { return (*this) * (ENLIVE_DEFAULT_RIGHT); }
 
+	// Rotations
 	static Matrix3<T> RotationX(T angle) { return Rotation(angle, Vector3<T>::UnitX()); }
 	static Matrix3<T> RotationY(T angle) { return Rotation(angle, Vector3<T>::UnitY()); }
 	static Matrix3<T> RotationZ(T angle) { return Rotation(angle, Vector3<T>::UnitZ()); }
 	static Matrix3<T> Rotation(T angle, const Vector3<T>& axis) { return Matrix3(glm::rotate(angle, static_cast<Vector3<T>::Parent>(axis))); }
 	static Matrix3<T> Rotation(T angle, T axisX, T axisY, T axisZ) { return Matrix3(glm::rotate(angle, axisX, axisY, axisZ)); }
+
+	// AngleAxis
+	void ToAngleAxis(Vector3<T>& axis, T& angle) const { glm::axisAngle(glm::mat<4, 4, T, Precision>(static_cast<Parent>(*this)), static_cast<Vector3<T>::Parent>(axis), angle); }
+	void FromAngleAxis(const Vector3<T>& axis, T angle) { *this = Matrix3(glm::axisAngleMatrix(static_cast<Vector3<T>::Parent>(axis), angle)); }
 
 	// Meta
 	bool Serialize(Serializer& serializer, const char* name);

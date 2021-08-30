@@ -58,6 +58,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////
 
+// TODO : GLM update
 // Engine default axes
 #define ENLIVE_DEFAULT_HANDEDNESS en::Math::Handedness::Right
 #define ENLIVE_DEFAULT_UP en::Vector3f::UnitY()

@@ -5,6 +5,7 @@
 #include <glm/gtx/vector_query.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/compatibility.hpp>
+#include <glm/gtx/normalize_dot.hpp>
 
 namespace en
 {
@@ -15,6 +16,7 @@ struct Vector2 : public glm::vec<2, T, glm::defaultp>
 public:
 	using Parent = glm::vec<2, T, glm::defaultp>;
 	using ElementType = T;
+	static constexpr glm::qualifier Precision = glm::defaultp;
 	static constexpr U32 Dim = 2;
 
 	// Constructors
@@ -22,6 +24,7 @@ public:
 	constexpr Vector2(const Vector2<T>& v) : Parent(static_cast<Parent>(v)) {}
 	constexpr explicit Vector2(T scalar) : Parent(scalar) {}
 	constexpr Vector2(T x, T y) : Parent(x, y) {}
+	constexpr Vector2(const T* data) : Parent(data[0], data[1]) {}
 	template <typename Other>
 	constexpr Vector2(const Vector2<Other>& v) : Parent(static_cast<Vector2<Other>::Parent>(v)) {}
 	template <typename OtherA, typename OtherB>
@@ -63,8 +66,8 @@ public:
 	const T& operator()(U32 i) const { if (i == 0) return x; return y; }
 	T& operator[](U32 i) { if (i == 0) return x; return y; }
 	const T& operator[](U32 i) const { if (i == 0) return x; return y; }
-	T* GetValuePtr() { return glm::value_ptr(static_cast<Parent>(*this)); }
-	const T* GetValuePtr() const { return glm::value_ptr(static_cast<Parent>(*this)); }
+	T* GetData() { return const_cast<T*>(glm::value_ptr(static_cast<Parent>(*this))); }
+	const T* GetData() const { return glm::value_ptr(static_cast<Parent>(*this)); }
 
 	// Constants
 	static constexpr Vector2<T> Unit() { return Vector2<T>(1, 1); }
@@ -78,6 +81,7 @@ public:
 	void Set(const Vector2<Other>& v) { Parent::operator=(static_cast<Vector2<Other>::Parent>(v)); }
 	void Set(T scalar) { x = scalar; y = scalar; }
 	void Set(T _x, T _y) { x = _x; y = _y; }
+	void Set(const T* data) { x = data[0]; y = data[1]; }
 	template <typename OtherA, typename OtherB>
 	void Set(OtherA _x, OtherB _y) { x = static_cast<T>(_x); y = static_cast<T>(_y); }
 
@@ -85,12 +89,18 @@ public:
 	T GetSquaredLength() const { return glm::length2(static_cast<Parent>(*this)); }
 	T GetLength() const { return glm::length(static_cast<Parent>(*this)); }
 	bool IsNormalized() const { return glm::isNormalized(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	Vector2<T>& FastNormalize() { *this = Vector2(glm::fastNormalize(static_cast<Parent>(*this))); return *this; }
+	Vector2<T> FastNormalized() const { return Vector2(glm::fastNormalize(static_cast<Parent>(*this))); }
 	Vector2<T>& Normalize() { *this = Vector2(glm::normalize(static_cast<Parent>(*this))); return *this; }
 	Vector2<T> Normalized() const { return Vector2(glm::normalize(static_cast<Parent>(*this))); }
 
 	// Operations
 	constexpr T Dot(const Vector2<T>& v) const { return glm::dot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
 	static constexpr T Dot(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::dot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
+	T FastNormalizeDot(const Vector2<T>& v) const { return glm::fastNormalizeDot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
+	static T FastNormalizeDot(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::fastNormalizeDot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
+	T NormalizeDot(const Vector2<T>& v) const { return glm::normalizeDot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
+	static T NormalizeDot(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::normalizeDot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
 	static bool AreCollinear(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::areCollinear(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
 	static bool AreOrthogonal(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::areOrthogonal(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }
 	static bool AreOrthonormal(const Vector2<T>& v1, const Vector2<T>& v2) { return glm::areOrthonormal(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }

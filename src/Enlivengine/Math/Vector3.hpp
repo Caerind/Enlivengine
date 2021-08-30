@@ -11,6 +11,7 @@ struct Vector3 : public glm::vec<3, T, glm::defaultp>
 public:
 	using Parent = glm::vec<3, T, glm::defaultp>;
 	using ElementType = T;
+	static constexpr glm::qualifier Precision = glm::defaultp;
 	static constexpr U32 Dim = 3;
 
 	// Constructors
@@ -18,6 +19,7 @@ public:
 	constexpr Vector3(const Vector3<T>& v) : Parent(static_cast<Parent>(v)) {}
 	constexpr explicit Vector3(T scalar) : Parent(scalar) {}
 	constexpr Vector3(T x, T y, T z) : Parent(x, y, z) {}
+	constexpr Vector3(const T* data) : Parent(data[0], data[1], data[2]) {}
 	template <typename Other>
 	constexpr Vector3(const Vector3<Other>& v) : Parent(static_cast<Vector3<Other>::Parent>(v)) {}
 	template <typename OtherA, typename OtherB, typename OtherC>
@@ -60,8 +62,8 @@ public:
 	const T& operator()(U32 i) const { if (i == 0) return x; else if (i == 1) return y; return z; }
 	T& operator[](U32 i) { if (i == 0) return x; else if (i == 1) return y; return z; }
 	const T& operator[](U32 i) const { if (i == 0) return x; else if (i == 1) return y; return z; }
-	T* GetValuePtr() { return glm::value_ptr(static_cast<Parent>(*this)); }
-	const T* GetValuePtr() const { return glm::value_ptr(static_cast<Parent>(*this)); }
+	T* GetData() { return const_cast<T*>(glm::value_ptr(static_cast<Parent>(*this))); }
+	const T* GetData() const { return glm::value_ptr(static_cast<Parent>(*this)); }
 
 	// Constants
 	static constexpr Vector3<T> Unit() { return Vector3<T>(1, 1, 1); }
@@ -76,6 +78,7 @@ public:
 	void Set(const Vector3<Other>& v) { Parent::operator=(static_cast<Vector3<Other>::Parent>(v)); }
 	void Set(T scalar) { x = scalar; y = scalar; z = scalar; }
 	void Set(T _x, T _y, T _z) { x = _x; y = _y; z = _z; }
+	void Set(const T* data) { x = data[0]; y = data[1]; z = data[2]; }
 	template <typename OtherA, typename OtherB, typename OtherC>
 	void Set(OtherA _x, OtherB _y, OtherC _z) { x = static_cast<T>(_x); y = static_cast<T>(_y); static_cast<T>(_z); }
 	void Set(const Vector2<T>& v, T _z) { x = v.x; y = v.y; z = _z; }
@@ -84,12 +87,18 @@ public:
 	T GetSquaredLength() const { return glm::length2(static_cast<Parent>(*this)); }
 	T GetLength() const { return glm::length(static_cast<Parent>(*this)); }
 	bool IsNormalized() const { return glm::isNormalized(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	Vector3<T>& FastNormalize() { *this = Vector3(glm::fastNormalize(static_cast<Parent>(*this))); return *this; }
+	Vector3<T> FastNormalized() const { return Vector3(glm::fastNormalize(static_cast<Parent>(*this))); }
 	Vector3<T>& Normalize() { *this = Vector3(glm::normalize(static_cast<Parent>(*this))); return *this; }
 	Vector3<T> Normalized() const { return Vector3(glm::normalize(static_cast<Parent>(*this))); }
 
 	// Operations
 	constexpr T Dot(const Vector3<T>& v) const { return glm::dot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
 	static constexpr T Dot(const Vector3<T>& v1, const Vector3<T>& v2) { return glm::dot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
+	T FastNormalizeDot(const Vector3<T>& v) const { return glm::fastNormalizeDot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
+	static T FastNormalizeDot(const Vector3<T>& v1, const Vector3<T>& v2) { return glm::fastNormalizeDot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
+	T NormalizeDot(const Vector3<T>& v) const { return glm::normalizeDot(static_cast<Parent>(*this), static_cast<Parent>(v)); }
+	static T NormalizeDot(const Vector3<T>& v1, const Vector3<T>& v2) { return glm::normalizeDot(static_cast<Parent>(v1), static_cast<Parent>(v2)); }
 	constexpr Vector3<T> Cross(const Vector3<T>& v) const { return Vector3(glm::cross(static_cast<Parent>(*this), static_cast<Parent>(v))); }
 	static constexpr Vector3<T> Cross(const Vector3<T>& v1, const Vector3<T>& v2) { return Vector3(glm::cross(static_cast<Parent>(v1), static_cast<Parent>(v2))); }
 	static bool AreCollinear(const Vector3<T>& v1, const Vector3<T>& v2) { return glm::areCollinear(static_cast<Parent>(v1), static_cast<Parent>(v2), T(Math::Epsilon)); }

@@ -125,7 +125,7 @@ void ImGuiEditor::Display()
 					world->GetDebugDraw().DrawTransform(parentMtx);
 					if (ImGuizmo::IsUsing())
 					{
-						const Matrix4f result = Matrix4f::Identity().Set(mtxData) * parentMtx.Inversed();
+						const Matrix4f result = Matrix4f(mtxData) * parentMtx.Inversed();
 						transform.SetTransform(result.GetTranslation(), result.GetRotation(), result.GetScale());
 					}
 				}
@@ -269,7 +269,7 @@ void ImGuiEditor::Display()
 				ImGuizmo::ViewManipulate(viewMtx, 8.0f, ImVec2(mViewRect.GetMin().x + mViewRect.GetSize().x - manipulatorSize, mViewRect.GetMin().y), ImVec2(manipulatorSize, manipulatorSize), 0x10101010);
 				if (std::memcmp(viewMtx, viewMtxR, sizeof(float) * 16) != 0)
 				{
-					const Matrix4f iMtx = Matrix4f::Identity().Set(viewMtx).Inversed();
+					const Matrix4f iMtx = Matrix4f(viewMtx).Inversed();
 					const Matrix3f rot = Matrix3f(-1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f) * iMtx.GetRotation(); // Don't exactly know why, but it seems we need to negate X too...
 
 					mCamera.SetPosition(iMtx.GetTranslation());
