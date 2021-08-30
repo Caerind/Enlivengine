@@ -200,6 +200,14 @@ bool Vector4<T>::Edit(ObjectEditor& objectEditor, const char* name)
 	}
 }
 
+/*
+template <typename T>
+std::string ToString<Vector4<T>>(const Vector4<T>& v)
+{
+	return glm::to_string(static_cast<Vector4<T>::Parent>(v));
+}
+*/
+
 typedef Vector4<F32> Vector4f;
 typedef Vector4<F64> Vector4d;
 typedef Vector4<I32> Vector4i;

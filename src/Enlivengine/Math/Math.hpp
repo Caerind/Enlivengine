@@ -8,6 +8,7 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/fast_square_root.hpp>
 #include <glm/gtx/fast_trigonometry.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Assert.hpp>

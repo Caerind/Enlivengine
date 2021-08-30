@@ -196,6 +196,14 @@ bool Vector3<T>::Edit(ObjectEditor& objectEditor, const char* name)
 	}
 }
 
+/*
+template <typename T>
+std::string ToString<Vector3<T>>(const Vector3<T>& v)
+{
+	return glm::to_string(static_cast<Vector3<T>::Parent>(v));
+}
+*/
+
 typedef Vector3<F32> Vector3f;
 typedef Vector3<F64> Vector3d;
 typedef Vector3<I32> Vector3i;

@@ -103,8 +103,8 @@ public:
 	static Matrix4<T> RotationX(T angle) { return RotationAxis(angle, Vector4<T>::UnitX()); }
 	static Matrix4<T> RotationY(T angle) { return RotationAxis(angle, Vector4<T>::UnitY()); }
 	static Matrix4<T> RotationZ(T angle) { return RotationAxis(angle, Vector4<T>::UnitZ()); }
-	static Matrix4<T> RotationAxis(T angle, const Vector3<T>& axis) { return Matrix4(glm::rotate(angle, static_cast<Vector3<T>::Parent>(axis))); }
-	static Matrix4<T> RotationAxis(T angle, T axisX, T axisY, T axisZ) { return Matrix4(glm::rotate(angle, axisX, axisY, axisZ)); }
+	static Matrix4<T> RotationAxis(T angle, const Vector3<T>& axis) { return Matrix4(glm::rotate(angle * T(Math::kDegToRad), static_cast<Vector3<T>::Parent>(axis))); }
+	static Matrix4<T> RotationAxis(T angle, T axisX, T axisY, T axisZ) { return Matrix4(glm::rotate(angle * T(Math::kDegToRad), axisX, axisY, axisZ)); }
 	static Matrix4<T> Scale(const Vector3<T>& scale) { return Matrix4(glm::scale(static_cast<Vector3<T>::Parent>(scale))); }
 	static Matrix4<T> Scale(T sx, T sy, T sz) { return Scale(Vector3<T>(sx, sy, sz)); }
 	static Matrix4<T> Scale(T s) { return Scale(Vector3<T>(s)); }
@@ -144,14 +144,10 @@ public:
 	//Quaternion<T> GetQuaternion() const { return Quaternion<T>(glm::quat_cast(static_cast<Parent>(*this))); }
 	//void ApplyQuaternion(const Quaternion<T>& quaternion) { ApplyRotation(Rotation(quaternion)); }
 
-	// AngleAxis
-	void ToAngleAxis(Vector3<T>& axis, T& angle) const { glm::axisAngle(static_cast<Parent>(*this), static_cast<Vector3<T>::Parent>(axis), angle); }
-	void FromAngleAxis(const Vector3<T>& axis, T angle) { *this = Matrix4(glm::axisAngleMatrix(static_cast<Vector3<T>::Parent>(axis), angle)); }
-
 	// View/Projection
-	static Matrix4<T> Perspective(T fov, T aspect, T nearPlane, T farPlane) { return Matrix4(glm::perspective(fov, aspect, nearPlane, farPlane)); }
-	static Matrix4<T> Perspective(T fov, T width, T height, T nearPlane, T farPlane) { return Matrix4(glm::perspectiveFov(fov, width, height, nearPlane, farPlane)); }
-	static Matrix4<T> InfinitePerspective(T fov, T aspect, T nearPlane) { return Matrix4(glm::infinitePerspective(fov, aspect, nearPlane)); }
+	static Matrix4<T> Perspective(T fov, T aspect, T nearPlane, T farPlane) { return Matrix4(glm::perspective(fov * T(Math::kDegToRad), aspect, nearPlane, farPlane)); }
+	static Matrix4<T> Perspective(T fov, T width, T height, T nearPlane, T farPlane) { return Matrix4(glm::perspectiveFov(fov * T(Math::kDegToRad), width, height, nearPlane, farPlane)); }
+	static Matrix4<T> InfinitePerspective(T fov, T aspect, T nearPlane) { return Matrix4(glm::infinitePerspective(fov * T(Math::kDegToRad), aspect, nearPlane)); }
 	static Matrix4<T> Orthographic(T left, T top, T right, T bottom) { return Matrix4(glm::ortho(left, top, right, bottom)); }
 	static Matrix4<T> Orthographic(T left, T top, T right, T bottom, T nearPlane, T farPlane) { return Matrix4(glm::ortho(left, top, right, bottom, nearPlane, farPlane)); }
 	static Matrix4<T> LookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up) { return Matrix4(glm::lookAt(static_cast<Vector3<T>::Parent>(eye), static_cast<Vector3<T>::Parent>(target), static_cast<Vector3<T>::Parent>(up))); }
@@ -159,6 +155,10 @@ public:
 	// Meta
 	bool Serialize(Serializer& serializer, const char* name);
 	bool Edit(ObjectEditor& objectEditor, const char* name);
+
+protected:
+	typename Parent::col_type& operator[](typename Parent::length_type i) { return Parent::operator[](i); }
+	typename Parent::col_type const& operator[](typename Parent::length_type i) const { return Parent::operator[](i); }
 };
 
 template <typename T>
@@ -167,10 +167,13 @@ bool Matrix4<T>::Serialize(Serializer& serializer, const char* name)
 	if (serializer.BeginClass(name, TypeInfo<Matrix4<T>>::GetName(), TypeInfo<Matrix4<T>>::GetHash()))
 	{
 		bool ret = true;
-		for (U32 i = 0; i < Matrix4<T>::Elements; ++i)
+		for (U32 row = 0; row < Matrix4<T>::Rows; ++row)
 		{
-			const std::string childName("i" + std::to_string(i));
-			ret = GenericSerialization(serializer, childName.c_str(), data[i]) && ret;
+			for (U32 col = 0; col < Matrix4<T>::Columns; ++col)
+			{
+				const std::string childName("i" + std::to_string(row * Matrix3<T>::Rows + col));
+				ret = GenericSerialization(serializer, childName.c_str(), (*this)[col][row]) && ret;
+			}
 		}
 		ret = serializer.EndClass() && ret;
 		return ret;
@@ -187,13 +190,13 @@ bool Matrix4<T>::Edit(ObjectEditor& objectEditor, const char* name)
 	if (objectEditor.BeginClass(name, TypeInfo<Matrix4<T>>::GetName(), TypeInfo<Matrix4<T>>::GetHash()))
 	{
 		bool ret = false;
-		for (U32 i = 0; i < Matrix4<T>::Rows; ++i)
+		for (U32 row = 0; row < Matrix4<T>::Rows; ++row)
 		{
-			const std::string childName("Row_" + std::to_string(i));
-			Vector4<T> row = GetRow(i);
-			if (GenericEdit(objectEditor, childName.c_str(), row))
+			const std::string childName("Row_" + std::to_string(row));
+			Vector4<T> v = GetRow(row);
+			if (GenericEdit(objectEditor, childName.c_str(), v))
 			{
-				SetRow(i, row);
+				SetRow(row, v);
 				ret = true;
 			}
 		}
@@ -205,6 +208,14 @@ bool Matrix4<T>::Edit(ObjectEditor& objectEditor, const char* name)
 		return false;
 	}
 }
+
+/*
+template <typename T>
+std::string ToString<Matrix4<T>>(const Matrix4<T>& v)
+{
+	return glm::to_string(static_cast<Matrix4<T>::Parent>(v));
+}
+*/
 
 typedef Matrix4<F32> Matrix4f;
 

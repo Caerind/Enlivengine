@@ -118,8 +118,8 @@ public:
 	T GetPolarAngle() const { return Math::Atan2(x, y); }
 	Vector2<T>& SetPolarAngle(T angle) { const T length = GetLength(); x = Math::Cos(angle) * length; y = Math::Sin(angle) * length; return *this; }
 	static Vector2<T> Polar(T angle, T length = T(1)) { return Vector2<T>(Math::Cos(angle) * length, Math::Sin(angle) * length); }
-	Vector2<T>& Rotate(T angle) { *this = Vector2(glm::rotate(static_cast<Parent>(*this), angle)); return *this; }
-	Vector2<T> Rotated(const T& angle) const { return Vector2(glm::rotate(static_cast<Parent>(*this), angle)); }
+	Vector2<T>& Rotate(T angle) { *this = Vector2(glm::rotate(static_cast<Parent>(*this), angle * T(Math::kDegToRad))); return *this; }
+	Vector2<T> Rotated(const T& angle) const { return Vector2(glm::rotate(static_cast<Parent>(*this), angle * T(Math::kDegToRad))); }
 
 	// Meta
 	bool Serialize(Serializer& serializer, const char* name);
@@ -193,6 +193,14 @@ bool Vector2<T>::Edit(ObjectEditor& objectEditor, const char* name)
 		return ret;
 	}
 }
+
+/*
+template <typename T>
+std::string ToString<Vector2<T>>(const Vector2<T>& v)
+{
+	return glm::to_string(static_cast<Vector2<T>::Parent>(v));
+}
+*/
 
 typedef Vector2<F32> Vector2f;
 typedef Vector2<F64> Vector2d;

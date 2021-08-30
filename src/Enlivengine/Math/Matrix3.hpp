@@ -79,8 +79,6 @@ public:
 	// Operations
 	T GetTrace() const { return (*this)[0][0] + (*this)[1][1] + (*this)[2][2]; }
 	T GetDeterminant() const { return glm::determinant(static_cast<Parent>(*this)); }
-	//Matrix3<T>& AffineInverse() { *this = Matrix3(glm::affineInverse(static_cast<Parent>(*this))); return *this; }
-	//Matrix3<T> AffineInversed() { return Matrix3(glm::affineInverse(static_cast<Parent>(*this))); }
 	Matrix3<T>& Inverse() { *this = Matrix3(glm::inverse(static_cast<Parent>(*this))); return *this; }
 	Matrix3<T> Inversed() const { return Matrix3(glm::inverse(static_cast<Parent>(*this))); }
 	Matrix3<T>& Transpose() { *this = Matrix3(glm::transpose(static_cast<Parent>(*this))); return *this; }
@@ -100,16 +98,20 @@ public:
 	static Matrix3<T> RotationX(T angle) { return Rotation(angle, Vector3<T>::UnitX()); }
 	static Matrix3<T> RotationY(T angle) { return Rotation(angle, Vector3<T>::UnitY()); }
 	static Matrix3<T> RotationZ(T angle) { return Rotation(angle, Vector3<T>::UnitZ()); }
-	static Matrix3<T> Rotation(T angle, const Vector3<T>& axis) { return Matrix3(glm::rotate(angle, static_cast<Vector3<T>::Parent>(axis))); }
-	static Matrix3<T> Rotation(T angle, T axisX, T axisY, T axisZ) { return Matrix3(glm::rotate(angle, axisX, axisY, axisZ)); }
+	static Matrix3<T> Rotation(T angle, const Vector3<T>& axis) { return Matrix3(glm::rotate(angle * T(Math::kDegToRad), static_cast<Vector3<T>::Parent>(axis))); }
+	static Matrix3<T> Rotation(T angle, T axisX, T axisY, T axisZ) { return Matrix3(glm::rotate(angle * T(Math::kDegToRad), axisX, axisY, axisZ)); }
 
 	// AngleAxis
-	void ToAngleAxis(Vector3<T>& axis, T& angle) const { glm::axisAngle(glm::mat<4, 4, T, Precision>(static_cast<Parent>(*this)), static_cast<Vector3<T>::Parent>(axis), angle); }
-	void FromAngleAxis(const Vector3<T>& axis, T angle) { *this = Matrix3(glm::axisAngleMatrix(static_cast<Vector3<T>::Parent>(axis), angle)); }
+	void ToAngleAxis(Vector3<T>& axis, T& angle) const { glm::axisAngle(glm::mat<4, 4, T, Precision>(static_cast<Parent>(*this)), static_cast<Vector3<T>::Parent>(axis), angle); angle *= T(Math::kRadToDeg); }
+	void FromAngleAxis(const Vector3<T>& axis, T angle) { *this = Matrix3(glm::axisAngleMatrix(static_cast<Vector3<T>::Parent>(axis), angle * T(Math::kDegToRad))); }
 
 	// Meta
 	bool Serialize(Serializer& serializer, const char* name);
 	bool Edit(ObjectEditor& objectEditor, const char* name);
+
+protected:
+	typename Parent::col_type& operator[](typename Parent::length_type i) { return Parent::operator[](i); }
+	typename Parent::col_type const& operator[](typename Parent::length_type i) const { return Parent::operator[](i); }
 };
 
 template <typename T>
@@ -159,6 +161,14 @@ bool Matrix3<T>::Edit(ObjectEditor& objectEditor, const char* name)
 		return false;
 	}
 }
+
+/*
+template <typename T>
+std::string ToString<Matrix3<T>>(const Matrix3<T>& v)
+{
+	return glm::to_string(static_cast<Matrix3<T>::Parent>(v));
+}
+*/
 
 typedef Matrix3<F32> Matrix3f;
 
