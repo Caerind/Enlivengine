@@ -83,7 +83,7 @@ public:
 	}
 	inline T GetDistance(const Vector2<T>& point) const
 	{
-		return Math::FastSqrt(GetSquaredDistance(point));
+		return Math::Sqrt(GetSquaredDistance(point));
 	}
 
 	constexpr bool Contains(T x, T y) const

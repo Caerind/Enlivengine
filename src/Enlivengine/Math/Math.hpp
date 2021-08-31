@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#define GLM_FORCE_XYZW_ONLY // Otherwise, there are unions that makes debugger less clear
 #define GLM_FORCE_SILENT_WARNINGS
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -42,6 +43,8 @@ public:
 
 	template <typename T>
 	static constexpr T Sqr(T value) { return value * value; }
+	static F32 Sqrt(F32 value) { return std::sqrt(value); }
+	static F32 InvSqrt(F32 value) { return 1.0f / std::sqrt(value); }
 	static F32 FastSqrt(F32 value) { return glm::fastSqrt<F32>(value); }
 	static F32 FastInvSqrt(F32 value) { return glm::fastInverseSqrt<F32>(value); }
 

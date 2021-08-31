@@ -4,6 +4,7 @@
 
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtx/matrix_operation.hpp>
 #include <glm/gtx/matrix_query.hpp>
 
 namespace en
@@ -24,7 +25,7 @@ public:
 	static constexpr U32 Elements{ Rows * Columns };
 
 	// Constructors
-	constexpr Matrix3() : Parent() {}
+	constexpr Matrix3() : Parent(glm::identity<Parent>()) {}
 	constexpr Matrix3(const Matrix3<T>& m) : Parent(static_cast<Parent>(m)) {}
 	constexpr explicit Matrix3(T scalar) : Parent(scalar) {}
 	constexpr Matrix3(T x0, T y0, T z0, T x1, T y1, T z1, T x2, T y2, T z2) : Parent(x0, y0, z0, x1, y1, z1, x2, y2, z2) {}
@@ -63,6 +64,7 @@ public:
 	bool IsOrthogonal() const { return glm::isOrthogonal(static_cast<Parent>(*this), T(Math::Epsilon)); }
 	bool IsNull() const { return glm::isNull(static_cast<Parent>(*this), T(Math::Epsilon)); }
 	bool IsNormalized() const { return glm::isNormalized(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	static bool Equals(const Matrix3<T>& m1, const Matrix3<T>& m2, T epsilon = T(Math::Epsilon)) { return Vector3<T>::Equals(m1[0], m2[0], epsilon) && Vector3<T>::Equals(m1[1], m2[1], epsilon) && Vector3<T>::Equals(m1[2], m2[2], epsilon); }
 
 	// Accessors
 	Vector3<T> GetColumn(U32 index) const { return Vector3(glm::column(static_cast<Parent>(*this), static_cast<int>(index))); }
@@ -73,7 +75,7 @@ public:
 	const T* GetData() const { return glm::value_ptr(static_cast<Parent>(*this)); }
 
 	// Constants
-	static constexpr Matrix3<T> Identity() { return Matrix3(T(1)); }
+	static constexpr Matrix3<T> Identity() { return Matrix3(glm::identity<Parent>()); }
 	static Matrix3<T> Diagonal(const Vector3<T>& v) { return Matrix3(glm::diagonal3x3(static_cast<Vector3<T>::Parent>(v))); }
 
 	// Operations

@@ -1324,7 +1324,7 @@ void ImGuiAnimationEditor::GetStatePinPositions(const AnimationStateMachine& sta
 			const ImVec2 centerThis = stateRects[stateIndex].GetCenter();
 			const ImVec2 centerOther = stateRects[otherStateIndex].GetCenter();
 			const ImVec2 delta = ImVec2(centerOther.x - centerThis.x, centerOther.y - centerThis.y);
-			const F32 deltaLength = Math::FastSqrt(delta.x * delta.x + delta.y * delta.y);
+			const F32 deltaLength = Math::Sqrt(delta.x * delta.x + delta.y * delta.y);
 			if (deltaLength)
 			{
 				const ImVec2 deltaNormalized = ImVec2(delta.x / deltaLength, delta.y / deltaLength);

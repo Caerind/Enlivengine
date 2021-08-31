@@ -22,7 +22,7 @@ public:
 	static constexpr U32 Elements{ Rows * Columns };
 
 	// Constructors
-	constexpr Matrix4() : Parent() {}
+	constexpr Matrix4() : Parent(glm::identity<Parent>()) {}
 	constexpr Matrix4(const Matrix4<T>& m) : Parent(static_cast<Parent>(m)) {}
 	constexpr explicit Matrix4(T scalar) : Parent(scalar) {}
 	constexpr Matrix4(T x0, T y0, T z0, T w0, T x1, T y1, T z1, T w1, T x2, T y2, T z2, T w2, T x3, T y3, T z3, T w3) : Parent(x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2, x3, y3, z3, w3) {}
@@ -61,6 +61,7 @@ public:
 	bool IsOrthogonal() const { return glm::isOrthogonal(static_cast<Parent>(*this), T(Math::Epsilon)); }
 	bool IsNull() const { return glm::isNull(static_cast<Parent>(*this), T(Math::Epsilon)); }
 	bool IsNormalized() const { return glm::isNormalized(static_cast<Parent>(*this), T(Math::Epsilon)); }
+	static bool Equals(const Matrix4<T>& m1, const Matrix4<T>& m2, T epsilon = T(Math::Epsilon)) { return Vector4<T>::Equals(m1[0], m2[0], epsilon) && Vector4<T>::Equals(m1[1], m2[1], epsilon) && Vector4<T>::Equals(m1[2], m2[2], epsilon) && Vector4<T>::Equals(m1[3], m2[3], epsilon); }
 
 	// Accessors
 	Vector4<T> GetColumn(U32 index) const { return Vector4(glm::column(static_cast<Parent>(*this), static_cast<int>(index))); }
@@ -71,7 +72,7 @@ public:
 	const T* GetData() const { return glm::value_ptr(static_cast<Parent>(*this)); }
 
 	// Constants
-	static constexpr Matrix4<T> Identity() { return Matrix4(T(1)); }
+	static constexpr Matrix4<T> Identity() { return Matrix4(glm::identity<Parent>()); }
 	static Matrix4<T> Diagonal(const Vector4<T>& v) { return Matrix4(glm::diagonal4x4(static_cast<Vector4<T>::Parent>(v))); }
 
 	// Operations
@@ -100,11 +101,11 @@ public:
 	static Matrix4<T> Rotation(const Matrix3<T>& m) { return Matrix4(m); }
 	// TODO : GLM update
 	//static Matrix4<T> Rotation(const Quaternion<T>& q) { return Matrix4(glm::mat4_cast(static_cast<Quaternion<T>::Parent>(q))); }
-	static Matrix4<T> RotationX(T angle) { return RotationAxis(angle, Vector4<T>::UnitX()); }
-	static Matrix4<T> RotationY(T angle) { return RotationAxis(angle, Vector4<T>::UnitY()); }
-	static Matrix4<T> RotationZ(T angle) { return RotationAxis(angle, Vector4<T>::UnitZ()); }
+	static Matrix4<T> RotationX(T angle) { return RotationAxis(angle, Vector3<T>::UnitX()); }
+	static Matrix4<T> RotationY(T angle) { return RotationAxis(angle, Vector3<T>::UnitY()); }
+	static Matrix4<T> RotationZ(T angle) { return RotationAxis(angle, Vector3<T>::UnitZ()); }
 	static Matrix4<T> RotationAxis(T angle, const Vector3<T>& axis) { return Matrix4(glm::rotate(angle * T(Math::kDegToRad), static_cast<Vector3<T>::Parent>(axis))); }
-	static Matrix4<T> RotationAxis(T angle, T axisX, T axisY, T axisZ) { return Matrix4(glm::rotate(angle * T(Math::kDegToRad), axisX, axisY, axisZ)); }
+	static Matrix4<T> RotationAxis(T angle, T axisX, T axisY, T axisZ) { return RotationAxis(angle, Vector3<T>(axisX, axisY, axisZ)); }
 	static Matrix4<T> Scale(const Vector3<T>& scale) { return Matrix4(glm::scale(static_cast<Vector3<T>::Parent>(scale))); }
 	static Matrix4<T> Scale(T sx, T sy, T sz) { return Scale(Vector3<T>(sx, sy, sz)); }
 	static Matrix4<T> Scale(T s) { return Scale(Vector3<T>(s)); }
@@ -116,9 +117,8 @@ public:
 
 	// Translation
 	Vector3<T> GetTranslation() const { return Vector4((*this)[3]).xyz(); }
-	// TODO : GLM update
-	void SetTranslation(const Vector3<T>& translation) { ENLIVE_UNUSED(translation); }
-	void SetTranslation(T tx, T ty, T tz) { ENLIVE_UNUSED(tx); ENLIVE_UNUSED(ty); ENLIVE_UNUSED(tz); }
+	void SetTranslation(const Vector3<T>& translation) { (*this)[3] = glm::vec<4, T, Precision>(static_cast<Vector3<T>::Parent>(translation), T(1)); }
+	void SetTranslation(T tx, T ty, T tz) { SetTranslation(Vector3<T>(tx, ty, tz)); }
 	void ApplyTranslation(const Vector3<T>& translation) { *this = Matrix4(glm::translate(static_cast<Parent>(*this), static_cast<Vector3<T>::Parent>(translation))); }
 	void ApplyTranslation(T tx, T ty, T tz) { ApplyTranslation(Vector3<T>(tx, ty, tz)); }
 
@@ -126,18 +126,16 @@ public:
 	bool IsScaled() const { return !Vector3<T>::Equals(GetScale(), Vector3<T>::Unit()); }
 	bool HasUniformScale() const { const Vector3<T> scale = GetScale(); return Math::Equals(scale.x, scale.y) && Math::Equals(scale.x, scale.z); }
 	Vector3<T> GetScale() const { return Vector3<T>(glm::length(glm::vec3((*this)[0])), glm::length(glm::vec3((*this)[1])), glm::length(glm::vec3((*this)[2]))); }
-	// TODO : GLM update
-	void SetScale(const Vector3<T>& scale) { ENLIVE_UNUSED(scale); }
-	void SetScale(T sx, T sy, T sz) { ENLIVE_UNUSED(sx); ENLIVE_UNUSED(sy); ENLIVE_UNUSED(sz); }
-	void SetScale(T s) { ENLIVE_UNUSED(s); }
+	void SetScale(const Vector3<T>& scale) { const Vector3<T> scaleChange = scale / GetScale(); (*this)[0] *= scaleChange.x; (*this)[1] *= scaleChange.y; (*this)[2] *= scaleChange.z; } // TODO : Check
+	void SetScale(T sx, T sy, T sz) { SetScale(Vector3<T>(sx, sy, sz)); }
+	void SetScale(T s) { SetScale(Vector3<T>(s)); }
 	void ApplyScale(const Vector3<T>& scale) { *this = Matrix4(glm::scale(static_cast<Parent>(*this), static_cast<Vector3<T>::Parent>(scale))); }
 	void ApplyScale(T sx, T sy, T sz) { ApplyScale(Vector3<T>(sx, sy, sz)); }
 	void ApplyScale(T s) { ApplyScale(Vector3<T>(s)); }
 
 	// Rotation
 	Matrix3<T> GetRotation() const { const Vector3<T> scale = GetScale(); return Matrix3<T>(Vector3(glm::vec<3, T, Precision>((*this)[0]) / scale.x), Vector3(glm::vec<3, T, Precision>((*this)[1]) / scale.y), Vector3(glm::vec<3, T, Precision>((*this)[2]) / scale.z)); }
-	// TODO : GLM update
-	void SetRotation(const Matrix3<T>& rotation) { ENLIVE_UNUSED(rotation); }
+	void SetRotation(const Matrix3<T>& rotation) { const Vector3<T> scale = GetScale(); (*this)[0] = scale.x * Vector4f(rotation.GetColumn(0), 0.0f); (*this)[1] = scale.y * Vector4f(rotation.GetColumn(1), 0.0f); (*this)[2] = scale.z * Vector4f(rotation.GetColumn(2), 0.0f); }
 	void ApplyRotation(const Matrix3<T>& rotation) { *this *= Matrix4(rotation); }
 
 	// TODO : GLM update

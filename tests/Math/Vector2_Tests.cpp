@@ -65,14 +65,14 @@ DOCTEST_TEST_CASE("Vector2")
 	DOCTEST_CHECK(en::Math::Equals(en::Vector2f::Dot(v2, v1), 92.0f));
 	DOCTEST_CHECK(en::Math::Equals(v1.GetSquaredLength(), 58.0f));
 	DOCTEST_CHECK(en::Math::Equals(v2.GetSquaredLength(), 146.0f));
-	DOCTEST_CHECK(en::Math::Equals(v1.GetLength(), en::Math::FastSqrt(58.0f)));
-	DOCTEST_CHECK(en::Math::Equals(v2.GetLength(), en::Math::FastSqrt(146.0f)));
+	DOCTEST_CHECK(en::Math::Equals(v1.GetLength(), en::Math::Sqrt(58.0f)));
+	DOCTEST_CHECK(en::Math::Equals(v2.GetLength(), en::Math::Sqrt(146.0f)));
 	v1.Normalize();
 	v2.Normalize();
 	// TODO : Test normalize
 	v1.SetPolarAngle(45.0f);
-	DOCTEST_CHECK(en::Math::Equals(v1.x, en::Math::FastSqrt(2.0f) * 0.5f));
-	DOCTEST_CHECK(en::Math::Equals(v1.y, en::Math::FastSqrt(2.0f) * 0.5f));
+	DOCTEST_CHECK(en::Math::Equals(v1.x, en::Math::Sqrt(2.0f) * 0.5f));
+	DOCTEST_CHECK(en::Math::Equals(v1.y, en::Math::Sqrt(2.0f) * 0.5f));
 	DOCTEST_CHECK(en::Math::Equals(v1.GetPolarAngle(), 45.0f));
 	v1.SetPolarAngle(0.0f);
 	DOCTEST_CHECK(en::Math::Equals(v1.x, 1.0f));

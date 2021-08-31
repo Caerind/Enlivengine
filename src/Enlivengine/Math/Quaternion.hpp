@@ -53,6 +53,9 @@ public:
 	}
 	inline Quaternion<T>& Set(const Matrix3<T>& matrix)
 	{
+		// TODO : GLM update
+		ENLIVE_UNUSED(matrix);
+		/*
 		const T trace = matrix.GetTrace();
 		if (trace > 0)
 		{
@@ -94,6 +97,8 @@ public:
 			s = (matrix[3] - matrix[1]) * overT;
 			return *this;
 		}
+		*/
+		return *this;
 	}
 
 	constexpr T& operator()(U32 i) { if (i == 0) return v.x; else if (i == 1) return v.y; else if (i == 2) return v.z; return s; }

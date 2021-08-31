@@ -190,7 +190,7 @@ bool Ray::Intersects(const Sphere& sphere, F32* distance /*= nullptr*/) const
 	}
 	if (distance != nullptr)
 	{
-		*distance = i - Math::FastSqrt(lSquared);
+		*distance = i - Math::Sqrt(lSquared);
 	}
 	return true;
 }

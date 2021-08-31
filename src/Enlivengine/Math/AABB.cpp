@@ -171,7 +171,7 @@ F32 AABB::GetDistanceSquared(const Vector3f& point) const
 
 F32 AABB::GetDistance(const Vector3f& point) const
 {
-	return Math::FastSqrt(GetDistanceSquared(point));
+	return Math::Sqrt(GetDistanceSquared(point));
 }
 
 bool AABB::Contains(const Vector3f& point) const
