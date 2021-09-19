@@ -32,6 +32,16 @@ DOCTEST_TEST_CASE("Matrix4")
 	DOCTEST_CHECK(layout.GetRow(2) == en::Vector4f(2, 6, 10, 14));
 	DOCTEST_CHECK(layout.GetRow(3) == en::Vector4f(3, 7, 11, 15));
 
+	// GetData
+	const en::Matrix4f dataA = layout;
+	const en::Matrix4f dataB = en::Matrix4f::Identity() * 3.0f;
+	DOCTEST_CHECK(dataA.GetData() != dataB.GetData());
+	const en::F32 dataC[16] = { 0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f };
+	for (int i = 0; i < 16; ++i)
+	{
+		DOCTEST_CHECK(dataA.GetData()[i] == dataC[i]);
+	}
+
 	// Operators 
 	DOCTEST_CHECK(layout == +layout);
 	DOCTEST_CHECK(en::Matrix4f::Identity() == +en::Matrix4f::Identity());

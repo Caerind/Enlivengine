@@ -68,8 +68,8 @@ public:
 	Vector4<T> GetRow(U32 index) const { return Vector4(glm::row(static_cast<Parent>(*this), static_cast<int>(index))); }
 	void SetColumn(U32 index, const Vector4<T>& column) { *this = Matrix4(glm::column(static_cast<Parent>(*this), static_cast<int>(index), static_cast<Vector4<T>::Parent>(column))); }
 	void SetRow(U32 index, const Vector4<T>& row) { *this = Matrix4(glm::row(static_cast<Parent>(*this), static_cast<int>(index), static_cast<Vector4<T>::Parent>(row))); }
-	T* GetData() { return const_cast<T*>(glm::value_ptr(static_cast<Parent>(*this))); }
-	const T* GetData() const { return glm::value_ptr(static_cast<Parent>(*this)); }
+	T* GetData() { return reinterpret_cast<T*>(this); }
+	const T* GetData() const { return reinterpret_cast<const T*>(this); }
 
 	// Constants
 	static constexpr Matrix4<T> Identity() { return Matrix4(glm::identity<Parent>()); }

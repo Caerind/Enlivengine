@@ -30,6 +30,16 @@ DOCTEST_TEST_CASE("Matrix3")
 	DOCTEST_CHECK(layout.GetRow(1) == en::Vector3f(1, 4, 7));
 	DOCTEST_CHECK(layout.GetRow(2) == en::Vector3f(2, 5, 8));
 
+	// GetData
+	const en::Matrix3f dataA = layout;
+	const en::Matrix3f dataB = en::Matrix3f::Identity() * 3.0f;
+	DOCTEST_CHECK(dataA.GetData() != dataB.GetData());
+	const en::F32 dataC[9] = { 0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f };
+	for (int i = 0; i < 9; ++i)
+	{
+		DOCTEST_CHECK(dataA.GetData()[i] == dataC[i]);
+	}
+
 	// Operators 
 	DOCTEST_CHECK(layout == +layout);
 	DOCTEST_CHECK(en::Matrix3f::Identity() == +en::Matrix3f::Identity());
