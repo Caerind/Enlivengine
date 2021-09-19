@@ -43,4 +43,4 @@ You can extend the engine for your game quite easily :
 
 ### Code
 
-For the code itself, you can check the [3DSceneExample](https://github.com/Caerind/Enlivengine/blob/master/Enlivengine/EnlivengineExamples/3DSceneExample.cpp)
+For the code itself, you can check the [3DSceneExample](https://github.com/Caerind/Enlivengine/blob/master/examples/3DSceneExample.cpp)
