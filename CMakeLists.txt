@@ -23,9 +23,15 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
-add_subdirectory(src)
+if(EXISTS src)
+    add_subdirectory(src)
+endif()
 
-add_subdirectory(tests)
-add_subdirectory(examples)
+if(EXISTS tests)
+    add_subdirectory(tests)
+endif()
+if(EXISTS examples)
+    add_subdirectory(examples)
+endif()
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT 3DSceneExample)
