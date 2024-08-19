@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-	enable_testing()
+    enable_testing()
 endif()
 
 # Used to have a good display look in IDE
@@ -23,15 +23,15 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
-if(EXISTS src)
-    add_subdirectory(src)
-endif()
+add_subdirectory(src)
 
-if(EXISTS tests)
+if(EXISTS "${CMAKE_SOURCE_DIR}/tests")
     add_subdirectory(tests)
 endif()
-if(EXISTS examples)
+if(EXISTS "${CMAKE_SOURCE_DIR}/examples")
     add_subdirectory(examples)
 endif()
 
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT 3DSceneExample)
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT 3DSceneExample)
+endif()
