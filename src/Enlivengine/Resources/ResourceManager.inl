@@ -210,7 +210,7 @@ ResourcePtr<T> ResourceManager::Create(const std::string& str, const ResourceLoa
 			const bool loaded = loader.Load(*resourcePtr);
 			if (!loaded)
 			{
-				enLogWarning(LogChannel::Application, "Resource {} cannot be loaded", str);
+				enLogWarning(LogChannel::Application, "Resource {} cannot be loaded", str.c_str());
 			}
 
 #ifdef ENLIVE_DEBUG
@@ -355,6 +355,7 @@ U32 ResourceManager::Count() const
 	}
 }
 
+#ifdef ENLIVE_DEBUG
 template <typename EnumClient>
 bool ResourceManager::InitializeClientResourceTypes()
 {
@@ -376,7 +377,6 @@ bool ResourceManager::InitializeClientResourceTypes()
 	}
 }
 
-#ifdef ENLIVE_DEBUG
 template <typename T>
 void ResourceManager::GetResourceInfosOfType(std::vector<ResourceInfo>& resourceInfos)
 {

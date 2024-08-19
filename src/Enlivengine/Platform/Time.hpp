@@ -87,10 +87,10 @@ public:
 	static constexpr Time Millisecond() { return Time(TicksPerMillisecond); }
 	static constexpr Time Microsecond() { return Time(TicksPerMicrosecond); }
 
-	bool Serialize(Serializer& serializer, const char* name);
-	bool Edit(ObjectEditor& objectEditor, const char* name);
-
 	static Time GetDeltaTime();
+
+    bool Serialize(Serializer& serializer, const char* name);
+    bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	I64 mTicks;
@@ -311,8 +311,8 @@ public:
 	static constexpr DateTime UnixDate() { return DateTime(1970, 1, 1); }
 	static const DateTime ProgramStart;
 
-	bool Serialize(Serializer& serializer, const char* name);
-	bool Edit(ObjectEditor& objectEditor, const char* name);
+    bool Serialize(Serializer& serializer, const char* name);
+    bool Edit(ObjectEditor& objectEditor, const char* name);
 
 private:
 	I64 mTicks;

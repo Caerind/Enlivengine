@@ -216,21 +216,21 @@ void ConsoleLogger::Write(const LogMessage& message)
 		break;
 	}
 
-	fmt::print("[{}][{}] {}\n",
-		message.GetTypeString(),
-		message.GetChannelString(),
-		message.GetMessageString());
+    fmt::print("[{}][{}] {}\n",
+        message.GetTypeString(),
+        message.GetChannelString(),
+        message.GetMessageString());
 
 	SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 #endif // ENLIVE_PLATFORM_WINDOWS
 
 #ifdef ENLIVE_PLATFORM_UNIX
 	// TODO : Colors in terminal for Unix
-	
-	fmt::print("[{}][{}] {}\n",
-		message.GetTypeString(),
-		message.GetChannelString(),
-		message.GetMessageString());
+
+    fmt::print("[{}][{}] {}\n",
+        message.GetTypeString(),
+        message.GetChannelString(),
+        message.GetMessageString());
 		
 #endif // ENLIVE_PLATFORM_UNIX
 }

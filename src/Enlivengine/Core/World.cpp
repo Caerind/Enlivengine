@@ -53,9 +53,9 @@ void World::Update()
 	mSystemManager.Update();
 }
 
-void World::Render()
+void World::Render(RenderTarget& renderTarget)
 {
-	mSystemManager.Render();
+	mSystemManager.Render(renderTarget);
 }
 
 #ifdef ENLIVE_TOOL

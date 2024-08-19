@@ -7,6 +7,12 @@
 namespace ImGui
 {
 
+ImVec4 ColorToImGuiColor(const en::Color& color)
+{
+    constexpr en::F32 factor = 1.0f / 255.0f;
+    return ImVec4(factor * color.r, factor * color.g, factor * color.b, factor * color.a);
+}
+
 void DisabledButton(const char* text)
 {
 	if (text == nullptr)
@@ -15,65 +21,6 @@ void DisabledButton(const char* text)
 	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 	ImGui::Button(text);
 	ImGui::PopStyleVar();
-}
-
-ImTextureID toId(bgfx::TextureHandle _handle, uint8_t _flags, uint8_t _mip)
-{
-	union { struct { bgfx::TextureHandle handle; uint8_t flags; uint8_t mip; } s; ImTextureID id; } tex;
-	tex.s.handle = _handle;
-	tex.s.flags = _flags;
-	tex.s.mip = _mip;
-	return tex.id;
-}
-
-void Image(bgfx::TextureHandle _handle
-	, uint8_t _flags
-	, uint8_t _mip
-	, const ImVec2& _size
-	, const ImVec2& _uv0
-	, const ImVec2& _uv1
-	, const ImVec4& _tintCol
-	, const ImVec4& _borderCol
-)
-{
-	Image(toId(_handle, _flags, _mip), _size, _uv0, _uv1, _tintCol, _borderCol);
-}
-
-void Image(bgfx::TextureHandle _handle
-	, const ImVec2& _size
-	, const ImVec2& _uv0
-	, const ImVec2& _uv1
-	, const ImVec4& _tintCol
-	, const ImVec4& _borderCol
-)
-{
-	Image(_handle, IMGUI_FLAGS_ALPHA_BLEND, 0, _size, _uv0, _uv1, _tintCol, _borderCol);
-}
-
-bool ImageButton(bgfx::TextureHandle _handle
-	, uint8_t _flags
-	, uint8_t _mip
-	, const ImVec2& _size
-	, const ImVec2& _uv0
-	, const ImVec2& _uv1
-	, int _framePadding
-	, const ImVec4& _bgCol
-	, const ImVec4& _tintCol
-)
-{
-	return ImageButton(toId(_handle, _flags, _mip), _size, _uv0, _uv1, _framePadding, _bgCol, _tintCol);
-}
-
-bool ImageButton(bgfx::TextureHandle _handle
-	, const ImVec2& _size
-	, const ImVec2& _uv0
-	, const ImVec2& _uv1
-	, int _framePadding
-	, const ImVec4& _bgCol
-	, const ImVec4& _tintCol
-)
-{
-	return ImageButton(_handle, IMGUI_FLAGS_ALPHA_BLEND, 0, _size, _uv0, _uv1, _framePadding, _bgCol, _tintCol);
 }
 
 /*
@@ -165,7 +112,7 @@ void PreviewAnimation(const en::Animation& animation, en::F32 maxSize, en::U32& 
 {
 	if (!animation.GetTexture().IsValid())
 	{
-		ImGui::TextColored(en::Colors::Orange.ToImGuiColor(), "Invalid texture");
+		ImGui::TextColored(ImGui::ColorToImGuiColor(en::Colors::Orange), "Invalid texture");
 	}
 
 	bool animationValid = (animation.GetClipCount() > 0 && animation.GetFrameCount() > 0);
@@ -212,7 +159,7 @@ void PreviewAnimation(const en::Animation& animation, en::F32 maxSize, en::U32& 
 	}
 	if (!animationValid)
 	{
-		ImGui::TextColored(en::Colors::Orange.ToImGuiColor(), "Invalid animation");
+		ImGui::TextColored(ImGui::ColorToImGuiColor(en::Colors::Orange), "Invalid animation");
 		ImGui::PreviewTexture(texture, maxSize);
 	}
 }

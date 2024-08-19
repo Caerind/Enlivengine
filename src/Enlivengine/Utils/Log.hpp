@@ -6,11 +6,10 @@
 
 #include <fstream>
 #include <vector> // Store log when logging
-#include <string>
 
 #include <fmt/format.h>
 
-#include <Enlivengine/Platform/PrimitiveTypes.hpp>
+#include <Enlivengine/Utils/String.hpp>
 #include <Enlivengine/Utils/Singleton.hpp>
 #include <Enlivengine/Utils/Enums.hpp>
 

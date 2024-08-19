@@ -2,6 +2,7 @@
 
 #include <Enlivengine/Core/EntityManager.hpp>
 #include <Enlivengine/Core/SystemManager.hpp>
+#include <Enlivengine/Graphics/RenderTarget.hpp>
 
 #ifdef ENLIVE_DEBUG
 #include <Enlivengine/Graphics/DebugDraw.hpp>
@@ -24,7 +25,7 @@ public:
 	
 	void UpdatePhysic();
 	void Update();
-	void Render();
+	void Render(RenderTarget& renderTarget);
 
 #ifdef ENLIVE_TOOL
 	void UpdateTool();

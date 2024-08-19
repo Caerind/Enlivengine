@@ -4,8 +4,8 @@
 
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_TOOL)
 
-#include <Enlivengine/Graphics/Camera.hpp>
-#include <Enlivengine/Graphics/Framebuffer.hpp>
+#include <Enlivengine/Graphics/View.hpp>
+#include <Enlivengine/Graphics/RenderTarget.hpp>
 
 #include <Enlivengine/Tools/ImGuiTool.hpp>
 
@@ -22,11 +22,11 @@ public:
 	const char* GetSaveName() const override;
 	int GetWindowFlags() const override; 
 
-	void Display() override;
+    void Display() override;
 
-	void UpdateCamera();
+    void UpdateView();
 
-	static Framebuffer& GetFramebuffer();
+	static RenderTarget& GetRenderTarget();
 	static Vector2i GetMouseScreenCoordinates();
 	static bool IsMouseInView();
 	static bool IsViewVisible();
@@ -34,8 +34,8 @@ public:
 	static bool IsShowingManipulator();
 	static bool IsShowingDebug();
 
-	static bool IsUsingEditorCamera();
-	static Camera& GetCamera();
+	static bool IsUsingEditorView();
+	static View* GetView();
 
 	enum class GizmoOperation
 	{
@@ -58,12 +58,12 @@ public:
 	static bool StopGame();
 
 private:
-	Framebuffer mFramebuffer;
+	RenderTarget mRenderTarget;
 	Rectf mViewRect;
 	bool mViewVisible;
 
-	Camera mCamera;
-	bool mUseMainCamera;
+	View mView;
+	bool mUseMainView;
 	bool mEditConfig;
 	bool mShowManipulator;
 	bool mShowDebug;

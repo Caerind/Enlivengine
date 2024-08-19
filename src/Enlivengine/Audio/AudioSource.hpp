@@ -1,6 +1,6 @@
 #pragma once
 
-#include <soloud.h>
+#include <Enlivengine/Audio/SoloudIncl.hpp>
 
 namespace en
 {

@@ -340,18 +340,18 @@ void PhysicSystem2D::InternalSystem::EndContact(b2Contact* contact)
 void PhysicSystem2D::InternalSystem::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
 	Color c;
-	c.FromBox2DColor(color);
+	c.FromFloats(color.r, color.g, color.b, color.a);
 	for (int32 i = 0; i < vertexCount; ++i)
 	{
-		const Vector3f pos1(vertices[i].x, vertices[i].y, 0.0f);
-		Vector3f pos2;
+		const Vector2f pos1(vertices[i].x, vertices[i].y);
+		Vector2f pos2;
 		if (i < vertexCount - 1)
 		{
-			pos2.Set(vertices[i+1].x, vertices[i+1].y, 0.0f);
+			pos2.Set(vertices[i+1].x, vertices[i+1].y);
 		}
 		else
 		{
-			pos2.Set(vertices[0].x, vertices[0].y, 0.0f);
+			pos2.Set(vertices[0].x, vertices[0].y);
 		}
 		mSystem.mWorld->GetDebugDraw().DrawLine(pos1, pos2, c);
 	}
@@ -394,28 +394,29 @@ void PhysicSystem2D::InternalSystem::DrawSolidCircle(const b2Vec2& center, float
 
 void PhysicSystem2D::InternalSystem::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
-	const Vector3f pos1(p1.x, p1.y, 0.0f);
-	const Vector3f pos2(p2.x, p2.y, 0.0f);
-	Color c;
-	c.FromBox2DColor(color);
+    const Vector2f pos1(p1.x, p1.y);
+    const Vector2f pos2(p2.x, p2.y);
+    Color c;
+    c.FromFloats(color.r, color.g, color.b, color.a);
 	mSystem.mWorld->GetDebugDraw().DrawLine(pos1, pos2, c);
 }
 
 void PhysicSystem2D::InternalSystem::DrawTransform(const b2Transform& xf)
 {
 	constexpr F32 lineLength = 0.4f;
-	DrawSegment(xf.p, xf.p + lineLength * xf.q.GetXAxis(), Colors::Red.ToBox2DColor());
-	DrawSegment(xf.p, xf.p + lineLength * xf.q.GetYAxis(), Colors::Green.ToBox2DColor());
+	DrawSegment(xf.p, xf.p + lineLength * xf.q.GetXAxis(), b2Color(1.0f, 0.0f, 0.0f));
+	DrawSegment(xf.p, xf.p + lineLength * xf.q.GetYAxis(), b2Color(0.0f, 1.0f, 0.0f));
 }
 
 void PhysicSystem2D::InternalSystem::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
 {
 	ENLIVE_UNUSED(size);
 
-	const Vector3f pos(p.x, p.y, 0.0f);
+	const Vector2f pos(p.x, p.y);
 	Color c;
-	c.FromBox2DColor(color);
-	mSystem.mWorld->GetDebugDraw().DrawPoint(pos, c);
+    c.FromFloats(color.r, color.g, color.b, color.a);
+	// TODO : Box2D DebugDraw Point
+	//mSystem.mWorld->GetDebugDraw().DrawPoint(pos, c);
 }
 #endif // ENLIVE_DEBUG
 

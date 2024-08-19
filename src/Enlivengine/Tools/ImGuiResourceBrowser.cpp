@@ -29,32 +29,34 @@ namespace en
 ImGuiResourceBrowser::ImGuiResourceBrowser()
 	: ImGuiTool()
 {
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".png", Colors::Cyan.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_IMAGE);
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".jpg", Colors::Cyan.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_IMAGE);
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".dds", Colors::Cyan.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_IMAGE);
+	/*
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".png", ImGui::ColorToImGuiColor(Colors::Cyan.WithAlpha(200)), ICON_FA_FILE_IMAGE);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".jpg", ImGui::ColorToImGuiColor(Colors::Cyan.WithAlpha(200)), ICON_FA_FILE_IMAGE);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".dds", ImGui::ColorToImGuiColor(Colors::Cyan.WithAlpha(200)), ICON_FA_FILE_IMAGE);
 
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".ttf", Colors::Orange.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_SIGNATURE);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".ttf", ImGui::ColorToImGuiColor(Colors::Orange.WithAlpha(200)), ICON_FA_FILE_SIGNATURE);
 
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".tmx", Colors::Lime.WithAlpha(200).ToImGuiColor());
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".tsx", Colors::Peach.WithAlpha(200).ToImGuiColor());
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".tmx", ImGui::ColorToImGuiColor(Colors::Lime.WithAlpha(200)));
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".tsx", ImGui::ColorToImGuiColor(Colors::Peach.WithAlpha(200)));
 
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".ogg", Colors::BabyPink.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_AUDIO);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".ogg", ImGui::ColorToImGuiColor(Colors::BabyPink.WithAlpha(200)), ICON_FA_FILE_AUDIO);
 
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".wav", Colors::HotPink.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_AUDIO);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".wav", ImGui::ColorToImGuiColor(Colors::HotPink.WithAlpha(200)), ICON_FA_FILE_AUDIO);
 
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".astm", Colors::DarkYellow.WithAlpha(200).ToImGuiColor());
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".astm", ImGui::ColorToImGuiColor(Colors::DarkYellow.WithAlpha(200)));
 
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".c", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".cpp", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".h", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".hpp", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".inl", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".sh", Colors::Yellow.WithAlpha(200).ToImGuiColor(), ICON_FA_FILE_CODE);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".c", ImGui::ColorToImGuiColor(Colors::Yellow.WithAlpha(200)), ICON_FA_FILE_CODE);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".cpp", ImGui::ColorToImGuiColor(Colors::Yellow.WithAlpha(200)), ICON_FA_FILE_CODE);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".h", ImGui::ColorToImGuiColor(Colors::Yellow.WithAlpha(200)), ICON_FA_FILE_CODE);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".hpp", ImGui::ColorToImGuiColor(Colors::Yellow.WithAlpha(200)), ICON_FA_FILE_CODE);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".inl", ImGui::ColorToImGuiColor(Colors::Yellow.WithAlpha(200)), ICON_FA_FILE_CODE);
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".sh", ImGui::ColorToImGuiColor(Colors::Yellow.WithAlpha(200)), ICON_FA_FILE_CODE);
 
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".json", Colors::LightGreen.WithAlpha(200).ToImGuiColor());
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".xml", Colors::LightBlue.WithAlpha(200).ToImGuiColor());
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".txt", Colors::Magenta.WithAlpha(200).ToImGuiColor());
-	igfd::ImGuiFileDialog::Instance()->SetExtentionInfos(".md", Colors::Mint.WithAlpha(200).ToImGuiColor());
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".json", ImGui::ColorToImGuiColor(Colors::LightGreen.WithAlpha(200)));
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".xml", ImGui::ColorToImGuiColor(Colors::LightBlue.WithAlpha(200)));
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".txt", ImGui::ColorToImGuiColor(Colors::Magenta.WithAlpha(200)));
+    ImGuiFileDialog::Instance()->SetExtentionInfos(".md", ImGui::ColorToImGuiColor(Colors::Mint.WithAlpha(200)));
+	*/
 }
 
 ImGuiToolTab ImGuiResourceBrowser::GetTab() const
@@ -109,7 +111,7 @@ bool ImGuiResourceBrowser::LoadResourceInfosFromFile()
 					{
 						if (!itr->second.loader(resourceInfo.identifier, resourceInfo.loadInfo.infoString))
 						{
-							enLogWarning(LogChannel::Core, "Can't load {}-{}", resourceInfo.identifier, resourceInfo.loadInfo.infoString);
+							enLogWarning(LogChannel::Core, "Can't load {}-{}", resourceInfo.identifier.c_str(), resourceInfo.loadInfo.infoString.c_str());
 						}
 					}
 					else
@@ -186,16 +188,18 @@ void ImGuiResourceBrowser::AddNewResource()
 		}
 		ImGui::InputText("Identitifer", mIdentifierBuffer, kBufferSize);
 		if (ImGui::Button("..."))
-		{
-			igfd::ImGuiFileDialog::Instance()->OpenDialog(key, dialogTitle, ".*", assetsPath.generic_string());
+        {
+            IGFD::FileDialogConfig config;
+            config.path = assetsPath.generic_string();
+			ImGuiFileDialog::Instance()->OpenDialog(key, dialogTitle, ".*", config);
 		}
 		ImGui::SameLine();
 		ImGui::InputText("Filename", mFilenameBuffer, kBufferSize);
-		if (igfd::ImGuiFileDialog::Instance()->FileDialog(key))
+		if (ImGuiFileDialog::Instance()->Display(key))
 		{
-			if (igfd::ImGuiFileDialog::Instance()->IsOk)
+			if (ImGuiFileDialog::Instance()->IsOk())
 			{
-				std::filesystem::path filename = igfd::ImGuiFileDialog::Instance()->GetFirstSelected();
+				std::filesystem::path filename = ImGuiFileDialog::Instance()->GetFilePathName();
 				std::string relativeResult = filename.lexically_relative(assetsPath).generic_string();
 
 #ifdef ENLIVE_COMPILER_MSVC
@@ -204,7 +208,7 @@ void ImGuiResourceBrowser::AddNewResource()
 				strcpy(mFilenameBuffer, relativeResult.c_str());
 #endif // ENLIVE_COMPILER_MSVC
 			}
-			igfd::ImGuiFileDialog::Instance()->CloseDialog(key);
+			ImGuiFileDialog::Instance()->Close();
 		}
 		if (mResourceType != 0 && strlen(mIdentifierBuffer) > 0 && strlen(mFilenameBuffer) > 0)
 		{
@@ -329,8 +333,8 @@ void ImGuiResourceBrowser::DisplayResources()
 					ImGui::SameLine();
 				}
 
-				//ImVec4 color = ResourceInfo::ResourceInfoTypeToColor(resourceInfo.type).toImGuiColor();
-				//ImGui::TextColored(color, "%s", resourceInfo.identifier.c_str());
+				//ImVec4 imColor = ImGui::ColorToImGuiColor(ResourceInfo::ResourceInfoTypeToColor(resourceInfo.type));
+				//ImGui::TextColored(imColor, "%s", resourceInfo.identifier.c_str());
 				ImGui::Text("%s", resourceInfo.identifier.c_str());
 
 				if (ImGui::IsItemHovered())
@@ -423,7 +427,9 @@ void ImGuiResourceBrowser::RegisterResourceSpecifics()
 				ImGui::BeginTooltip();
 
 				const Texture& texture = ResourceManager::GetInstance().Get<Texture>(resourceInfo.id).Get();
-				ImGui::Image(texture.GetHandle(), ImVec2(100.0f, 100.0f));
+				ENLIVE_UNUSED(texture);
+				// TODO
+				//ImGui::Image(texture.GetHandle(), ImVec2(100.0f, 100.0f));
 
 				ImGui::EndTooltip();
 			}

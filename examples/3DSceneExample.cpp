@@ -4,10 +4,9 @@
 #include <Enlivengine/Window/Controller.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/TransformComponent.hpp>
-#include <Enlivengine/Core/CameraComponent.hpp>
+#include <Enlivengine/Core/ViewComponent.hpp>
 #include <Enlivengine/Core/Components.hpp>
-#include <Enlivengine/Graphics/Camera.hpp>
-#include <Enlivengine/Graphics/BgfxWrapper.hpp>
+#include <Enlivengine/Graphics/View.hpp>
 #include <Enlivengine/Tools/ImGuiEditor.hpp>
 
 #include <Enlivengine/Audio/AudioManager.hpp>
@@ -23,41 +22,37 @@ public:
 	bool Serialize(Serializer& serializer, const char* name) override;
 	bool Edit(ObjectEditor& objectEditor, const char* name) override;
 
-	void Render() override
+	void Render(RenderTarget& renderTarget) override
 	{
 #ifdef ENLIVE_DEBUG
-		mWorld->GetDebugDraw().DrawCross(Vector3f(0.0f));
-		mWorld->GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -16, 16, 1, Colors::White);
+		// TODO
+		//mWorld->GetDebugDraw().DrawCross(Vector3f(0.0f));
+		//mWorld->GetDebugDraw().DrawGrid(Vector3f::Zero(), ENLIVE_DEFAULT_UP, -16, 16, 1, Colors::White);
 #endif // ENLIVE_DEBUG
 
-#ifdef ENLIVE_TOOL
-		Framebuffer& framebuffer = ImGuiEditor::GetFramebuffer();
-		Camera* camera = &ImGuiEditor::GetCamera();
-#else
-		Framebuffer& framebuffer = Framebuffer::GetDefaultFramebuffer();
-		Camera* camera = Camera::GetMainCamera();
-#endif // ENLIVE_TOOL
+		const View& currentView = GetCurrentView();
 
-		if (framebuffer.IsValid() && camera != nullptr)
+		if (renderTarget.IsValid())
 		{
-			const bgfx::ViewId mainViewID = 2;
-			BgfxWrapper::SetCurrentView(mainViewID);
+			const Vector2u& renderTargetSize = renderTarget.GetSize();
+			const F32 aspectRatio = static_cast<F32>(renderTargetSize.x) / static_cast<F32>(renderTargetSize.y);
 
-			const Vector2u& framebufferSize = framebuffer.GetSize();
-			const F32 aspectRatio = static_cast<F32>(framebufferSize.x) / static_cast<F32>(framebufferSize.y);
-			const Vector2f vpMin = camera->GetViewport().GetMin();
-			const Vector2f vpSize = camera->GetViewport().GetSize();
+			// TODO : Viewport
+			//const Vector2f vpMin = currentView.GetViewport().GetMin();
+			//const Vector2f vpSize = currentView.GetViewport().GetSize();
 
-			if (camera->GetAspect() != aspectRatio)
+            // TODO : Aspect
+			/*
+			if (currentView.GetAspect() != aspectRatio)
 			{
-				camera->SetAspect(aspectRatio);
+				currentView.SetAspect(aspectRatio);
 			}
+			*/
 
-			bgfx::setViewClear(mainViewID, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, camera->GetClearColor().ToRGBA(), 1.0f, 0);
-			bgfx::setViewTransform(mainViewID, camera->GetViewMatrix().GetData(), camera->GetProjectionMatrix().GetData());
-			bgfx::setViewRect(mainViewID, static_cast<U16>(vpMin.x * framebufferSize.x), static_cast<U16>(vpMin.y * framebufferSize.y), static_cast<U16>(vpSize.x * framebufferSize.x), static_cast<U16>(vpSize.y * framebufferSize.y));
-			bgfx::setViewFrameBuffer(mainViewID, framebuffer.GetHandle());
-			bgfx::touch(mainViewID);
+			renderTarget.Clear();
+			// TODO : Set view from Camera
+			//bgfx::setViewTransform(mainViewID, camera->GetViewMatrix().GetData(), camera->GetProjectionMatrix().GetData());
+			//bgfx::setViewRect(mainViewID, static_cast<U16>(vpMin.x * renderTargetSize.x), static_cast<U16>(vpMin.y * renderTargetSize.y), static_cast<U16>(vpSize.x * renderTargetSize.x), static_cast<U16>(vpSize.y * renderTargetSize.y));
 
 			RenderWorld();
 
@@ -68,9 +63,8 @@ public:
 			if (mWorld->IsDebugRendering())
 #endif // ENLIVE_TOOL
 			{
-				mWorld->GetDebugDraw().Render();
+				mWorld->GetDebugDraw().Render(renderTarget);
 			}
-			mWorld->GetDebugDraw().Clear();
 #endif // ENLIVE_DEBUG
 		}
 	}
@@ -88,27 +82,34 @@ public:
 				const Matrix4f matrix = (entity.Has<TransformComponent>()) ? entity.Get<TransformComponent>().GetGlobalMatrix() : Matrix4f::Identity();
 				if (entity.Has<SpriteComponent>())
 				{
+					/*
 					Sprite& sprite = entity.Get<SpriteComponent>().sprite;
 					if (sprite.CanRender())
 					{
-						bgfx::setTransform(matrix.GetData());
+						// TODO : Transform
+						//bgfx::setTransform(matrix.GetData());
 						sprite.Render();
 						render = true;
 					}
+					*/
 				}
 				if (entity.Has<TilemapComponent>())
 				{
+					/*
 					Tilemap& tilemap = entity.Get<TilemapComponent>().tilemap;
 					if (tilemap.CanRender())
-					{
-						bgfx::setTransform(matrix.GetData());
+                    {
+                        // TODO : Transform
+						//bgfx::setTransform(matrix.GetData());
 						entity.Get<TilemapComponent>().tilemap.Render();
 						render = true;
 					}
+					*/
 				}
 				if (!render)
-				{
-					bgfx::setTransform(Matrix4f::Identity().GetData());
+                {
+                    // TODO : Transform
+					//bgfx::setTransform(Matrix4f::Identity().GetData());
 				}
 			}
 		}
@@ -146,9 +147,12 @@ public:
 	void Update() override
 	{
 #ifdef ENLIVE_DEBUG
-		mWorld->GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
-		mWorld->GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
+		// TODO
+		//mWorld->GetDebugDraw().DrawBox({ 1.0f, 0.5f, 1.0f }, { 2.0f, 1.5f, 2.0f }, Colors::Red);
+		//mWorld->GetDebugDraw().DrawSphere({ -1.0f, 0.5f, -3.0f }, 0.5f, Colors::Red);
 
+		// TODO
+		/*
 		auto& entityManager = mWorld->GetEntityManager();
 		auto view = entityManager.View<en::CameraComponent>();
 		for (auto entt : view)
@@ -160,7 +164,7 @@ public:
 				mWorld->GetDebugDraw().DrawFrustum(cam.CreateFrustum());
 			}
 		}
-
+		*/
 #endif // ENLIVE_DEBUG
 	}
 };

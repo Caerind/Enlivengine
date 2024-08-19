@@ -1,7 +1,5 @@
 #include <Enlivengine/Audio/AudioSourceWav.hpp>
 
-#include <soloud_wav.h>
-
 namespace en
 {
 

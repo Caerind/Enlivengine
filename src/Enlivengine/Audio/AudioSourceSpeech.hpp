@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include <soloud.h>
-
 #include <Enlivengine/Audio/AudioSource.hpp>
 
 namespace en

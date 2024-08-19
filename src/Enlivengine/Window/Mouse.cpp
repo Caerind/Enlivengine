@@ -1,249 +1,175 @@
 #include <Enlivengine/Window/Mouse.hpp>
 
-#include <SDL.h>
+#include <SFML/Window/Mouse.hpp>
 
 #include <Enlivengine/Utils/Assert.hpp>
-
 #include <Enlivengine/Window/EventSystem.hpp>
 #include <Enlivengine/Window/Window.hpp>
 
 namespace en
 {
 
-void Mouse::SetPositionGlobal(const Vector2i& mousePos)
+void Mouse::SetPositionAbsolute(const Vector2i& mousePos)
 {
-	SDL_WarpMouseGlobal(static_cast<int>(mousePos.x), static_cast<int>(mousePos.y));
+    sf::Mouse::setPosition(sf::Vector2i(mousePos.x, mousePos.y));
 }
 
-Vector2i Mouse::GetPositionGlobal()
+Vector2i Mouse::GetPositionAbsolute()
 {
-	int x, y;
-	SDL_GetGlobalMouseState(&x, &y);
-	return Vector2i(static_cast<I32>(x), static_cast<I32>(y));
+    const auto mousePos = sf::Mouse::getPosition();
+    return Vector2i(static_cast<I32>(mousePos.x), static_cast<I32>(mousePos.y));
 }
 
-void Mouse::SetPositionCurrentWindow(const Vector2i& mousePos)
+void Mouse::SetPositionRelative(const Vector2i& mousePos, const Window& window)
 {
-	SDL_WarpMouseInWindow(nullptr, static_cast<int>(mousePos.x), static_cast<int>(mousePos.y));
-	GetInstance().mPosition = mousePos;
+    sf::Mouse::setPosition(sf::Vector2i(mousePos.x, mousePos.y), window.GetSFMLWindow());
 }
 
-Vector2i Mouse::GetPositionCurrentWindow()
+Vector2i Mouse::GetPositionRelative(const Window& window)
 {
-	return GetInstance().mPosition;
+    const auto mousePos = sf::Mouse::getPosition(window.GetSFMLWindow());
+    return Vector2i(static_cast<I32>(mousePos.x), static_cast<I32>(mousePos.y));
+}
+
+Vector2i Mouse::GetPosition()
+{
+    return GetInstance().mPosition;
+}
+
+Vector2i Mouse::GetPreviousPosition()
+{
+    return GetInstance().mPreviousPosition;
 }
 
 bool Mouse::HasMouseMoved()
 {
-	Mouse& mouse = GetInstance();
-	return mouse.mMouseMovement.x != 0 || mouse.mMouseMovement.y != 0;
+    Mouse& mouse = GetInstance();
+    return mouse.mMouseMovement.x != 0 || mouse.mMouseMovement.y != 0;
 }
 
 Vector2i Mouse::GetMouseMovement()
 {
-	return GetInstance().mMouseMovement;
+    return GetInstance().mMouseMovement;
 }
 
 bool Mouse::HasWheelMoved()
 {
-	return GetInstance().mWheel != 0;
+    return GetInstance().mWheel != 0;
 }
 
 I32 Mouse::GetWheel()
 {
-	return GetInstance().mWheel;
+    return GetInstance().mWheel;
 }
 
 bool Mouse::HasHorizontalWheelMoved()
 {
-	return GetInstance().mHorizontalWheel != 0;
+    return GetInstance().mHorizontalWheel != 0;
 }
 
 I32 Mouse::GetHorizontalWheel()
 {
-	return GetInstance().mHorizontalWheel;
-}
-
-Window* Mouse::GetCurrentWindow()
-{
-	SDL_Window* window = SDL_GetMouseFocus();
-	if (window != nullptr)
-	{
-		return Window::GetWindowFromSDLWindow(window);
-	}
-	else
-	{
-		return nullptr;
-	}
+    return GetInstance().mHorizontalWheel;
 }
 
 bool Mouse::IsHold(Button button)
 {
-	Mouse& mouse = GetInstance();
-	switch (button)
-	{
-	case Button::Left: return (SDL_BUTTON_LMASK & mouse.mButtonMask) > 0; break;
-	case Button::Middle: return (SDL_BUTTON_MMASK & mouse.mButtonMask) > 0; break;
-	case Button::Right: return (SDL_BUTTON_RMASK & mouse.mButtonMask) > 0; break;
-	case Button::X1: return (SDL_BUTTON_X1MASK & mouse.mButtonMask) > 0; break;
-	case Button::X2: return (SDL_BUTTON_X2MASK & mouse.mButtonMask) > 0; break;
-	default: enAssert(false); break;
-	}
-	return false;
+    Mouse& mouse = GetInstance();
+    return (static_cast<U32>(button) & mouse.mButtonMask) > 0;
 }
 
 bool Mouse::IsPressed(Button button)
 {
-	Mouse& mouse = GetInstance();
-	switch (button)
-	{
-	case Button::Left: return (SDL_BUTTON_LMASK & mouse.mButtonMask) > 0 && (SDL_BUTTON_LMASK & mouse.mPreviousButtonMask) == 0; break;
-	case Button::Middle: return (SDL_BUTTON_MMASK & mouse.mButtonMask) > 0 && (SDL_BUTTON_MMASK & mouse.mPreviousButtonMask) == 0; break;
-	case Button::Right: return (SDL_BUTTON_RMASK & mouse.mButtonMask) > 0 && (SDL_BUTTON_RMASK & mouse.mPreviousButtonMask) == 0; break;
-	case Button::X1: return (SDL_BUTTON_X1MASK & mouse.mButtonMask) > 0 && (SDL_BUTTON_X1MASK & mouse.mPreviousButtonMask) == 0; break;
-	case Button::X2: return (SDL_BUTTON_X2MASK & mouse.mButtonMask) > 0 && (SDL_BUTTON_X2MASK & mouse.mPreviousButtonMask) == 0; break;
-	default: enAssert(false); break;
-	}
-	return false;
+    Mouse& mouse = GetInstance();
+    return (static_cast<U32>(button) & mouse.mButtonMask) > 0 && (static_cast<U32>(button) & mouse.mPreviousButtonMask) == 0;
 }
 
 bool Mouse::IsReleased(Button button)
 {
-	Mouse& mouse = GetInstance();
-	switch (button)
-	{
-	case Button::Left: return (SDL_BUTTON_LMASK & mouse.mButtonMask) == 0 && (SDL_BUTTON_LMASK & mouse.mPreviousButtonMask) > 0; break;
-	case Button::Middle: return (SDL_BUTTON_MMASK & mouse.mButtonMask) == 0 && (SDL_BUTTON_MMASK & mouse.mPreviousButtonMask) > 0; break;
-	case Button::Right: return (SDL_BUTTON_RMASK & mouse.mButtonMask) == 0 && (SDL_BUTTON_RMASK & mouse.mPreviousButtonMask) > 0; break;
-	case Button::X1: return (SDL_BUTTON_X1MASK & mouse.mButtonMask) == 0 && (SDL_BUTTON_X1MASK & mouse.mPreviousButtonMask) > 0; break;
-	case Button::X2: return (SDL_BUTTON_X2MASK & mouse.mButtonMask) == 0 && (SDL_BUTTON_X2MASK & mouse.mPreviousButtonMask) > 0; break;
-	default: enAssert(false); break;
-	}
-	return false;
+    Mouse& mouse = GetInstance();
+    return (static_cast<U32>(button) & mouse.mButtonMask) == 0 && (static_cast<U32>(button) & mouse.mPreviousButtonMask) > 0;
 }
 
-bool Mouse::IsRelativeMode()
+void Mouse::PreUpdate()
 {
-	return SDL_GetRelativeMouseMode() == SDL_TRUE;
+    Mouse& mouse = GetInstance();
+
+    mouse.mPreviousButtonMask = mouse.mButtonMask;
+    mouse.mPreviousPosition = mouse.mPosition;
+    mouse.mWheel = 0;
+    mouse.mHorizontalWheel = 0;
 }
 
-void Mouse::SetRelativeMode(bool relativeMode)
+Mouse::Button sfButtonToEnButton(sf::Mouse::Button button)
 {
-	if (IsRelativeMode() != relativeMode)
-	{
-		if (relativeMode)
-		{
-			SDL_SetRelativeMouseMode(SDL_TRUE);
-			int pX, pY;
-			SDL_GetRelativeMouseState(&pX, &pY);
-		}
-		else
-		{
-			SDL_SetRelativeMouseMode(SDL_FALSE);
-		}
-	}
+    switch (button)
+    {
+    case sf::Mouse::Button::Left: return Mouse::Button::Left;
+    case sf::Mouse::Button::Right: return Mouse::Button::Right;
+    case sf::Mouse::Button::Middle: return Mouse::Button::Middle;
+    case sf::Mouse::Button::XButton1: return Mouse::Button::X1;
+    case sf::Mouse::Button::XButton2: return Mouse::Button::X2;
+    default: enAssert(false);
+    }
+    return Mouse::Button::Left;
 }
 
-void Mouse::EnableRelativeMode()
+void Mouse::HandleEvent(const sf::Event& event)
 {
-	SetRelativeMode(true);
+    Mouse& mouse = GetInstance();
+    switch (event.type)
+    {
+    case sf::Event::MouseWheelMoved:
+        // Deprecated
+        break;
+    case sf::Event::MouseWheelScrolled:
+        if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+            mouse.mWheel += static_cast<I32>(event.mouseWheelScroll.delta);
+        else if (event.mouseWheelScroll.wheel == sf::Mouse::HorizontalWheel)
+            mouse.mHorizontalWheel += static_cast<I32>(event.mouseWheelScroll.delta);
+        break;
+    case sf::Event::MouseButtonPressed:
+        mouse.mButtonMask |= static_cast<U32>(sfButtonToEnButton(event.mouseButton.button));
+        mouse.mPosition.x = event.mouseButton.x;
+        mouse.mPosition.y = event.mouseButton.y;
+        break;
+    case sf::Event::MouseButtonReleased:
+        mouse.mButtonMask &= ~static_cast<U32>(sfButtonToEnButton(event.mouseButton.button));
+        mouse.mPosition.x = event.mouseButton.x;
+        mouse.mPosition.y = event.mouseButton.y;
+        break;
+    case sf::Event::MouseMoved:
+        mouse.mPosition.x = event.mouseMove.x;
+        mouse.mPosition.y = event.mouseMove.y;
+        break;
+    case sf::Event::MouseEntered:
+    case sf::Event::MouseLeft:
+        // Nothing
+        break;
+    }
 }
 
-void Mouse::DisableRelativeMode()
+void Mouse::PostUpdate()
 {
-	SetRelativeMode(false);
-}
-
-bool Mouse::IsCursorVisible()
-{
-	return SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE;
-}
-
-void Mouse::SetCursorVisible(bool visible)
-{
-	SDL_ShowCursor(visible ? SDL_ENABLE : SDL_DISABLE);
-}
-
-void Mouse::ShowCursor()
-{
-	SDL_ShowCursor(SDL_ENABLE);
-}
-
-void Mouse::HideCursor()
-{
-	SDL_ShowCursor(SDL_DISABLE);
-}
-
-void Mouse::Refresh()
-{
-	Mouse& mouse = GetInstance();
-
-	int pX, pY;
-	mouse.mPreviousButtonMask = mouse.mButtonMask;
-	if (IsRelativeMode())
-	{
-		mouse.mButtonMask = SDL_GetRelativeMouseState(&pX, &pY);
-		const I32 x = static_cast<I32>(pX);
-		const I32 y = static_cast<I32>(pY);
-		mouse.mMouseMovement.x = x;
-		mouse.mMouseMovement.y = y;
-	}
-	else
-	{
-		mouse.mButtonMask = SDL_GetMouseState(&pX, &pY);
-		const I32 x = static_cast<I32>(pX);
-		const I32 y = static_cast<I32>(pY);
-		mouse.mMouseMovement.x = x - mouse.mPosition.x;
-		mouse.mMouseMovement.y = y - mouse.mPosition.y;
-		mouse.mPosition.x = x;
-		mouse.mPosition.y = y;
-	}
-	mouse.mWheel = 0;
-	mouse.mHorizontalWheel = 0;
-}
-
-void Mouse::HandleEvent(const SDL_Event& event)
-{
-	Mouse& mouse = GetInstance();
-	if (event.type == SDL_MOUSEMOTION)
-	{
-	}
-	else if (event.type == SDL_MOUSEBUTTONDOWN)
-	{
-		mouse.mButtonMask |= event.button.button;
-
-		if ((SDL_BUTTON_LMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Left), 0);
-		if ((SDL_BUTTON_MMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Middle), 0);
-		if ((SDL_BUTTON_RMASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::Right), 0);
-		if ((SDL_BUTTON_X1MASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::X1), 0);
-		if ((SDL_BUTTON_X2MASK & event.button.button) > 0) EventSystem::SetLastButton(EventSystem::EventButton::Type::MouseButton, static_cast<U32>(Mouse::Button::X2), 0);
-	}
-	else if (event.type == SDL_MOUSEBUTTONUP)
-	{
-		mouse.mButtonMask &= ~(event.button.button);
-	}
-	else if (event.type == SDL_MOUSEWHEEL)
-	{
-		if (event.wheel.x > 0) mouse.mHorizontalWheel += 1;
-		if (event.wheel.x < 0) mouse.mHorizontalWheel -= 1;
-		if (event.wheel.y > 0) mouse.mWheel += 1;
-		if (event.wheel.y < 0) mouse.mWheel -= 1;
-	}
+    Mouse& mouse = GetInstance();
+    mouse.mMouseMovement.x = mouse.mPosition.x - mouse.mPreviousPosition.x;
+    mouse.mMouseMovement.y = mouse.mPosition.y - mouse.mPreviousPosition.y;
 }
 
 Mouse& Mouse::GetInstance()
 {
-	static Mouse instance;
-	return instance;
+    static Mouse instance;
+    return instance;
 }
 
 Mouse::Mouse()
-	: mPosition(0, 0)
-	, mMouseMovement(0, 0)
-	, mPreviousButtonMask(0)
-	, mButtonMask(0)
-	, mWheel(0)
-	, mHorizontalWheel(0)
+    : mPreviousPosition(0, 0)
+    , mPosition(0, 0)
+    , mMouseMovement(0, 0)
+    , mPreviousButtonMask(0)
+    , mButtonMask(0)
+    , mWheel(0)
+    , mHorizontalWheel(0)
 {
 }
 

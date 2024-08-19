@@ -2,12 +2,13 @@
 
 #include <vector>
 
-#include <bgfx/bgfx.h>
+#include <SFML/Graphics.hpp>
 
 #include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Math/Rect.hpp>
-#include <Enlivengine/Graphics/Shader.hpp>
+#include <Enlivengine/Math/Matrix4.hpp>
 #include <Enlivengine/Graphics/Tileset.hpp>
+#include <Enlivengine/Graphics/RenderTarget.hpp>
 
 namespace en
 {
@@ -15,67 +16,41 @@ namespace en
 class Tilemap
 {
 public:
-	Tilemap();
-	Tilemap(Tilemap&& other);
-	Tilemap(const Tilemap& other) = delete;
-	~Tilemap();
-
-	Tilemap& operator=(Tilemap&& other);
-	Tilemap& operator=(const Tilemap& other) = delete;
+    Tilemap();
 
 	void SetTileset(const Tileset& tileset);
 	const Tileset* GetTileset() const;
 
 	void SetSize(const Vector2u& size);
 	const Vector2u& GetSize() const;
+	
+	void SetTileSize(const Vector2f& tileSize);
+	const Vector2f& GetTileSize() const;
 
 	void SetTile(const Vector2u& tileCoords, U32 tileID);
 	U32 GetTile(const Vector2u& tileCoords) const;
-
-	Rectf GetLocalBounds() const;
-	Rectf GetGlobalBounds() const;
-
-	bool CanRender() const;
-	void Render() const;
+	
+	void Render(RenderTarget& target, const Matrix4f& transform = en::Matrix4f::Identity());
 
 private:
-	void UpdateTexCoords();
-	void UpdateTileTexCoords(U32 tileIndex);
-	void UpdateVertexBuffer();
-	void UpdateIndexBuffer();
+    void UpdatePositions();
+    void UpdateTexCoords();
+    void UpdateTileTexCoords(U32 tileIndex);
+    void UpdateVertexBuffer();
 
 private:
-	struct Vertex
-	{
-		Vector2f pos;
-		F32 unusedZ{ 0.0f };
-		Vector2f texCoords;
-
-		static bgfx::VertexLayout kLayout;
-	};
-
-	Vector2u mSize;
-	std::vector<U32> mTiles;
-	std::vector<Vertex> mVertices;
-	bgfx::VertexBufferHandle mVertexBuffer;
-	std::vector<U16> mIndices;
-	bgfx::IndexBufferHandle mIndexBuffer;
-	const Tileset* mTileset;
-
-private:
-	static const U16 kIndices[6];
-	static Shader kShader;
-	static bgfx::UniformHandle kUniformTexture;
-
-public:
-	// TODO : Make these private
-	//friend class BgfxWrapper;
-	static bool InitializeTilemaps();
-	static bool ReleaseTilemaps();
+    sf::VertexBuffer mVertexBuffer;
+    std::vector<sf::Vertex> mVertices;
+    std::vector<U32> mTiles;
+    const Tileset* mTileset;
+    Vector2u mSize;
+    Vector2f mTileSize;
+	bool mDirtyVertexBuffer;
 };
 
 } // namespace en
 
 ENLIVE_META_CLASS_BEGIN(en::Tilemap, en::Type_ClassSerialization, en::Type_ClassEditor)
-	ENLIVE_META_CLASS_MEMBER("size", &en::Tilemap::GetSize, &en::Tilemap::SetSize)
+	ENLIVE_META_CLASS_MEMBER("size", &en::Tilemap::GetSize, &en::Tilemap::SetSize),
+	ENLIVE_META_CLASS_MEMBER("tileSize", &en::Tilemap::GetTileSize, &en::Tilemap::SetTileSize)
 ENLIVE_META_CLASS_END()

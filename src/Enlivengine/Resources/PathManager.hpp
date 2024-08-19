@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include <bgfx/bgfx.h>
-
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Singleton.hpp>
 
@@ -26,19 +24,13 @@ public:
 	static void SetTmpPath(const std::string& tmpPath);
 	static const std::string& GetTmpPath();
 
-	static bool AutoDetectShadersPath();
-	static void SetShadersPath(const std::string& shadersPath);
-	static const std::string& GetShadersPath();
-
-	static const std::string& GetShadersPathForRenderer(bgfx::RendererType::Enum renderer);
-
 	static void SetScreenshotPath(const std::string& screenshotPath);
 	static const std::string& GetScreenshotPath();
 
 private:
 	static PathManager& GetInstance();
 
-	PathManager();
+	PathManager() = default;
 
 	// NonCopyable & NonMovable
 	PathManager(const PathManager&) = delete;
@@ -49,8 +41,6 @@ private:
 	std::string mExecutablePath;
 	std::string mAssetsPath;
 	std::string mTmpPath;
-	std::string mShadersPath;
-	std::string mShadersPathRenderer;
 	std::string mScreenshotPath;
 };
 

@@ -1,6 +1,6 @@
-// Copyright (C) 2017 Jérôme Leclercq, author of Nazara Engine : https://github.com/DigitalPulseSoftware/NazaraEngine
-
 #pragma once
+
+// Inspired by Nazara Engine : https://github.com/DigitalPulseSoftware/NazaraEngine
 
 #include <functional>
 #include <memory>

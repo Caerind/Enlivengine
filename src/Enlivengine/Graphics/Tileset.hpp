@@ -2,13 +2,17 @@
 
 #include <Enlivengine/Math/Vector2.hpp>
 #include <Enlivengine/Graphics/Texture.hpp>
+#include <Enlivengine/Resources/ResourceManager.hpp>
 
 namespace en
 {
 
-class Tileset
+class Tileset : public Resource<Tileset>
 {
 public:
+	static U32 GetStaticResourceType() { return static_cast<U32>(ResourceType::Tileset); }
+	U32 GetResourceType() const override { return GetStaticResourceType(); }
+
 	Tileset();
 	~Tileset();
 
@@ -37,5 +41,30 @@ private:
 	U32 mSpacing;
 	U32 mMargin;
 };
+
+class TilesetLoader
+{
+public:
+	TilesetLoader() = delete;
+
+	static ResourceLoader<Tileset> FromCode(TexturePtr texture, const Vector2u& tileSize, const Vector2u& gridSize, U32 spacing = 0, U32 margin = 0)
+	{
+		return ResourceLoader<Tileset>([&](Tileset& r)
+			{
+				r.SetTexture(texture);
+				r.SetTileSize(tileSize);
+				r.SetGridSize(gridSize);
+				r.SetSpacing(spacing);
+				r.SetMargin(margin);
+				
+				const bool result = true;
+				r.SetLoaded(result);
+				r.SetLoadInfo(ResourceLoadInfo(ResourceLoadInfo::Procedural));
+				return result;
+			});
+	}
+};
+
+using TilesetPtr = ResourcePtr<Tileset>;
 
 } // namespace en

@@ -210,4 +210,18 @@ typedef Vector2f vec2; // GLSL-like
 
 } // namespace en
 
+namespace std
+{
+    
+template <typename T>
+struct hash<en::Vector2<T>>
+{
+    size_t operator()(const en::Vector2<T>& obj) const
+    {
+        return hash<T>()(obj.x) ^ hash<T>()(obj.y << 1);
+    }
+};
+    
+} // namespace std
+
 ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::Vector2, en::Type_CustomSerialization, en::Type_CustomEditor)

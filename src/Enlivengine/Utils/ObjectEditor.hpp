@@ -1,14 +1,14 @@
 #pragma once
 
+#include <string>
+#include <vector>
+#include <array>
+
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/NonCopyable.hpp>
 #include <Enlivengine/Utils/TypeInfo.hpp>
 #include <Enlivengine/Utils/Meta.hpp>
 #include <Enlivengine/Utils/Enums.hpp>
-#include <string>
-
-#include <vector>
-#include <array>
 #include <Enlivengine/Utils/Array.hpp>
 
 // TODO : Not good to have this here...

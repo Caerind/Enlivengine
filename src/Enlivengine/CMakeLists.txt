@@ -16,9 +16,6 @@ source_group("Utils" FILES ${ENLIVENGINE_UTILS_FILES})
 file(GLOB_RECURSE ENLIVENGINE_MATH_FILES "Math/*")
 source_group("Math" FILES ${ENLIVENGINE_MATH_FILES})
 
-file(GLOB_RECURSE ENLIVENGINE_SDL_FILES "SDL/*")
-source_group("SDL" FILES ${ENLIVENGINE_SDL_FILES})
-
 file(GLOB_RECURSE ENLIVENGINE_WINDOW_FILES "Window/*")
 source_group("Window" FILES ${ENLIVENGINE_WINDOW_FILES})
 
@@ -46,12 +43,13 @@ source_group("Tools" FILES ${ENLIVENGINE_TOOLS_FILES})
 file(GLOB_RECURSE ENLIVENGINE_ENGINE_FILES "Engine/*")
 source_group("Engine" FILES ${ENLIVENGINE_ENGINE_FILES})
 
+find_package(OpenGL REQUIRED)
+
 add_library(Enlivengine STATIC
 	${ENLIVENGINE_ROOT_FILES}
 	${ENLIVENGINE_PLATFORM_FILES}
 	${ENLIVENGINE_UTILS_FILES}
 	${ENLIVENGINE_MATH_FILES}
-	${ENLIVENGINE_SDL_FILES}
 	${ENLIVENGINE_WINDOW_FILES}
 	${ENLIVENGINE_RESOURCES_FILES}
 	${ENLIVENGINE_AUDIO_FILES}
@@ -69,5 +67,5 @@ else()
 	target_compile_options(Enlivengine PRIVATE -Wall -Wextra -pedantic -Werror)
 endif()
 target_include_directories(Enlivengine PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
-target_link_libraries(Enlivengine PUBLIC EnlivengineThirdParty)
+target_link_libraries(Enlivengine PUBLIC EnlivengineThirdParty sfml-graphics OpenGL::GL)
 set_target_properties(Enlivengine PROPERTIES FOLDER "Enlivengine")

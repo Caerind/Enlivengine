@@ -1,6 +1,6 @@
 #pragma once
 
-#include <bgfx/bgfx.h>
+#include <SFML/Graphics/Texture.hpp>
 
 #include <Enlivengine/Math/Vector3.hpp>
 #include <Enlivengine/Resources/ResourceManager.hpp>
@@ -14,33 +14,21 @@ public:
 	static U32 GetStaticResourceType() { return static_cast<U32>(ResourceType::Texture); }
 	U32 GetResourceType() const override { return GetStaticResourceType(); }
 
-	Texture();
-	~Texture();
+	Texture() = default;
 
-	bool Initialize(const char* filename, U64 flags = BGFX_TEXTURE_NONE | BGFX_SAMPLER_NONE);
-	void Destroy();
+    bool LoadFromFile(const char* filename);
 
 	bool IsValid() const;
 
-	U32 GetMemSize() const;
-	Vector3u GetSize() const;
+	Vector2u GetSize() const;
 	U32 GetWidth() const;
 	U32 GetHeight() const;
-	U32 GetDepth() const;
-	U32 GetLayers() const;
-	U32 GetMips() const;
-	U32 GetBitsPerPixel() const;
-	bool IsCubeMap() const;
-
-	// TODO : Remove/Clean
-	bgfx::TextureHandle GetHandle() const { return mTexture; }
+	
+	sf::Texture& GetSFMLTexture() { return mTexture; }
 
 private:
-	static void ImageReleaseCallback(void* ptr, void* userData);
-
-private:
-	bgfx::TextureHandle mTexture;
-	bgfx::TextureInfo mInfo;
+	sf::Texture mTexture;
+	bool mValid{false};
 };
 
 class TextureLoader
@@ -52,7 +40,7 @@ public:
 	{
 		return ResourceLoader<Texture>([&filename](Texture& r)
 			{
-				const bool result = r.Initialize(filename.c_str());
+				const bool result = r.LoadFromFile(filename.c_str());
 				r.SetLoaded(result);
 				r.SetLoadInfo(ResourceLoadInfo(ResourceLoadInfo::File, filename));
 				return result;

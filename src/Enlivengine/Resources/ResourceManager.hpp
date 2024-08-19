@@ -251,10 +251,10 @@ public:
 	template <typename T = void> U32 Count() const;
 	U32 Count(U32 resourceType) const;
 
+#ifdef ENLIVE_DEBUG
 	template <typename EnumClient>
 	bool InitializeClientResourceTypes();
 
-#ifdef ENLIVE_DEBUG
 	template <typename T = void> void GetResourceInfosOfType(std::vector<ResourceInfo>& resourceInfos);
 	void GetResourceInfosOfType(std::vector<ResourceInfo>& resourceInfos, U32 resourceType);
 	void GetResourceInfos(std::vector<ResourceInfo>& resourceInfos);
@@ -304,4 +304,4 @@ ENLIVE_META_CLASS_END()
 
 ENLIVE_DEFINE_TYPE_INFO_TEMPLATE(en::ResourcePtr, en::Type_CustomSerialization, en::Type_CustomEditor)
 
-#include "ResourceManager.inl"
+#include <Enlivengine/Resources/ResourceManager.inl>

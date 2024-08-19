@@ -1,7 +1,5 @@
 #include <Enlivengine/Audio/AudioSourceSpeech.hpp>
 
-#include <soloud_speech.h>
-
 #include <Enlivengine/Utils/Assert.hpp>
 
 namespace en

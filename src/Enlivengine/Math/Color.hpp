@@ -2,12 +2,6 @@
 
 #include <Enlivengine/Math/Math.hpp>
 
-#ifdef ENLIVE_ENABLE_IMGUI
-#include <imgui/imgui.h>
-#endif // ENLIVE_ENABLE_IMGUI
-
-#include <Box2D/Box2D.h>
-
 namespace en
 {
 
@@ -53,29 +47,15 @@ public:
 		return *this;
 	}
 
-#ifdef ENLIVE_ENABLE_IMGUI
-	inline ImVec4 ToImGuiColor() const { const F32 factor = 1.0f / 255.0f; return ImVec4(factor * r, factor * g, factor * b, factor * a); }
-	inline Color& FromImGuiColor(const ImVec4& color)
-	{
-		const F32 factor = 255.0f;
-		r = static_cast<U8>(factor * color.x);
-		g = static_cast<U8>(factor * color.y);
-		b = static_cast<U8>(factor * color.z);
-		a = static_cast<U8>(factor * color.w);
-		return *this;
-	}
-#endif // ENLIVE_ENABLE_IMGUI
-
-	inline b2Color ToBox2DColor() const { const F32 factor = 1.0f / 255.0f; return b2Color(factor * r, factor * g, factor * b, factor * a); }
-	inline Color& FromBox2DColor(const b2Color& color)
-	{
-		const F32 factor = 255.0f;
-		r = static_cast<U8>(factor * color.r);
-		g = static_cast<U8>(factor * color.g);
-		b = static_cast<U8>(factor * color.b);
-		a = static_cast<U8>(factor * color.a);
-		return *this;
-	}
+    inline Color& FromFloats(float _r, float _g, float _b, float _a = 1.0f)
+    {
+        const F32 factor = 255.0f;
+        r = static_cast<U8>(factor * _r);
+        g = static_cast<U8>(factor * _g);
+        b = static_cast<U8>(factor * _b);
+        a = static_cast<U8>(factor * _a);
+        return *this;
+    }
 
 	constexpr bool operator==(const Color& other) const { return r == other.r && g == other.g && b == other.b && a == other.a; }
 	constexpr bool operator!=(const Color& other) const { return !operator==(other); }

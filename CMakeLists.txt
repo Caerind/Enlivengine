@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12...3.15)
 
 project(Enlivengine
-    VERSION 0.3
+    VERSION 0.0
     DESCRIPTION "Enlivengine"
     LANGUAGES CXX)
 
@@ -16,6 +16,12 @@ endif()
 # Used to have a good display look in IDE
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
+
+include(FetchContent)
+FetchContent_Declare(SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.6.x)
+FetchContent_MakeAvailable(SFML)
 
 add_subdirectory(src)
 

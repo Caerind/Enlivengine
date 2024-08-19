@@ -2,8 +2,6 @@
 
 #if defined(ENLIVE_ENABLE_IMGUI) && defined(ENLIVE_TOOL)
 
-#include <ImGuizmo/ImGuizmo.h>
-
 #include <Enlivengine/Core/Universe.hpp>
 #include <Enlivengine/Core/World.hpp>
 #include <Enlivengine/Core/Entity.hpp>
@@ -21,21 +19,18 @@ namespace en
 
 ImGuiEditor::ImGuiEditor()
 	: ImGuiTool()
-	, mFramebuffer()
+	, mRenderTarget()
 	, mViewRect()
 	, mViewVisible(false)
-	, mCamera()
-	, mUseMainCamera(true)
+	, mView()
+	, mUseMainView(true)
 	, mEditConfig(false)
 	, mShowManipulator(true)
 	, mShowDebug(true)
 	, mGizmoOperation(GizmoOperation::Translate)
 	, mStatus(GameStatus::Stopped)
 {
-	mCamera.InitializePerspective(80.0f, 0.1f, 10000.0f);
-	mCamera.InitializeView(Vector3f(-2.0f, 0.8f, 2.0f), Matrix3f::RotationY(-135.0f));
-
-	mFramebuffer.Create(Vector2u(840, 600), true);
+	mRenderTarget.Create({ 840, 600 });
 }
 
 ImGuiToolTab ImGuiEditor::GetTab() const
@@ -70,10 +65,12 @@ void ImGuiEditor::Display()
 	mViewRect.SetMax(Vector2f(vMax.x + windowPos.x, vMax.y + windowPos.y));
 	const Vector2f windowSize = mViewRect.GetSize();
 
-	if (IsUsingEditorCamera())
+    // TODO : ImGuizmo
+    /*
+	if (IsUsingEditorView())
 	{
 		ImGuizmo::SetRect(mViewRect.GetMin().x, mViewRect.GetMin().y, windowSize.x, windowSize.y);
-		ImGuizmo::SetOrthographic(mCamera.GetProjection() == Camera::ProjectionMode::Orthographic);
+		ImGuizmo::SetOrthographic(true);
 
 		if (world != nullptr)
 		{
@@ -103,6 +100,7 @@ void ImGuiEditor::Display()
 					TransformComponent& transform = entity.Get<TransformComponent>();
 					float mtxData[16];
 					std::memcpy(mtxData, transform.GetGlobalMatrix().GetData(), sizeof(float) * 16);
+					
 					ImGuizmo::Manipulate(
 						mCamera.GetViewMatrix().GetData(),
 						mCamera.GetProjectionMatrix().GetData(),
@@ -122,7 +120,8 @@ void ImGuiEditor::Display()
 						}
 					}
           
-					world->GetDebugDraw().DrawTransform(parentMtx);
+					// TODO : DebugDraw Transform
+					//world->GetDebugDraw().DrawTransform(parentMtx);
 					if (ImGuizmo::IsUsing())
 					{
 						const Matrix4f result = Matrix4f::Identity().Set(mtxData) * parentMtx.Inversed();
@@ -130,8 +129,9 @@ void ImGuiEditor::Display()
 					}
 				}
 			}
-		}
-	}
+        }
+    }
+    */
 
 	if (ImGui::BeginMenuBar())
 	{
@@ -189,30 +189,30 @@ void ImGuiEditor::Display()
 			// Button to switch from editor cam / game cam in during test
 			if (mStatus != GameStatus::Stopped)
 			{
-				if (mUseMainCamera)
+				if (mUseMainView)
 				{
 					if (ImGui::SmallButton("EditorCam"))
 					{
-						mUseMainCamera = false;
+						mUseMainView = false;
 					}
 				}
 				else
 				{
 					if (ImGui::SmallButton("GameCam"))
 					{
-						mUseMainCamera = true;
+						mUseMainView = true;
 					}
 				}
 
 			}
 
-			if (!IsUsingEditorCamera())
+			if (!IsUsingEditorView())
 			{
 				GenericEdit(objectEditor, "Debug", mShowDebug);
 			}
 		}
 
-		if (IsUsingEditorCamera())
+		if (IsUsingEditorView())
 		{
 			if (ImGui::SmallButton("Config"))
 			{
@@ -239,13 +239,13 @@ void ImGuiEditor::Display()
 		ImGui::EndMenuBar();
 	}
 
-	if (IsUsingEditorCamera())
+	if (IsUsingEditorView())
 	{
 		if (mEditConfig)
 		{
 			if (ImGui::Begin("Editor - Config", &mEditConfig))
 			{
-				GenericEdit(objectEditor, "Camera settings", mCamera);
+				GenericEdit(objectEditor, "View settings", mView);
 				GenericEdit(objectEditor, "Show Manipulator", mShowManipulator);
 				GenericEdit(objectEditor, "Show Debug", mShowDebug);
 				ImGui::End();
@@ -261,6 +261,8 @@ void ImGuiEditor::Display()
 		{
 			if (mShowManipulator)
 			{
+				// TODO
+				/*
 				float manipulatorSize = 100;
 				float viewMtx[16];
 				float viewMtxR[16];
@@ -275,21 +277,23 @@ void ImGuiEditor::Display()
 					mCamera.SetPosition(iMtx.GetTranslation());
 					mCamera.SetRotation(rot);
 				}
+				*/
 			}
 
-			UpdateCamera();
+			UpdateView();
 		}
 	}
 	
 	if (windowSize.x > 0 && windowSize.y > 0)
 	{
 		const Vector2u uWindowSize = Vector2u(windowSize);
-		if (uWindowSize != mFramebuffer.GetSize())
+		if (uWindowSize != mRenderTarget.GetSize())
 		{
-			mFramebuffer.Resize(uWindowSize);
+			mRenderTarget.Resize(uWindowSize);
 		}
 
-		ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
+		// TODO
+		//ImGui::Image(mFramebuffer.GetTexture(), ImVec2(windowSize.x, windowSize.y));
 
 		mViewVisible = ImGui::IsItemVisible(); // TODO : Not really working...
 	}
@@ -298,14 +302,16 @@ void ImGuiEditor::Display()
 		mViewVisible = false;
 	}
 
-	if (mStatus != GameStatus::Stopped && mUseMainCamera && world == nullptr)
+	if (mStatus != GameStatus::Stopped && mUseMainView && world == nullptr)
 	{
-		mUseMainCamera = false;
+		mUseMainView = false;
 	}
 }
 
-void ImGuiEditor::UpdateCamera()
+void ImGuiEditor::UpdateView()
 {
+	// TODO : UpdateView mvt
+	/*
 	if (Keyboard::IsAltHold())
 	{
 		Mouse::SetRelativeMode(true);
@@ -332,7 +338,7 @@ void ImGuiEditor::UpdateCamera()
 			Vector3f movement;
 			movement += 3.0f * forward * mvtUnit * dtSeconds;
 			movement -= 3.0f * left * mvtUnit.CrossProduct(ENLIVE_DEFAULT_UP) * dtSeconds;
-			mCamera.Move(movement);
+			mView.Move(movement);
 		}
 
 		// Rotation
@@ -340,11 +346,11 @@ void ImGuiEditor::UpdateCamera()
 		{
 			if (!Math::Equals(deltaYaw, 0.0f))
 			{
-				mCamera.Rotate(Matrix3f::RotationY(100.0f * dtSeconds * deltaYaw));
+				mView.Rotate(Matrix3f::RotationY(100.0f * dtSeconds * deltaYaw));
 			}
 			if (!Math::Equals(deltaPitch, 0.0f))
 			{
-				//mCamera.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
+				mView.Rotate(Quaternionf(100.0f * dtSeconds * deltaPitch, direction.CrossProduct(ENLIVE_DEFAULT_UP)));
 			}
 		}
 	}
@@ -352,21 +358,22 @@ void ImGuiEditor::UpdateCamera()
 	{
 		Mouse::SetRelativeMode(false);
 	}
+	*/
 }
 
-Framebuffer& ImGuiEditor::GetFramebuffer()
+RenderTarget& ImGuiEditor::GetRenderTarget()
 {
-	return GetInstance().mFramebuffer;
+	return GetInstance().mRenderTarget;
 }
 
 Vector2i ImGuiEditor::GetMouseScreenCoordinates()
 {
-	return Mouse::GetPositionCurrentWindow() - Vector2i(GetInstance().mViewRect.GetMin());
+	return Mouse::GetPosition() - Vector2i(GetInstance().mViewRect.GetMin());
 }
 
 bool ImGuiEditor::IsMouseInView()
 {
-	return IsViewVisible() && GetInstance().mViewRect.Contains(Vector2f(Mouse::GetPositionCurrentWindow()));
+	return IsViewVisible() && GetInstance().mViewRect.Contains(Vector2f(Mouse::GetPosition()));
 }
 
 bool ImGuiEditor::IsViewVisible()
@@ -384,10 +391,10 @@ bool ImGuiEditor::IsShowingDebug()
 	return GetInstance().mShowDebug;
 }
 
-bool ImGuiEditor::IsUsingEditorCamera()
+bool ImGuiEditor::IsUsingEditorView()
 {
 	auto& instance = GetInstance();
-	if (instance.mStatus != GameStatus::Stopped && instance.mUseMainCamera && Camera::GetMainCamera() != nullptr)
+	if (instance.mStatus != GameStatus::Stopped && instance.mUseMainView)
 	{
 		return false;
 	}
@@ -397,16 +404,16 @@ bool ImGuiEditor::IsUsingEditorCamera()
 	}
 }
 
-Camera& ImGuiEditor::GetCamera()
+View* ImGuiEditor::GetView()
 {
 	auto& instance = GetInstance();
-	if (instance.mStatus != GameStatus::Stopped && instance.mUseMainCamera && Camera::GetMainCamera() != nullptr)
+	if (instance.mStatus != GameStatus::Stopped && instance.mUseMainView)
 	{
-		return *Camera::GetMainCamera();
+		return nullptr;
 	}
 	else
 	{
-		return instance.mCamera;
+		return &instance.mView;
 	}
 }
 
@@ -445,7 +452,7 @@ bool ImGuiEditor::StartGame()
 		else
 		{
 			enAssert(false); // Oups...
-			enLogFatal(LogChannel::Core, "Can't load world {}", worldName);
+			enLogFatal(LogChannel::Core, "Can't load world {}", worldName.c_str());
 		}
 	}
 	else
@@ -473,7 +480,7 @@ bool ImGuiEditor::StopGame()
 	else
 	{
 		enAssert(false); // Oups...
-		enLogFatal(LogChannel::Core, "Can't load world {}", worldName);
+		enLogFatal(LogChannel::Core, "Can't load world {}", worldName.c_str());
 	}
 
 	return false;

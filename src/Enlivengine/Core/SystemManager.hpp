@@ -3,6 +3,7 @@
 #include <Enlivengine/Core/System.hpp>
 #include <Enlivengine/Core/PhysicSystemBase.hpp>
 #include <Enlivengine/Core/RenderSystemBase.hpp>
+#include <Enlivengine/Graphics/RenderTarget.hpp>
 
 namespace en
 {
@@ -35,7 +36,7 @@ public:
 
 	void UpdatePhysic();
 	void Update();
-	void Render();
+	void Render(RenderTarget& renderTarget);
 
 #ifdef ENLIVE_TOOL
 	void UpdateTool();

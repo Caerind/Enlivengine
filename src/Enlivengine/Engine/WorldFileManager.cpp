@@ -92,7 +92,7 @@ bool WorldFileManager::RemoveWorld(const std::string& worldName)
 	const World* world = Universe::GetCurrentWorld();
 	if (world != nullptr && world->GetName() == worldName)
 	{
-		enLogError(LogChannel::Core, "Can't remove the currently loaded world \"{}\"", world->GetName());
+		enLogError(LogChannel::Core, "Can't remove the currently loaded world \"{}\"", world->GetName().c_str());
 		return false;
 	}
 
@@ -163,22 +163,22 @@ World* WorldFileManager::LoadWorld_Internal(const std::string& worldName)
 		{
 			if (GenericSerialization(worldReader, "World", *world))
 			{
-				enLogInfo(LogChannel::Core, "World \"{}\" is correctly loaded", worldName);
+				enLogInfo(LogChannel::Core, "World \"{}\" is correctly loaded", worldName.c_str());
 			}
 			else
 			{
-				enLogWarning(LogChannel::Core, "World \"{}\" isn't correctly loaded", worldName, path.string());
+				enLogWarning(LogChannel::Core, "World \"{}\" isn't correctly loaded", worldName.c_str(), path.string().c_str());
 			}
 			return world;
 		}
 		else
 		{
-			enLogError(LogChannel::Core, "Can't open world \"{}\" : {}", worldName, path.string());
+			enLogError(LogChannel::Core, "Can't open world \"{}\" : {}", worldName.c_str(), path.string().c_str());
 		}
 	}
 	else
 	{
-		enLogError(LogChannel::Core, "World \"{}\" doesn't exist : {}", worldName, path.string());
+		enLogError(LogChannel::Core, "World \"{}\" doesn't exist : {}", worldName.c_str(), path.string().c_str());
 	}
 	return nullptr;
 }
@@ -198,18 +198,18 @@ bool WorldFileManager::SaveWorld_Internal(const World* world)
 
 		if (correctlySerialized && correctlyClosed)
 		{
-			enLogInfo(LogChannel::Core, "World \"{}\" is correctly saved", worldName);
+			enLogInfo(LogChannel::Core, "World \"{}\" is correctly saved", worldName.c_str());
 			return true;
 		}
 		else
 		{
-			enLogError(LogChannel::Core, "World \"{}\" file can't be saved : {}", worldName, path.string());
+			enLogError(LogChannel::Core, "World \"{}\" file can't be saved : {}", worldName.c_str(), path.string().c_str());
 			return false;
 		}
 	}
 	else
 	{
-		enLogError(LogChannel::Core, "Can't save world {} : {}", worldName, path.string());
+		enLogError(LogChannel::Core, "Can't save world {} : {}", worldName.c_str(), path.string().c_str());
 		return false;
 	}
 }

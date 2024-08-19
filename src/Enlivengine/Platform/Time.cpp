@@ -13,6 +13,16 @@ Time Time::Now()
 	return Time(static_cast<I64>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
 }
 
+Time Time::GetDeltaTime()
+{
+	return sDeltaTime;
+}
+
+void Time::SetDeltaTime(Time dt)
+{
+	sDeltaTime = dt;
+}
+
 bool Time::Serialize(Serializer& serializer, const char* name)
 {
 	return serializer.Serialize(name, mTicks);
@@ -39,16 +49,6 @@ bool Time::Edit(ObjectEditor& objectEditor, const char* name)
 	{
 		return false;
 	}
-}
-
-Time Time::GetDeltaTime()
-{
-	return sDeltaTime;
-}
-
-void Time::SetDeltaTime(Time dt)
-{
-	sDeltaTime = dt;
 }
 
 Clock::Clock()

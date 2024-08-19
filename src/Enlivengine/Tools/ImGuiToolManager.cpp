@@ -175,6 +175,8 @@ bool ImGuiToolManager::CreateDefaultImGuiFile(const std::string& filename)
 		return false;
 	}
 
+	// TODO : Update
+	/*
 	{
 		file << "[Window][DockSpaceViewport_11111111]" << std::endl;
 		file << "Pos=0,24" << std::endl;
@@ -236,6 +238,7 @@ bool ImGuiToolManager::CreateDefaultImGuiFile(const std::string& filename)
 		file << "    DockNode  ID=0x00000004 Parent=0x00000002 SizeRef=1620,211 Selected=0x893FB60F" << std::endl;
 		file << std::endl;
 	}
+	*/
 
 	file << std::endl;
 	file.close();
@@ -258,14 +261,14 @@ void ImGuiToolManager::Update(Window& window)
 	}
 #endif // ENLIVE_RELEASE && ENLIVE_DEBUG
 
-	if (imgui.mRunning)
+	ENLIVE_UNUSED(window);
+	/*if (imgui.mRunning)
 	{
-		const Vector2u windowSize = window.GetSize();
-		ImGuiWrapper::BeginFrame(250, windowSize.x, windowSize.y, Time::GetDeltaTime().AsSeconds());
+		ImGuiWrapper::BeginFrame(window, Time::GetDeltaTime());
 		imgui.ImGuiMain();
 		imgui.ImGuiTools();
-		ImGuiWrapper::EndFrame();
-	}
+		ImGuiWrapper::EndFrame(window);
+	}*/
 }
 
 void ImGuiToolManager::RegisterTool(ImGuiTool& tool)
@@ -335,7 +338,7 @@ void ImGuiToolManager::ImGuiMain()
 	}
 
 #ifdef ENLIVE_TOOL
-	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+	//ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 #endif // ENLIVE_TOOL
 }
 

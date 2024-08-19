@@ -1,7 +1,5 @@
 #pragma once
 
-#include <soloud.h>
-
 #include <Enlivengine/Resources/ResourceManager.hpp>
 #include <Enlivengine/Audio/AudioSource.hpp>
 

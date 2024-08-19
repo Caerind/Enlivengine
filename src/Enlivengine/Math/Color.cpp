@@ -1,5 +1,7 @@
 #include <Enlivengine/Math/Color.hpp>
 
+#include <Enlivengine/Graphics/ImGuiHelper.hpp>
+
 namespace en
 {
 
@@ -31,10 +33,10 @@ bool Color::Edit(ObjectEditor& objectEditor, const char* name)
 #ifdef ENLIVE_ENABLE_IMGUI
 	if (objectEditor.IsImGuiEditor())
 	{
-		ImVec4 color = ToImGuiColor();
-		if (ImGui::ColorEdit3(name, (float*)&color))
+		ImVec4 imColor = ImGui::ColorToImGuiColor(*this);
+		if (ImGui::ColorEdit3(name, (float*)&imColor))
 		{
-			FromImGuiColor(color);
+			FromFloats(imColor.x, imColor.y, imColor.z, imColor.w);
 			return true;
 		}
 		return false;

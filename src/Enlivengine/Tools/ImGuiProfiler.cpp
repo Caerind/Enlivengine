@@ -197,7 +197,7 @@ void ImGuiProfiler::DisplayFrame(const ProfilerFrame& frame) const
 				{
 					const U32 taskNameHash = Hash::SlowHash(task.name);
 					const Color color(taskNameHash);
-					const ImVec4 imColor = color.ToImGuiColor();
+					const ImVec4 imColor = ImGui::ColorToImGuiColor(color);
 
 					ImGui::PushStyleColor(ImGuiCol_Button, imColor);
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, imColor);

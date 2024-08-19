@@ -387,7 +387,7 @@ private:
 		mCapacity = newCapacity;
 		if (mArray != nullptr)
 		{
-			const bool result = enDelete(T, mArray);
+			[[maybe_unused]] const bool result = enDelete(T, mArray);
 			enAssert(result && mArray == nullptr);
 		}
 		if (mCapacity > 0)

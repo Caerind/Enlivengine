@@ -8,7 +8,6 @@
 #include <Enlivengine/Platform/Debugger.hpp>
 #include <Enlivengine/Platform/Time.hpp>
 #include <Enlivengine/Utils/Log.hpp>
-#include <SDL_config.h>
 
 #include <Enlivengine/Resources/PathManager.hpp>
 #include <Enlivengine/Engine.hpp>
@@ -174,39 +173,6 @@ int main(int argc, char** argv)
 	enLogInfo(en::LogChannel::System, "CompilerTraits:");
 
 	enLogInfo(en::LogChannel::System, "ENLIVE_FUNCTION : {}", ENLIVE_FUNCTION);
-
-	enLogInfo(en::LogChannel::System, "================================================");
-	enLogInfo(en::LogChannel::System, "SDL detected driver:");
-#ifdef SDL_VIDEO_DRIVER_WINDOWS
-	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_WINDOWS");
-#endif
-#ifdef SDL_VIDEO_DRIVER_WINRT
-	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_WINRT");
-#endif
-#ifdef SDL_VIDEO_DRIVER_X11
-	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_X11");
-#endif
-#ifdef SDL_VIDEO_DRIVER_DIRECTFB
-	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_DIRECTFB");
-#endif
-#ifdef SDL_VIDEO_DRIVER_COCOA
-	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_COCOA");
-#endif
-#ifdef SDL_VIDEO_DRIVER_UIKIT
-	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_UIKIT");
-#endif
-#ifdef SDL_VIDEO_DRIVER_WAYLAND
-	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_WAYLAND");
-#endif
-#ifdef SDL_VIDEO_DRIVER_MIR
-	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_MIR");
-#endif
-#ifdef SDL_VIDEO_DRIVER_ANDROID
-	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_ANDROID");
-#endif
-#ifdef SDL_VIDEO_DRIVER_VIVANTE
-	enLogInfo(en::LogChannel::System, "SDL_VIDEO_DRIVER_VIVANTE");
-#endif
 
 	enLogInfo(en::LogChannel::System, "================================================");
 	enLogInfo(en::LogChannel::System, "Config:");

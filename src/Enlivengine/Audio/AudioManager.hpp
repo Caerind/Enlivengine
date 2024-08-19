@@ -1,6 +1,6 @@
 #pragma once
 
-#include <soloud.h>
+#include <Enlivengine/Audio/SoloudIncl.hpp>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Singleton.hpp>

@@ -64,7 +64,8 @@ void AlignedFree(void* ptr)
 
 std::size_t RoundToAlignment(std::size_t size, std::size_t alignment)
 {
-	return (size + (alignment - 1)) & -alignment;
+	const long long signedAlignment = static_cast<long long>(alignment);
+	return (size + (alignment - 1)) & -signedAlignment;
 }
 
 const void* MemorySource::GetEndPointer() const

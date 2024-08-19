@@ -19,7 +19,7 @@ source_group("filter" FILES ${SRC_FILTER})
 
 # Backend
 set(SRC_BACKEND
-	src/backend/sdl2_static/soloud_sdl2_static.cpp
+	src/backend/null/soloud_null.cpp
 )
 source_group("backend" FILES ${SRC_BACKEND})
 
@@ -29,6 +29,5 @@ add_library(SoLoud STATIC
 	${SRC_CORE}
 	${SRC_FILTER}
 )
-target_compile_definitions(SoLoud PUBLIC WITH_SDL2_STATIC)
+target_compile_definitions(SoLoud PUBLIC WITH_NULL)
 target_include_directories(SoLoud PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
-target_link_libraries(SoLoud PUBLIC SDL2-static SDL2main)

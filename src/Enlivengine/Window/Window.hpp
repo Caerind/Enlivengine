@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL.h>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include <Enlivengine/Platform/PrimitiveTypes.hpp>
 #include <Enlivengine/Utils/Signal.hpp>
@@ -13,7 +13,7 @@ class Window
 {
 public:
     Window();
-	~Window();
+    ~Window();
    
     // NonCopyable / NonMovable
     Window(Window&& other) = delete;
@@ -21,24 +21,25 @@ public:
     Window& operator=(Window&& other) = delete;
     Window& operator=(const Window& other) = delete;
 
-    bool Create(const char* name, U32 displayIndex = 0);
-    bool Create(const char* name, U32 width, U32 height, U32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    bool Create(const char* name, U32 x, U32 y, U32 width, U32 height, U32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-	void Destroy();
-	bool IsValid() const;
+    bool Create(const char* name);
+
+    void Destroy();
+    bool IsValid() const;
 
     void Close();
-	void ResetShouldClose();
-	bool ShouldClose() const;
+    void ResetShouldClose();
+    bool ShouldClose() const;
     enSignal(OnShouldClose, const Window*);
 
     void SetVisible(bool visible);
     bool IsVisible() const;
 
+    /*
     void Minimize();
     void Maximize();
     bool IsMinimized() const;
     bool IsMaximized() const;
+    */
 
     void SetSize(const Vector2u& size);
     Vector2u GetSize() const;
@@ -47,6 +48,7 @@ public:
     void SetTitle(const char* title);
     const char* GetTitle() const;
 
+    /*
     bool IsGrabbing() const;
     void SetGrab(bool grab);
     void Grab();
@@ -55,24 +57,20 @@ public:
     U32 GetID() const;
     U32 GetFlags() const;
 
-    static Window* GetFirstWindow();
     static Window* GetGrabbingWindow();
+    */
+    
+    sf::RenderWindow& GetSFMLWindow();
+    const sf::RenderWindow& GetSFMLWindow() const;
 
 private:
-    friend class BgfxWrapper;
     friend class Mouse;
     friend class EventSystem;
 
-    SDL_Window* mWindow;
-    bool mShouldClose;
-
-    static constexpr U32 kMaxWindows = 10;
-    static U32 sWindowCount;
-    static Window* sWindows[kMaxWindows];
-    static void RegisterWindow(Window* window);
-    static void UnregisterWindow(Window* window);
-    static Window* GetWindowFromSDLWindow(SDL_Window* sdlWindow);
-    static Window* GetWindowFromSDLWindowID(U32 sldWindowID);
+    sf::RenderWindow mWindow; // Or sf::Window ?
+    std::string mTitle;
+    bool mShouldClose{false};
+    bool mVisible{false};
 };
 
 } // namespace en

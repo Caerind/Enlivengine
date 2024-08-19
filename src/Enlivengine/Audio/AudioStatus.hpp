@@ -5,9 +5,9 @@ namespace en
 
 enum class AudioStatus
 {
-	Playing,
-	Paused,
-	Stopped
+    Playing,
+    Paused,
+    Stopped
 };
 
 } // namespace en

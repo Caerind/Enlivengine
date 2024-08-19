@@ -6,8 +6,8 @@
 #include <Enlivengine/Utils/Hash.hpp>
 #include <Enlivengine/Utils/Macros.hpp>
 #include <Enlivengine/Utils/String.hpp>
-#include <string>
 
+#include <string>
 #include <array>
 #include <vector>
 

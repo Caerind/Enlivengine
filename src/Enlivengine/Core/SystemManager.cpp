@@ -76,12 +76,12 @@ void SystemManager::Update()
 	}
 }
   
-void SystemManager::Render()
+void SystemManager::Render(RenderTarget& renderTarget)
 {
 	ENLIVE_PROFILE_FUNCTION();
 	if (mRenderSystem != nullptr)
 	{
-		mRenderSystem->Render();
+		mRenderSystem->Render(renderTarget);
 	}
 }
 

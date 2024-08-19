@@ -671,7 +671,7 @@ void ImGuiAnimationEditor::NewState(AnimationStateMachine& stateMachine)
 			}
 			else
 			{
-				ImGui::TextColored(Colors::Orange.ToImGuiColor(), "Invalid clip");
+				ImGui::TextColored(ImGui::ColorToImGuiColor(Colors::Orange), "Invalid clip");
 				validNewState = false;
 			}
 		}
@@ -874,10 +874,10 @@ void ImGuiAnimationEditor::ParametersList(AnimationStateMachine& stateMachine)
             ImVec4 color;
             switch (parameter.GetType())
             {
-            case AnimationStateMachine::Parameter::Type::Boolean: color = Colors::Lime.ToImGuiColor(); break;
-            case AnimationStateMachine::Parameter::Type::Float: color = Colors::Salmon.ToImGuiColor(); break;
-            case AnimationStateMachine::Parameter::Type::Integer: color = Colors::Cyan.ToImGuiColor(); break;
-            case AnimationStateMachine::Parameter::Type::Trigger: color = Colors::Yellow.ToImGuiColor(); break;
+            case AnimationStateMachine::Parameter::Type::Boolean: color = ImGui::ColorToImGuiColor(Colors::Lime); break;
+            case AnimationStateMachine::Parameter::Type::Float: color = ImGui::ColorToImGuiColor(Colors::Salmon); break;
+            case AnimationStateMachine::Parameter::Type::Integer: color = ImGui::ColorToImGuiColor(Colors::Cyan); break;
+            case AnimationStateMachine::Parameter::Type::Trigger: color = ImGui::ColorToImGuiColor(Colors::Yellow); break;
             default: break;
             }
             ImGui::TextColored(color, "%s", parameter.GetName().c_str());
@@ -1031,10 +1031,10 @@ void ImGuiAnimationEditor::Preview(AnimationStateMachine& stateMachine)
 				ImVec4 color;
 				switch (parameter.GetType())
 				{
-				case AnimationStateMachine::Parameter::Type::Boolean: color = Colors::Lime.ToImGuiColor(); break;
-				case AnimationStateMachine::Parameter::Type::Float: color = Colors::Salmon.ToImGuiColor(); break;
-				case AnimationStateMachine::Parameter::Type::Integer: color = Colors::Cyan.ToImGuiColor(); break;
-				case AnimationStateMachine::Parameter::Type::Trigger: color = Colors::Yellow.ToImGuiColor(); break;
+				case AnimationStateMachine::Parameter::Type::Boolean: color = ImGui::ColorToImGuiColor(Colors::Lime); break;
+				case AnimationStateMachine::Parameter::Type::Float: color = ImGui::ColorToImGuiColor(Colors::Salmon); break;
+				case AnimationStateMachine::Parameter::Type::Integer: color = ImGui::ColorToImGuiColor(Colors::Cyan); break;
+				case AnimationStateMachine::Parameter::Type::Trigger: color = ImGui::ColorToImGuiColor(Colors::Yellow); break;
 				default: break;
 				}
 				ImGui::TextColored(color, "%s", parameter.GetName().c_str());
@@ -1258,7 +1258,7 @@ void ImGuiAnimationEditor::NodeEditor(AnimationStateMachine& stateMachine)
 			ax::NodeEditor::Link(GetTransitionID(transition, stateMachine),
 				GetTransitionInputID(transition, stateMachine),
 				GetTransitionOutputID(transition, stateMachine),
-				Colors::Lime.ToImGuiColor(),
+				ImGui::ColorToImGuiColor(Colors::Lime),
 				2.0f
 			);
 		}

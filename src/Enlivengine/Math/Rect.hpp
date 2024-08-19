@@ -27,10 +27,8 @@ public:
 	constexpr T Height() const { return mMax.y - mMin.y; }
 
 	constexpr Vector2<T> GetSize() const { return mMax - mMin; }
-	constexpr void SetSize(const Vector2<T>& size) { mMax = mMin + size; }
-
 	constexpr Vector2<T> GetCenter() const { return (mMin + mMax) * 0.5f; }
-	constexpr void SetCenter(const Vector2<T>& center) { const Vector2<T> hs = GetHalfSize(); mMin = center - hs; mMax = center + hs; }
+	constexpr void SetCenterAndSize(const Vector2<T>& center, const Vector2<T>& size) { const Vector2<T> hs = size / 2; mMin = center - hs; mMax = center + hs; }
 
 	constexpr Vector2<T> GetHalfSize() const { return (mMax - mMin) * 0.5f; }
 	constexpr T GetArea() const { const Vector2f size = GetSize(); return size.x * size.y; }
@@ -100,28 +98,40 @@ public:
 			&& mMin.y <= rect.mMin.y
 			&& mMax.x >= rect.mMax.x
 			&& mMax.y >= rect.mMax.y;
-	}
+    }
 
-	constexpr bool Intersects(const Rect<T>& rect, Rect<T>* intersection = nullptr) const
-	{
-		T left = Math::Max(mMin.x, rect.mMin.x);
-		T right = Math::Min(mMax.x, rect.mMax.x);
-		if (left >= right)
-			return false;
+    constexpr bool Intersects(const Rect<T>& rect) const
+    {
+        T left = Math::Max(mMin.x, rect.mMin.x);
+        T right = Math::Min(mMax.x, rect.mMax.x);
+        if (left >= right)
+            return false;
 
-		T top = Math::Max(mMin.y, rect.mMin.y);
-		T bottom = Math::Min(mMax.y, rect.mMax.y);
-		if (top >= bottom)
-			return false;
+        T top = Math::Max(mMin.y, rect.mMin.y);
+        T bottom = Math::Min(mMax.y, rect.mMax.y);
+        if (top >= bottom)
+            return false;
 
-		if (intersection != nullptr)
-		{
-			intersection->mMin.Set(left, top);
-			intersection->mMax.Set(right, bottom);
-		}
+        return true;
+    }
 
-		return true;
-	}
+    constexpr bool Intersects(const Rect<T>& rect, Rect<T>& intersection) const
+    {
+        T left = Math::Max(mMin.x, rect.mMin.x);
+        T right = Math::Min(mMax.x, rect.mMax.x);
+        if (left >= right)
+            return false;
+
+        T top = Math::Max(mMin.y, rect.mMin.y);
+        T bottom = Math::Min(mMax.y, rect.mMax.y);
+        if (top >= bottom)
+            return false;
+
+        intersection.mMin.Set(left, top);
+        intersection.mMax.Set(right, bottom);
+
+        return true;
+    }
 
 	constexpr bool operator==(const Rect<T>& other) const { return mMin == other.mMin && mMax == other.mMax; }
 	constexpr bool operator!=(const Rect<T>& other) const { return !operator==(other); }
