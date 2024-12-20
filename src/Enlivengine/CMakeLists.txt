@@ -43,29 +43,35 @@ source_group("Tools" FILES ${ENLIVENGINE_TOOLS_FILES})
 file(GLOB_RECURSE ENLIVENGINE_ENGINE_FILES "Engine/*")
 source_group("Engine" FILES ${ENLIVENGINE_ENGINE_FILES})
 
-find_package(OpenGL REQUIRED)
+if(WIN32)
+    find_package(OpenGL REQUIRED)
+endif()
 
 add_library(Enlivengine STATIC
-	${ENLIVENGINE_ROOT_FILES}
-	${ENLIVENGINE_PLATFORM_FILES}
-	${ENLIVENGINE_UTILS_FILES}
-	${ENLIVENGINE_MATH_FILES}
-	${ENLIVENGINE_WINDOW_FILES}
-	${ENLIVENGINE_RESOURCES_FILES}
-	${ENLIVENGINE_AUDIO_FILES}
-	${ENLIVENGINE_GRAPHICS_FILES}
-	${ENLIVENGINE_ANIMATION_FILES}
-	${ENLIVENGINE_TILED_FILES}
-	${ENLIVENGINE_CORE_FILES}
-	${ENLIVENGINE_TOOLS_FILES}
-	${ENLIVENGINE_ENGINE_FILES}
+    ${ENLIVENGINE_ROOT_FILES}
+    ${ENLIVENGINE_PLATFORM_FILES}
+    ${ENLIVENGINE_UTILS_FILES}
+    ${ENLIVENGINE_MATH_FILES}
+    ${ENLIVENGINE_WINDOW_FILES}
+    ${ENLIVENGINE_RESOURCES_FILES}
+    ${ENLIVENGINE_AUDIO_FILES}
+    ${ENLIVENGINE_GRAPHICS_FILES}
+    ${ENLIVENGINE_ANIMATION_FILES}
+    ${ENLIVENGINE_TILED_FILES}
+    ${ENLIVENGINE_CORE_FILES}
+    ${ENLIVENGINE_TOOLS_FILES}
+    ${ENLIVENGINE_ENGINE_FILES}
 )
 target_compile_definitions(Enlivengine PUBLIC $<$<CONFIG:RelWithDebInfo>:ENLIVE_DEBUG>)
 if (MSVC)
-	target_compile_options(Enlivengine PRIVATE /W4 /WX)
+    target_compile_options(Enlivengine PRIVATE /W4 /WX)
 else()
-	target_compile_options(Enlivengine PRIVATE -Wall -Wextra -pedantic -Werror)
+    target_compile_options(Enlivengine PRIVATE -Wall -Wextra -pedantic -Werror)
 endif()
 target_include_directories(Enlivengine PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
-target_link_libraries(Enlivengine PUBLIC EnlivengineThirdParty sfml-graphics OpenGL::GL)
+if(WIN32)
+    target_link_libraries(Enlivengine PUBLIC EnlivengineThirdParty sfml-graphics OpenGL::GL)
+elseif(ANDROID)
+    target_link_libraries(Enlivengine PUBLIC EnlivengineThirdParty sfml-graphics)
+endif()
 set_target_properties(Enlivengine PROPERTIES FOLDER "Enlivengine")

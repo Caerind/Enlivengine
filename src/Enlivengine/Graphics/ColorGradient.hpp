@@ -3,9 +3,9 @@
 #include <unordered_map>
 #include <functional>
 
-#include <Platform/PrimitiveTypes.hpp>
-#include <Utils/Assert.hpp>
-#include <Math/Color.hpp>
+#include <Enlivengine/Platform/PrimitiveTypes.hpp>
+#include <Enlivengine/Utils/Assert.hpp>
+#include <Enlivengine/Math/Color.hpp>
 
 namespace en
 {
