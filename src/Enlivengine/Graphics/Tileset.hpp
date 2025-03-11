@@ -49,7 +49,7 @@ public:
 
 	static ResourceLoader<Tileset> FromCode(TexturePtr texture, const Vector2u& tileSize, const Vector2u& gridSize, U32 spacing = 0, U32 margin = 0)
 	{
-		return ResourceLoader<Tileset>([&](Tileset& r)
+		return ResourceLoader<Tileset>([=](Tileset& r)
 			{
 				r.SetTexture(texture);
 				r.SetTileSize(tileSize);
