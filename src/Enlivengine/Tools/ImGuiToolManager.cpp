@@ -34,13 +34,13 @@ bool ImGuiToolManager::Initialize()
 	ImGuiToolManager& imgui = GetInstance();
 	enAssert(!imgui.mInitialized);
 
+	imgui.RegisterEngineTools();
+
 	imgui.mInitialized = true;
 
 #ifdef ENLIVE_TOOL
 	imgui.mRunning = true;
 #endif // ENLIVE_TOOL
-
-	imgui.RegisterTools();
 
 	return true;
 }
@@ -274,7 +274,6 @@ void ImGuiToolManager::Update(Window& window)
 void ImGuiToolManager::RegisterTool(ImGuiTool& tool)
 {
 	ImGuiToolManager& imgui = GetInstance();
-	enAssert(imgui.mInitialized);
 
 	const U32 tab = static_cast<U32>(tool.GetTab());
 
@@ -294,7 +293,7 @@ void ImGuiToolManager::RegisterTool(ImGuiTool& tool)
 	tools.push_back(&tool);
 }
 
-void ImGuiToolManager::RegisterTools()
+void ImGuiToolManager::RegisterEngineTools()
 {
 #ifdef ENLIVE_TOOL
 	RegisterTool(ImGuiEditor::GetInstance());

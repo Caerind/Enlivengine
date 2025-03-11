@@ -34,7 +34,7 @@ public:
 	static void RegisterTool(ImGuiTool& tool);
 
 private:
-	void RegisterTools();
+	void RegisterEngineTools();
 
 	void ImGuiMain();
 	void ImGuiTools();
